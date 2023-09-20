@@ -1,1 +1,89 @@
 
+spring:
+  profiles:
+    active: dev
+  datasource:
+    druid:
+      type: com.alibaba.druid.pool.DruidDataSource
+      url: jdbc:mysql://gz-cynosdbmysql-grp-dv26psgv.sql.tencentcdb.com:20516/ssm?serverTimezone=UTC&useSSL=true&useUnicode=true&characterEncoding=UTF-8
+
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      #     连接池配置信息(通常来说，只需要修改initialSize、minIdle、maxActive
+      #     如果用Oracle，则把poolPreparedStatements配置为true，mysql可以配置为false。分库分表较多的数据库，建议配置为false。
+      #     removeabandoned不建议在生产环境中打开如果用SQL Server，建议追加配置)
+      #     初始化大小
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      #     配置获取连接等待超时的时间
+      max-wait: 60000
+      #     配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      #     配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      #     申请连接的时候检测，建议配置为true，不影响性能，并且保证安全性
+      test-while-idle: true
+      #     获取连接时执行检测，建议关闭，影响性能
+      test-on-borrow: false
+      #     是否开启PSCache,PSCahce对支持游标的数据库性能提示巨大，oracle建议开启，mysql下建议关闭
+      pool-prepared-statements: false
+      #     开启poolPreparedStatments后生效
+      max-pool-prepared-statement-per-connection-size: 20
+
+      #     配置监控统计拦截的filters，去掉后监控界面sql无法统计，‘wall’用于防火墙·，log4j2：日志
+      filters:
+        commons-log.connection-logger-name: stat,wall,log4j
+
+      # Spring监控配置，说明请参考Druid Github Wiki，配置_Druid和Spring关联监控配置
+      # Spring监控AOP切入点，如x.y.z.service.*,配置多个英文逗号分隔
+      aop-patterns: 'com.cmxz.snakesmartmemo.*'
+
+      #     配置监控属性： 在druid-starter的： com.alibaba.druid.spring.boot.autoconfigure.stat包下进行的逻辑配置
+      web-stat-filter: # WebStatFilter配置，
+        enabled: true #默认为false，表示不使用WebStatFilter配置，就是属性名去短线
+        url-pattern: /* #拦截该项目下的一切请求
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*' #对这些请求放行
+        session-stat-enable: true
+        principal-session-name: session_name
+        principal-cookie-name: cookie_name
+        #        profile-enable:
+        #        session-stat-max-count:
+
+      stat-view-servlet: # StatViewServlet配置
+        enabled: true  #默认为false，表示不使用StatViewServlet配置，就是属性名去短线
+        url-pattern: /druid/*  #配置DruidStatViewServlet的访问地址。后台监控页面的访问地址
+        reset-enable: false #禁用HTML页面上的“重置”功能，会把所有监控的数据全部清空，一般不使用
+        login-username: admin #监控页面登录的用户名
+        login-password: 2003 #监控页面登录的密码
+        #       StatViewSerlvet展示出来的监控信息比较敏感，是系统运行的内部情况，如果你需要做访问控制，可以配置allow和deny这两个参数
+        #       deny优先于allow，如果在deny列表中，就算在allow列表中，也会被拒绝。如果allow没有配置或者为空，则允许所有访问
+        #       配置的格式
+        #        <IP>
+        #        或者<IP>/<SUB_NET_MASK_size>其中128.242.127.1/24
+        #        24表示，前面24位是子网掩码，比对的时候，前面24位相同就匹配,不支持IPV6。
+        allow: 127.0.0.1,192.168.2.111  #IP白名单(没有配置或者为空，则允许所有访问)。允许谁访问druid后台，默认允许全部用户访问。
+        deny:  #IP黑名单 (存在共同时，deny优先于allow)。不允许谁访问druid后台
+      filter:
+        stat:
+          enabled: true         # 开启DruidDataSource状态监控
+          db-type: mysql        # 数据库的类型
+          log-slow-sql: true    # 开启慢SQL记录功能
+          slow-sql-millis: 2000 # 默认3000毫秒，这里超过2s，就是慢，记录到日志
+      wall:
+        enabled: true
+        config:
+        drop-table-allow: false
+server:
+  port: 19198
+# ========================== ↓↓↓↓↓↓ 七牛云配置 ↓↓↓↓↓↓ ==========================
+qiniu:
+  kodo:
+    accessKey: wrc6ZCQCAntE73vpn2KBK0eFLvD-B7Y7BhnTRJrr
+    secretKey: MTZS6Lq_J09KnHTAhJgsEk_z-IzKk5i0M5-RNM18
+    # 对象储存
+    bucket: # 空间名称
+    zone:  # 存储区域
+    domain: rm4232llv.hn-bkt.clouddn.com # 访问域名
+
+#logging:
+#  config: classpath:logback-spring.xml
