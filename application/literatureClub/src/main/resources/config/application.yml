@@ -81,7 +81,9 @@ spring:
         enabled: true
         config:
         drop-table-allow: false
-
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 # ========================== ↓↓↓↓↓↓ 七牛云配置 ↓↓↓↓↓↓ ==========================
 #qiniu:
 #  kodo:
