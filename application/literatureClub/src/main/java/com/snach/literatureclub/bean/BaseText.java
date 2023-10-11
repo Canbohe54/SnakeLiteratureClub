@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class BaseText implements Serializable {
     @Id
-    BigInteger id;
+    String id;
     String text;
     Date time;
     String textBy;

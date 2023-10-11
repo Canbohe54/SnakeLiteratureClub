@@ -38,7 +38,7 @@ public interface ArticleDao {
      * @param id 稿件id
      */
     @Delete("DELETE FROM article WHERE id = #{id}")
-    void deleteArticleById(@Param("id") BigInteger id);
+    void deleteArticleById(@Param("id") String id);
 
     /**
      * 根据作者id查找其稿件，返回稿件id、标题、描述和时间
@@ -48,7 +48,7 @@ public interface ArticleDao {
     @Select("SELECT a.id id,a.title title,a.description description,a.time time" +
             "FROM article a left join contributor_article_list c on a.id = c.article_id " +
             "WHERE c.contributor_id = #{contributor_id}")
-    Article getArticleByContributorId(@Param("contributor_id") BigInteger contributor_id);
+    Article getArticleByContributorId(@Param("contributor_id") String contributor_id);
 
     /**
      * 根据id获取单个稿件的详细信息
@@ -56,7 +56,7 @@ public interface ArticleDao {
      * @return id对应的稿件信息的Article对象
      */
     @Select("SELECT * FROM article WHERE id = #{id}")
-    Article getArticleById(@Param("id") int id);
+    Article getArticleById(@Param("id") String id);
 
     /**
      * 获取所有的稿件信息
@@ -65,4 +65,21 @@ public interface ArticleDao {
     @Select("SELECT * FROM article")
     List<Article> getAllArticles();
 
+    /**
+     * 插入作者与稿件关系和稿件状态
+     * @param contributor_id 作者id
+     * @param article_id 稿件id
+     * @param statue 保存状态（1：保存成功 2：待审核 0：保存失败）
+     */
+    @Insert("INSERT INTO contributor_article_list(contributor_id,article_id,statue) VALUES(#{c_id},#{a_id},#{statue})")
+    void insertRelationAndState(@Param("c_id") String contributor_id,@Param("a_id") String article_id,@Param("statue") int statue);
+
+    /**
+     * 更新稿件状态
+     * @param article_id 稿件id
+     * @param statue 保存状态（1：保存成功 2：待审核 0：保存失败）
+     * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
+     */
+    @Update("UPDATE contributor_article_list SET statue=#{statue} WHERE article_id=#{a_id}")
+    int updateStatue(@Param("a_id") String article_id,int statue);
 }
