@@ -156,7 +156,7 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public Map<String, Object> getArticleById(String id) {
         Map<String, Object> res = new HashMap<String, Object>();
-        res.put("article", articleDao.getArticleById(id).toString());
+        res.put("article", articleDao.getArticleById(id));
         res.put("statusMsg", "ok");
         return res;
     }
