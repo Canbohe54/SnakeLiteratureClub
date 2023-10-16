@@ -14,8 +14,10 @@ import java.util.Date;
 public class Article extends BaseText implements Serializable {
     String title;
     String description;
-    public Article(String id, String text, Date time,String textBy, String title, String description){
+    int status;
+    public Article(String id, String text, Date time,String textBy, String title, String description,int status){
         super(id,text,time,textBy);
+        this.status = status;
         this.title = title;
         this.description = description;
     }
