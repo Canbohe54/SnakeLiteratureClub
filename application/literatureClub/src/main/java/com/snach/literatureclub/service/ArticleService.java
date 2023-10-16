@@ -2,6 +2,7 @@ package com.snach.literatureclub.service;
 
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.dao.ArticleDao;
+import com.snach.literatureclub.utils.Tools;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,17 +87,17 @@ class ArticleServiceImpl implements ArticleService {
     public Map<String, Object> addArticle(String contributor_id, String title, String description, String text, int action) {
         Map<String, Object> res = new HashMap<String, Object>();
         //时间戳生成id
-        String id = generateId("article");
+        String id = generateId(Tools.Type.ARTICLE);
 
         //修改时间
         //SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
 
         //插入article表
-        Article article = new Article(id, text, date, "", title, description);
+        Article article = new Article(id, text, date, "", title, description,action);
         articleDao.insertArticle(article);
-        // 稿件状态更新
-        articleDao.insertRelationAndState(contributor_id, id, action);
+        // 稿件投稿者关系更新
+        articleDao.insertRelationAndState(contributor_id, id);
 
         res.put("fileStatue", action);
         res.put("statusMsg", "ok");
@@ -110,11 +111,9 @@ class ArticleServiceImpl implements ArticleService {
         Date date = new Date(System.currentTimeMillis());
 
         // 更新基本信息
-        Article article = new Article(id, "", date, "", title, description);
+        Article article = new Article(id, "", date, "", title, description,2);
         articleDao.updateArticleInfo(article);
 
-        // 更新稿件状态
-        articleDao.updateStatue(id,2);
         res.put("fileStatue", 2);
         res.put("statusMsg", "ok");
         return res;
@@ -127,10 +126,8 @@ class ArticleServiceImpl implements ArticleService {
         // 修改时间
         Date date = new Date(System.currentTimeMillis());
         // 更新详细信息
-        Article article = new Article(id, text, date, "", title, description);
+        Article article = new Article(id, text, date, "", title, description,action);
         articleDao.updateArticleDetail(article);
-        // 状态更新
-        articleDao.updateStatue(id,action);
 
         res.put("fileStatue", action);
         res.put("statusMsg", "ok");
