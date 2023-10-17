@@ -1,7 +1,7 @@
 <template>
   <el-affix>
     <div aria-label="page header" class="header-display">
-      <el-page-header title="蛇蛇文学社" style="background-color: white;">
+      <el-page-header title="蛇拾文学社" style="background-color: white;" >
         <template #icon>
           <div class="flex items-center">
             <img alt="snakeliteratureclub" src="../assets/logo.png" class="header-logo">
@@ -94,7 +94,7 @@
   align-items: center;
 }
 .el-menu--horizontal.el-menu {
-  border-bottom: none;
+  border-bottom: none!important;
   text-decoration: none;
 }
 .el-dropdown-link:focus {
