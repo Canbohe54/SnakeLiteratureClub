@@ -31,14 +31,14 @@
     <el-form-item label="单位" prop="unit">
       <el-input placeholder="请输入所在单位" v-model="regRuleForm.unit" />
     </el-form-item>
-    <el-form-item>
-      <el-checkbox>我已阅读并同意《用户协议》</el-checkbox>
+    <el-form-item prop="checkUserAgreement">
+      <el-checkbox v-model="regRuleForm.checkUserAgreement" :checked="regRuleForm.checkUserAgreement">我已阅读并同意《用户协议》</el-checkbox>
     </el-form-item>
   </el-form>
   <div class="regBottom">
     <div></div>
     <el-button type="primary" @click="onSubmit(regRuleFormRef)" class="regButton">立即注册</el-button>
-    <router-link to="/Login" class="regLink">已经有账户了？点击登录</router-link>
+    <router-link to="/login" class="regLink">已经有账户了？点击登录</router-link>
   </div>
 </template>
 <script lang="ts" setup>
@@ -56,6 +56,7 @@ interface RegRuleForm {
   name: string
   identity: string
   unit: string
+  checkUserAgreement: boolean
 } // 验证表单接口
 
 const regRuleForm = reactive<RegRuleForm>({
@@ -64,7 +65,8 @@ const regRuleForm = reactive<RegRuleForm>({
   passwd2: '',
   name: '',
   identity: '',
-  unit: ''
+  unit: '',
+  checkUserAgreement: false
 }) // 验证表单
 const regRuleFormRef = ref<FormInstance>()
 
@@ -115,13 +117,22 @@ const validateEmail = (rule: any, value: any, callback: any) => { // 验证邮�
   }
 }
 
+const validateCheckUserAgreement = (rule: any, value: any, callback: any) => { // 验证用户协议
+  if (value === false) {
+    callback(new Error('请阅读并同意《用户协议》'))
+  } else {
+    callback()
+  }
+}
+
 const regRules = reactive<FormRules<RegRuleForm>>({ // 表单验证规则
   email: [{ required: true, validator: validateEmail, trigger: 'blur' }],
   passwd: [{ required: true, validator: validatePasswd, trigger: 'blur' }],
   passwd2: [{ required: true, validator: validatePasswd2, trigger: 'blur' }],
   name: [{ required: true, message: '姓名不能为空', trigger: 'blur' }],
   identity: [{ required: true, message: '请选择身份', trigger: 'blur' }],
-  unit: [{ required: true, message: '单位不能为空', trigger: 'blur' }]
+  unit: [{ required: true, message: '单位不能为空', trigger: 'blur' }],
+  checkUserAgreement: [{ required: true, validator: validateCheckUserAgreement, trigger: 'change' }]
 })
 
 const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单

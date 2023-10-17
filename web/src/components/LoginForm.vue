@@ -10,7 +10,7 @@
     <div class="loginBottom">
         <div></div>
         <el-button type="primary" @click="onSubmit(loginRuleFormRef)" class="loginButton">立即登录</el-button>
-        <router-link to="/Register" class="loginLink">还没有账户？点击注册</router-link>
+        <router-link to="/register" class="loginLink">还没有账户？点击注册</router-link>
     </div>
 </template>
 <script lang="ts" setup>

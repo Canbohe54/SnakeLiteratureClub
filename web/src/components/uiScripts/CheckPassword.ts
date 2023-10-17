@@ -41,10 +41,11 @@ export const checkPasswordRule = (password:string, username:string) => {
   if (password === '' || password.length < 8 || password.length > 32) {
     // console.log("长度小于8，或大于32");
     return '密码长度应大于8位小于32位'
-  } if (password.indexOf(username) !== -1) {
-    // console.log("包含用户名");
-    return '请勿包含用户名'
   }
+  // if (password.indexOf(username) !== -1) {
+  //   // console.log("包含用户名");
+  //   return '请勿包含用户名'
+  // }
   // if (isContinuousChar(password)) {
   //   // console.log("包含3个及以上相同或字典连续字符");
   //   return '请勿包含3个及以上相同或字母表连续字符'
