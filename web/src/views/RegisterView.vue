@@ -24,7 +24,7 @@ export default class RegisterView extends Vue {}
   border-radius: 20px;
   width: 600px;
   position: absolute;
-  padding: 30px;
+  padding: 20px 30px 40px 30px;
   left: 50%;
   top: 50%;
   transform: translate(-50%,-50%);
