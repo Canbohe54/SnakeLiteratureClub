@@ -1,35 +1,35 @@
 <template>
-  <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="80px" size="large">
+  <el-form ref="regRuleFormRef" :model="regRuleForm" :rules="regRules" label-width="80px" size="large">
     <el-form-item label="邮箱" prop="email">
-      <el-input placeholder="请输入邮箱" v-model="ruleForm.email" />
+      <el-input placeholder="请输入邮箱" v-model="regRuleForm.email" />
     </el-form-item>
     <el-form-item label="密码" prop="passwd">
-      <el-input tpye="password" placeholder="请输入密码" show-password v-model="ruleForm.passwd" />
+      <el-input tpye="password" placeholder="请输入密码" show-password v-model="regRuleForm.passwd" />
     </el-form-item>
-    <el-form-item v-if="ruleForm.passwd !== '' && ruleForm.passwd !== undefined" label="" algin="center" style="height: 25px">
+    <el-form-item v-if="regRuleForm.passwd !== '' && regRuleForm.passwd !== undefined" label="" algin="center" style="height: 25px">
       <!-- 展示长度条 -->
-      <div class="bar" v-if="ruleForm.passwd !== '' && ruleForm.passwd !== undefined"
+      <div class="bar" v-if="regRuleForm.passwd !== '' && regRuleForm.passwd !== undefined"
         :style="{ background: barColor, width: width + '%' }">
         <!-- 展示文字 -->
-        <div class="strength" :style="{ color: barColor }" v-if="ruleForm.passwd !== '' && ruleForm.passwd !== undefined">
+        <div class="strength" :style="{ color: barColor }" v-if="regRuleForm.passwd !== '' && regRuleForm.passwd !== undefined">
           {{ strength }}
         </div>
       </div>
     </el-form-item>
     <el-form-item label="确认密码" prop="passwd2">
-      <el-input type="password" placeholder="请再次输入密码" show-password v-model="ruleForm.passwd2" />
+      <el-input type="password" placeholder="请再次输入密码" show-password v-model="regRuleForm.passwd2" />
     </el-form-item>
     <el-form-item label="姓名" prop="name">
-      <el-input placeholder="请输入姓名" v-model="ruleForm.name" />
+      <el-input placeholder="请输入姓名" v-model="regRuleForm.name" />
     </el-form-item>
     <el-form-item label="身份" prop="identity">
-      <el-radio-group v-model="ruleForm.identity" class="ml-4">
+      <el-radio-group v-model="regRuleForm.identity" class="ml-4">
         <el-radio label="学生" size="large">学生</el-radio>
         <el-radio label="专家" size="large">专家</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="单位" prop="unit">
-      <el-input placeholder="请输入所在单位" v-model="ruleForm.unit" />
+      <el-input placeholder="请输入所在单位" v-model="regRuleForm.unit" />
     </el-form-item>
     <el-form-item>
       <el-checkbox>我已阅读并同意《用户协议》</el-checkbox>
@@ -37,7 +37,7 @@
   </el-form>
   <div class="regBottom">
     <div></div>
-    <el-button type="primary" @click="onSubmit(ruleFormRef)" class="regButton">立即注册</el-button>
+    <el-button type="primary" @click="onSubmit(regRuleFormRef)" class="regButton">立即注册</el-button>
     <router-link to="/Login" class="regLink">已经有账户了？点击登录</router-link>
   </div>
 </template>
@@ -47,9 +47,9 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { checkPasswordRule, level } from './uiScripts/CheckPassword'
 // do not use same name with ref!!!
 
-const regEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
+const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
 
-interface RuleForm {
+interface RegRuleForm {
   email: string
   passwd: string
   passwd2: string
@@ -58,7 +58,7 @@ interface RuleForm {
   unit: string
 } // 验证表单接口
 
-const ruleForm = reactive<RuleForm>({
+const regRuleForm = reactive<RegRuleForm>({
   email: '',
   passwd: '',
   passwd2: '',
@@ -66,17 +66,17 @@ const ruleForm = reactive<RuleForm>({
   identity: '',
   unit: ''
 }) // 验证表单
-const ruleFormRef = ref<FormInstance>()
+const regRuleFormRef = ref<FormInstance>()
 
 const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密码
   if (value === '') {
     callback(new Error('密码不能为空'))
   } else {
     let name = ''
-    if (ruleForm.name === '') {
+    if (regRuleForm.name === '') {
       name = '空'
     } else {
-      name = ruleForm.name
+      name = regRuleForm.name
     }
     const result = checkPasswordRule(value, name)
     if (result === '校验通过') {
@@ -84,9 +84,9 @@ const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密�
     } else {
       callback(new Error(result))
     }
-    if (ruleForm.passwd2 !== '') {
-      if (!ruleFormRef.value) return
-      ruleFormRef.value.validateField('passwd2', () => null)
+    if (regRuleForm.passwd2 !== '') {
+      if (!regRuleFormRef.value) return
+      regRuleFormRef.value.validateField('passwd2', () => null)
     }
     callback()
   }
@@ -95,7 +95,7 @@ const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密�
 const validatePasswd2 = (rule: any, value: any, callback: any) => { // 验证验证密码
   if (value === '') {
     callback(new Error('请再次输入密码'))
-  } else if (value !== ruleForm.passwd) {
+  } else if (value !== regRuleForm.passwd) {
     callback(new Error('两次输入密码不一致'))
   } else {
     callback()
@@ -106,7 +106,7 @@ const validateEmail = (rule: any, value: any, callback: any) => { // 验证邮�
   if (value === '') {
     callback(new Error('邮箱不能为空'))
   } else {
-    const isEmail = regEmail.test(value)
+    const isEmail = regExpEmail.test(value)
     if (!isEmail) {
       callback(new Error('请输入正确的邮箱地址'))
     } else {
@@ -115,7 +115,7 @@ const validateEmail = (rule: any, value: any, callback: any) => { // 验证邮�
   }
 }
 
-const rules = reactive<FormRules<RuleForm>>({ // 表单验证规则
+const regRules = reactive<FormRules<RegRuleForm>>({ // 表单验证规则
   email: [{ required: true, validator: validateEmail, trigger: 'blur' }],
   passwd: [{ required: true, validator: validatePasswd, trigger: 'blur' }],
   passwd2: [{ required: true, validator: validatePasswd2, trigger: 'blur' }],
@@ -144,7 +144,7 @@ const width = ref('')
 const strength = ref('')
 // 监听注册页面的新密码变化状态，来改变密码强弱显示
 watch(
-  () => ruleForm.passwd,
+  () => regRuleForm.passwd,
   (newVal) => {
     if (newVal !== '') {
       const res: string = level(newVal)
