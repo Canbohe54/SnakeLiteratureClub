@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Grades implements Serializable {
+public class Grade implements Serializable {
     String expert_id;
     String article_id;
     int garde_expr;
