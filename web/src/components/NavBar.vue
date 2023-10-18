@@ -1,17 +1,17 @@
 <template>
   <el-affix>
     <div aria-label="page header" class="header-display">
-      <el-page-header title="蛇拾文学社" style="background-color: white;" @back="onback">
+      <el-page-header title="蛇拾文学社" style="background-color: white;" @back="backToLobby">
         <template #icon>
           <div class="flex items-center">
             <img alt="snakeliteratureclub" src="../assets/logo.png" class="header-logo">
           </div>
         </template>
         <template #content><!--菜单栏-->
-          <div>
+          <div class="nav-content">
             <el-menu :default-active=null class="el-menu-demo" mode="horizontal" :ellipsis="false" @select="handleSelect">
               <div class="flex-grow"></div>
-              <el-menu-item index="1">Processing Center</el-menu-item>
+              <el-menu-item index="1">文学大厅</el-menu-item>
               <!-- <el-sub-menu index="2">
             <template #title>Workspace</template>
             <el-menu-item index="2-1">item one</el-menu-item>
@@ -25,42 +25,45 @@
             </el-sub-menu>
           </el-sub-menu> -->
             </el-menu>
+            <div class="mt-4 search-input" v-if="route.path!=='/search'">
+              <el-input v-model="searchInput" placeholder="搜索" class="input-with-select">
+                <template #append>
+                  <el-button :icon="Search" type="primary" @click="handleSearch"/>
+                </template>
+              </el-input>
+            </div>
           </div>
         </template>
 
-        <template #extra><!--用户信息设置栏-->
-          <div class="flex items-center">
-            <!-- <el-menu :default-active=null class="el-menu-demo" mode="horizontal" :ellipsis="false" @select="handleSelect">
-              <div class="flex-grow"></div>
-              <el-menu-item index="2">
-                <el-tag>Default</el-tag>
-                <el-avatar class="mr-3" :size="32"
-              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-              </el-menu-item>
-            </el-menu> -->
-            <el-dropdown>
-              <router-link :to="userInfoRedirect" class="user-info-link">
-                <span class="el-dropdown-link">
-                <div class="user-display">
-                  <el-tag class="ml-2 user-display-content" :type="userTagType"><span v-if="userInfo.userName !== '' && userInfo.userName !== undefined">{{ userInfo.userName }} · </span>{{ userInfo.userIdentity }}</el-tag>
-                  <el-avatar class="mr-3 user-display-content" :size="40"
-                    src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-                </div>
-                <!-- <el-icon class="el-icon--right">
+        <template #extra>
+          <div class="nav-extra">
+            <div class="flex items-center"><!--用户信息设置栏-->
+              <el-dropdown @command="handleDropdownCommand">
+                <router-link :to="userInfoRedirect" class="user-info-link">
+                  <span class="el-dropdown-link">
+                    <div class="user-display"> <!--用户信息-->
+                      <el-tag class="ml-2 user-display-content" :type="userTagType" disable-transitions><span
+                          v-if="userInfo.userName !== '' && userInfo.userName !== undefined">{{ userInfo.userName }} ·
+                        </span>{{ userInfo.userIdentity }}</el-tag>
+                      <el-avatar class="mr-3 user-display-content" :size="40"
+                        src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+                    </div>
+                    <!-- <el-icon class="el-icon--right">
                   <arrow-down />
                 </el-icon> -->
-              </span>
-              </router-link>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item>Action 1</el-dropdown-item>
-                  <el-dropdown-item>Action 2</el-dropdown-item>
-                  <el-dropdown-item>Action 3</el-dropdown-item>
-                  <el-dropdown-item disabled>Action 4</el-dropdown-item>
-                  <el-dropdown-item divided>Action 5</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+                  </span>
+                </router-link>
+                <template #dropdown>
+                  <el-dropdown-menu v-if="userInfo.userIdentity === '未登录'">
+                    <el-dropdown-item command="login">点击登录！</el-dropdown-item>
+                  </el-dropdown-menu>
+                  <el-dropdown-menu v-else>
+                    <el-dropdown-item command="userCenter">个人中心</el-dropdown-item>
+                    <el-dropdown-item divided>退出登录</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </div>
         </template>
       </el-page-header>
@@ -68,32 +71,60 @@
   </el-affix>
 </template>
 <style>
-.header-display { /*头部*/
+.header-display {
+  /*头部*/
   border-bottom: 1px solid var(--el-border-color);
 }
 
-.header-logo { /*logo*/
+.header-logo {
+  /*logo*/
   width: 32px;
   height: 32px;
   margin: 0 0 0 16px;
 }
 
-.flex-grow { /*菜单栏*/
+.flex-grow {
+  /*菜单栏*/
   flex-grow: 1;
 }
+.nav-content {
+  display: flex;
+  align-items: center;
+}
 
-.user-display { /*用户信息展示栏*/
+.search-input {
+  margin:0 0 0 200px;
+}
+.input-with-select .el-input__wrapper {
+  border-radius: 8px;
+}
+.input-with-select .el-input-group__append {
+  background-color: var(--el-fill-color-blank);
+  border-radius: 8px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.nav-extra {
+  display: flex;
+  align-items: center;
+}
+.user-display {
+  /*用户信息展示栏*/
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 16px 0 0;
 }
 
-.user-info-link { /*用户信息展示栏链接*/
+.user-info-link {
+  /*用户信息展示栏链接*/
   text-decoration: none;
+  outline: none;
 }
 
-.user-display-content {   /*用户信息展示栏内容*/
+.user-display-content {
+  /*用户信息展示栏内容*/
   margin: 0 8px 0 0;
   font-size: 12px;
 }
@@ -117,8 +148,36 @@
 <script lang="ts" setup>
 // import { ArrowDown } from '@element-plus/icons-vue'
 import { reactive, ref } from 'vue'
+
 // const activeIndex = ref('2')
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { Search } from '@element-plus/icons-vue'
+const router = useRouter()
+const route = useRoute()
+// logo跳转部分
+const backToLobby = () => {
+  router.push('/')
+}
+
+// 导航菜单部分
+const handleSelect = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+
+// 搜索框部分
+const searchInput = ref('')
+const handleSearch = async () => {
+  if (searchInput.value !== '' && searchInput.value !== undefined) {
+    router.push({ path: '/search', query: { wd: searchInput.value } })
+  } else {
+    router.push({ path: '/search' })
+  }
+}
+// 用户信息部分
+const userInfo = reactive({ // 用户信息
+  userName: '',
+  userIdentity: '未登录'
+})
 
 const identityTagType = (userIdentity: string) => {
   switch (userIdentity) {
@@ -133,22 +192,23 @@ const identityTagType = (userIdentity: string) => {
   }
 }
 
-const router = useRouter()
-
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const onback = () => {
-  router.push('/')
-}
-
-const userInfo = reactive({ // 用户信息
-  userName: '',
-  userIdentity: '未登录'
-})
 const userTagType = ref(identityTagType(userInfo.userIdentity))
 const userInfoRedirect = ref(userInfo.userIdentity === '未登录' ? '/login' : '/')
 // 未登录则跳转到登录页面，已登录则跳转到个人信息页面 未完成
+
+// 下拉菜单部分
+const handleDropdownCommand = (command: string | number | object) => {
+  switch (command) {
+    case 'login':
+      router.push('/login')
+      break
+    case 'userCenter':
+      router.push('/userCenter')
+      break
+    default:
+      break
+  }
+}
 </script>
 <script>
 
