@@ -1,10 +1,7 @@
 package com.snach.literatureclub.dao;
 
 import com.snach.literatureclub.bean.Comment;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -14,26 +11,36 @@ import java.util.List;
 @Mapper
 public interface CommentDao {
     /**
-     * 根据文本id载入该文本附属评论列表
+     * 根据评论id获取评论
+     *
+     * @param commentId 评论id
+     * @return 该评论对象
+     */
+    @Select("SELECT id, text, time, text_by as textBy, text_on as textOn, reply FROM comments WHERE id = #{commentId}")
+    Comment getComment(String commentId);
+
+    /**
+     * 根据文本id载入该文本附属所有评论列表
      *
      * @param textId 文本id
      * @return 该文本下的评论列表
      */
-    @Select("SELECT * FROM comments WHERE text_id = #{textId}")
-    List<Comment> loadComment(@Param("textId") String textId);
+    @Select("SELECT id, text, time, text_by as textBy, text_on as textOn, reply FROM comments WHERE text_on = #{textId} ORDER BY time DESC")
+    List<Comment> loadComment(String textId);
 
     /**
      * 添加评论
      *
      * @param id 本评论id
      */
-    @Insert("INSERT INTO comments()")
-    void insertComment(String id, String text, Date date, String textBy, String textOn, String reply);
+    @Insert("INSERT INTO comments(id, text, time, text_by, text_on, reply) values(#{id}, #{text}, #{time}, #{textBy}, #{textOn}, #{reply})")
+    void insertComment(String id, String text, Date time, String textBy, String textOn, String reply);
 
     /**
      * 删除评论
      *
      * @param commentId 评论id
      */
+    @Delete("DELETE FROM comments where id=#{commentId}")
     void deleteComment(String commentId);
 }
