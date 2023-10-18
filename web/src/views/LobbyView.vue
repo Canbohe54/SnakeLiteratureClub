@@ -4,7 +4,7 @@
     <h1>This is Lobby Page</h1>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import NavBar from '../components/NavBar.vue'
 import infroll from '../components/temp_infroll.vue'

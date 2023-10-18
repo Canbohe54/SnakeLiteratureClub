@@ -24,6 +24,16 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/RegisterView.vue')
   },
   {
+    path: '/user',
+    name: 'user',
+    component: () => import('../views/UserCenterView.vue')
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: () => import('../views/SearchView.vue')
+  },
+  {
     path: '/about',
     name: 'about',
     // route level code-splitting
@@ -39,11 +49,6 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathmatch(.*)',
     redirect: '/404'
-  },
-  {
-    path: '/test',
-    name: 'test',
-    component: () => import('../views/TestView.vue')
   }
 ]
 
