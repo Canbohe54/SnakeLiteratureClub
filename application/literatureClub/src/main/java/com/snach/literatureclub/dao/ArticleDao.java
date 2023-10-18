@@ -3,8 +3,8 @@ package com.snach.literatureclub.dao;
 import com.snach.literatureclub.bean.Article;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Repository
@@ -69,11 +69,28 @@ public interface ArticleDao {
     List<Article> getAllArticles();
 
     /**
-     * 插入作者与稿件关系和稿件状态
+     * 插入作者与稿件关系
      * @param contributor_id 作者id
      * @param article_id 稿件id
      */
     @Insert("INSERT INTO contributor_article_list(contributor_id,article_id) VALUES(#{c_id},#{a_id})")
-    void insertRelationAndState(@Param("c_id") String contributor_id,@Param("a_id") String article_id);
+    void insertRelation(@Param("c_id") String contributor_id, @Param("a_id") String article_id);
 
+    /**
+     * 更新稿件保存状态
+     * @param status 稿件状态 （1：保存成功 2：待审核 3.已发布 4.未通过 0：保存失败）
+     * @param id 文章id
+     * @return
+     */
+    @Update("UPDATE article SET status = #{status} WHERE id = #{id}")
+    int updateStatus(@Param("status") int status,@Param("id") String id);
+
+    /**
+     * 判断稿件是否属于该作者
+     * @param contributor_id 作者id
+     * @param article_id 稿件id
+     * @return 匹配到的行数
+     */
+    @Select("Select COUNT(*) FROM contributor_article_list WHERE contributor_id = #{contributor_id} AND article_id = #{article_id}")
+    int belong(@Param("contributor_id") String contributor_id,@Param("article_id") String article_id);
 }

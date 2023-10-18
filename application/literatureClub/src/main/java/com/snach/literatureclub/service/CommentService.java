@@ -6,12 +6,10 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static com.snach.literatureclub.utils.Tools.*;
+import static com.snach.literatureclub.utils.IdTools.*;
+import static com.snach.literatureclub.utils.TokenTools.*;
 
 @Service
 public interface CommentService {
@@ -20,7 +18,6 @@ public interface CommentService {
      *
      * @param articleId 稿件id
      * @param recursive 是否使用递归载入评论（即包含子评论）
-     * @return
      * <p>
      * 关于`根评论`及`子评论`:
      * @see Comment
@@ -30,17 +27,20 @@ public interface CommentService {
     /**
      * 添加评论
      *
-     * @param commentTo 稿件id或评论id
+     * @param token 用户token
+     * @param text 评论文本
+     * <p>--------------</p>
+     * param `textOn` and `reply`:
+     * @see Comment
      */
-    Map<String, Object> addComment(String commentTo);
+    Map<String, Object> addComment(String token, String text, String textOn, String reply);
 
     /**
      * 删除评论
      *
      * @param commentId 评论id
-     * @param reclusive 是否递归删除所有评论，默认false
      */
-    void deleteComment(String commentId, Boolean reclusive);
+    Map<String, Object> deleteComment(String token, String commentId);
 }
 
 @Service
@@ -49,10 +49,12 @@ class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentDao commentDao;
 
+    private static final Calendar calendar = Calendar.getInstance();
+
     @Override
     public Map<String, Object> loadComment(String articleId, Boolean recursive) {
         Map<String, Object> response = new HashMap<>();
-        if (idType(articleId) == Type.ARTICLE) {
+        if (idType(articleId) != Type.ARTICLE) {
             response.put("statusMsg", "Invalid id.");
             response.put("res", "{}");
             return response;
@@ -73,14 +75,26 @@ class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Map<String, Object> addComment(String commentTo) {
+    public Map<String, Object> addComment(String token, String text, String textOn, String reply) {
         Map<String, Object> response = new HashMap<>();
-//        commentDao.insertComment(commentTo);
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        commentDao.insertComment(generateId(Type.COMMENT), text, calendar.getTime(), getPayload(token, "id"), textOn, reply);
+        response.put("statusMsg", "Success.");
         return response;
     }
 
     @Override
-    public void deleteComment(String commentId, Boolean reclusive) {
+    public Map<String, Object> deleteComment(String token, String commentId) {
+        Map<String, Object> response = new HashMap<>();
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
         commentDao.deleteComment(commentId);
+        response.put("statusMsg", "Success.");
+        return response;
     }
 }

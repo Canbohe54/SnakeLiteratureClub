@@ -2,7 +2,7 @@ package com.snach.literatureclub.utils;
 
 import java.util.Random;
 
-public class Tools {
+public class IdTools {
     private static final String code = "WLJwjm8F6iySOH2aXvK4RnZ1Nkbel93cQoYgzGE0rChVIMdDTPs5UAfqt7uBxp";
     private static final Random random = new Random();
 
