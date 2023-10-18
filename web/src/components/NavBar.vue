@@ -39,7 +39,8 @@
               </el-menu-item>
             </el-menu> -->
             <el-dropdown>
-              <span class="el-dropdown-link">
+              <router-link :to="userInfoRedirect" class="user-info-link">
+                <span class="el-dropdown-link">
                 <div class="user-display">
                   <el-tag class="ml-2 user-display-content" :type="userTagType"><span v-if="userInfo.userName !== '' && userInfo.userName !== undefined">{{ userInfo.userName }} · </span>{{ userInfo.userIdentity }}</el-tag>
                   <el-avatar class="mr-3 user-display-content" :size="40"
@@ -49,6 +50,7 @@
                   <arrow-down />
                 </el-icon> -->
               </span>
+              </router-link>
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item>Action 1</el-dropdown-item>
@@ -85,6 +87,10 @@
   align-items: center;
   justify-content: center;
   margin: 0 16px 0 0;
+}
+
+.user-info-link { /*用户信息展示栏链接*/
+  text-decoration: none;
 }
 
 .user-display-content {   /*用户信息展示栏内容*/
@@ -136,11 +142,13 @@ const onback = () => {
   router.push('/')
 }
 
-const userInfo = reactive({
+const userInfo = reactive({ // 用户信息
   userName: '',
   userIdentity: '未登录'
 })
 const userTagType = ref(identityTagType(userInfo.userIdentity))
+const userInfoRedirect = ref(userInfo.userIdentity === '未登录' ? '/login' : '/')
+// 未登录则跳转到登录页面，已登录则跳转到个人信息页面 未完成
 </script>
 <script>
 
