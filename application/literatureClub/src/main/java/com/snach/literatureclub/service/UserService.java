@@ -11,6 +11,25 @@ import java.util.Map;
 @Service
 public interface UserService {
     Map<String, Object> getUser(String userId);
+
+    /**
+     * 用户收藏
+     * 返回格式 {statusMsg: #{String}}
+     * @param token 用于验证是否过期以及获取作者id
+     * @param article_id
+     * @return 执行状态
+     */
+    Map<String,Object> addFavorite(String token,String article_id);
+
+    /**
+     * 用户取消收藏
+     * 返回格式 {statusMsg: #{String}}
+     * @param token 用于验证是否过期以及获取作者id
+     * @param article_id
+     * @return 执行状态
+     */
+    Map<String,Object> cancelFavorite(String token,String article_id);
+
 }
 
 @Mapper
@@ -22,4 +41,15 @@ class UserServiceImpl implements UserService {
         Map<String, Object> res = new HashMap<>();
         return res;
     }
+
+    @Override
+    public Map<String, Object> addFavorite(String token, String article_id) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> cancelFavorite(String token, String article_id) {
+        return null;
+    }
+    //TODO getAllFavorites
 }
