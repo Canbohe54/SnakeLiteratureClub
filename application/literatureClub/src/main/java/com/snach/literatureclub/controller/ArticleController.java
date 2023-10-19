@@ -19,7 +19,6 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
-
     /**
      * 返回所有稿件的详细信息
      * 返回格式 { articles: [#{ARTICLE},...], statusMsg: #{STRING}}

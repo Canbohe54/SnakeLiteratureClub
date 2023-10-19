@@ -12,8 +12,8 @@ import java.util.List;
 public interface ArticleDao {
     /**
      * 插入方法
-     * @param article 封装有稿件信息的Article对象
      *
+     * @param article 封装有稿件信息的Article对象
      */
     @Insert("INSERT INTO article(id, title,description,text,time,status) " +
             "VALUES(#{article.id}, #{article.title},#{article.description},#{article.time},#{article.status})")
@@ -21,6 +21,7 @@ public interface ArticleDao {
 
     /**
      * 更新稿件详细信息,包括包括标题、描述和内容
+     *
      * @param article 封装有稿件信息的Article对象
      * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
      */
@@ -30,14 +31,17 @@ public interface ArticleDao {
 
     /**
      * 更新稿件基础信息,包括包括标题和描述
+     *
      * @param article 封装有稿件信息的Article对象
      * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
      */
     @Update("UPDATE article SET title = #{article.title}, description = #{article.description}, time = #{article.time},status = #{article.status} " +
             "WHERE id = #{article.id}")
     int updateArticleInfo(@Param("article") Article article);
+
     /**
      * 根据稿件id进行删除
+     *
      * @param id 稿件id
      */
     @Delete("DELETE FROM article WHERE id = #{id}")
@@ -45,6 +49,7 @@ public interface ArticleDao {
 
     /**
      * 根据作者id查找其稿件，返回稿件id、标题、描述和时间
+     *
      * @param contributor_id 作者id
      * @return
      */
@@ -54,7 +59,17 @@ public interface ArticleDao {
     List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id);
 
     /**
+     * 根据稿件id获取单个稿件的基础信息
+     *
+     * @param article_id 稿件id
+     * @return id对应的稿件信息的Article对象
+     */
+    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status FROM article a WHERE id = #{id}")
+    Article getArticleBasicById(@Param("id") String article_id);
+
+    /**
      * 根据id获取单个稿件的详细信息
+     *
      * @param id 稿件id
      * @return id对应的稿件信息的Article对象
      */
@@ -63,6 +78,7 @@ public interface ArticleDao {
 
     /**
      * 获取所有的稿件信息
+     *
      * @return 所有的稿件信息的Article对象List
      */
     @Select("SELECT * FROM article")
@@ -70,27 +86,30 @@ public interface ArticleDao {
 
     /**
      * 插入作者与稿件关系
+     *
      * @param contributor_id 作者id
-     * @param article_id 稿件id
+     * @param article_id     稿件id
      */
     @Insert("INSERT INTO contributor_article_list(contributor_id,article_id) VALUES(#{c_id},#{a_id})")
     void insertRelation(@Param("c_id") String contributor_id, @Param("a_id") String article_id);
 
     /**
      * 更新稿件保存状态
+     *
      * @param status 稿件状态 （1：保存成功 2：待审核 3.已发布 4.未通过 0：保存失败）
-     * @param id 文章id
+     * @param id     文章id
      * @return
      */
     @Update("UPDATE article SET status = #{status} WHERE id = #{id}")
-    int updateStatus(@Param("status") int status,@Param("id") String id);
+    int updateStatus(@Param("status") int status, @Param("id") String id);
 
     /**
      * 判断稿件是否属于该作者
+     *
      * @param contributor_id 作者id
-     * @param article_id 稿件id
+     * @param article_id     稿件id
      * @return 匹配到的行数
      */
     @Select("Select COUNT(*) FROM contributor_article_list WHERE contributor_id = #{contributor_id} AND article_id = #{article_id}")
-    int belong(@Param("contributor_id") String contributor_id,@Param("article_id") String article_id);
+    int belong(@Param("contributor_id") String contributor_id, @Param("article_id") String article_id);
 }
