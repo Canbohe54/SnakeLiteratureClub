@@ -36,6 +36,7 @@ public interface ArticleService {
     /**
      * 用户更改稿件基础信息，包括标题和描述，根据id进行更新，同时更新修改时间
      * 返回格式{article_id: #{String}, title: #{String}, description: #{String}, time:#{Date}, fileStatue: #{INTEGER}, statusMsg: #{STRING} }
+     *
      * @param token       用于验证是否过期以及获取作者id
      * @param id          稿件id
      * @param title       标题
@@ -49,7 +50,7 @@ public interface ArticleService {
      * 若action为草稿保存则无需审核，为发布则需要审核
      * 返回格式{article_id: #{String}, title: #{String}, description: #{String}, time:#{Date}, fileStatue: #{INTEGER}, statusMsg: #{STRING} }
      *
-     * @param token
+     * @param token       用于验证是否过期以及获取作者id
      * @param id          稿件id
      * @param title       标题
      * @param description 描述
@@ -57,12 +58,12 @@ public interface ArticleService {
      * @param action      稿件处理事件（1：草稿保存 2：发布 ）
      * @return 保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
      */
-    Map<String, Object> updateArticle(String token,String id, String title, String description, String text, int action);
+    Map<String, Object> updateArticle(String token, String id, String title, String description, String text, int action);
 
     /**
      * 根据id删除稿件
      *
-     * @param token
+     * @param token 用于验证是否过期以及获取作者id
      * @param id    稿件id
      * @return 执行状态 返回格式{ statusMsg: #{STRING} }
      */
@@ -108,7 +109,7 @@ class ArticleServiceImpl implements ArticleService {
             return res;
         }
         // 获取作者id
-        String contributor_id = getPayload(token,"id");
+        String contributor_id = getPayload(token, "id");
         if (article_id == null) {
             //没有稿件id，时间戳生成id
             article_id = generateId(IdTools.Type.ARTICLE);
@@ -132,12 +133,12 @@ class ArticleServiceImpl implements ArticleService {
         res.put("description", description);
         res.put("time", date);
         res.put("fileStatue", action);
-        res.put("statusMsg", "ok");
+        res.put("statusMsg", "Success.");
         return res;
     }
 
     @Override
-    public Map<String, Object> updateArticle(String token,String id, String title, String description) {
+    public Map<String, Object> updateArticle(String token, String id, String title, String description) {
         Map<String, Object> res = new HashMap<String, Object>();
         // 修改时间
         Date date = new Date(System.currentTimeMillis());
@@ -151,7 +152,7 @@ class ArticleServiceImpl implements ArticleService {
         res.put("description", description);
         res.put("time", date);
         res.put("fileStatue", 2);
-        res.put("statusMsg", "ok");
+        res.put("statusMsg", "Success.");
         return res;
     }
 
@@ -163,10 +164,10 @@ class ArticleServiceImpl implements ArticleService {
             res.put("statusMsg", "Invalid token.");
             return res;
         }
-        // 获取作者id
-        String contributor_id = getPayload(token,"id");
-        if(articleDao.belong(contributor_id,id)==0){
-            res.put("statusMsg", "Access denied");
+        // 获取作者id,查看该作者是否拥有该稿件，若不拥有则返回"Access denied."
+        String contributor_id = getPayload(token, "id");
+        if (articleDao.belong(contributor_id, id) == 0) {
+            res.put("statusMsg", "Access denied.");
             return res;
         }
         // 修改时间
@@ -180,7 +181,7 @@ class ArticleServiceImpl implements ArticleService {
         res.put("description", description);
         res.put("time", date);
         res.put("fileStatue", action);
-        res.put("statusMsg", "ok");
+        res.put("statusMsg", "Success.");
         return res;
     }
 
@@ -193,13 +194,13 @@ class ArticleServiceImpl implements ArticleService {
             return res;
         }
         // 获取作者id
-        String contributor_id = getPayload(token,"id");
-        if(articleDao.belong(contributor_id,id)==0){
+        String contributor_id = getPayload(token, "id");
+        if (articleDao.belong(contributor_id, id) == 0) {
             res.put("statusMsg", "Access denied");
             return res;
         }
         articleDao.deleteArticleById(id);
-        res.put("statusMsg", "success");
+        res.put("statusMsg", "success.");
         return res;
     }
 
@@ -207,7 +208,7 @@ class ArticleServiceImpl implements ArticleService {
     public Map<String, Object> getContributorArticles(String contributor_id) {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put("articles", articleDao.getArticleByContributorId(contributor_id));
-        res.put("statusMsg", "success");
+        res.put("statusMsg", "success.");
         return res;
     }
 
@@ -215,7 +216,7 @@ class ArticleServiceImpl implements ArticleService {
     public Map<String, Object> getArticleById(String id) {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put("article", articleDao.getArticleById(id));
-        res.put("statusMsg", "success");
+        res.put("statusMsg", "success.");
         return res;
     }
 
@@ -223,7 +224,7 @@ class ArticleServiceImpl implements ArticleService {
     public Map<String, Object> getAllArticles() {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put("article", articleDao.getAllArticles());
-        res.put("statusMsg", "success");
+        res.put("statusMsg", "success.");
         return res;
     }
 }
