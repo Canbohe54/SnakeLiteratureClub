@@ -57,4 +57,28 @@ public interface GradeDao {
      */
     @Select("select * from grades where expert_id = #{expert_id} and article_id = #{article_id}")
     public Grade getGradeByExpertIdAndArticleId(@Param("expert_id") String expert_id,@Param("article_id") String article_id);
+
+    /**
+     * 根据稿件id查询总分的平均分
+     * @param article_id 稿件id
+     * @return 平均分
+     */
+    @Select("select avg(grade_all) from grades where article_id = #{article_id} group by article_id ")
+    public int getAvgGradeByArticleId(@Param("article_id") String article_id);
+
+    /**
+     * 根据稿件id查询评分的专家人数
+     * @param article_id 稿件id
+     * @return 评分专家人数
+     */
+    @Select("select count(expert_id) from grades where article_id = #{article_id} group by article_id ")
+    public int getCountByArticleId(@Param("article_id") String article_id);
+
+    /**
+     * 根据专家id查询稿件评分,按照总分由高到低排序
+     * @param expert_id 专家id
+     * @return
+     */
+    @Select("select * from grades where expert_id = #{expert_id} order by grade_all")
+    public List<Grade> getSortByGradeAll(@Param("expert_id") String expert_id);
 }
