@@ -1,10 +1,10 @@
 package com.snach.literatureclub.dao;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Mapper
 @Repository
@@ -27,4 +27,12 @@ public interface FavoritesDao {
      */
     @Delete("DELETE FROM favorites WHERE user_id = #{user_id} AND article_id = #{article_id}")
     void cancelFavorite(@Param("user_id") String user_id, @Param("article_id") String article_id);
+
+    /**
+     * 根据用户id查找其收藏稿件id
+     * @param user_id 用户id
+     * @return 稿件id列表
+     */
+    @Select("SELECT article_id FROM favorites WHERE user_id = #{user_id}")
+    List<String> getAIdByUId(String user_id);
 }

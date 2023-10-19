@@ -38,4 +38,15 @@ public class UserController {
     public Map<String,Object> cancelFavorite(@RequestParam("token") String token, @RequestParam("article_id") String article_id){
         return userService.cancelFavorite(token,article_id);
     }
+
+    /**
+     * 用户获取收藏列表基础信息
+     * 返回格式 {articles: [{#ARTICLE}, ...], statusMsg: #{String}}
+     * @param token 用于验证是否过期以及获取作者id
+     * @return 收藏列表，执行状态
+     */
+    @RequestMapping(value = "getAllFavorites",method = RequestMethod.GET)
+    public Map<String,Object> getAllFavorites(String token){
+        return userService.getAllFavorites(token);
+    }
 }
