@@ -103,7 +103,7 @@ class GradeServiceImpl implements GradeService {
     public Map<String, Object> addGrade(String article_id, String expert_id, int grade_expr, int grade_struct, int grade_theme, String advice) {
         Map<String, Object> res = new HashMap<String, Object>();
         int grade_all = grade_expr+grade_struct+grade_theme;
-        Grade grade = new Grade(article_id,expert_id,grade_expr,grade_struct,grade_theme,grade_all,advice);
+        Grade grade = new Grade(expert_id,article_id,grade_expr,grade_struct,grade_theme,grade_all,advice);
         gradeDao.insertGrade(grade);
         res.put("article_id", article_id);
         res.put("expert_id", expert_id);
@@ -128,7 +128,7 @@ class GradeServiceImpl implements GradeService {
     public Map<String, Object> updateGrade(String article_id, String expert_id, int grade_expr, int grade_struct, int grade_theme, String advice) {
         Map<String, Object> res = new HashMap<String, Object>();
         int grade_all = grade_expr+grade_struct+grade_theme;
-        Grade grade = new Grade(article_id,expert_id,grade_expr,grade_struct,grade_theme,grade_all,advice);
+        Grade grade = new Grade(expert_id,article_id,grade_expr,grade_struct,grade_theme,grade_all,advice);
         gradeDao.updateGrade(grade);
         res.put("article_id", article_id);
         res.put("expert_id", expert_id);
