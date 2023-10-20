@@ -1,5 +1,6 @@
 package com.snach.literatureclub.controller;
 
+import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,20 +24,15 @@ public class ContributorController {
      * 返回稿件基本信息（标题、描述、时间和id）和各事件执行状态
      * 返回格式{article_id: #{String}, title: #{String}, description: #{String}, time:#{Date}, fileStatue: #{INTEGER}, statusMsg: #{STRING} }
      *
-     * @param token       用于验证是否过期以及获取作者id
-     * @param article_id  稿件id，初次创建为null
-     * @param title       稿件标题
-     * @param description 稿件描述
-     * @param text        稿件内容
-     * @param action      稿件处理事件（1：草稿保存 2：发布 ）
+     * @param token   用于验证是否过期以及获取作者id
+     * @param article 稿件信息，id初次创建为null
      * @return 稿件基本信息（标题、描述、时间和id）,保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
+     * @see Article
      */
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    public Map<String, Object> save(@RequestParam("token") String token, @RequestParam("article_id") String article_id,
-                                    @RequestParam("title") String title, @RequestParam("description") String description,
-                                    @RequestParam("text") String text, @RequestParam("action") int action) {
-
-        return articleService.addArticle(token, article_id, title, description, text, action);
+    public Map<String, Object> save(@RequestParam("token") String token, Article article) {
+        System.out.println(article);
+        return articleService.addArticle(token, article);
     }
 
     /**
@@ -47,14 +43,16 @@ public class ContributorController {
      * @param id          稿件id
      * @param title       稿件标题
      * @param description 稿件描述
+     * @param attr        稿件多值属性，如标签
      * @return 保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
      */
     @RequestMapping(value = "changeBasicInfo", method = RequestMethod.POST)
     public Map<String, Object> changeBasicInfo(@RequestParam("token") String token,
                                                @RequestParam("article_id") String id,
                                                @RequestParam("title") String title,
-                                               @RequestParam("description") String description) {
-        return articleService.updateArticle(token, id, title, description);
+                                               @RequestParam("description") String description,
+                                               @RequestParam("attr") String attr) {
+        return articleService.updateArticle(token, id, title, description, 3, attr);
     }
 
     /**
