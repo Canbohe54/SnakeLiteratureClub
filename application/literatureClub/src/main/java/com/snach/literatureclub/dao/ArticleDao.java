@@ -15,8 +15,8 @@ public interface ArticleDao {
      *
      * @param article 封装有稿件信息的Article对象
      */
-    @Insert("INSERT INTO article(id, title,description,text,time,status) " +
-            "VALUES(#{article.id}, #{article.title},#{article.description},#{article.time},#{article.status})")
+    @Insert("INSERT INTO article(id, title,description,text,time,status,attr) " +
+            "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.attr})")
     void insertArticle(@Param("article") Article article);
 
     /**
@@ -25,7 +25,7 @@ public interface ArticleDao {
      * @param article 封装有稿件信息的Article对象
      * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
      */
-    @Update("UPDATE article SET title = #{article.title}, description = #{article.description}, text = #{article.text}, time = #{article.time},status = #{article.status} " +
+    @Update("UPDATE article SET title = #{article.title}, description = #{article.description}, text = #{article.text}, time = #{article.time},status = #{article.status}, attr = #{article.attr} " +
             "WHERE id = #{article.id}")
     int updateArticleDetail(@Param("article") Article article);
 
@@ -35,7 +35,7 @@ public interface ArticleDao {
      * @param article 封装有稿件信息的Article对象
      * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
      */
-    @Update("UPDATE article SET title = #{article.title}, description = #{article.description}, time = #{article.time},status = #{article.status} " +
+    @Update("UPDATE article SET title = #{article.title}, description = #{article.description}, time = #{article.time},status = #{article.status}, attr = #{article.attr} " +
             "WHERE id = #{article.id}")
     int updateArticleInfo(@Param("article") Article article);
 
@@ -53,7 +53,7 @@ public interface ArticleDao {
      * @param contributor_id 作者id
      * @return
      */
-    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status" +
+    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr" +
             "FROM article a left join contributor_article_list c on a.id = c.article_id " +
             "WHERE c.contributor_id = #{contributor_id}")
     List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id);
@@ -64,7 +64,7 @@ public interface ArticleDao {
      * @param article_id 稿件id
      * @return id对应的稿件信息的Article对象
      */
-    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status FROM article a WHERE id = #{id}")
+    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr FROM article a WHERE id = #{id}")
     Article getArticleBasicById(@Param("id") String article_id);
 
     /**
