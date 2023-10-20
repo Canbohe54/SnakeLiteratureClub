@@ -23,4 +23,10 @@ public interface UserDao {
 
     @Insert("INSERT INTO user")
     void insertUser(User user);
+
+    @Select("select count(email) from user where email = #{email} group by email")
+    int existEmail(@Param("email") String email);
+
+    @Select("select * from user where email = #{email} and password = #{password}}")
+    User login(@Param("email") String email,@Param("password") String password);
 }

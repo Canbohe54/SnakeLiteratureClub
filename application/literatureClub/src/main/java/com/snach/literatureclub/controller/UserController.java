@@ -49,4 +49,9 @@ public class UserController {
     public Map<String,Object> getAllFavorites(String token){
         return userService.getAllFavorites(token);
     }
+
+    @RequestMapping(value = "login",method = RequestMethod.GET)
+    public Map<String,Object> login(@RequestParam("email") String email,@RequestParam("password") String password){
+        return userService.login(email,password);
+    }
 }
