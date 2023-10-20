@@ -21,7 +21,7 @@ public class User implements Serializable {
 
     String attr;
 
-    public User(String name, String id, String phone, String email, String introduction, String organization, String pictureUrl) {
+    public User(String name, String id, String phone, String email, String introduction, String organization, String pictureUrl, String attr) {
         this.name = name;
         this.id = id;
         this.phone = phone;
@@ -29,5 +29,6 @@ public class User implements Serializable {
         this.introduction = introduction;
         this.organization = organization;
         this.pictureUrl = pictureUrl;
+        this.attr = attr;
     }
 }

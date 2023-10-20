@@ -32,6 +32,7 @@ public interface ArticleService {
      * @return 稿件基本信息（标题、描述、时间和id）,保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
      */
     Map<String, Object> addArticle(String token, String article_id, String title, String description, String text, int action);
+    Map<String, Object> addArticle(String token, Article article);
 
     /**
      * 用户更改稿件基础信息，包括标题和描述，根据id进行更新，同时更新修改时间
@@ -131,7 +132,7 @@ class ArticleServiceImpl implements ArticleService {
         Date date = new Date(System.currentTimeMillis());
 
         //插入article表
-        Article article = new Article(article_id, text, date, "", title, description, action);
+        Article article = new Article(article_id, text, date, "", title, description, action,"");
         articleDao.insertArticle(article);
         // 稿件投稿者关系更新
         articleDao.insertRelation(contributor_id, article_id);
@@ -146,13 +147,50 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public Map<String, Object> addArticle(String token, Article article) {
+        Map<String, Object> res = new HashMap<String, Object>();
+        // 检测token是否合法
+//        if (!tokenVerify(token)) {
+//            res.put("statusMsg", "Invalid token.");
+//            return res;
+//        }
+        // 获取作者id
+//        String contributor_id = getPayload(token, "id");
+//        if (article.getId() == null) {
+//            //没有稿件id，时间戳生成id
+//            article.setId(generateId(IdTools.Type.ARTICLE));
+//        } else {
+//            //若已有稿件id，则进行更新
+//            // return updateArticle(token, article_id, title, description, text, action);
+//        }
+        String contributor_id = "1112";
+        //修改时间
+        //SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        Date date = new Date(System.currentTimeMillis());
+        article.setTime(date);
+        //插入article表
+        //Article article = new Article(article_id, text, date, "", title, description, action);
+        articleDao.insertArticle(article);
+        // 稿件投稿者关系更新
+        articleDao.insertRelation(contributor_id, article.getId());
+
+        res.put("article_id", article.getId());
+        res.put("title", article.getTitle());
+        res.put("description", article.getDescription());
+        res.put("time", date);
+        res.put("fileStatue", 3);
+        res.put("statusMsg", "Success.");
+        return res;
+    }
+
+    @Override
     public Map<String, Object> updateArticle(String token, String id, String title, String description) {
         Map<String, Object> res = new HashMap<String, Object>();
         // 修改时间
         Date date = new Date(System.currentTimeMillis());
 
         // 更新基本信息
-        Article article = new Article(id, "", date, "", title, description, 2);
+        Article article = new Article(id, "", date, "", title, description, 2,"");
         articleDao.updateArticleInfo(article);
 
         res.put("article_id", id);
@@ -181,7 +219,7 @@ class ArticleServiceImpl implements ArticleService {
         // 修改时间
         Date date = new Date(System.currentTimeMillis());
         // 更新详细信息
-        Article article = new Article(id, text, date, "", title, description, action);
+        Article article = new Article(id, text, date, "", title, description, action,"");
         articleDao.updateArticleDetail(article);
 
         res.put("article_id", id);
