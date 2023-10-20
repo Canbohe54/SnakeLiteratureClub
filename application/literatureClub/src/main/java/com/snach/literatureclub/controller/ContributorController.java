@@ -43,14 +43,16 @@ public class ContributorController {
      * @param id          稿件id
      * @param title       稿件标题
      * @param description 稿件描述
+     * @param attr        稿件多值属性，如标签
      * @return 保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
      */
     @RequestMapping(value = "changeBasicInfo", method = RequestMethod.POST)
     public Map<String, Object> changeBasicInfo(@RequestParam("token") String token,
                                                @RequestParam("article_id") String id,
                                                @RequestParam("title") String title,
-                                               @RequestParam("description") String description) {
-        return articleService.updateArticle(token, id, title, description);
+                                               @RequestParam("description") String description,
+                                               @RequestParam("attr") String attr) {
+        return articleService.updateArticle(token, id, title, description, 3, attr);
     }
 
     /**
