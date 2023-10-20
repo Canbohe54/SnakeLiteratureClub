@@ -23,15 +23,11 @@ public interface ArticleService {
      * 返回稿件基本信息（标题、描述、时间和id）和各事件执行状态
      * 返回格式{article_id: #{String}, title: #{String}, description: #{String}, time:#{Date}, fileStatue: #{INTEGER}, statusMsg: #{STRING} }
      *
-     * @param token       用于验证是否过期以及获取作者id
-     * @param article_id  稿件id，初次创建为null
-     * @param title       标题
-     * @param description 描述
-     * @param text        稿件内容
-     * @param action      稿件处理事件（1：草稿保存 2：发布 ）
+     * @param token   用于验证是否过期以及获取作者id
+     * @param article 稿件信息 id初次创建为null
      * @return 稿件基本信息（标题、描述、时间和id）,保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
+     * @see Article
      */
-    Map<String, Object> addArticle(String token, String article_id, String title, String description, String text, int action);
     Map<String, Object> addArticle(String token, Article article);
 
     /**
@@ -42,26 +38,24 @@ public interface ArticleService {
      * @param id          稿件id
      * @param title       标题
      * @param description 描述
+     * @param status      稿件状态
+     * @param attr        稿件多值属性，如标签
      * @return 保存状态（2：待审核 0：保存失败）,执行状态 返回格式{ fileStatue: #{INTEGER}, statusMsg: #{STRING} }
      */
-    Map<String, Object> updateArticle(String token, String id, String title, String description);
+    Map<String, Object> updateArticle(String token, String id, String title, String description, int status, String attr);
 
     /**
      * 用户更改稿件详细信息，包括标题、描述和内容，根据id进行更新，同时更新修改时间
      * 若action为草稿保存则无需审核，为发布则需要审核
      * 返回格式{article_id: #{String}, title: #{String}, description: #{String}, time:#{Date}, fileStatue: #{INTEGER}, statusMsg: #{STRING} }
      *
-     * @param token       用于验证是否过期以及获取作者id
-     * @param id          稿件id
-     * @param title       标题
-     * @param description 描述
-     * @param text        内容
-     * @param action      稿件处理事件（1：草稿保存 2：发布 ）
+     * @param token   用于验证是否过期以及获取作者id
+     * @param article 稿件详细信息
      * @return 保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
+     * @see Article
      */
-    Map<String, Object> updateArticle(String token, String id, String title, String description, String text, int action);
+    Map<String, Object> updateArticle(String token, Article article);
 
-    Map<String,Object> updateArticle(String token, Article article);
     /**
      * 根据id删除稿件
      *
@@ -111,7 +105,7 @@ class ArticleServiceImpl implements ArticleService {
     private ArticleDao articleDao;
 
     @Override
-    public Map<String, Object> addArticle(String token, String article_id, String title, String description, String text, int action) {
+    public Map<String, Object> addArticle(String token, Article article) {
         Map<String, Object> res = new HashMap<String, Object>();
         // 检测token是否合法
         if (!tokenVerify(token)) {
@@ -120,49 +114,12 @@ class ArticleServiceImpl implements ArticleService {
         }
         // 获取作者id
         String contributor_id = getPayload(token, "id");
-        if (article_id == null) {
-            //没有稿件id，时间戳生成id
-            article_id = generateId(IdTools.Type.ARTICLE);
-        } else {
-            //若已有稿件id，则进行更新
-            return updateArticle(token, article_id, title, description, text, action);
-        }
-
-        //修改时间
-        //SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        Date date = new Date(System.currentTimeMillis());
-
-        //插入article表
-        Article article = new Article(article_id, text, date, "", title, description, action,"");
-        articleDao.insertArticle(article);
-        // 稿件投稿者关系更新
-        articleDao.insertRelation(contributor_id, article_id);
-
-        res.put("article_id", article_id);
-        res.put("title", title);
-        res.put("description", description);
-        res.put("time", date);
-        res.put("fileStatue", action);
-        res.put("statusMsg", "Success.");
-        return res;
-    }
-
-    @Override
-    public Map<String, Object> addArticle(String token, Article article) {
-        Map<String, Object> res = new HashMap<String, Object>();
-//         检测token是否合法
-        if (!tokenVerify(token)) {
-            res.put("statusMsg", "Invalid token.");
-            return res;
-        }
-//         获取作者id
-        String contributor_id = getPayload(token, "id");
         if (article.getId() == null) {
             //没有稿件id，时间戳生成id
             article.setId(generateId(IdTools.Type.ARTICLE));
         } else {
             //若已有稿件id，则进行更新
-            // return updateArticle(token, article_id, title, description, text, action);
+             return updateArticle(token, article);
         }
         //修改时间
         //SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -183,13 +140,13 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Map<String, Object> updateArticle(String token, String id, String title, String description) {
+    public Map<String, Object> updateArticle(String token, String id, String title, String description, int status, String attr) {
         Map<String, Object> res = new HashMap<String, Object>();
         // 修改时间
         Date date = new Date(System.currentTimeMillis());
 
         // 更新基本信息
-        Article article = new Article(id, "", date, "", title, description, 2,"");
+        Article article = new Article(id, "", date, "", title, description, status, attr);
         articleDao.updateArticleInfo(article);
 
         res.put("article_id", id);
@@ -201,34 +158,6 @@ class ArticleServiceImpl implements ArticleService {
         return res;
     }
 
-    @Override
-    public Map<String, Object> updateArticle(String token, String id, String title, String description, String text, int action) {
-        Map<String, Object> res = new HashMap<String, Object>();
-        // 检测token是否合法
-        if (!tokenVerify(token)) {
-            res.put("statusMsg", "Invalid token.");
-            return res;
-        }
-        // 获取作者id,查看该作者是否拥有该稿件，若不拥有则返回"Access denied."
-        String contributor_id = getPayload(token, "id");
-        if (articleDao.belong(contributor_id, id) == 0) {
-            res.put("statusMsg", "Access denied.");
-            return res;
-        }
-        // 修改时间
-        Date date = new Date(System.currentTimeMillis());
-        // 更新详细信息
-        Article article = new Article(id, text, date, "", title, description, action,"");
-        articleDao.updateArticleDetail(article);
-
-        res.put("article_id", id);
-        res.put("title", title);
-        res.put("description", description);
-        res.put("time", date);
-        res.put("fileStatue", action);
-        res.put("statusMsg", "Success.");
-        return res;
-    }
 
     @Override
     public Map<String, Object> updateArticle(String token, Article article) {
@@ -245,7 +174,7 @@ class ArticleServiceImpl implements ArticleService {
             return res;
         }
         // 稿件状态 1：保存成功 2：待审核 3.已发布 4.未通过 0：保存失败
-        article.setStatus(3);
+        article.setStatus(article.getStatus());
         // 修改时间
         Date date = new Date(System.currentTimeMillis());
         // 更新详细信息

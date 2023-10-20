@@ -13,7 +13,7 @@ import java.util.Date;
 /**
  * title        稿件标题
  * description  稿件描述
- * status       稿件状态
+ * status       稿件状态 1：保存成功 2：待审核 3.已发布 4.未通过 0：保存失败
  * attr         稿件其他多值属性，如标签
  *
  * @see BaseText
