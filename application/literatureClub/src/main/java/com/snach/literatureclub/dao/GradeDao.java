@@ -14,7 +14,7 @@ public interface GradeDao {
      * @param grade
      */
     @Insert("insert into grades(expert_id,article_id,grade_expr,grade_struct,grade_theme,grade_all,advice) "+
-    "values (#{expert_id},#{article_id}),#{grade_expr},#{grade_struct},#{grade_theme},#{grade_all},#{advice}")
+    "values (#{grade.expert_id},#{grade.article_id},#{grade.grade_expr},#{grade.grade_struct},#{grade.grade_theme},#{grade.grade_all},#{grade.advice})")
     public void insertGrade(@Param("grade") Grade grade);
 
     /**
