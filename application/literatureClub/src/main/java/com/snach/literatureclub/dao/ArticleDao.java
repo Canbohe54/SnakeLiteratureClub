@@ -73,7 +73,7 @@ public interface ArticleDao {
      * @param id 稿件id
      * @return id对应的稿件信息的Article对象
      */
-    @Select("SELECT * FROM article WHERE id = #{id}")
+    @Select("SELECT id, text, time, text_by, title, description, status, attr FROM article WHERE id = #{id}")
     Article getArticleById(@Param("id") String id);
 
     /**
@@ -81,10 +81,10 @@ public interface ArticleDao {
      *
      * @return 所有的稿件信息的Article对象List
      */
-    @Select("SELECT * FROM article")
+    @Select("SELECT id, text, time, text_by, title, description, status, attr FROM article")
     List<Article> getAllArticles();
 
-    @Select("SELECT * FROM article WHERE title LIKE '%#{keyword}%'")
+    @Select("SELECT id, text, time, text_by, title, description, status, attr FROM article WHERE title LIKE '%#{keyword}%'")
     List<Article> getArticlesByKeyword(String keyword);
 
     /**
