@@ -10,6 +10,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class BaseText implements Serializable {
     @Id
     String id;

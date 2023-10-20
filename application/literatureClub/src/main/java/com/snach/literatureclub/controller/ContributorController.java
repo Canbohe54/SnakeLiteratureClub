@@ -1,5 +1,6 @@
 package com.snach.literatureclub.controller;
 
+import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,12 @@ public class ContributorController {
                                     @RequestParam("text") String text, @RequestParam("action") int action) {
 
         return articleService.addArticle(token, article_id, title, description, text, action);
+    }
+
+    @RequestMapping(value = "save2", method = RequestMethod.POST)
+    public Map<String, Object> save(@RequestParam("token") String token, Article article) {
+        System.out.println(article);
+        return articleService.addArticle(token, article);
     }
 
     /**
