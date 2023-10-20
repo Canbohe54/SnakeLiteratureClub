@@ -1,5 +1,6 @@
 package com.snach.literatureclub.controller;
 
+import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,17 @@ public class UserController {
     private final UserService userService;
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    /**
+     * 用户注册
+     * @param user 用户信息
+     * @return 执行状态
+     *      <p>返回格式 {statusMsg: #{String}}
+     */
+    @RequestMapping(value = "reg", method = RequestMethod.POST)
+    public Map<String, Object> register(User user) {
+        return userService.register(user);
     }
 
     /**

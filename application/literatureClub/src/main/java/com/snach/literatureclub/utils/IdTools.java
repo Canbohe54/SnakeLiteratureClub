@@ -50,7 +50,7 @@ public class IdTools {
     }
 
     private static String generateUserId() {
-        return null;
+        return "u" + numberConvert(System.currentTimeMillis());
     }
 
     public static String generateId(Type type) {
