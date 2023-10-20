@@ -7,6 +7,12 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
 
+/**
+ * id       主键
+ * text     文本内容
+ * time     最近修改时间
+ * textBy   文本作者
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

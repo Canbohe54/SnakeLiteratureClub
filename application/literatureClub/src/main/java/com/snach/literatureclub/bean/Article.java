@@ -10,6 +10,14 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
 
+/**
+ * title        稿件标题
+ * description  稿件描述
+ * status       稿件状态
+ * attr         稿件其他多值属性，如标签
+ *
+ * @see BaseText
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString

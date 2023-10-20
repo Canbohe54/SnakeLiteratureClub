@@ -61,6 +61,7 @@ public interface ArticleService {
      */
     Map<String, Object> updateArticle(String token, String id, String title, String description, String text, int action);
 
+    Map<String,Object> updateArticle(String token, Article article);
     /**
      * 根据id删除稿件
      *
@@ -149,27 +150,25 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public Map<String, Object> addArticle(String token, Article article) {
         Map<String, Object> res = new HashMap<String, Object>();
-        // 检测token是否合法
-//        if (!tokenVerify(token)) {
-//            res.put("statusMsg", "Invalid token.");
-//            return res;
-//        }
-        // 获取作者id
-//        String contributor_id = getPayload(token, "id");
-//        if (article.getId() == null) {
-//            //没有稿件id，时间戳生成id
-//            article.setId(generateId(IdTools.Type.ARTICLE));
-//        } else {
-//            //若已有稿件id，则进行更新
-//            // return updateArticle(token, article_id, title, description, text, action);
-//        }
-        String contributor_id = "1112";
+//         检测token是否合法
+        if (!tokenVerify(token)) {
+            res.put("statusMsg", "Invalid token.");
+            return res;
+        }
+//         获取作者id
+        String contributor_id = getPayload(token, "id");
+        if (article.getId() == null) {
+            //没有稿件id，时间戳生成id
+            article.setId(generateId(IdTools.Type.ARTICLE));
+        } else {
+            //若已有稿件id，则进行更新
+            // return updateArticle(token, article_id, title, description, text, action);
+        }
         //修改时间
         //SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
         article.setTime(date);
         //插入article表
-        //Article article = new Article(article_id, text, date, "", title, description, action);
         articleDao.insertArticle(article);
         // 稿件投稿者关系更新
         articleDao.insertRelation(contributor_id, article.getId());
@@ -227,6 +226,36 @@ class ArticleServiceImpl implements ArticleService {
         res.put("description", description);
         res.put("time", date);
         res.put("fileStatue", action);
+        res.put("statusMsg", "Success.");
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> updateArticle(String token, Article article) {
+        Map<String, Object> res = new HashMap<String, Object>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            res.put("statusMsg", "Invalid token.");
+            return res;
+        }
+        // 获取作者id,查看该作者是否拥有该稿件，若不拥有则返回"Access denied."
+        String contributor_id = getPayload(token, "id");
+        if (articleDao.belong(contributor_id, article.getId()) == 0) {
+            res.put("statusMsg", "Access denied.");
+            return res;
+        }
+        // 稿件状态 1：保存成功 2：待审核 3.已发布 4.未通过 0：保存失败
+        article.setStatus(3);
+        // 修改时间
+        Date date = new Date(System.currentTimeMillis());
+        // 更新详细信息
+        articleDao.updateArticleDetail(article);
+
+        res.put("article_id", article.getId());
+        res.put("title", article.getTitle());
+        res.put("description", article.getDescription());
+        res.put("time", date);
+        res.put("fileStatue", article.getStatus());
         res.put("statusMsg", "Success.");
         return res;
     }
