@@ -50,7 +50,7 @@ public class UserController {
         return userService.getAllFavorites(token);
     }
 
-    @RequestMapping(value = "login",method = RequestMethod.GET)
+    @RequestMapping(value = "login",method = RequestMethod.POST)
     public Map<String,Object> login(@RequestParam("email") String email,@RequestParam("password") String password){
         return userService.login(email,password);
     }
