@@ -11,9 +11,14 @@ public class User implements Serializable {
     String id;
     String phone;
     String email;
+
+    String password;
+
+    String group;
     String introduction;
     String organization;
     String pictureUrl;
+
     String attr;
 
     public User(String name, String id, String phone, String email, String introduction, String organization, String pictureUrl) {
