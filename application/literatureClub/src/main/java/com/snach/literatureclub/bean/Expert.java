@@ -5,7 +5,10 @@ import lombok.*;
 import java.io.Serializable;
 
 @Data
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Expert extends BaseUser implements Serializable {
+@Deprecated
+public class Expert extends User implements Serializable {
+    public Expert(String name, String id, String phone, String email, String introduction, String organization, String pictureUrl) {
+        super(name, id, phone, email, introduction, organization, pictureUrl);
+    }
 }

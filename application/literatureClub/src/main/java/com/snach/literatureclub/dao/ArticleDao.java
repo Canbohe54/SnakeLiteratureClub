@@ -84,6 +84,9 @@ public interface ArticleDao {
     @Select("SELECT * FROM article")
     List<Article> getAllArticles();
 
+    @Select("SELECT * FROM article WHERE title LIKE '%#{keyword}%'")
+    List<Article> getArticlesByKeyword(String keyword);
+
     /**
      * 插入作者与稿件关系
      *

@@ -1,5 +1,7 @@
 package com.snach.literatureclub.dao;
 
+import com.snach.literatureclub.bean.User;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -13,4 +15,12 @@ public interface UserDao {
 
     @Select("SELECT COUNT(*) FROM group WHERE id = #{id} AND user_id = #{user_id}")
     int exist(@Param("id") BigInteger id, @Param("user_id") String user_id);
+    @Select("SELECT * FROM user WHERE id = #{id}")
+    User getUserById(String id);
+
+    @Select("SELECT * FROM user WHERE name LIKE '%#{keyword}%'")
+    User getUserByKeyword(String keyword);
+
+    @Insert("INSERT INTO user")
+    void insertUser(User user);
 }

@@ -13,10 +13,6 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
-    }
-
     @RequestMapping(value = "load", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> loadComment(@RequestParam("id") String id,

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Repository
 @Mapper
+@Deprecated
 public interface ContentAuditorDao {
 
 }

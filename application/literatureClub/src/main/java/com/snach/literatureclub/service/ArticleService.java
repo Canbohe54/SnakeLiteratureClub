@@ -92,6 +92,14 @@ public interface ArticleService {
      * @return 所有的稿件信息的Article对象List
      */
     Map<String, Object> getAllArticles();
+
+    /**
+     * 根据关键词搜索稿件
+     *
+     * @param keyword 关键词
+     * @return 搜索到的所有稿件信息 返回格式{ articles: [#{Article}, ...], statusMsg: #{String} }
+     */
+    Map<String, Object> searchArticleByKeyword(String keyword);
 }
 
 @Service
@@ -225,6 +233,14 @@ class ArticleServiceImpl implements ArticleService {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put("article", articleDao.getAllArticles());
         res.put("statusMsg", "success.");
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> searchArticleByKeyword(String keyword) {
+        Map<String, Object> res = new HashMap<String, Object>();
+        res.put("article", articleDao.getArticlesByKeyword(keyword));
+        res.put("statusMsg", "ok");
         return res;
     }
 }

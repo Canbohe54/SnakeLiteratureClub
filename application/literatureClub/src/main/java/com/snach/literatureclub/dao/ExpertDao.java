@@ -8,6 +8,7 @@ import java.math.BigInteger;
 
 @Repository
 @Mapper
+@Deprecated
 public interface ExpertDao {
     //以下为模板，需要进行修改
     @Insert("INSERT INTO expert_info(id, username) VALUES(#{expert.id}, #{expert.username})")
