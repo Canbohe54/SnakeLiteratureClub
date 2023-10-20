@@ -7,5 +7,6 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@Deprecated
 public class QualificationAuditor extends BaseAuditor implements Serializable {
 }

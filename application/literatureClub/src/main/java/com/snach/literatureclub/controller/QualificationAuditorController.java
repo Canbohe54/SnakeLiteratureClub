@@ -9,11 +9,10 @@ import java.util.Map;
 @CrossOrigin
 @RestController
 @RequestMapping("quali")
+@Deprecated
 public class QualificationAuditorController {
     @Autowired
-    private final QualificationAuditorService qSercice;
-
-    public QualificationAuditorController(QualificationAuditorService qService){this.qSercice = qService;}
+    private QualificationAuditorService qualificationAuditorService;
 
     /**
      * 审核员审核后对稿件状态进行更新
@@ -27,7 +26,7 @@ public class QualificationAuditorController {
     public Map<String,Object> update_art_status(@RequestParam("token") String token,
                                                 @RequestParam("article_id") String article_id,
                                                 @RequestParam("status") int status){
-        return qSercice.updateArticleStatus(token,article_id,status);
+        return qualificationAuditorService.updateArticleStatus(token,article_id,status);
     }
 
 }

@@ -5,8 +5,13 @@ import lombok.*;
 import java.io.Serializable;
 
 @Data
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Contributor extends BaseUser implements Serializable {
+@Deprecated
+public class Contributor extends User implements Serializable {
     String grade;
+
+    public Contributor(String name, String id, String phone, String email, String introduction, String organization, String pictureUrl, String grade) {
+        super(name, id, phone, email, introduction, organization, pictureUrl);
+        this.grade = grade;
+    }
 }

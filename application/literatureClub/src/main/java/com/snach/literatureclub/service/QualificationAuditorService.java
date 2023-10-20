@@ -15,6 +15,7 @@ import static com.snach.literatureclub.utils.TokenTools.getPayload;
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
 
 @Service
+@Deprecated
 public interface QualificationAuditorService {
     /**
      * 审核员审核后对稿件状态进行更新
@@ -29,6 +30,7 @@ public interface QualificationAuditorService {
 
 @Mapper
 @Service
+@Deprecated
 class QualificationAuditorServiceImpl implements QualificationAuditorService {
     @Autowired
     private QualificationAuditorDao qualificationAuditorDao;
