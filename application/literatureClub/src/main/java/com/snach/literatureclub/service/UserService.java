@@ -1,6 +1,7 @@
 package com.snach.literatureclub.service;
 
 import com.snach.literatureclub.bean.Article;
+import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.dao.ArticleDao;
 import com.snach.literatureclub.dao.FavoritesDao;
 import com.snach.literatureclub.dao.UserDao;
@@ -17,7 +18,13 @@ import static com.snach.literatureclub.utils.TokenTools.*;
 
 @Service
 public interface UserService {
-    Map<String, Object> getUser(String userId);
+    /**
+     * 用户注册
+     * @param user 用户信息
+     * @return 执行状态
+     *      <p>返回格式 {statusMsg: #{String}}
+     */
+    Map<String, Object> register(User user);
 
     /**
      * 用户收藏
@@ -68,8 +75,11 @@ class UserServiceImpl implements UserService {
     @Autowired
     private ArticleDao articleDao;
 
-    public Map<String, Object> getUser(String userId) {
+    @Override
+    public Map<String, Object> register(User user) {
         Map<String, Object> response = new HashMap<>();
+        userDao.insertUser(user);
+        response.put("statusMsg", "Success");
         return response;
     }
 
