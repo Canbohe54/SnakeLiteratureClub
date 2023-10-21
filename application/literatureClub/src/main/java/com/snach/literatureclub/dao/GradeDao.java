@@ -22,15 +22,15 @@ public interface GradeDao {
      * @param expert_id
      * @param article_id
      */
-    @Delete("delete from grades where expert_id = #{expert_id} and article = #{article_id}")
+    @Delete("delete from grades where expert_id = #{expert_id} and article_id = #{article_id}")
     public void deleteGradeByExpertIdAndArticleId(@Param("expert_id") String expert_id,@Param("article_id") String article_id);
 
     /**
      * 更新评分信息
      * @param grade 封装有评分信息的Grade对象
      */
-    @Update("update grades set grade_expr = #{grade_expr},grade_struct = #{grade_struct},grade_theme = #{grade_theme},grade_all = #{grade_all},advice = #{advice} "+
-    "where article_id = #{article_id} and expert_id = #{expert_id}")
+    @Update("update grades set grade_expr = #{grade.grade_expr},grade_struct = #{grade.grade_struct},grade_theme = #{grade.grade_theme},grade_all = #{grade.grade_all},advice = #{grade.advice} "+
+    "where article_id = #{grade.article_id} and expert_id = #{grade.expert_id}")
     public void updateGrade(@Param("grade") Grade grade);
 
     /**
@@ -81,4 +81,13 @@ public interface GradeDao {
      */
     @Select("select * from grades where expert_id = #{expert_id} order by grade_all")
     public List<Grade> getSortByGradeAll(@Param("expert_id") String expert_id);
+
+    /**
+     * 查询是否存在成绩
+     * @param expert_id
+     * @param article_id
+     * @return
+     */
+    @Select("select count(*) from grades where expert_id = #{expert_id} and article_id = #{article_id}")
+    public int existGrade(@Param("expert_id") String expert_id,@Param("article_id") String article_id);
 }
