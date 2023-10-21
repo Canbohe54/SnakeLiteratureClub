@@ -11,10 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
+
 @Service
 public interface GradeService {
     /**
      * 专家对稿件的评分和评价保存
+     * @param token token
      * @param article_id 稿件id
      * @param expert_id 专家id
      * @param grade_expr 文字表达成绩
@@ -25,7 +28,7 @@ public interface GradeService {
      * grade_expr: #{INTEGER}, grade_struct:#{INTEGER}, grade_theme: #{INTEGER},grade_all:#{Integer},
      * advice:#{String},statusMsg: #{STRING} }
      */
-    Map<String,Object> addGrade(String article_id,String expert_id,int grade_expr,int grade_struct,int grade_theme,String advice);
+    Map<String,Object> addGrade(String token,String article_id,String expert_id,int grade_expr,int grade_struct,int grade_theme,String advice);
 
     /**
      * 根据专家id和稿件id删除评分
@@ -33,7 +36,7 @@ public interface GradeService {
      * @param article_id 稿件id
      * @return 返回格式{statusMsg: #{STRING}}
      */
-    Map<String,Object> deleteGrade(String expert_id,String article_id);
+    Map<String,Object> deleteGrade(String token,String expert_id,String article_id);
 
     /**
      *更新评分
@@ -47,7 +50,7 @@ public interface GradeService {
      * grade_expr: #{INTEGER}, grade_struct:#{INTEGER}, grade_theme: #{INTEGER},grade_all:#{Integer},
      * advice:#{String},statusMsg: #{STRING} }
      */
-    Map<String,Object> updateGrade(String article_id,String expert_id,int grade_expr,int grade_struct,int grade_theme,String advice);
+    Map<String,Object> updateGrade(String token,String article_id,String expert_id,int grade_expr,int grade_struct,int grade_theme,String advice);
 
     /**
      * 根据稿件id获取全部评分信息
@@ -100,8 +103,17 @@ class GradeServiceImpl implements GradeService {
     private GradeDao gradeDao;
 
     @Override
-    public Map<String, Object> addGrade(String article_id, String expert_id, int grade_expr, int grade_struct, int grade_theme, String advice) {
+    public Map<String, Object> addGrade(String token,String article_id, String expert_id, int grade_expr, int grade_struct, int grade_theme, String advice) {
         Map<String, Object> res = new HashMap<String, Object>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            res.put("statusMsg", "Invalid token.");
+            return res;
+        }
+        if(gradeDao.existGrade(expert_id,article_id)!=0){
+            res.put("statusMsg", "Grade exists.");
+            return res;
+        }
         int grade_all = grade_expr+grade_struct+grade_theme;
         Grade grade = new Grade(expert_id,article_id,grade_expr,grade_struct,grade_theme,grade_all,advice);
         gradeDao.insertGrade(grade);
@@ -117,21 +129,39 @@ class GradeServiceImpl implements GradeService {
     }
 
     @Override
-    public Map<String, Object> deleteGrade(String expert_id, String article_id) {
+    public Map<String, Object> deleteGrade(String token,String expert_id, String article_id) {
         Map<String, Object> res = new HashMap<String, Object>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            res.put("statusMsg", "Invalid token.");
+            return res;
+        }
+        if(gradeDao.existGrade(expert_id,article_id)==0){
+            res.put("statusMsg", "Grades do not exist.");
+            return res;
+        }
         gradeDao.deleteGradeByExpertIdAndArticleId(expert_id,article_id);
         res.put("statusMsg", "success");
         return res;
     }
 
     @Override
-    public Map<String, Object> updateGrade(String article_id, String expert_id, int grade_expr, int grade_struct, int grade_theme, String advice) {
+    public Map<String, Object> updateGrade(String token,String article_id, String expert_id, int grade_expr, int grade_struct, int grade_theme, String advice) {
         Map<String, Object> res = new HashMap<String, Object>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            res.put("statusMsg", "Invalid token.");
+            return res;
+        }
+        if(gradeDao.existGrade(expert_id,article_id)!=0){
+            res.put("statusMsg", "Grade exists.");
+            return res;
+        }
         int grade_all = grade_expr+grade_struct+grade_theme;
         Grade grade = new Grade(expert_id,article_id,grade_expr,grade_struct,grade_theme,grade_all,advice);
         gradeDao.updateGrade(grade);
-        res.put("article_id", article_id);
         res.put("expert_id", expert_id);
+        res.put("article_id", article_id);
         res.put("grade_expr", grade_expr);
         res.put("grade_struct", grade_struct);
         res.put("grade_theme", grade_theme);

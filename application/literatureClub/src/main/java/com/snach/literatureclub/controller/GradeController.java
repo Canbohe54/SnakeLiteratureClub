@@ -15,29 +15,32 @@ public class GradeController {
     private GradeService gradeService;
 
     @RequestMapping("add")
-    public Map<String,Object> addGrade(@RequestParam("article_id") String article_id,
+    public Map<String,Object> addGrade(@RequestParam("token") String token,
+                                       @RequestParam("article_id") String article_id,
                                        @RequestParam("expert_id") String expert_id,
                                        @RequestParam("grade_expr") int grade_expr,
                                        @RequestParam("grade_struct") int grade_struct,
                                        @RequestParam("grade_theme") int grade_theme,
                                        @RequestParam("advice") String advice){
-        return gradeService.addGrade(article_id,expert_id,grade_expr,grade_struct,grade_theme,advice);
+        return gradeService.addGrade(token,article_id,expert_id,grade_expr,grade_struct,grade_theme,advice);
     }
 
     @RequestMapping("delete")
-    public Map<String,Object> deleteGrade(@RequestParam("article_id") String article_id,
+    public Map<String,Object> deleteGrade(@RequestParam("token") String token,
+                                       @RequestParam("article_id") String article_id,
                                        @RequestParam("expert_id") String expert_id){
-        return gradeService.deleteGrade(expert_id,article_id);
+        return gradeService.deleteGrade(token,expert_id,article_id);
     }
 
     @RequestMapping("update")
-    public Map<String,Object> updateGrade(@RequestParam("article_id") String article_id,
+    public Map<String,Object> updateGrade(@RequestParam("token") String token,
+                                       @RequestParam("article_id") String article_id,
                                        @RequestParam("expert_id") String expert_id,
                                        @RequestParam("grade_expr") int grade_expr,
                                        @RequestParam("grade_struct") int grade_struct,
                                        @RequestParam("grade_theme") int grade_theme,
                                        @RequestParam("advice") String advice){
-        return gradeService.updateGrade(article_id,expert_id,grade_expr,grade_struct,grade_theme,advice);
+        return gradeService.updateGrade(token,article_id,expert_id,grade_expr,grade_struct,grade_theme,advice);
     }
 
     @RequestMapping("getGradeByArticleId")
@@ -67,7 +70,7 @@ public class GradeController {
     }
 
     @RequestMapping("getSortByGradeAll")
-    public Map<String,Object> getSortByGradeAll(@RequestParam("article_id") String article_id){
-        return gradeService.getSortByGradeAll(article_id);
+    public Map<String,Object> getSortByGradeAll(@RequestParam("expert_id") String expert_id){
+        return gradeService.getSortByGradeAll(expert_id);
     }
 }
