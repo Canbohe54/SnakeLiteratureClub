@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.snach.literatureclub.utils.TokenTools.*;
+import static com.snach.literatureclub.utils.IdTools.*;
 
 @Service
 public interface UserService {
@@ -78,6 +79,9 @@ class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> register(User user) {
         Map<String, Object> response = new HashMap<>();
+        if (user.getId() == null) {
+            user.setId(generateId(Type.USER));
+        }
         userDao.insertUser(user);
         response.put("statusMsg", "Success");
         return response;
