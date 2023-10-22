@@ -21,9 +21,9 @@ public interface UserDao {
     @Select("SELECT * FROM user WHERE name LIKE '%#{keyword}%'")
     User getUserByKeyword(String keyword);
 
-    @Insert("INSERT INTO user(id, name, phone, email, password, group) " +
-            "VALUES(#{user.id}, #{user.name}, #{user.phone}, #{user.email}, #{user.password}, #{user.group})")
-    void insertUser(User user);
+    @Insert("INSERT INTO user(id, name, phone, email, password, `group`, organization) " +
+            "VALUES(#{user.id}, #{user.name}, #{user.phone}, #{user.email}, #{user.password}, #{user.group}, #{user.organization})")
+    void insertUser(@Param("user") User user);
 
     @Select("select count(email) from user where email = #{email}")
     int existEmail(@Param("email") String email);
