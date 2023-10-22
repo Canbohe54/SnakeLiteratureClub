@@ -17,6 +17,8 @@
 import { reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { checkPasswordRule } from './uiScripts/CheckPassword'
+import { POST } from '@/scripts/Axios'
+import LoginForm from '@/components/LoginForm.vue'
 // do not use same name with ref!!!
 
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
@@ -39,8 +41,6 @@ const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密�
     const name = ''
     const result = checkPasswordRule(value, name)
     if (result === '校验通过') {
-      // 这里接上后端的验证
-      // 校验用户密码是否正确
       callback()
     } else {
       callback(new Error(result))
@@ -72,6 +72,14 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
   await formEl.validate((valid, fields) => {
     if (valid) {
       console.log('submit!')
+      POST('/usr/login', { email: loginRuleForm.email, password: loginRuleForm.passwd }, (response) => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+          // TODO: store token
+          console.log(response.data.token)
+        } else {
+          console.log(response.data.statusMsg)
+        }
+      })
     } else {
       console.log('error submit!', fields)
     }

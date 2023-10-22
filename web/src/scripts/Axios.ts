@@ -2,11 +2,11 @@ import axios, { AxiosResponse } from 'axios'
 
 axios.defaults.baseURL = 'http://127.0.0.1:19198'
 
-export function GET (url: string, headers: object = {}, params: object = {}, onReady?: (response: AxiosResponse) => void, onError?: (error?: any) => void) {
+export function GET (url: string, params: object = {}, onReady?: (response: AxiosResponse) => void, onError?: (error?: any) => void) {
   axios({
     url: url,
     method: 'GET',
-    headers: headers,
+    headers: { 'Content-Type': 'multipart/form-data' },
     params: params
   }).then(function (response: AxiosResponse) {
     onReady?.(response)
@@ -15,21 +15,13 @@ export function GET (url: string, headers: object = {}, params: object = {}, onR
   })
 }
 
-export function POST (url: string, headers: object = {}, data: object = {}, callback?: (response: AxiosResponse) => void, onError?: (error?: any) => void) {
+export function POST (url: string, data: object = {}, callback?: (response: AxiosResponse) => void, onError?: (error?: any) => void) {
   axios({
     url: url,
     method: 'POST',
-    headers: headers,
+    headers: { 'Content-Type': 'multipart/form-data' },
     data: data
   }).then(function (response: AxiosResponse) {
-    callback?.(response)
-  }).catch(function (error: any) {
-    console.log(error)
-  })
-}
-
-export function $POST (url: string, headers: object = {}, data: object = {}, callback?: (response: AxiosResponse) => void, onError?: (error?: any) => void) {
-  axios.post(url, data).then(function (response: AxiosResponse) {
     callback?.(response)
   }).catch(function (error: any) {
     console.log(error)
