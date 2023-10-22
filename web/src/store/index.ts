@@ -5,8 +5,14 @@ export default createStore({
     token: ''
   },
   getters: {
+    getToken: state => {
+      return state.token
+    }
   },
   mutations: {
+    setToken: (state, token) => {
+      state.token = token
+    }
   },
   actions: {
   },

@@ -45,6 +45,7 @@
 import { reactive, ref, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { checkPasswordRule, level } from './uiScripts/CheckPassword'
+import { POST } from '@/scripts/Axios'
 // do not use same name with ref!!!
 
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
@@ -140,6 +141,13 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
   await formEl.validate((valid, fields) => {
     if (valid) {
       console.log('submit!')
+      POST('/usr/reg', { name: regRuleForm.name, email: regRuleForm.email, password: regRuleForm.passwd, organization: regRuleForm.unit }, (response) => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+          console.log(response.data.statusMsg)
+        } else {
+          console.log(response.data.statusMsg)
+        }
+      })
     } else {
       console.log('error submit!', fields)
     }
