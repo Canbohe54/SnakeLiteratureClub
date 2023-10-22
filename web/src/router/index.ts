@@ -47,6 +47,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/NotFoundView.vue')
   },
   {
+    path: '/test',
+    name: 'test',
+    component: () => import('../views/TestView.vue')
+  },
+  {
     path: '/:pathmatch(.*)',
     redirect: '/404'
   }

@@ -228,6 +228,7 @@ class ArticleServiceImpl implements ArticleService {
     public Map<String, Object> getAllArticles() {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put("article", articleDao.getAllArticles());
+        System.out.println(2);
         res.put("statusMsg", "success.");
         return res;
     }

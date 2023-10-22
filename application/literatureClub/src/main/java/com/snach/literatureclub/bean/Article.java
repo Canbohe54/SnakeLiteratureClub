@@ -1,9 +1,6 @@
 package com.snach.literatureclub.bean;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
@@ -20,6 +17,8 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+// 不加无参构造函数会出现数据库查询数据为null导致出现java.lang.IllegalArgumentException: null 错误
+@NoArgsConstructor
 @ToString
 public class Article extends BaseText implements Serializable {
     String title;
