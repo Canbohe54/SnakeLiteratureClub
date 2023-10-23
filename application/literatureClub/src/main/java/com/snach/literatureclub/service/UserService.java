@@ -21,9 +21,10 @@ import static com.snach.literatureclub.utils.IdTools.*;
 public interface UserService {
     /**
      * 用户注册
+     *
      * @param user 用户信息
      * @return 执行状态
-     *      <p>返回格式 {statusMsg: #{String}}
+     * <p>返回格式 {statusMsg: #{String}}
      */
     Map<String, Object> register(User user);
 
@@ -58,12 +59,14 @@ public interface UserService {
 
     /**
      * 用户登录
-     * @param email 邮箱
+     *
+     * @param email    邮箱
      * @param password 密码
      * @return 返回格式{statusMsg: #{String},token: #{token}}
      */
-    Map<String,Object> login(String email,String password);
+    Map<String, Object> login(String email, String password);
 
+    Map<String, Object> userSearch(String keyword);
 }
 
 @Mapper
@@ -142,18 +145,24 @@ class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> login(String email, String password) {
         Map<String, Object> response = new HashMap<String, Object>();
-        if(userDao.existEmail(email) == 0){
-            response.put("statusMsg","Nonexistent");
-        }
-        else{
-            if(userDao.login(email, password)==null){
-                response.put("statusMsg","Password error.");
-            }
-            else {
-                response.put("statusMsg","Success.");
-                response.put("token",tokenGen(userDao.login(email,password)));
+        if (userDao.existEmail(email) == 0) {
+            response.put("statusMsg", "Nonexistent");
+        } else {
+            if (userDao.login(email, password) == null) {
+                response.put("statusMsg", "Password error.");
+            } else {
+                response.put("statusMsg", "Success.");
+                response.put("token", tokenGen(userDao.login(email, password)));
             }
         }
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> userSearch(String keyword) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("res", userDao.getUsersByKeyword(keyword));
+        response.put("statusMsg", "Success.");
         return response;
     }
 }

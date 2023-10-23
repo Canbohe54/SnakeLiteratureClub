@@ -84,7 +84,23 @@ public interface ArticleDao {
     @Select("SELECT id, text, time, text_by, title, description, status, attr FROM article")
     List<Article> getAllArticles();
 
-    @Select("SELECT id, text, time, text_by, title, description, status, attr FROM article WHERE title LIKE '%#{keyword}%'")
+    /**
+     * 根据名称关键字和标签获取稿件
+     *
+     * @param keyword 关键字
+     * @param tag     标签
+     * @return 所有符合条件的稿件
+     */
+    @Select("SELECT id, text, time, text_by, title, description, status, attr FROM article WHERE title LIKE '%${keyword}%' AND attr LIKE '%\"tags\":%\"${tag}\"%]%'")
+    List<Article> getArticlesByKeywordAndTag(String keyword, String tag);
+
+    /**
+     * 根据名称关键字获取稿件
+     *
+     * @param keyword 关键字
+     * @return 所有符合条件的稿件
+     */
+    @Select("SELECT id, text, time, text_by, title, description, status, attr FROM article WHERE title LIKE '%${keyword}%'")
     List<Article> getArticlesByKeyword(String keyword);
 
     /**
