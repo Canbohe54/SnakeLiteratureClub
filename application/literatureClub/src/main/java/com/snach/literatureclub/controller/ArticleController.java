@@ -28,7 +28,6 @@ public class ArticleController {
      */
     @RequestMapping(value = "allArticles", method = RequestMethod.GET)
     public Map<String, Object> allArticles(@RequestParam(name = "token", required = false) String token) {
-        System.out.println(1);
         return articleService.getAllArticles();
     }
 

@@ -133,7 +133,7 @@ class ArticleServiceImpl implements ArticleService {
         res.put("article_id", article.getId());
         res.put("title", article.getTitle());
         res.put("description", article.getDescription());
-        res.put("time", date);
+        res.put("time", article.getTime());
         res.put("fileStatue", 3);
         res.put("statusMsg", "Success.");
         return res;
@@ -177,13 +177,14 @@ class ArticleServiceImpl implements ArticleService {
         article.setStatus(article.getStatus());
         // 修改时间
         Date date = new Date(System.currentTimeMillis());
+        article.setTime(date);
         // 更新详细信息
         articleDao.updateArticleDetail(article);
 
         res.put("article_id", article.getId());
         res.put("title", article.getTitle());
         res.put("description", article.getDescription());
-        res.put("time", date);
+        res.put("time", article.getTime());
         res.put("fileStatue", article.getStatus());
         res.put("statusMsg", "Success.");
         return res;

@@ -31,7 +31,7 @@ public class TokenTools {
      */
     public static String tokenGen(User user) {
         Calendar expires = Calendar.getInstance();
-        expires.add(Calendar.SECOND, 60);
+        expires.add(Calendar.MINUTE, 60);
         return JWT.create()
                 .withHeader(HEADERS)
                 .withClaim("id", user.getId())
