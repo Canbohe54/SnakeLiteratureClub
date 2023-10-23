@@ -143,6 +143,17 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public Map<String, Object> updateArticle(String token, String id, String title, String description, int status, String attr) {
         Map<String, Object> res = new HashMap<String, Object>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            res.put("statusMsg", "Invalid token.");
+            return res;
+        }
+        // 获取作者id,查看该作者是否拥有该稿件，若不拥有则返回"Access denied."
+        String contributor_id = getPayload(token, "id");
+        if (articleDao.belong(contributor_id, id) == 0) {
+            res.put("statusMsg", "Access denied.");
+            return res;
+        }
         // 修改时间
         Date date = new Date(System.currentTimeMillis());
 
@@ -150,10 +161,12 @@ class ArticleServiceImpl implements ArticleService {
         Article article = new Article(id, "", date, "", title, description, status, attr);
         articleDao.updateArticleInfo(article);
 
+
         res.put("article_id", id);
         res.put("title", title);
         res.put("description", description);
         res.put("time", date);
+        // 稿件状态 1：保存成功 2：待审核 3.已发布 4.未通过 0：保存失败
         res.put("fileStatue", 2);
         res.put("statusMsg", "Success.");
         return res;
