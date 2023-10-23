@@ -27,7 +27,7 @@ public class ArticleController {
      * @return 所有的稿件信息的Article对象List
      */
     @RequestMapping(value = "allArticles", method = RequestMethod.GET)
-    public Map<String, Object> allArticles(@RequestParam(name = "token",required = false)String token) {
+    public Map<String, Object> allArticles(@RequestParam(name = "token", required = false) String token) {
         System.out.println(1);
         return articleService.getAllArticles();
     }
@@ -39,9 +39,14 @@ public class ArticleController {
      * @param article_id 稿件id
      * @return 稿件详细信息, 执行状态
      */
-    @RequestMapping(value = "articleDetail",method = RequestMethod.GET)
+    @RequestMapping(value = "articleDetail", method = RequestMethod.GET)
     public Map<String, Object> articleDetail(@RequestParam("article_id") String article_id) {
         return articleService.getArticleById(article_id);
     }
 
+    @RequestMapping(value = "search", method = RequestMethod.GET)
+    public Map<String, Object> articleSearch(@RequestParam(value = "keyword") String keyword,
+                                             @RequestParam(value = "tag", required = false) String tag) {
+        return articleService.searchArticle(keyword, tag);
+    }
 }

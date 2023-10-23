@@ -95,7 +95,7 @@ public interface ArticleService {
      * @param keyword 关键词
      * @return 搜索到的所有稿件信息 返回格式{ articles: [#{Article}, ...], statusMsg: #{String} }
      */
-    Map<String, Object> searchArticleByKeyword(String keyword);
+    Map<String, Object> searchArticle(String keyword, String tag);
 }
 
 @Service
@@ -119,7 +119,7 @@ class ArticleServiceImpl implements ArticleService {
             article.setId(generateId(IdTools.Type.ARTICLE));
         } else {
             //若已有稿件id，则进行更新
-             return updateArticle(token, article);
+            return updateArticle(token, article);
         }
         //修改时间
         //SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -234,9 +234,13 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Map<String, Object> searchArticleByKeyword(String keyword) {
-        Map<String, Object> res = new HashMap<String, Object>();
-        res.put("article", articleDao.getArticlesByKeyword(keyword));
+    public Map<String, Object> searchArticle(String keyword, String tag) {
+        Map<String, Object> res = new HashMap<>();
+        if (tag == null) {
+            res.put("res", articleDao.getArticlesByKeyword(keyword));
+        } else {
+            res.put("res", articleDao.getArticlesByKeywordAndTag(keyword, tag));
+        }
         res.put("statusMsg", "ok");
         return res;
     }
