@@ -31,7 +31,6 @@ public class ContributorController {
      */
     @RequestMapping(value = "save", method = RequestMethod.POST)
     public Map<String, Object> save(@RequestParam("token") String token, Article article) {
-        System.out.println(article);
         return articleService.addArticle(token, article);
     }
 

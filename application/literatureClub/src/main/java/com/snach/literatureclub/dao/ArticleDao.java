@@ -15,7 +15,7 @@ public interface ArticleDao {
      *
      * @param article 封装有稿件信息的Article对象
      */
-    @Insert("INSERT INTO article(id, title,description,text,time,status,attr) " +
+    @Insert("INSERT INTO article(id, title,description,text,`time`,status,attr) " +
             "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.attr})")
     void insertArticle(@Param("article") Article article);
 
