@@ -53,7 +53,7 @@ public interface ArticleDao {
      * @param contributor_id 作者id
      * @return
      */
-    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr" +
+    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr " +
             "FROM article a left join contributor_article_list c on a.id = c.article_id " +
             "WHERE c.contributor_id = #{contributor_id}")
     List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id);
