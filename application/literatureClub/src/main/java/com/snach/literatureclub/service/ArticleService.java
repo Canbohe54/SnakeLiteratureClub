@@ -121,6 +121,7 @@ class ArticleServiceImpl implements ArticleService {
             //若已有稿件id，则进行更新
             return updateArticle(token, article);
         }
+        article.setTextBy(contributor_id);
         //修改时间
         //SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
