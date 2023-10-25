@@ -5,6 +5,7 @@ import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.dao.ArticleDao;
 import com.snach.literatureclub.dao.FavoritesDao;
 import com.snach.literatureclub.dao.UserDao;
+import com.snach.literatureclub.utils.VerifyingCodeTools;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,17 +17,26 @@ import java.util.Map;
 
 import static com.snach.literatureclub.utils.TokenTools.*;
 import static com.snach.literatureclub.utils.IdTools.*;
+import static com.snach.literatureclub.utils.VerifyingCodeTools.*;
 
 @Service
 public interface UserService {
     /**
+     * 向邮箱发送随机验证码
+     *
+     * @param email 收件人邮箱
+     */
+    void sendVerifyingCode(String email);
+
+    /**
      * 用户注册
      *
      * @param user 用户信息
+     * @param vCode 用户输入的验证码
      * @return 执行状态
      * <p>返回格式 {statusMsg: #{String}}
      */
-    Map<String, Object> register(User user);
+    Map<String, Object> register(User user, String vCode);
 
     /**
      * 用户收藏
@@ -80,13 +90,22 @@ class UserServiceImpl implements UserService {
     private ArticleDao articleDao;
 
     @Override
-    public Map<String, Object> register(User user) {
+    public void sendVerifyingCode(String email) {
+        VerifyingCodeTools.sendVerifyingCode(email);
+    }
+
+    @Override
+    public Map<String, Object> register(User user, String vCode) {
         Map<String, Object> response = new HashMap<>();
+        if (!verifyCode(user.getEmail(), vCode)) {
+            response.put("statusMsg", "Wrong Verifying Code.");
+            return response;
+        }
         if (user.getId() == null) {
             user.setId(generateId(Type.USER));
         }
         userDao.insertUser(user);
-        response.put("statusMsg", "Success");
+        response.put("statusMsg", "Success.");
         return response;
     }
 

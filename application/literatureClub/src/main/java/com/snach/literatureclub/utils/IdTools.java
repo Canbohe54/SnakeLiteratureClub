@@ -25,7 +25,7 @@ public class IdTools {
         }
     }
 
-    private synchronized static String randomStringGen(int length) {
+    public synchronized static String randomStringGen(int length) {
         StringBuilder randStr = new StringBuilder();
         for (int i = 0; i < length; i++) {
             randStr.append(code.charAt(random.nextInt(code.length())));

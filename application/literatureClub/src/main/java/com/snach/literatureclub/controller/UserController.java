@@ -19,15 +19,26 @@ public class UserController {
     }
 
     /**
+     * 向邮箱发送随机验证码
+     *
+     * @param email 收件人邮箱
+     */
+    @RequestMapping(value = "sendvcode", method = RequestMethod.POST)
+    public void sendVerifyingCode(String email) {
+        userService.sendVerifyingCode(email);
+    }
+
+    /**
      * 用户注册
      *
      * @param user 用户信息
+     * @param vCode 用户输入的验证码
      * @return 执行状态
      * <p>返回格式 {statusMsg: #{String}}
      */
     @RequestMapping(value = "reg", method = RequestMethod.POST)
-    public Map<String, Object> register(User user) {
-        return userService.register(user);
+    public Map<String, Object> register(User user, String vCode) {
+        return userService.register(user, vCode);
     }
 
     /**
