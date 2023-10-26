@@ -3,6 +3,13 @@
     <el-form-item label="邮箱" prop="email">
       <el-input placeholder="请输入邮箱" v-model="regRuleForm.email" />
     </el-form-item>
+    <el-form-item label="验证码" prop="emailCaptcha">
+      <el-input placeholder="请输入验证码" v-model="regRuleForm.emailCaptcha">
+        <template #append>
+          <el-button type="primary" @click="sendEmailCaptcha" class="sendEmailCaptchaButton" :disabled="emailCaptchaButton.disabled">{{ emailCaptchaButton.buttonText }}</el-button>
+        </template>
+      </el-input>
+    </el-form-item>
     <el-form-item label="密码" prop="passwd">
       <el-input tpye="password" placeholder="请输入密码" show-password v-model="regRuleForm.passwd" />
     </el-form-item>
@@ -31,27 +38,45 @@
     <el-form-item label="单位" prop="unit">
       <el-input placeholder="请输入所在单位" v-model="regRuleForm.unit" />
     </el-form-item>
+    <el-form-item label="年级" v-if="regRuleForm.identity === '学生'">
+      <el-select v-model="stuGrade" placeholder="请选择学生年级">
+        <el-option label="一年级" value="一年级" />
+        <el-option label="二年级" value="二年级" />
+        <el-option label="三年级" value="三年级" />
+        <el-option label="四年级" value="四年级" />
+        <el-option label="五年级" value="五年级" />
+        <el-option label="六年级" value="六年级" />
+        <el-option label="七年级" value="七年级" />
+        <el-option label="八年级" value="八年级" />
+        <el-option label="九年级" value="九年级" />
+        <el-option label="高一" value="高一" />
+        <el-option label="高二" value="高二" />
+        <el-option label="高三" value="高三" />
+      </el-select>
+    </el-form-item>
     <el-form-item prop="checkUserAgreement">
       <el-checkbox v-model="regRuleForm.checkUserAgreement" :checked="regRuleForm.checkUserAgreement">我已阅读并同意《用户协议》</el-checkbox>
     </el-form-item>
   </el-form>
   <div class="regBottom">
     <div></div>
-    <el-button type="primary" @click="onSubmit(regRuleFormRef)" class="regButton">立即注册</el-button>
+    <el-button type="primary" @click="onSubmit(regRuleFormRef)" class="regButton" :disabled="regButton.disabled">{{ regButton.buttonText }}</el-button>
     <router-link to="/login" class="regLink">已经有账户了？点击登录</router-link>
   </div>
 </template>
 <script lang="ts" setup>
 import { reactive, ref, watch } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { checkPasswordRule, level } from './uiScripts/CheckPassword'
 import { POST } from '@/scripts/Axios'
+import router from '@/router'
 // do not use same name with ref!!!
 
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
 
 interface RegRuleForm {
   email: string
+  emailCaptcha: string
   passwd: string
   passwd2: string
   name: string
@@ -62,6 +87,7 @@ interface RegRuleForm {
 
 const regRuleForm = reactive<RegRuleForm>({
   email: '',
+  emailCaptcha: '',
   passwd: '',
   passwd2: '',
   name: '',
@@ -69,7 +95,52 @@ const regRuleForm = reactive<RegRuleForm>({
   unit: '',
   checkUserAgreement: false
 }) // 验证表单
+const stuGrade = ref('') // 学生年级
+
+const emailCaptchaButton = reactive<any>({ // 邮箱验证码按钮
+  disabled: false,
+  buttonText: '发送验证码',
+  duration: 59,
+  timer: null
+})
+const regButton = reactive<any>({ // 注册按钮
+  disabled: false,
+  buttonText: '立即注册',
+  duration: 2,
+  timer: null
+})
+
 const regRuleFormRef = ref<FormInstance>()
+
+const sendEmailCaptcha = () => { // 发送邮箱验证码
+  regRuleFormRef.value?.validateField('email', (valid) => {
+    if (valid) {
+      emailCaptchaButton.disabled = true
+      emailCaptchaButton.buttonText = `${emailCaptchaButton.duration}秒后重新发送`
+      emailCaptchaButton.timer && clearInterval(emailCaptchaButton.timer)
+      emailCaptchaButton.timer = setInterval(() => {
+        if (emailCaptchaButton.duration === 0) {
+          emailCaptchaButton.disabled = false
+          emailCaptchaButton.buttonText = '重新发送'
+          emailCaptchaButton.duration = 59
+          emailCaptchaButton.timer && clearInterval(emailCaptchaButton.timer)
+        } else {
+          emailCaptchaButton.duration--
+          emailCaptchaButton.buttonText = `${emailCaptchaButton.duration}秒后重新发送`
+        }
+      }, 1000)
+      POST('/usr/sendvcode', { email: regRuleForm.email }, (response) => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+          console.log(response.data.statusMsg)
+        } else {
+          console.log(response.data.statusMsg)
+        }
+      })
+    } else {
+      console.log('邮箱不能为空!')
+    }
+  })
+}
 
 const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密码
   if (value === '') {
@@ -118,6 +189,14 @@ const validateEmail = (rule: any, value: any, callback: any) => { // 验证邮�
   }
 }
 
+const validateEmailCaptcha = (rule: any, value: any, callback: any) => { // 验证验证码
+  if (value === '') {
+    callback(new Error('验证码不能为空'))
+  } else {
+    callback()
+  }
+}
+
 const validateCheckUserAgreement = (rule: any, value: any, callback: any) => { // 验证用户协议
   if (value === false) {
     callback(new Error('请阅读并同意《用户协议》'))
@@ -128,6 +207,7 @@ const validateCheckUserAgreement = (rule: any, value: any, callback: any) => { /
 
 const regRules = reactive<FormRules<RegRuleForm>>({ // 表单验证规则
   email: [{ required: true, validator: validateEmail, trigger: 'blur' }],
+  emailCaptcha: [{ required: true, validator: validateEmailCaptcha, trigger: 'blur' }],
   passwd: [{ required: true, validator: validatePasswd, trigger: 'blur' }],
   passwd2: [{ required: true, validator: validatePasswd2, trigger: 'blur' }],
   name: [{ required: true, message: '姓名不能为空', trigger: 'blur' }],
@@ -137,17 +217,51 @@ const regRules = reactive<FormRules<RegRuleForm>>({ // 表单验证规则
 })
 
 const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
+  // 不要忘记传学生年级
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      console.log('submit!')
-      POST('/usr/reg', { name: regRuleForm.name, email: regRuleForm.email, password: regRuleForm.passwd, organization: regRuleForm.unit }, (response) => {
+      regButton.disabled = true
+      regButton.buttonText = '正在注册...'
+      let isPosted = false
+      // TODO 加入额外选项
+      POST('/usr/reg', { name: regRuleForm.name, email: regRuleForm.email, password: regRuleForm.passwd, organization: regRuleForm.unit, attrs: { grade: stuGrade }, vCode: regRuleForm.emailCaptcha }, (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
           console.log(response.data.statusMsg)
+          ElMessage({
+            message: '注册成功',
+            type: 'success',
+            duration: 2000
+          })
+          router.push('/login')
+        } else if (response.status === 200 && response.data.statusMsg === 'Email already exists.') { // 邮箱已存在
+          ElMessage.error('邮箱已存在')
+          console.log(response.data.statusMsg)
+        } else if (response.status === 200 && response.data.statusMsg === 'Wrong Verifying Code.') { // 验证码错误
+          ElMessage.error('验证码错误')
+          console.log(response.data.statusMsg)
         } else {
+          ElMessage.error('注册失败，请检查网络连接')
           console.log(response.data.statusMsg)
         }
+        isPosted = true
       })
+      regButton.timer && clearInterval(regButton.timer)
+      regButton.timer = setInterval(() => {
+        if (regButton.duration === 0) {
+          regButton.disabled = false
+          regButton.buttonText = '立即注册'
+          regButton.duration = 2
+          regButton.timer && clearInterval(regButton.timer)
+          if (isPosted === false) {
+            ElMessage.error('注册失败，请检查网络连接')
+          }
+        } else {
+          regButton.duration--
+          regButton.buttonText = '正在注册...'
+        }
+      }, 1000)
+      console.log('submit!')
     } else {
       console.log('error submit!', fields)
     }
@@ -211,7 +325,8 @@ watch(
   color: #606266;
   font: 14px "Microsoft YaHei";
   display: grid;
-  justify-self: end;
+  justify-content: end;
+  margin-right: 4px;
 }
 
 .regLink:hover {

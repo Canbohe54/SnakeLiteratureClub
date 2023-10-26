@@ -8,6 +8,8 @@
 import { Options, Vue } from 'vue-class-component'
 import NavBar from '../components/NavBar.vue'
 import infroll from '../components/temp_infroll.vue'
+import { useStore } from 'vuex'
+console.log(useStore())
 @Options({
   components: {
     NavBar,

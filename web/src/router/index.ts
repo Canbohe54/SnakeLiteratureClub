@@ -25,8 +25,38 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/user',
-    name: 'user',
+    name: 'user-center',
     component: () => import('../views/UserCenterView.vue')
+  },
+  {
+    path: '/user/:id',
+    name: 'user-info',
+    component: () => import('../views/UserCenterView.vue')
+  },
+  {
+    path: '/account',
+    name: 'account-manage',
+    component: () => import('../views/AccountManageView.vue'),
+    children: [
+      {
+        path: 'info',
+        component: () => import('../components/accountManage/forms/InfoChangeForm.vue')
+      },
+      {
+        path: 'email',
+        component: () => import('../components/accountManage/forms/EmailChangeForm.vue'),
+        children: [
+          {
+            path: 'verify',
+            component: () => import('../components/accountManage/forms/PasswdConfirmForm.vue')
+          }
+        ]
+      },
+      {
+        path: 'password',
+        component: () => import('../components/accountManage/forms/PasswdChangeForm.vue')
+      }
+    ]
   },
   {
     path: '/search',
@@ -45,11 +75,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/404',
     name: 'not-found',
     component: () => import('../views/NotFoundView.vue')
-  },
-  {
-    path: '/test',
-    name: 'test',
-    component: () => import('../views/TestView.vue')
   },
   {
     path: '/:pathmatch(.*)',

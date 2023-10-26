@@ -1,5 +1,5 @@
 <template>
-    <el-form ref="loginRuleFormRef" :model="loginRuleForm" :rules="loginRules" label-width="80px" size="large">
+      <el-form ref="loginRuleFormRef" :model="loginRuleForm" :rules="loginRules" label-width="60px" size="large">
         <el-form-item label="邮箱" prop="email">
             <el-input placeholder="请输入邮箱" v-model="loginRuleForm.email" />
         </el-form-item>
@@ -8,17 +8,21 @@
         </el-form-item>
     </el-form>
     <div class="loginBottom">
-        <div></div>
-        <el-button type="primary" @click="onSubmit(loginRuleFormRef)" class="loginButton">立即登录</el-button>
-        <router-link to="/register" class="loginLink">还没有账户？点击注册</router-link>
+        <div>
+          <router-link to="/forgetPassword" class="forget-password">忘记密码？</router-link>
+        </div>
+        <el-button type="primary" @click="onSubmit(loginRuleFormRef)" class="loginButton" :disabled="loginButton.disabled">{{ loginButton.buttonText }}</el-button>
+        <div>
+          <router-link to="/register" class="loginLink">还没有账户？点击注册</router-link>
+        </div>
     </div>
 </template>
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { checkPasswordRule } from './uiScripts/CheckPassword'
 import { POST } from '@/scripts/Axios'
-import LoginForm from '@/components/LoginForm.vue'
+import router from '@/router'
 // do not use same name with ref!!!
 
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
@@ -32,6 +36,14 @@ const loginRuleForm = reactive<LoginRuleForm>({
   email: '',
   passwd: ''
 }) // 验证表单
+
+const loginButton = reactive<any>({ // 登录按钮
+  disabled: false,
+  buttonText: '立即登录',
+  duration: 2,
+  timer: null
+})
+
 const loginRuleFormRef = ref<FormInstance>()
 
 const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密码
@@ -71,15 +83,36 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
+      loginButton.disabled = true
+      loginButton.buttonText = '正在登录...'
+      let isPosted = false
       console.log('submit!')
       POST('/usr/login', { email: loginRuleForm.email, password: loginRuleForm.passwd }, (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
+          ElMessage.success('登录成功')
+          router.push('/')
           // TODO: store token
           console.log(response.data.token)
         } else {
           console.log(response.data.statusMsg)
         }
+        isPosted = true
       })
+      loginButton.timer && clearInterval(loginButton.timer)
+      loginButton.timer = setInterval(() => {
+        if (loginButton.duration === 0) {
+          loginButton.disabled = false
+          loginButton.buttonText = '立即登录'
+          loginButton.duration = 2
+          loginButton.timer && clearInterval(loginButton.timer)
+          if (!isPosted) {
+            ElMessage.error('登录超时，请检查网络连接')
+          }
+        } else {
+          loginButton.duration--
+          loginButton.buttonText = '正在登录...'
+        }
+      }, 1000)
     } else {
       console.log('error submit!', fields)
     }
@@ -95,17 +128,28 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
 }
 
 .loginButton {
-    width: 50%;
+    width: 60%;
     height: 125%;
     justify-self: center;
+}
+.forget-password {
+  text-decoration: none;
+  color: #606266;
+  font: 14px "Microsoft YaHei";
+  display: flex;
+  justify-content: flex-begin;
+  margin-left: 50px;
+}
+.forget-password:hover {
+    color: #5999fe;
 }
 
 .loginLink {
     text-decoration: none;
     color: #606266;
     font: 14px "Microsoft YaHei";
-    display: grid;
-    justify-self: end;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .loginLink:hover {

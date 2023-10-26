@@ -24,7 +24,7 @@
               <el-menu-item index="2-4-3">item three</el-menu-item>
             </el-sub-menu>
           </el-sub-menu> -->
-            </el-menu>
+            </el-menu><!--搜索框-->
             <div class="mt-4 search-input" v-if="route.path!=='/search'">
               <el-input v-model="searchInput" placeholder="搜索" class="input-with-select">
                 <template #append>
@@ -136,7 +136,7 @@
   align-items: center;
 }
 
-.el-menu--horizontal.el-menu {
+.el-menu--horizontal.el-menu { /*取消菜单栏下边框*/
   border-bottom: none !important;
   text-decoration: none;
 }
