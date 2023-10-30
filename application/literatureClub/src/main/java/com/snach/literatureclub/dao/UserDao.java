@@ -14,8 +14,8 @@ import java.util.List;
 @Repository
 @Mapper
 public interface UserDao {
-    @Select("SELECT COUNT(*) FROM group WHERE id = #{id} AND user_id = #{user_id}")
-    int exist(@Param("id") BigInteger id, @Param("user_id") String user_id);
+    @Select("SELECT COUNT(*) FROM user WHERE `group` = #{group} AND user_id = #{user_id}")
+    int exist(@Param("group") BigInteger group, @Param("user_id") String user_id);
 
     @Select("SELECT * FROM user WHERE id = #{id}")
     User getUserById(String id);

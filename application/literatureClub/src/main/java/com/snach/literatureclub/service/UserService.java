@@ -31,7 +31,7 @@ public interface UserService {
     /**
      * 用户注册
      *
-     * @param user 用户信息
+     * @param user  用户信息
      * @param vCode 用户输入的验证码
      * @return 执行状态
      * <p>返回格式 {statusMsg: #{String}}
@@ -99,6 +99,14 @@ class UserServiceImpl implements UserService {
         Map<String, Object> response = new HashMap<>();
         if (!verifyCode(user.getEmail(), vCode)) {
             response.put("statusMsg", "Wrong Verifying Code.");
+            return response;
+        }
+        if (userDao.existEmail(user.getEmail()) != 0) {
+            response.put("statusMsg", "Email already exists.");
+            return response;
+        }
+        if (user.getPassword() == null) {
+            response.put("statusMsg", "The password cannot be empty.");
             return response;
         }
         if (user.getId() == null) {
