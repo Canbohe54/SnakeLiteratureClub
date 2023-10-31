@@ -1,4 +1,4 @@
-package com.snach.literatureclub.utils;
+package com.snach.literatureclub.config;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

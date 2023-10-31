@@ -40,7 +40,8 @@ public class VerifyingCodeTools {
         try {
             staticMailService.sendVerifyingCode(mail, vCode);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
+//            System.out.println(e.getMessage());
             return false;
         }
         return true;
