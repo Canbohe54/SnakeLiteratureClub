@@ -59,7 +59,7 @@
                   </el-dropdown-menu>
                   <el-dropdown-menu v-else>
                     <el-dropdown-item command="userCenter">个人中心</el-dropdown-item>
-                    <el-dropdown-item command="accManage">账号设置</el-dropdown-item>
+                    <el-dropdown-item command="accManage" v-if="!route.path.match('/account')">账号设置</el-dropdown-item>
                     <el-dropdown-item divided>退出登录</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>

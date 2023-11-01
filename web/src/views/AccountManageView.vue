@@ -24,7 +24,7 @@
     flex-wrap: nowrap;
 }
 .acc-manage-center { /* 主界面 */
-    margin: 100px 50px 50px 50px;
+    margin: 0 50px 50px 50px;
 }
 .navbar {
     margin: 0 0;

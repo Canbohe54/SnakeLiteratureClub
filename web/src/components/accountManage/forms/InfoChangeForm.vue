@@ -3,7 +3,7 @@
     <el-form label-width="80px" label-position="right" size="large">
       <el-form-item label="用户头像" class="info-items user-avatar">
         <el-tooltip class="tooltip" effect="dark" content="点击上传" placement="top">
-          <el-avatar class="user-avatar-preview" :size="150" :src="avatarUrl" @click="handleAvatarPreview"></el-avatar>
+          <el-avatar class="user-avatar-preview" :size="150" :src="userInfo.avatar" @click="handleAvatarPreview"></el-avatar>
         </el-tooltip>
       </el-form-item>
       <el-form-item label="姓名" class="info-items info-input">
@@ -47,14 +47,17 @@
 import { reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 // do not use same name with ref!!!
-const avatarUrl = ref('https://avatars.githubusercontent.com/u/43968296')
-const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
+import { useStore } from 'vuex'
+const store = useStore()
 const userInfo = reactive({
-  name: 'Canbohe54',
-  unit: 'South China Normal University',
-  identity: '学生',
-  introduction: '这个人很懒，什么都没有留下~'
+  avatar: store.state.userInfo.avatar,
+  name: store.state.userInfo.name,
+  unit: store.state.userInfo.unit,
+  identity: store.state.userInfo.identity,
+  introduction: store.state.userInfo.introduction
 })
+const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
+
 const stuGrade = ref('九年级') // 学生年级
 const userInfoInit = ref('')
 
@@ -66,6 +69,7 @@ const handleAvatarPreview = () => {
 .info-change-form {
   display: flex;
   justify-content: center;
+  margin: 100px 0 0 0;
 }
 
 .info-change-form /deep/ .el-form-item__content {

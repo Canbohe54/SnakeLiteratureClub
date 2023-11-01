@@ -2,7 +2,7 @@
 <div class="email-change-form">
     <el-form ref="emailChangeFormRef" :model="emailChangeForm" :rules="emailChangeRules" label-width="120px" label-position="right" size="large">
     <el-form-item label="原绑定邮箱" prop="oriEmail" class="email-items email-input email-org">
-      <el-input v-model="emailChangeForm.oriEmail" placeholder="原邮箱地址" :disabled="true"></el-input>
+      <el-input v-model="oriEmail" placeholder="原邮箱地址" :disabled="true"></el-input>
     </el-form-item>
     <el-form-item label="新邮箱地址" prop="newEmail" class="email-items email-input">
       <el-input v-model="emailChangeForm.newEmail" placeholder="请输入新邮箱地址"></el-input>
@@ -22,17 +22,17 @@
 import { reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { POST } from '@/scripts/Axios'
+import { useStore } from 'vuex'
 import router from '@/router'
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
-
+const store = useStore()
+const oriEmail = ref(store.state.userInfo.email) // 原邮箱地址
 interface EmailChangeForm {
-  oriEmail: string
   newEmail: string
   emailCaptcha: string
 } // 验证表单接口
 
 const emailChangeForm = reactive<EmailChangeForm>({
-  oriEmail: '',
   newEmail: '',
   emailCaptcha: ''
 })

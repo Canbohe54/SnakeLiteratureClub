@@ -4,7 +4,7 @@
     <div class="info-confirm-form">
       <el-avatar class="user-avatar-preview" :size="50" :src="userInfo.avatar"></el-avatar>
       <el-text class="signed-text">已登录账户</el-text>
-      <el-tag :type="userTagType">{{ userInfo.name }} · {{ userInfo.identity }}</el-tag>
+      <el-tag :type="userTagType"  disable-transitions>{{ userInfo.name }} · {{ userInfo.identity }}</el-tag>
     </div>
     <div class="passwd-confirm-form">
       <el-form label-width="80px" label-position="top" size="large">

@@ -14,7 +14,9 @@
 <script lang="ts" setup>
 import router from '@/router'
 import { reactive, ref } from 'vue'
-const oriEmail = ref('') // 原邮箱地址
+import { useStore } from 'vuex'
+const store = useStore()
+const oriEmail = ref(store.state.userInfo.email) // 原邮箱地址
 const toConfirm = () => {
   router.push('/account/email/verify')
 }

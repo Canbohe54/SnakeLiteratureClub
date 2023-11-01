@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 // import HomeView from '../views/HomeView.vue'
 import LobbyView from '../views/LobbyView.vue'
+import { useStore } from 'vuex'
+const store = useStore() // 已连接vuex，可设置路由拦截
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -63,6 +65,16 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'password',
         component: () => import('../views/AccountManage/PasswdChangeView.vue'),
+        children: [
+          {
+            path: 'verify',
+            component: () => import('../components/accountManage/forms/PasswdConfirmForm.vue')
+          }
+        ]
+      },
+      {
+        path: 'cancel',
+        component: () => import('../views/AccountManage/AccountCancelView.vue'),
         children: [
           {
             path: 'verify',

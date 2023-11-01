@@ -9,7 +9,7 @@ export default createStore({
       unit: 'South China Normal University',
       introduction: '这个人很懒，什么都没有留下~',
       email: 'Canbohe54@outlook.com',
-      avatar: 'https://avatars.githubusercontent.com/u/43968297?v=4'
+      avatar: 'https://avatars.githubusercontent.com/u/43968296'
     }
   },
   getters: {

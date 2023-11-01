@@ -20,7 +20,7 @@
           <el-icon><icon-lock /></el-icon>
           <span>修改密码</span>
         </el-menu-item>
-        <el-menu-item index="4" class="acc-bar-menu-item" route="/account/cancel">
+        <el-menu-item index="4" class="acc-bar-menu-item" route="/account/cancel/verify">
           <el-icon><icon-circle-close /></el-icon>
           <span>注销账户</span>
         </el-menu-item>
