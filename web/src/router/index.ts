@@ -44,17 +44,31 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'email',
-        component: () => import('../components/accountManage/forms/EmailChangeForm.vue'),
+        component: () => import('../views/AccountManage/EmailChangeView.vue'),
+        children: [
+          {
+            path: 'info',
+            component: () => import('../components/accountManage/forms/EmailInfo.vue')
+          },
+          {
+            path: 'verify',
+            component: () => import('../components/accountManage/forms/PasswdConfirmForm.vue')
+          },
+          {
+            path: 'change',
+            component: () => import('../components/accountManage/forms/EmailChangeForm.vue')
+          }
+        ]
+      },
+      {
+        path: 'password',
+        component: () => import('../views/AccountManage/PasswdChangeView.vue'),
         children: [
           {
             path: 'verify',
             component: () => import('../components/accountManage/forms/PasswdConfirmForm.vue')
           }
         ]
-      },
-      {
-        path: 'password',
-        component: () => import('../components/accountManage/forms/PasswdChangeForm.vue')
       }
     ]
   },

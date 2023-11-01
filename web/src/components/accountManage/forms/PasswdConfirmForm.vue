@@ -1,18 +1,35 @@
 <template>
-    <div class="info-change-form">
-        <el-form label-width="80px" label-position="top">
-            <el-form-item label="验证密码" class="info-items info-input">
-                <el-input v-model="confirmPasswd" placeholder="请输入密码"></el-input>
-            </el-form-item>
-        </el-form>
+  <div class="confirm">
+    <h3>需要验证身份</h3>
+    <div class="info-confirm-form">
+      <el-avatar class="user-avatar-preview" :size="50" :src="userInfo.avatar"></el-avatar>
+      <el-text class="signed-text">已登录账户</el-text>
+      <el-tag :type="userTagType">{{ userInfo.name }} · {{ userInfo.identity }}</el-tag>
     </div>
+    <div class="passwd-confirm-form">
+      <el-form label-width="80px" label-position="top" size="large">
+        <el-form-item label="请输入密码" class="confirm-passwd">
+          <el-input v-model="confirmPasswd.passwd"></el-input>
+        </el-form-item>
+      </el-form>
+      <div class="loginBottom">
+        <div></div>
+        <el-button type="primary" class="loginButton">验证</el-button>
+        <div>
+          <router-link to="/forgetPassword" class="forget-password-confirm">忘记密码？</router-link>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { POST } from '@/scripts/Axios'
 import router from '@/router'
+import { useStore } from 'vuex'
 import { checkPasswordRule, level } from '../../uiScripts/CheckPassword'
+const store = useStore()
 interface ConfirmPasswd {
   passwd: string
 }
@@ -20,6 +37,23 @@ const confirmPasswd = reactive<ConfirmPasswd>({
   passwd: ''
 })
 const confirmPasswdRef = ref<FormInstance>()
+
+const avatarUrl = ref('https://avatars.githubusercontent.com/u/43968296')
+
+const identityTagType = (userIdentity: string) => {
+  switch (userIdentity) {
+    case '专家':
+      return 'warning'
+    case '学生':
+      return 'success'
+    case '管理员':
+      return 'warning'
+    default:
+      return 'info'
+  }
+}
+const userInfo = reactive(store.state.userInfo)
+const userTagType = ref(identityTagType(userInfo.identity))
 
 const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密码
   if (value === '') {
@@ -40,27 +74,63 @@ const confirmPasswdRules = reactive<FormRules<ConfirmPasswd>>({ // 表单验证�
 })
 </script>
 <style scoped>
-.info-change-form {
+.confirm {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.passwd-confirm-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+  border-radius: 20px;
+  box-shadow: 0 0 1px 0;
+  width: 360px;
+  padding: 30px 10px;
+}
+
+.passwd-confirm-form /deep/ .el-form-item__content {
   justify-content: center;
 }
-.info-change-form /deep/ .el-form-item__content {
-  justify-content: center;
-}
-.info-input {
-  width: 400px;
-}
-.info-input /deep/ .el-input__wrapper {
-  box-shadow: 0 0 0 0px;
-}
-.info-input /deep/ .el-input__inner {
-  text-align: center;
-}
-.info-input /deep/ .el-input__inner:focus {
-  border-bottom: #a9abb2 1px solid;
-}
-.info-items {
+
+.info-confirm-form {
   display: flex;
   align-items: center;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 0 1px 0;
+  width: 300px;
+  padding: 30px 40px;
+  margin: 20px 0;
 }
-</style>
+.signed-text {
+  margin: 0 10px;
+}
+
+.confirm-passwd {
+  width: 300px;
+}
+
+.forget-password-confirm {
+  text-decoration: none;
+  color: #606266;
+  font: 14px "Microsoft YaHei";
+  display: flex;
+  justify-content: flex-end;
+  margin-left: 30px;
+}
+
+.forget-password-confirm:hover {
+  color: #5999fe;
+}
+
+.loginBottom {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr 1fr 1fr;
+}</style>

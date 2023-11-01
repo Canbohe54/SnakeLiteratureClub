@@ -7,7 +7,7 @@
             <el-col :span="3">
                 <AccManageBar />
             </el-col>
-            <el-col :span="21"> <!--非常完美，不要改了-->
+            <el-col :span="21" class="acc-manage-center"> <!--非常完美，不要改了-->
                 <router-view />
             </el-col>
         </el-row>
@@ -22,6 +22,9 @@
 }
 .acc-manage-row {
     flex-wrap: nowrap;
+}
+.acc-manage-center { /* 主界面 */
+    margin: 100px 50px 50px 50px;
 }
 .navbar {
     margin: 0 0;

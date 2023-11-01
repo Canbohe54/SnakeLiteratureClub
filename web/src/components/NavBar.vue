@@ -43,10 +43,10 @@
                   <span class="el-dropdown-link">
                     <div class="user-display"> <!--用户信息-->
                       <el-tag class="ml-2 user-display-content" :type="userTagType" disable-transitions><span
-                          v-if="userInfo.userName !== '' && userInfo.userName !== undefined">{{ userInfo.userName }} ·
-                        </span>{{ userInfo.userIdentity }}</el-tag>
+                          v-if="userInfo.name !== '' && userInfo.name !== undefined">{{ userInfo.name }} ·
+                        </span>{{ userInfo.identity }}</el-tag>
                       <el-avatar class="mr-3 user-display-content" :size="40"
-                        src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+                        :src="userInfo.avatar" />
                     </div>
                     <!-- <el-icon class="el-icon--right">
                   <arrow-down />
@@ -54,11 +54,12 @@
                   </span>
                 </router-link>
                 <template #dropdown>
-                  <el-dropdown-menu v-if="userInfo.userIdentity === '未登录'">
+                  <el-dropdown-menu v-if="userInfo.identity === '未登录'">
                     <el-dropdown-item command="login">点击登录！</el-dropdown-item>
                   </el-dropdown-menu>
                   <el-dropdown-menu v-else>
                     <el-dropdown-item command="userCenter">个人中心</el-dropdown-item>
+                    <el-dropdown-item command="accManage">账号设置</el-dropdown-item>
                     <el-dropdown-item divided>退出登录</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -148,12 +149,13 @@
 <script lang="ts" setup>
 // import { ArrowDown } from '@element-plus/icons-vue'
 import { reactive, ref } from 'vue'
-
+import { useStore } from 'vuex'
 // const activeIndex = ref('2')
 import { useRoute, useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 const router = useRouter()
 const route = useRoute()
+const store = useStore()
 // logo跳转部分
 const backToLobby = () => {
   router.push('/')
@@ -174,10 +176,11 @@ const handleSearch = async () => {
   }
 }
 // 用户信息部分
-const userInfo = reactive({ // 用户信息
-  userName: '',
-  userIdentity: '未登录'
-})
+// const userInfo = reactive({ // 用户信息
+//   userName: 'Canbohe54',
+//   userIdentity: '专家'
+// })
+const userInfo = reactive(store.state.userInfo)
 
 const identityTagType = (userIdentity: string) => {
   switch (userIdentity) {
@@ -192,8 +195,8 @@ const identityTagType = (userIdentity: string) => {
   }
 }
 
-const userTagType = ref(identityTagType(userInfo.userIdentity))
-const userInfoRedirect = ref(userInfo.userIdentity === '未登录' ? '/login' : '/')
+const userTagType = ref(identityTagType(userInfo.identity))
+const userInfoRedirect = ref(userInfo.identity === '未登录' ? '/login' : '/')
 // 未登录则跳转到登录页面，已登录则跳转到个人信息页面 未完成
 
 // 下拉菜单部分
@@ -204,6 +207,9 @@ const handleDropdownCommand = (command: string | number | object) => {
       break
     case 'userCenter':
       router.push('/userCenter')
+      break
+    case 'accManage':
+      router.push('/account/info')
       break
     default:
       break
