@@ -79,6 +79,10 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: 'verify',
             component: () => import('../components/accountManage/forms/PasswdConfirmForm.vue')
+          },
+          {
+            path: 'confirm',
+            component: () => import('../components/accountManage/forms/EmailConfirmForm.vue')
           }
         ]
       }

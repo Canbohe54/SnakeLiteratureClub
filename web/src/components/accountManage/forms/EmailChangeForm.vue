@@ -7,7 +7,7 @@
     <el-form-item label="新邮箱地址" prop="newEmail" class="email-items email-input">
       <el-input v-model="emailChangeForm.newEmail" placeholder="请输入新邮箱地址"></el-input>
     </el-form-item>
-    <el-form-item label="验证码" prop="emailCaptcha" class="email-items email-input">
+    <el-form-item label="新邮箱验证码" prop="emailCaptcha" class="email-items email-input">
       <el-input placeholder="请输入验证码" v-model="emailChangeForm.emailCaptcha">
         <template #append>
           <el-button type="primary" @click="sendEmailCaptcha" class="sendEmailCaptchaButton" :disabled="emailCaptchaButton.disabled">{{ emailCaptchaButton.buttonText }}</el-button>

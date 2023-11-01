@@ -2,13 +2,13 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    token: '',
+    token: 'tokenNotNull',
     userInfo: {
       name: 'Canbohe54',
       identity: '专家',
       unit: 'South China Normal University',
       introduction: '这个人很懒，什么都没有留下~',
-      email: 'Canbohe54@outlook.com',
+      email: 'Canbohe54@snakeliterature.club',
       avatar: 'https://avatars.githubusercontent.com/u/43968296'
     }
   },
