@@ -1,0 +1,70 @@
+<template>
+    <div>
+        <el-text>您确定要注销账户吗？</el-text>
+    </div>
+    <div>
+        <el-text>账户资料将会永远消失！（真的很久！）</el-text>
+    </div>
+    <div class="cancel-confirm-form">
+        <el-form label-position="top" size="large" ref="cancelAccFormRef" :model="cancelAccForm" :rules="cancelAccRules"
+            label-width="120px">
+            <el-form-item label="请输入“确认注销”以抹除账户" prop="confirm" class="cancel-items cancel-input">
+                <el-input placeholder="确认注销" v-model="cancelAccForm.confirm"></el-input>
+            </el-form-item>
+        </el-form>
+    </div>
+    <el-button type="danger" :disabled="cancelAccForm.confirm !== '确认注销'">注销账户</el-button>
+</template>
+<script lang="ts" setup>
+import { reactive, ref } from 'vue'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import { POST } from '@/scripts/Axios'
+import router from '@/router'
+
+interface CancelAccForm {
+    confirm: string
+} // 验证表单接口
+
+const cancelAccForm = reactive<CancelAccForm>({
+  confirm: ''
+})
+
+const validateConfirm = (rule: any, value: any, callback: any) => { // 验证密码
+  if (value === '') {
+    callback(new Error('请输入“确认注销”以抹除账户'))
+  } else if (value !== '确认注销') {
+    callback(new Error('请输入“确认注销”以抹除账户'))
+  } else {
+    callback()
+  }
+}
+
+const cancelAccRules = reactive<FormRules>({
+  confirm: [
+    { required: true, validator: validateConfirm, trigger: 'blur' }
+  ]
+})
+
+const cancelAccFormRef = ref<FormInstance>()
+
+</script>
+<style scoped>
+.cancel-confirm-form {
+  display: flex;
+  justify-content: center;
+  margin: 100px 50px 0 0;
+}
+.cancel-confirm-form /deep/ .el-form-item__content {
+  justify-content: center;
+}
+.cancel-input {
+  width: 400px;
+}
+.cancel-input /deep/ .el-input__inner {
+  text-align: center;
+}
+.cancel-items {
+  margin: 0 0 30px 30px;
+  align-items: center;
+}
+</style>

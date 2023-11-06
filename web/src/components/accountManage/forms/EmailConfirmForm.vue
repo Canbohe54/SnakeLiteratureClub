@@ -148,10 +148,11 @@ const emailChangeRules = reactive<FormRules<ConfirmEmail>>({ // 表单验证规�
 }
 
 .signed-text {
-    margin: 0 10px;
+    margin: 0 0 0 10px;
 }
 
 .signed-email {
+    margin: 0 10px;
     font-weight: bold;
 }
 .loginBottom {

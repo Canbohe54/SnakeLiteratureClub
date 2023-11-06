@@ -56,6 +56,7 @@ const userInfo = reactive({
   identity: store.state.userInfo.identity,
   introduction: store.state.userInfo.introduction
 })
+// 缓存，点击提交后，通过后端修改，返回数据到store修改
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
 
 const stuGrade = ref('九年级') // 学生年级

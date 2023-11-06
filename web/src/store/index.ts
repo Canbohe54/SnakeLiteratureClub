@@ -8,7 +8,7 @@ export default createStore({
       identity: '专家',
       unit: 'South China Normal University',
       introduction: '这个人很懒，什么都没有留下~',
-      email: 'Canbohe54@snakeliterature.club',
+      email: 'Canbohe54@snake.club',
       avatar: 'https://avatars.githubusercontent.com/u/43968296'
     }
   },

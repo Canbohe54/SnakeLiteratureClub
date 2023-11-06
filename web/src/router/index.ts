@@ -69,6 +69,10 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: 'verify',
             component: () => import('../components/accountManage/forms/PasswdConfirmForm.vue')
+          },
+          {
+            path: 'change',
+            component: () => import('../components/accountManage/forms/PasswdChangeForm.vue')
           }
         ]
       },
@@ -83,8 +87,27 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: 'confirm',
             component: () => import('../components/accountManage/forms/EmailConfirmForm.vue')
+          },
+          {
+            path: 'cancel',
+            component: () => import('../components/accountManage/forms/CancelAccForm.vue')
           }
         ]
+      }
+    ]
+  },
+  {
+    path: '/forget',
+    name: 'forget-passwd',
+    component: () => import('../views/ForgetPasswdView.vue'),
+    children: [
+      {
+        path: 'verify',
+        component: () => import('../components/accountManage/forms/EmailConfirmForm.vue')
+      },
+      {
+        path: 'change',
+        component: () => import('../components/accountManage/forms/PasswdChangeForm.vue')
       }
     ]
   },
