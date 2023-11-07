@@ -3,7 +3,8 @@ package com.snach.literatureclub.utils;
 import java.util.Random;
 
 public class IdTools {
-    private static final String code = "WLJwjm8F6iySOH2aXvK4RnZ1Nkbel93cQoYgzGE0rChVIMdDTPs5UAfqt7uBxp";
+    private static final String code62 = "WLJwjm8F6iySOH2aXvK4RnZ1Nkbel93cQoYgzGE0rChVIMdDTPs5UAfqt7uBxp";
+    private static final String code10 = "0123456789";
     private static final Random random = new Random();
 
     public enum Type {
@@ -25,23 +26,31 @@ public class IdTools {
         }
     }
 
-    public synchronized static String randomStringGen(int length) {
+    public synchronized static String randomStringGen62(int length) {
         StringBuilder randStr = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            randStr.append(code.charAt(random.nextInt(code.length())));
+            randStr.append(code62.charAt(random.nextInt(code62.length())));
+        }
+        return randStr.toString();
+    }
+
+    public synchronized static String randomStringGen10(int length) {
+        StringBuilder randStr = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            randStr.append(code10.charAt(random.nextInt(code10.length())));
         }
         return randStr.toString();
     }
 
     public static String numberConvert(long timeStamp) {
         StringBuilder stamp = new StringBuilder();
-        while (timeStamp >= code.length()) {
-            stamp.append(code.charAt((int) (timeStamp % code.length())));
-            timeStamp = timeStamp / code.length();
+        while (timeStamp >= code62.length()) {
+            stamp.append(code62.charAt((int) (timeStamp % code62.length())));
+            timeStamp = timeStamp / code62.length();
         }
-        stamp.append(code.charAt((int) (timeStamp % code.length())));
+        stamp.append(code62.charAt((int) (timeStamp % code62.length())));
         stamp.reverse();
-        stamp.append(randomStringGen(4));
+        stamp.append(randomStringGen62(4));
         return stamp.toString();
     }
 

@@ -32,7 +32,7 @@ public class VerifyingCodeTools {
     }
 
     public static boolean sendVerifyingCode(String mail) {
-        String vCode = randomStringGen(6);
+        String vCode = randomStringGen10(6);
         Jedis jedis = jedispool.getResource();
         jedis.set(mail, vCode);
         jedis.expire(mail, 600);

@@ -175,11 +175,13 @@ class UserServiceImpl implements UserService {
         if (userDao.existEmail(email) == 0) {
             response.put("statusMsg", "Nonexistent");
         } else {
-            if (userDao.login(email, password) == null) {
+            User user = userDao.login(email, password);
+            if (user == null) {
                 response.put("statusMsg", "Password error.");
             } else {
                 response.put("statusMsg", "Success.");
-                response.put("token", tokenGen(userDao.login(email, password)));
+                response.put("token", tokenGen(user));
+                response.put("userInfo", user.safeGetUserInfo());
             }
         }
         return response;

@@ -3,6 +3,9 @@ package com.snach.literatureclub.bean;
 import lombok.*;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * name 用户名
@@ -39,5 +42,20 @@ public class User implements Serializable {
         this.organization = organization;
         this.pictureUrl = pictureUrl;
         this.attr = attr;
+    }
+
+    public Map<String, Object> safeGetUserInfo() {
+        Map<String, Object> userInfo = new HashMap<>();
+        for (Field field : User.class.getDeclaredFields()) {
+            if (!field.getName().equalsIgnoreCase("password")) {
+                try {
+                    field.setAccessible(true);
+                    userInfo.put(field.getName(), field.get(this));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return userInfo;
     }
 }
