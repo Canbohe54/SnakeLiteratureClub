@@ -9,9 +9,9 @@
         </template>
         <template #content><!--菜单栏-->
           <div class="nav-content">
-            <el-menu :default-active=null class="el-menu-demo" mode="horizontal" :ellipsis="false" @select="handleSelect">
+            <el-menu :default-active=null class="el-menu-demo nav-menu" mode="horizontal" :ellipsis="false" @select="handleSelect">
               <div class="flex-grow"></div>
-              <el-menu-item index="1">文学大厅</el-menu-item>
+              <el-menu-item index="1" class="nav-menu-option">文学大厅</el-menu-item>
               <!-- <el-sub-menu index="2">
             <template #title>Workspace</template>
             <el-menu-item index="2-1">item one</el-menu-item>
@@ -71,7 +71,7 @@
     </div>
   </el-affix>
 </template>
-<style>
+<style scoped>
 .header-display {
   /*头部*/
   border-bottom: 1px solid var(--el-border-color);
@@ -137,11 +137,17 @@
   align-items: center;
 }
 
-.el-menu--horizontal.el-menu { /*取消菜单栏下边框*/
+.nav-menu { /*取消菜单栏下边框*/
   border-bottom: none !important;
   text-decoration: none;
 }
-
+.nav-menu-option:hover {
+  color: var(--el-menu-hover-text-color)!important;
+  background-color: var(--el-menu-bg-color)!important;
+}
+.nav-menu-option:focus {
+  background-color: var(--el-menu-bg-color)!important;
+}
 .el-dropdown-link:focus {
   outline: none;
 }
@@ -196,7 +202,7 @@ const identityTagType = (userIdentity: string) => {
 }
 
 const userTagType = ref(identityTagType(userInfo.identity))
-const userInfoRedirect = ref(userInfo.identity === '未登录' ? '/login' : '/')
+const userInfoRedirect = ref(userInfo.identity === '未登录' ? '/login' : '/user')
 // 未登录则跳转到登录页面，已登录则跳转到个人信息页面 未完成
 
 // 下拉菜单部分
@@ -206,7 +212,7 @@ const handleDropdownCommand = (command: string | number | object) => {
       router.push('/login')
       break
     case 'userCenter':
-      router.push('/userCenter')
+      router.push('/user')
       break
     case 'accManage':
       router.push('/account/info')
