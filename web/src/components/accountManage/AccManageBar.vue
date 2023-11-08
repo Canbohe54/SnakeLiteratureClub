@@ -5,22 +5,22 @@
         class="el-menu-vertical-demo"
         @open="handleOpen"
         @close="handleClose"
-        default-active="1"
+        :default-active="menuDefaultAct"
         router
       >
-      <el-menu-item index="1" class="acc-bar-menu-item" route="/account/info">
+      <el-menu-item index="info" class="acc-bar-menu-item" route="/account/info">
           <el-icon><icon-user /></el-icon>
           <span>用户信息</span>
         </el-menu-item>
-        <el-menu-item index="2" class="acc-bar-menu-item" route="/account/email/info">
+        <el-menu-item index="email" class="acc-bar-menu-item" route="/account/email/info">
           <el-icon><icon-email /></el-icon>
           <span>绑定邮箱</span>
         </el-menu-item>
-        <el-menu-item index="3" class="acc-bar-menu-item" route="/account/password/verify">
+        <el-menu-item index="password" class="acc-bar-menu-item" route="/account/password/verify">
           <el-icon><icon-lock /></el-icon>
           <span>修改密码</span>
         </el-menu-item>
-        <el-menu-item index="4" class="acc-bar-menu-item" route="/account/cancel/verify">
+        <el-menu-item index="cancel" class="acc-bar-menu-item" route="/account/cancel/verify">
           <el-icon><icon-circle-close /></el-icon>
           <span>注销账户</span>
         </el-menu-item>
@@ -53,10 +53,14 @@ import {
   Message as IconEmail,
   CircleClose as IconCircleClose
 } from '@element-plus/icons-vue'
+import { reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
 const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
+const route = useRoute()
+const menuDefaultAct = ref(route.path.split('/')[2])
 </script>
