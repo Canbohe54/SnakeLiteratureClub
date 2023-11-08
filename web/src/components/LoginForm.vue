@@ -23,7 +23,10 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { checkPasswordRule } from './uiScripts/CheckPassword'
 import { POST } from '@/scripts/Axios'
 import router from '@/router'
+import { useStore } from "vuex";
 // do not use same name with ref!!!
+
+const store = useStore()
 
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
 
@@ -89,10 +92,11 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
       console.log('submit!')
       POST('/usr/login', { email: loginRuleForm.email, password: loginRuleForm.passwd }, (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
+          console.log(response.data)
+          store.commit('setToken', response.data.token)
+          store.commit('setUserInfo', response.data.userInfo)
           ElMessage.success('登录成功')
           router.push('/')
-          // TODO: store token
-          console.log(response.data.token)
         } else {
           console.log(response.data.statusMsg)
         }

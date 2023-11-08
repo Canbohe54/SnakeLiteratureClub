@@ -1,4 +1,4 @@
-import { createStore } from 'vuex'
+import {createStore} from 'vuex'
 
 export default createStore({
   state: {
@@ -26,6 +26,17 @@ export default createStore({
     },
     setUserInfo: (state, userInfo) => {
       state.userInfo = userInfo
+    },
+    clear: state => {
+      state.token = ''
+      state.userInfo = {
+        name: '',
+        identity: '',
+        unit: '',
+        introduction: '',
+        email: '',
+        avatar: ''
+      }
     }
   },
   actions: {

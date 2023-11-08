@@ -9,7 +9,7 @@
     <div class="passwd-confirm-form">
       <el-form label-width="80px" label-position="top" size="large">
         <el-form-item label="请输入密码" class="confirm-passwd">
-          <el-input v-model="confirmPasswd.passwd"></el-input>
+          <el-input v-model="confirmPasswd.passwd" show-password></el-input>
         </el-form-item>
       </el-form>
       <div class="loginBottom">

@@ -26,7 +26,7 @@
           </el-sub-menu> -->
             </el-menu><!--搜索框-->
             <div class="mt-4 search-input" v-if="route.path!=='/search'">
-              <el-input v-model="searchInput" placeholder="搜索" class="input-with-select">
+              <el-input v-model="searchInput" placeholder="搜索" class="input-with-select" @keydown.enter="handleSearch">
                 <template #append>
                   <el-button :icon="Search" type="primary" @click="handleSearch"/>
                 </template>

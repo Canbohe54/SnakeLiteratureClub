@@ -72,7 +72,15 @@ const routes: Array<RouteRecordRaw> = [
           },
           {
             path: 'change',
-            component: () => import('../components/accountManage/forms/PasswdChangeForm.vue')
+            component: () => import('../components/accountManage/forms/PasswdChangeForm.vue'),
+            beforeEnter: (to, from, next) => {
+              // TODO: 更详细的拦截规则
+              if (from.path === '/account/password/verify') {
+                next()
+              } else {
+                next(false)
+              }
+            }
           }
         ]
       },
