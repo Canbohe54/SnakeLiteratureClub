@@ -16,11 +16,6 @@ const routes: Array<RouteRecordRaw> = [
     component: LobbyView
   },
   {
-    path: '/test',
-    name: 'test',
-    component: () => import('../views/TestView.vue')
-  },
-  {
     path: '/login',
     name: 'login',
     component: () => import('../views/LoginView.vue')
