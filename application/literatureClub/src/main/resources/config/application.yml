@@ -96,3 +96,8 @@ spring:
 
 #logging:
 #  config: classpath:logback-spring.xml
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  page-size-zero: true

@@ -21,14 +21,19 @@ public class ArticleController {
     }
 
     /**
-     * 返回所有稿件的详细信息
-     * 返回格式 { articles: [#{ARTICLE},...], statusMsg: #{STRING}}
-     *
+     * 分页查询返回所有稿件的基础信息
+     * 返回格式 { articles: total: #{NUMBER}, list: [#{ARTICLE},...], statusMsg: #{STRING}}
+     * @param token 非必要参数
+     * @param pageNum 当前页数
+     * @param pageSize 页面显示条数
      * @return 所有的稿件信息的Article对象List
      */
     @RequestMapping(value = "allArticles", method = RequestMethod.GET)
-    public Map<String, Object> allArticles(@RequestParam(name = "token", required = false) String token) {
-        return articleService.getAllArticles();
+    public Map<String, Object> allArticles(@RequestParam(name = "token", required = false) String token,
+                                           @RequestParam(name = "page_num")int pageNum,
+                                           @RequestParam(name = "page_size")int pageSize) {
+
+        return articleService.getAllArticles(pageNum,pageSize);
     }
 
     /**

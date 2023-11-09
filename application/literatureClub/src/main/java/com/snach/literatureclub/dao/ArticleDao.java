@@ -81,7 +81,7 @@ public interface ArticleDao {
      *
      * @return 所有的稿件信息的Article对象List
      */
-    @Select("SELECT id, text, time, text_by, title, description, status, attr FROM article")
+    @Select("SELECT id, time, text_by as textBy, title, description, status, attr FROM article")
     List<Article> getAllArticles();
 
     /**

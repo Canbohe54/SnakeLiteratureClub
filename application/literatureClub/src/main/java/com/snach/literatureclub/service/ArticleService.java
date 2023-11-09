@@ -1,5 +1,7 @@
 package com.snach.literatureclub.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.dao.ArticleDao;
 import com.snach.literatureclub.utils.IdTools;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.snach.literatureclub.utils.TokenTools.getPayload;
@@ -82,12 +85,12 @@ public interface ArticleService {
     Map<String, Object> getArticleById(String id);
 
     /**
-     * 返回所有稿件的详细信息
+     * 返回所有稿件的基础信息
      * 返回格式 { articles: [#{ARTICLE},...], statusMsg: #{STRING}}
      *
      * @return 所有的稿件信息的Article对象List
      */
-    Map<String, Object> getAllArticles();
+    Map<String, Object> getAllArticles(int pageNum,int pageSize);
 
     /**
      * 根据关键词搜索稿件
@@ -219,7 +222,7 @@ class ArticleServiceImpl implements ArticleService {
             return res;
         }
         articleDao.deleteArticleById(id);
-        res.put("statusMsg", "success.");
+        res.put("statusMsg", "Success.");
         return res;
     }
 
@@ -227,7 +230,7 @@ class ArticleServiceImpl implements ArticleService {
     public Map<String, Object> getContributorArticles(String contributor_id) {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put("articles", articleDao.getArticleByContributorId(contributor_id));
-        res.put("statusMsg", "success.");
+        res.put("statusMsg", "Success.");
         return res;
     }
 
@@ -235,15 +238,19 @@ class ArticleServiceImpl implements ArticleService {
     public Map<String, Object> getArticleById(String id) {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put("article", articleDao.getArticleById(id));
-        res.put("statusMsg", "success.");
+        res.put("statusMsg", "Success.");
         return res;
     }
 
     @Override
-    public Map<String, Object> getAllArticles() {
+    public Map<String, Object> getAllArticles(int pageNum,int pageSize) {
         Map<String, Object> res = new HashMap<String, Object>();
-        res.put("article", articleDao.getAllArticles());
-        res.put("statusMsg", "success.");
+
+        PageHelper.startPage(pageNum,pageSize);
+        PageInfo<Article> pageInfo = new PageInfo<>(articleDao.getAllArticles());
+//        List<Article> articles = articleDao.getAllArticles();
+        res.put("articles", pageInfo);
+        res.put("statusMsg", "Success.");
         return res;
     }
 
@@ -255,7 +262,7 @@ class ArticleServiceImpl implements ArticleService {
         } else {
             res.put("res", articleDao.getArticlesByKeywordAndTag(keyword, tag));
         }
-        res.put("statusMsg", "ok");
+        res.put("statusMsg", "Success");
         return res;
     }
 }

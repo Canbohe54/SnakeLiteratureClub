@@ -1,6 +1,7 @@
 package com.snach.literatureclub.bean;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import java.io.Serializable;
@@ -21,5 +22,6 @@ public class BaseText implements Serializable {
     String id;
     String text;
     Date time;
+    @JsonProperty("text_by")
     String textBy;
 }
