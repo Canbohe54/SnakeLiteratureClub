@@ -10,9 +10,8 @@
         <el-col :span="24">
           <el-card class="box-card">
             <div>
+              {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
               <h2>{{ articleInfo.title }}</h2>
-              {{ articleInfo.time }}
-              {{ articleInfo['text_by'] }}
               {{ articleInfo.description }}
             </div>
           </el-card>
@@ -23,7 +22,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="pageInfo.currentPage"
-        :page-sizes="[1, 20, 30, 40]"
+        :page-sizes="[10, 20, 30, 40]"
         :page-size="pageInfo.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="pageInfo.total">
@@ -33,11 +32,14 @@
 </template>
 <script lang="ts" setup>
 import {reactive} from "vue";
-import {POST} from "@/scripts/Axios";
+import {SYNC_GET} from "@/scripts/Axios";
+import {useStore} from "vuex";
+import {isRaw} from "@vue/composition-api";
 
+const store = useStore()
 const pageInfo = {
   currentPage: 1,
-  pageSize: 1,
+  pageSize: 10,
   total: 10,
 }
 let articleList = reactive({
@@ -56,16 +58,36 @@ function handleCurrentChange(newPage: any) {
   pageInfo.currentPage = newPage
   getArticleList()
 }
+async function getTextBy(artList: any) {
+  await Promise.all(
+    artList.map(async (item: any) => {
+      await SYNC_GET("/usr/getUserBasicInfo",{
+        user_id:item.text_by
+      },response => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.'){
+          item.text_by = response.data.user_info.name
+        } else {
+          console.log(response)
+        }
+      })
+    })
+  )
 
-function getArticleList() {
-  POST("/article/allArticles", {page_num: pageInfo.currentPage, page_size: pageInfo.pageSize}, (response) => {
-    if ((response.status === 200 || response.status === 0) && response.data.statusMsg === 'Success.') {
-      articleList.artList = response.data.articles.list;
-      pageInfo.total = response.data.articles.total;
+  articleList.artList = artList
+}
+async function getArticleList() {
+  await (SYNC_GET("/article/search", {
+    page_num: pageInfo.currentPage,
+    page_size: pageInfo.pageSize,
+    keyword: store.getters.getSearchKey
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      await getTextBy(response.data.articles.list)
+      pageInfo.total = response.data.articles.total
     } else {
       console.log(response);
     }
-  })
+  }))
 
 }
 </script>

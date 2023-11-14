@@ -4,6 +4,9 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 import { ref } from 'vue'
+import {useStore} from "vuex";
 const route = useRoute()
+const store = useStore()
 const searchWord = ref(route.query.wd)
+store.commit("setSearchKey", searchWord)
 </script>

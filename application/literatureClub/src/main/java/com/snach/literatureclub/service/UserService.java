@@ -77,6 +77,7 @@ public interface UserService {
     Map<String, Object> login(String email, String password);
 
     Map<String, Object> userSearch(String keyword);
+    Map<String,Object> getUserBasicInfo(String userId);
 }
 
 @Mapper
@@ -190,7 +191,25 @@ class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> userSearch(String keyword) {
         Map<String, Object> response = new HashMap<>();
-        response.put("res", userDao.getUsersByKeyword(keyword));
+        List<Map<String,Object>> users = new ArrayList<>();
+        for (User u:userDao.getUsersByKeyword(keyword)) {
+            users.add(u.safeGetUserInfo());
+        }
+        response.put("user_info", users);
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getUserBasicInfo(String userId) {
+        Map<String, Object> response = new HashMap<>();
+        System.out.println("_____________________"+userId);
+        User user_info = userDao.getUserById(userId);
+        if(user_info==null){
+            response.put("statusMsg", "Nonexistent");
+            return response;
+        }
+        response.put("user_info", user_info.safeGetUserInfo());
         response.put("statusMsg", "Success.");
         return response;
     }

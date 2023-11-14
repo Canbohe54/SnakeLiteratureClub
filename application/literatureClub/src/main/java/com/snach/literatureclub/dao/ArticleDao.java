@@ -100,7 +100,7 @@ public interface ArticleDao {
      * @param keyword 关键字
      * @return 所有符合条件的稿件
      */
-    @Select("SELECT id, text, time, text_by, title, description, status, attr FROM article WHERE title LIKE '%${keyword}%'")
+    @Select("SELECT id, text, time, text_by as textBy, title, description, status, attr FROM article WHERE title LIKE '%${keyword}%'")
     List<Article> getArticlesByKeyword(String keyword);
 
     /**

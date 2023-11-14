@@ -88,4 +88,4 @@ public class UserController {
     public Map<String, Object> search(@RequestParam("keyword") String keyword) {
         return userService.userSearch(keyword);
     }
-}
+   

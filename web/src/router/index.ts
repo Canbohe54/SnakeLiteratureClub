@@ -125,6 +125,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/SearchView.vue')
   },
   {
+    path: '/test',
+    name: 'test',
+    component: () => import('../views/TestView.vue')
+  },
+  {
     path: '/about',
     name: 'about',
     // route level code-splitting

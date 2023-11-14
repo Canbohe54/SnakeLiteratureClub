@@ -10,7 +10,8 @@ export default createStore({
       introduction: '这个人很懒，什么都没有留下~',
       email: 'Canbohe54@snake.club',
       avatar: 'https://avatars.githubusercontent.com/u/43968296'
-    }
+    },
+    searchKey: ''
   },
   getters: {
     getToken: state => {
@@ -18,6 +19,9 @@ export default createStore({
     },
     getUserInfo: state => {
       return state.userInfo
+    },
+    getSearchKey: state => {
+      return state.searchKey
     }
   },
   mutations: {
@@ -26,6 +30,9 @@ export default createStore({
     },
     setUserInfo: (state, userInfo) => {
       state.userInfo = userInfo
+    },
+    setSearchKey: (state, searchKey)=>{
+      state.searchKey = searchKey
     },
     clear: state => {
       state.token = ''

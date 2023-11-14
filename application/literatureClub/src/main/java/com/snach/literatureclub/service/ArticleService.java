@@ -249,7 +249,7 @@ class ArticleServiceImpl implements ArticleService {
 
         PageHelper.startPage(pageNum,pageSize);
         PageInfo<Article> pageInfo = new PageInfo<>(articleDao.getAllArticles());
-//        List<Article> articles = articleDao.getAllArticles();
+
         res.put("articles", pageInfo);
         res.put("statusMsg", "Success.");
         return res;
@@ -260,11 +260,11 @@ class ArticleServiceImpl implements ArticleService {
         Map<String, Object> res = new HashMap<>();
         PageHelper.startPage(pageNum,pageSize);
         if (tag == null) {
-            res.put("res", articleDao.getArticlesByKeyword(keyword));
+            res.put("articles", new PageInfo<>(articleDao.getArticlesByKeyword(keyword)));
         } else {
-            res.put("res", articleDao.getArticlesByKeywordAndTag(keyword, tag));
+            res.put("articles", new PageInfo<>(articleDao.getArticlesByKeywordAndTag(keyword, tag)));
         }
-        res.put("statusMsg", "Success");
+        res.put("statusMsg", "Success.");
         return res;
     }
 }
