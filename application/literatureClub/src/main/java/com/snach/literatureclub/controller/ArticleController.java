@@ -50,7 +50,9 @@ public class ArticleController {
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public Map<String, Object> articleSearch(@RequestParam(value = "keyword") String keyword,
-                                             @RequestParam(value = "tag", required = false) String tag) {
-        return articleService.searchArticle(keyword, tag);
+                                             @RequestParam(value = "tag", required = false) String tag,
+                                             @RequestParam(name = "page_num")int pageNum,
+                                             @RequestParam(name = "page_size")int pageSize) {
+        return articleService.searchArticle(keyword, tag,pageNum,pageSize);
     }
 }

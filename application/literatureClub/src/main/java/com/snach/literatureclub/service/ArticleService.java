@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.snach.literatureclub.utils.TokenTools.getPayload;
@@ -95,10 +94,12 @@ public interface ArticleService {
     /**
      * 根据关键词搜索稿件
      *
-     * @param keyword 关键词
+     * @param keyword  关键词
+     * @param pageNum
+     * @param pageSize
      * @return 搜索到的所有稿件信息 返回格式{ articles: [#{Article}, ...], statusMsg: #{String} }
      */
-    Map<String, Object> searchArticle(String keyword, String tag);
+    Map<String, Object> searchArticle(String keyword, String tag,int pageNum,int pageSize);
 }
 
 @Service
@@ -255,8 +256,9 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Map<String, Object> searchArticle(String keyword, String tag) {
+    public Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize) {
         Map<String, Object> res = new HashMap<>();
+        PageHelper.startPage(pageNum,pageSize);
         if (tag == null) {
             res.put("res", articleDao.getArticlesByKeyword(keyword));
         } else {
