@@ -1,34 +1,38 @@
 <template>
+  <el-row>
+    <el-col :span="18" :offset="3">
 
-  <div>
-    <el-card class="box-card">
-      <el-row v-for="(articleInfo,index) in articleList.artList"
-              :key="index"
-              :span="8"
-              :gutter="24"
-              :offset="index > 0 ? 2 : 0">
-        <el-col :span="24">
-          <el-card class="box-card">
-            <div>
-              {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
-              <h2>{{ articleInfo.title }}</h2>
-              {{ articleInfo.description }}
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
+      <div>
+        <el-card class="box-card">
+          <el-row v-for="(articleInfo,index) in articleList.artList"
+                  :key="index"
+                  :span="8"
+                  :gutter="24"
+                  :offset="index > 0 ? 2 : 0">
+            <el-col :span="24">
+              <el-card class="box-card">
+                <div>
+                  {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
+                  <h2>{{ articleInfo.title }}</h2>
+                  {{ articleInfo.description }}
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
 
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pageInfo.currentPage"
-        :page-sizes="[10, 20, 30, 40]"
-        :page-size="pageInfo.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pageInfo.total">
-      </el-pagination>
-    </el-card>
-  </div>
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="pageInfo.currentPage"
+            :page-sizes="[10, 20, 30, 40]"
+            :page-size="pageInfo.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pageInfo.total">
+          </el-pagination>
+        </el-card>
+      </div>
+    </el-col>
+  </el-row>
 </template>
 <script lang="ts" setup>
 import {reactive} from "vue";
@@ -58,13 +62,14 @@ function handleCurrentChange(newPage: any) {
   pageInfo.currentPage = newPage
   getArticleList()
 }
+
 async function getTextBy(artList: any) {
   await Promise.all(
     artList.map(async (item: any) => {
-      await SYNC_GET("/usr/getUserBasicInfo",{
-        user_id:item.text_by
-      },response => {
-        if (response.status === 200 && response.data.statusMsg === 'Success.'){
+      await SYNC_GET("/usr/getUserBasicInfo", {
+        user_id: item.text_by
+      }, response => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
           item.text_by = response.data.user_info.name
         } else {
           console.log(response)
@@ -75,6 +80,7 @@ async function getTextBy(artList: any) {
 
   articleList.artList = artList
 }
+
 async function getArticleList() {
   await (SYNC_GET("/article/search", {
     page_num: pageInfo.currentPage,

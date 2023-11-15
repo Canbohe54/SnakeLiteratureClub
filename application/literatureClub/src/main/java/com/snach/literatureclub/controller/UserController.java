@@ -88,4 +88,8 @@ public class UserController {
     public Map<String, Object> search(@RequestParam("keyword") String keyword) {
         return userService.userSearch(keyword);
     }
-   
+    @RequestMapping(value = "getUserBasicInfo",method = RequestMethod.GET)
+    public Map<String,Object> getUserBasicInfo(@RequestParam("user_id")String userId){
+        return userService.getUserBasicInfo(userId);
+    }
+}
