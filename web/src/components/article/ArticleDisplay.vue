@@ -4,6 +4,7 @@
 
       <div>
         <el-card class="box-card">
+          <el-empty v-if="articleList.artList" description="暂无结果" />
           <el-row v-for="(articleInfo,index) in articleList.artList"
                   :key="index"
                   :span="8"
@@ -35,38 +36,38 @@
   </el-row>
 </template>
 <script lang="ts" setup>
-import {reactive} from "vue";
-import {SYNC_GET} from "@/scripts/Axios";
-import {useStore} from "vuex";
-import {isRaw} from "@vue/composition-api";
+import { reactive } from 'vue'
+import { SYNC_GET } from '@/scripts/Axios'
+import { useStore } from 'vuex'
+import { isRaw } from '@vue/composition-api'
 
 const store = useStore()
 const pageInfo = {
   currentPage: 1,
   pageSize: 10,
-  total: 10,
+  total: 10
 }
-let articleList = reactive({
+const articleList = reactive({
   artList: []
 })
 getArticleList()
 
 // 监听 page size 改变的事件
-function handleSizeChange(newSize: any) {
+function handleSizeChange (newSize: any) {
   pageInfo.pageSize = newSize
   getArticleList()
 }
 
 // 监听 页码值 改变的事件
-function handleCurrentChange(newPage: any) {
+function handleCurrentChange (newPage: any) {
   pageInfo.currentPage = newPage
   getArticleList()
 }
 
-async function getTextBy(artList: any) {
+async function getTextBy (artList: any) {
   await Promise.all(
     artList.map(async (item: any) => {
-      await SYNC_GET("/usr/getUserBasicInfo", {
+      await SYNC_GET('/usr/getUserBasicInfo', {
         user_id: item.text_by
       }, response => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
@@ -81,8 +82,8 @@ async function getTextBy(artList: any) {
   articleList.artList = artList
 }
 
-async function getArticleList() {
-  await (SYNC_GET("/article/search", {
+async function getArticleList () {
+  await (SYNC_GET('/article/search', {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
     keyword: store.getters.getSearchKey
@@ -91,9 +92,8 @@ async function getArticleList() {
       await getTextBy(response.data.articles.list)
       pageInfo.total = response.data.articles.total
     } else {
-      console.log(response);
+      console.log(response)
     }
   }))
-
 }
 </script>

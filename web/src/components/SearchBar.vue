@@ -21,10 +21,10 @@
 
 </template>
 <script lang="ts" setup>
-import {useRoute, useRouter} from 'vue-router'
-import {ref} from 'vue'
-import {useStore} from "vuex";
-import {Search} from "@element-plus/icons-vue";
+import { useRoute, useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { useStore } from 'vuex'
+import { Search } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const store = useStore()
@@ -33,15 +33,15 @@ const searchWord = ref(route.query.wd)
 
 const handleSearch = async () => {
   if (searchWord.value !== '' && searchWord.value !== undefined) {
-    router.push({path: '/search', query: {wd: searchWord.value}})
+    router.push({ path: '/search', query: { wd: searchWord.value } })
   } else {
-    router.push({path: '/search'})
+    router.push({ path: '/search' })
   }
 }
-store.commit("setSearchKey", searchWord)
+store.commit('setSearchKey', searchWord)
 
 </script>
-<style>
+<style scoped>
 .search-input {
   margin: 20px 0 20px 0;
   padding: 5px 0 5px 3px;
@@ -55,5 +55,9 @@ store.commit("setSearchKey", searchWord)
 
 .search-input-text input {
   font-size: 20px !important;
+}
+
+.search-input-text /deep/ .el-input-group__append {
+  background-color: white;
 }
 </style>

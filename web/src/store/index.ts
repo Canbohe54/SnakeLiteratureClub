@@ -1,4 +1,4 @@
-import {createStore} from 'vuex'
+import { createStore } from 'vuex'
 
 export default createStore({
   state: {
@@ -31,7 +31,7 @@ export default createStore({
     setUserInfo: (state, userInfo) => {
       state.userInfo = userInfo
     },
-    setSearchKey: (state, searchKey)=>{
+    setSearchKey: (state, searchKey) => {
       state.searchKey = searchKey
     },
     clear: state => {
