@@ -1,10 +1,9 @@
 <template>
   <el-row>
     <el-col :span="18" :offset="3">
-
       <div>
         <el-card class="box-card">
-          <el-empty v-if="articleList.artList" description="暂无结果" />
+          <el-empty v-if="articleList.artList.length === 0" description="暂无结果" />
           <el-row v-for="(articleInfo,index) in articleList.artList"
                   :key="index"
                   :span="8"
