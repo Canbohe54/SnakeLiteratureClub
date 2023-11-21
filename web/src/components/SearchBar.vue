@@ -38,7 +38,6 @@ const handleSearch = async () => {
     router.push({ path: '/search' })
   }
 }
-store.commit('setSearchKey', searchWord)
 
 </script>
 <style scoped>

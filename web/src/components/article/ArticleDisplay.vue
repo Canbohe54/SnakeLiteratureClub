@@ -35,12 +35,15 @@
   </el-row>
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { reactive, watch, ref } from 'vue'
 import { SYNC_GET } from '@/scripts/Axios'
 import { useStore } from 'vuex'
-import { isRaw } from '@vue/composition-api'
+import {useRoute} from "vue-router";
 
 const store = useStore()
+const route = useRoute()
+//不知道为什么不能监听searcWord
+// const searchWord = ref(route.query.wd)
 const pageInfo = {
   currentPage: 1,
   pageSize: 10,
@@ -51,6 +54,9 @@ const articleList = reactive({
 })
 getArticleList()
 
+watch(() => route.query.wd, () => {
+  getArticleList()
+})
 // 监听 page size 改变的事件
 function handleSizeChange (newSize: any) {
   pageInfo.pageSize = newSize
@@ -85,7 +91,7 @@ async function getArticleList () {
   await (SYNC_GET('/article/search', {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
-    keyword: store.getters.getSearchKey
+    keyword: route.query.wd
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       await getTextBy(response.data.articles.list)
