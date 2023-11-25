@@ -10,7 +10,7 @@
                   :gutter="24"
                   :offset="index > 0 ? 2 : 0">
             <el-col :span="24">
-              <el-card class="box-card">
+              <el-card class="box-card" @click='gotoDetail(articleInfo.id)' >
                 <div>
                   {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
                   <h2>{{ articleInfo.title }}</h2>
@@ -39,6 +39,7 @@ import { reactive, watch, ref } from 'vue'
 import { SYNC_GET } from '@/scripts/Axios'
 import { useStore } from 'vuex'
 import {useRoute} from "vue-router";
+import router from "@/router";
 
 const store = useStore()
 const route = useRoute()
@@ -100,5 +101,13 @@ async function getArticleList () {
       console.log(response)
     }
   }))
+}
+function gotoDetail (articleId : any) {
+  console.log(articleId)
+  if (articleId !== '' && articleId !== undefined) {
+    router.push({path: '/articleDetail', query: {article_id: articleId}})
+  }else{
+    router.push({path: '/articleNotFound'})
+  }
 }
 </script>
