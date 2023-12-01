@@ -4,7 +4,7 @@
             <el-input placeholder="请输入邮箱" v-model="loginRuleForm.email" />
         </el-form-item>
         <el-form-item label="密码" prop="passwd">
-            <el-input tpye="password" placeholder="请输入密码" show-password v-model="loginRuleForm.passwd" />
+            <el-input type="password" placeholder="请输入密码" show-password v-model="loginRuleForm.passwd" />
         </el-form-item>
     </el-form>
     <div class="loginBottom">
