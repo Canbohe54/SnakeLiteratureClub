@@ -38,9 +38,9 @@ const articleDetail: AttributeAddableObject = reactive({
   attr: ''
 });
 
-const value1 = ref(null)
-const value2 = ref(null)
-const value3 = ref(null)
+const value1 = ref(0)
+const value2 = ref(0)
+const value3 = ref(0)
 const colors = ref(['#99A9BF', '#F7BA2A', '#FF9900']) // same as { 2: '#99A9BF', 4: { value: '#F7BA2A', excluded: true }, 5: '#FF9900' }
 
 const input = ref('')
@@ -82,11 +82,11 @@ const save = async () => {
   //to do:获取token测试
   await SYNC_POST("/grade/add", {
     token: store.getters.getToken,
-    article_id: articleDetail.id,
+    article_id: route.query.id,
     expert_id: store.getters.getUserInfo.id,
-    grade_expr: value1,
-    grade_struct: value2,
-    grade_theme: value3,
+    grade_expr: value1.value,
+    grade_struct: value2.value,
+    grade_theme: value3.value,
     advice: input,
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'success') {

@@ -1,12 +1,19 @@
 <template>
   <el-row>
     <el-col :span="18" :offset="3">
-
+      <el-input
+        v-model="articleDetail.title"
+        :rows="20"
+        :autosize="{ minRows: 1, maxRows: 3}"
+        type="textarea"
+        placeholder="请输入标题"
+      />
       <el-input
           v-model="articleDetail.text"
           :rows="20"
+          :autosize="{ minRows: 10, maxRows: 20}"
           type="textarea"
-          placeholder="请输入文本"
+          placeholder="请输入正文"
       />
 
       <SearchFilter />
