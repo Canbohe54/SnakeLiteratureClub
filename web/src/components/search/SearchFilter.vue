@@ -1,5 +1,5 @@
 <template>
-  <div class="filterBox">
+  <div class="filterBox filterBox-shadow">
     <el-row class="filterGroup" v-for="(group, groupKey) in filterTagGroups">
       <el-col :span="3">
         <el-text class="checkboxGroupName">{{ groupKey }}</el-text>
@@ -18,7 +18,7 @@
 import { ref } from 'vue'
 import { AttributeAddableObject } from '@/scripts/ArticleTagFilter'
 
-let filterTagGroups = {'group-A': ['A-filter', 'B-fil', 'C-fil', 'D-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil'], 'group-B': ['D-fil', 'E-fil']}
+const filterTagGroups = { 'group-A': ['A-filter', 'B-fil', 'C-fil', 'D-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil'], 'group-B': ['D-fil', 'E-fil'] }
 
 const filterSelection: AttributeAddableObject = ref({});
 
@@ -29,10 +29,10 @@ const filterSelection: AttributeAddableObject = ref({});
   for (const filter in filterTagGroups) {
     filterSelection.value[filter] = []
   }
-})();
+})()
 
 function loadSelection (attr: AttributeAddableObject<string[]>) {
-  let select = attr['tags']
+  const select = attr.tags
   for (const group in select) {
     for (const tag of select[group]) {
       filterSelection.value[group].push(tag)
@@ -52,11 +52,14 @@ defineProps({
 
 <style scoped>
 .filterBox {
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  border-radius: 5px;
+  border: 1px solid var(--el-card-border-color);
+  border-radius: 10px;
   padding-top: 5px;
   padding-bottom: 5px;
   margin-bottom: 10px;
+}
+.filterBox-shadow {
+  box-shadow: var(--el-box-shadow-light);
 }
 .filterGroup {
   margin-top: 5px;

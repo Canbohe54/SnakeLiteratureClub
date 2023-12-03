@@ -9,14 +9,14 @@
                   :span="8"
                   :gutter="24"
                   :offset="index > 0 ? 2 : 0">
-            <el-col :span="24">
-              <el-card class="box-card" @click='gotoDetail(articleInfo.id)' >
-                <div>
-                  {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
-                  <h2>{{ articleInfo.title }}</h2>
-                  {{ articleInfo.description }}
-                </div>
-              </el-card>
+            <el-col :span="24" >
+                <el-card class="box-card result-single-card" @click='gotoDetail(articleInfo.id)' >
+                  <div>
+                    {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
+                    <h2>{{ articleInfo.title }}</h2>
+                    {{ articleInfo.description }}
+                  </div>
+                </el-card>
             </el-col>
           </el-row>
 
@@ -39,12 +39,12 @@
 import { reactive, watch, ref } from 'vue'
 import { SYNC_GET } from '@/scripts/Axios'
 import { useStore } from 'vuex'
-import {useRoute} from "vue-router";
-import router from "@/router";
+import { useRoute } from 'vue-router'
+import router from '@/router'
 
 const store = useStore()
 const route = useRoute()
-//不知道为什么不能监听searcWord
+// 不知道为什么不能监听searcWord
 // const searchWord = ref(route.query.wd)
 const pageInfo = {
   currentPage: 1,
@@ -96,7 +96,7 @@ async function getArticleList () {
     page_size: pageInfo.pageSize,
     keyword: route.query.wd,
     status_list: articleStatus,
-    l:1
+    l: 1
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       await getTextBy(response.data.articles.list)
@@ -109,9 +109,9 @@ async function getArticleList () {
 function gotoDetail (articleId : any) {
   console.log(articleId)
   if (articleId !== '' && articleId !== undefined) {
-    router.push({path: '/articleDetail', query: {article_id: articleId}})
-  }else{
-    router.push({path: '/articleNotFound'})
+    router.push({ path: '/articleDetail', query: { article_id: articleId } })
+  } else {
+    router.push({ path: '/articleNotFound' })
   }
 }
 </script>
@@ -124,5 +124,11 @@ function gotoDetail (articleId : any) {
   margin: 20px 0 10px 0;
   display: flex;
   justify-content: center;
+}
+
+.result-single-card {
+  border-radius: 10px;
+  box-shadow: none;
+  margin-bottom: 10px;
 }
 </style>
