@@ -1,7 +1,4 @@
 <template>
-    <el-row>
-      <el-col :span="18" :offset="2">
-
         <div class="filterBox">
           <el-row class="filterGroup" v-for="(group, groupKey) in filterTagGroups">
             <el-col :span="3">
@@ -14,16 +11,13 @@
             </el-col>
           </el-row>
         </div>
-
-      </el-col>
-    </el-row>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { AttributeAddableObject } from '@/scripts/ArticleTagFilter'
 
-let filterTagGroups = {'group-A': ['A-filter', 'B-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil'], 'group-B': ['D-fil', 'E-fil']}
+let filterTagGroups = {'group-A': ['A-filter', 'B-fil', 'C-fil', 'D-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil'], 'group-B': ['D-fil', 'E-fil']}
 
 const filterSelection: AttributeAddableObject = ref({});
 
@@ -43,10 +37,11 @@ function onChange() {
 
 <style scoped>
 .filterBox {
-  border-radius: 20px;
-  border: 2px solid royalblue;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
   padding-top: 5px;
   padding-bottom: 5px;
+  margin-bottom: 10px;
 }
 .filterGroup {
   margin-top: 5px;
@@ -54,16 +49,18 @@ function onChange() {
 }
 .checkboxGroupName {
   text-align: center;
-  line-height: 30px;
+  line-height: 40px;
   float: right;
   padding-right: 25%;
 }
 .checkboxGroup {
-  border-left: 3px solid blueviolet;
+  text-align: left;
+  border-left: 3px solid #76b7c2;
   padding-left: 3%;
   float: left;
 }
 .checkboxGroup :deep(.is-checked) {
+  border-color: rgba(185, 161, 203, 0.7);
   background-color: rgba(66, 185, 131, 0.5);
 }
 .checkboxButton :deep(.el-checkbox-button__inner) {
@@ -73,12 +70,10 @@ function onChange() {
   box-shadow: none !important;
 }
 .checkboxButton {
-  --el-checkbox-button-checked-text-color: #b82020;
-  margin-bottom: 10px;
-  margin-left: 0;
-  margin-right: 25px;
+  --el-checkbox-button-checked-text-color: #4e73a2;
+  margin: 5px 25px 5px 0;
   text-align: left;
-  border: 1px solid rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(0, 0, 0, 0.6);
   border-radius: 5px !important;
 }
 </style>

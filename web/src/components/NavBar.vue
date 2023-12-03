@@ -222,6 +222,3 @@ const handleDropdownCommand = (command: string | number | object) => {
   }
 }
 </script>
-<script>
-
-</script>

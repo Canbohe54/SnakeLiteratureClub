@@ -42,7 +42,7 @@ const handleSearch = async () => {
 </script>
 <style scoped>
 .search-input {
-  margin: 20px 0 20px 0;
+  margin: 20px 0 10px 0;
   padding: 5px 0 5px 3px;
 }
 
