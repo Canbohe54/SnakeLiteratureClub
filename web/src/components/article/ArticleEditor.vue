@@ -9,7 +9,7 @@
           placeholder="请输入文本"
       />
 
-      <!--      <search-filter />-->
+      <SearchFilter />
 
       <el-upload
           ref="upload"
@@ -21,15 +21,9 @@
           :auto-upload="false"
           :show-file-list="false"
       >
-        <template #trigger>
-          <el-button type="primary">上传文件</el-button>
-        </template>
-        <el-button class="ml-3" type="success" @click="save">
-          保存
-        </el-button>
-        <el-button class="ml-3" type="success" @click="dialogFormVisible=true">
-          发布
-        </el-button>
+        <el-button type="primary">上传文件</el-button>
+        <el-button class="3" type="success" @click="save">保存</el-button>
+        <el-button class="3" type="success" @click="dialogFormVisible=true">发布</el-button>
 
 
           <el-dialog v-model="dialogFormVisible" title="SHipping address" draggable center>
@@ -70,6 +64,7 @@ import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import {ElMessage, FormInstance} from "element-plus";
+import SearchFilter from "@/components/search/SearchFilter.vue";
 
 const upload = ref<UploadInstance>()
 const store = useStore()
