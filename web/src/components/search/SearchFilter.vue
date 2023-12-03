@@ -1,16 +1,17 @@
 <template>
-        <div class="filterBox">
-          <el-row class="filterGroup" v-for="(group, groupKey) in filterTagGroups">
-            <el-col :span="3">
-              <el-text class="checkboxGroupName">{{groupKey}}</el-text>
-            </el-col>
-            <el-col :span="21">
-              <el-checkbox-group class="checkboxGroup" tag="span" v-model="filterSelection[groupKey]" @change="onChange()" :label="groupKey">
-                <el-checkbox-button class="checkboxButton" v-for="key in group" :label="key">{{key}}</el-checkbox-button>
-              </el-checkbox-group>
-            </el-col>
-          </el-row>
-        </div>
+  <div class="filterBox">
+    <el-row class="filterGroup" v-for="(group, groupKey) in filterTagGroups">
+      <el-col :span="3">
+        <el-text class="checkboxGroupName">{{ groupKey }}</el-text>
+      </el-col>
+      <el-col :span="21">
+        <el-checkbox-group class="checkboxGroup" tag="span" v-model="filterSelection[groupKey]" @change="filterOnChange()"
+                           :label="groupKey">
+          <el-checkbox-button class="checkboxButton" v-for="key in group" :label="key">{{ key }}</el-checkbox-button>
+        </el-checkbox-group>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -30,9 +31,23 @@ const filterSelection: AttributeAddableObject = ref({});
   }
 })();
 
-function onChange() {
-  console.log(filterSelection.value)
+function loadSelection (attr: AttributeAddableObject<string[]>) {
+  let select = attr['tags']
+  for (const group in select) {
+    for (const tag of select[group]) {
+      filterSelection.value[group].push(tag)
+    }
+  }
 }
+
+defineExpose({ filterSelection, loadSelection })
+defineProps({
+  filterOnChange: {
+    type: Function,
+    required: false,
+    default: () => {}
+  }
+})
 </script>
 
 <style scoped>
@@ -61,7 +76,7 @@ function onChange() {
 }
 .checkboxGroup :deep(.is-checked) {
   border-color: rgba(185, 161, 203, 0.7);
-  background-color: rgba(66, 185, 131, 0.5);
+  background-color: rgba(66, 185, 131, 0.3);
 }
 .checkboxButton :deep(.el-checkbox-button__inner) {
   border: none !important;

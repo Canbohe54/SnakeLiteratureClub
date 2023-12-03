@@ -20,7 +20,7 @@
           placeholder="请输入正文"
       />
 
-      <SearchFilter />
+      <SearchFilter ref="SearchFilterRef"/>
 
       <el-upload
           ref="upload"
@@ -46,14 +46,12 @@
                 <el-input v-model="form.region" autocomplete="off"/>
               </el-form-item>
             </el-form>
-            <template #footer>
             <span class="dialog-footer">
               <el-button @click="dialogFormVisible = false">Cancel</el-button>
               <el-button type="primary" @click="release">
                 Confirm
               </el-button>
             </span>
-            </template>
           </el-dialog>
 
 
@@ -84,6 +82,7 @@ const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
 const formWidth = '20%'
 const formRef = ref<FormInstance>()
+const SearchFilterRef = ref()
 
 interface releaseForm {
   name: string
@@ -131,6 +130,7 @@ function errorCallback(response: any) {
       for (const dataKey in response.data.article) {
         articleDetail[dataKey] = response.data.article[dataKey]
       }
+      SearchFilterRef.value.loadSelection(JSON.parse(articleDetail['attr']))
     } else {
       errorCallback(response)
     }
