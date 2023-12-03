@@ -2,14 +2,18 @@
   <el-row>
     <el-col :span="18" :offset="3">
       <el-input
+        class="header"
         v-model="articleDetail.title"
+        maxlength="50"
+        show-word-limit
         :rows="20"
         :autosize="{ minRows: 1, maxRows: 3}"
         type="textarea"
-        placeholder="请输入标题"
+        placeholder="请输入标题（建议30字以内）"
       />
       <el-input
           v-model="articleDetail.text"
+          class="text"
           :rows="20"
           :autosize="{ minRows: 10, maxRows: 20}"
           type="textarea"
@@ -180,7 +184,7 @@ const release = async () => {
     textBy: '',
     title: articleDetail.title,
     description: articleDetail.description,
-    status: 2, //待审核
+    status: 3, //已发布
     attr: articleDetail.attr
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
@@ -198,11 +202,15 @@ const release = async () => {
 </script>
 
 
-<style>
+<style scoped>
 .upload-demo {
   margin: 20px 0;
 }
 
-
-
+.header {
+  font-size: 25px;
+}
+.text{
+  font-size: 18px;
+}
 </style>

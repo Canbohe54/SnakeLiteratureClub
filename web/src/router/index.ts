@@ -125,8 +125,8 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/SearchView.vue')
   },
   {
-    path: '/articleEdit',
-    name: 'articleEdit',
+    path: '/articleEditor',
+    name: 'articleEditor',
     component: () => import('../views/ArticleEditView.vue')
   },
   {
