@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -52,7 +53,8 @@ public class ArticleController {
     public Map<String, Object> articleSearch(@RequestParam(value = "keyword") String keyword,
                                              @RequestParam(value = "tag", required = false) String tag,
                                              @RequestParam(name = "page_num")int pageNum,
-                                             @RequestParam(name = "page_size")int pageSize) {
-        return articleService.searchArticle(keyword, tag,pageNum,pageSize);
+                                             @RequestParam(name = "page_size")int pageSize,
+                                             @RequestParam(name = "status_list")List<Integer> statusList) {
+        return articleService.searchArticle(keyword, tag,pageNum,pageSize,statusList);
     }
 }

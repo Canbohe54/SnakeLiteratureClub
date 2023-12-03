@@ -53,6 +53,7 @@ const pageInfo = {
 const articleList = reactive({
   artList: []
 })
+const articleStatus = [3]
 getArticleList()
 
 watch(() => route.query.wd, () => {
@@ -92,7 +93,9 @@ async function getArticleList () {
   await (SYNC_GET('/article/search', {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
-    keyword: route.query.wd
+    keyword: route.query.wd,
+    status_list: articleStatus,
+    l:1
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       await getTextBy(response.data.articles.list)
