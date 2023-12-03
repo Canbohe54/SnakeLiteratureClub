@@ -1,19 +1,42 @@
 <template>
-  <div class="demo-rate-block">
-    <span class="demonstration">文章评分</span>
-    <el-rate v-model="value1" size="large" :colors="colors" allow-half show-score />
-    <el-rate v-model="value2" size="large" :colors="colors" allow-half show-score />
-    <el-rate v-model="value3" size="large" :colors="colors" allow-half show-score />
-    <span class="demo2">文章评价</span>
-    <el-input v-model="input" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea" placeholder="Please input"
-              clearable maxlength="100" show-word-limit/>
+  <!-- Form -->
+    <el-button type="success" @click="() => {dialogFormVisible = true}" round>
+      评分与评价
+    </el-button>
 
-    <div><br></div>
-    <el-row class="mb-4">
-      <el-button type="upload" round @click="save">提交</el-button>
+  <el-dialog v-model="dialogFormVisible" title="评分与评价">
+    <el-form :model="form">
+      <div class="demo-rate-block">
+        <span class="demonstration">文章评分</span>
+        文字与表达：<el-rate v-model="gradeData.grade_expr" size="large" :colors="colors" show-score />
+        <br/>
+        内容与结构：<el-rate v-model="gradeData.grade_struct" size="large" :colors="colors" show-score />
+        <br/>
+        主题相关性：<el-rate v-model="gradeData.grade_theme" size="large" :colors="colors" show-score />
+        <br/>
+        <span class="demo2">文章评价</span>
+        <br/>
+        <el-input v-model="gradeData.advice" :autosize="{ minRows: 4, maxRows: 6 }" type="textarea" placeholder="Please input"
+                  clearable maxlength="100" show-word-limit/>
 
-    </el-row>
-  </div>
+        <br/>
+<!--        <el-row class="mb-4">-->
+<!--          <el-button type="cancle" round >取消</el-button>-->
+<!--          <el-button type="certain" round @click="save">确定</el-button>-->
+
+<!--        </el-row>-->
+      </div>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="() => {dialogFormVisible = false; save()}" >
+          确定
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
+
 </template>
 
 <script lang="ts" setup>
@@ -27,6 +50,19 @@ import {AttributeAddableObject} from "@/scripts/ArticleTagFilter";
 const store = useStore()
 const route = useRoute()
 
+const dialogFormVisible = ref(false)
+const formLabelWidth = '140px'
+const form = reactive({
+  name: '',
+  region: '',
+  date1: '',
+  date2: '',
+  delivery: false,
+  type: [],
+  resource: '',
+  desc: '',
+})
+
 const articleDetail: AttributeAddableObject = reactive({
   id: null,
   text: '',
@@ -38,6 +74,16 @@ const articleDetail: AttributeAddableObject = reactive({
   attr: ''
 });
 
+
+const gradeData = {
+  expert_id: '',
+  article_id: '',
+  grade_expr: ref(0),
+  grade_struct: ref(0),
+  grade_theme: ref(0),
+  grade_all: '',
+  advice: ref('')
+}
 const value1 = ref(0)
 const value2 = ref(0)
 const value3 = ref(0)
@@ -79,15 +125,16 @@ function errorCallback(response: any) {
   })
 })();
 const save = async () => {
+  console.log("save")
   //to do:获取token测试
   await SYNC_POST("/grade/add", {
     token: store.getters.getToken,
     article_id: route.query.id,
     expert_id: store.getters.getUserInfo.id,
-    grade_expr: value1.value,
-    grade_struct: value2.value,
-    grade_theme: value3.value,
-    advice: input,
+    grade_expr: gradeData.grade_expr,
+    grade_struct: gradeData.grade_struct,
+    grade_theme: gradeData.grade_theme,
+    advice: gradeData.advice,
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'success') {
       console.log("Save successfully!")
@@ -96,10 +143,29 @@ const save = async () => {
         message: 'Save successfully!',
         type: 'success',
       })
-    } else {
+    }else {
       errorCallback(response)
     }
   })
+}
+
+async function getGrade(){
+  await (SYNC_GET('/grade/getGradeByExpertIdAndArticleId', {
+    article_id: route.query.id,
+    expert_id: store.getters.getUserInfo.id,
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'success') {
+      gradeData.expert_id = response.data.expert_id;
+      gradeData.article_id = response.data.article_id;
+      gradeData.grade_expr = ref(response.data.grade_expr);
+      gradeData.grade_struct =  ref(response.data.grade_struct);
+      gradeData.grade_theme = ref(response.data.grade_theme);
+      gradeData.grade_all = response.data.grade_all;
+      gradeData.advice = ref(response.data.advice);
+    } else {
+      console.log(response)
+    }
+  }))
 }
 </script>
 
@@ -122,5 +188,18 @@ const save = async () => {
   color: var(--el-text-color-secondary);
   font-size: 14px;
   margin-bottom: 20px;
+}
+
+.el-button--text {
+  margin-right: 15px;
+}
+.el-select {
+  width: 300px;
+}
+.el-input {
+  width: 300px;
+}
+.dialog-footer button:first-child {
+  margin-right: 10px;
 }
 </style>

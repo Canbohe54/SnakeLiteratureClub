@@ -53,6 +53,14 @@ public interface GradeService {
     Map<String,Object> updateGrade(String token,String article_id,String expert_id,int grade_expr,int grade_struct,int grade_theme,String advice);
 
     /**
+     * 检查评分是否存在
+     * @param expert_id
+     * @param article_id
+     * @return 评分数
+     */
+    Map<String,Object> existGrade(String expert_id,String article_id);
+
+    /**
      * 根据稿件id获取全部评分信息
      * @param article_id 稿件id
      * @return 返回格式{grades:#{List<Grade>,statusMsg: #{STRING}}
@@ -111,7 +119,10 @@ class GradeServiceImpl implements GradeService {
             return res;
         }
         if(gradeDao.existGrade(expert_id,article_id)!=0){
-            res.put("statusMsg", "Grade exists.");
+            int grade_all = grade_expr+grade_struct+grade_theme;
+            Grade grade = new Grade(expert_id,article_id,grade_expr,grade_struct,grade_theme,grade_all,advice);
+            gradeDao.updateGrade(grade);
+            res.put("statusMsg", "update.");
             return res;
         }
         int grade_all = grade_expr+grade_struct+grade_theme;
@@ -171,6 +182,13 @@ class GradeServiceImpl implements GradeService {
         return res;
     }
 
+    @Override
+    public Map<String,Object> existGrade(String expert_id,String article_id){
+        Map<String, Object> res = new HashMap<String, Object>();
+        res.put("num", gradeDao.existGrade(expert_id,article_id));
+        res.put("statusMsg", "success");
+        return res;
+    }
     @Override
     public Map<String, Object> getGradeByArticle_id(String article_id) {
         Map<String, Object> res = new HashMap<String, Object>();

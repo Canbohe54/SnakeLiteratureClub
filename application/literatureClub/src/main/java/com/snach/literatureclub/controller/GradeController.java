@@ -42,6 +42,10 @@ public class GradeController {
                                        @RequestParam("advice") String advice){
         return gradeService.updateGrade(token,article_id,expert_id,grade_expr,grade_struct,grade_theme,advice);
     }
+    @RequestMapping("exist")
+    public Map<String,Object> existGrade(String expert_id,String article_id){
+        return gradeService.existGrade(expert_id,article_id);
+    }
 
     @RequestMapping("getGradeByArticleId")
     public Map<String,Object> getGradeByArticleId(@RequestParam("article_id") String article_id){
