@@ -37,6 +37,9 @@
 
         <template #extra>
           <div class="nav-extra">
+            <div v-if="userInfo.identity === '学生'" class="nav-contribute">
+            <el-button type="primary" class="mr-2" plain><el-icon><Upload /></el-icon>&nbsp;投稿文章</el-button>
+          </div>
             <div class="flex items-center"><!--用户信息设置栏-->
               <el-dropdown @command="handleDropdownCommand">
                 <router-link :to="userInfoRedirect" class="user-info-link">
@@ -106,6 +109,12 @@
   border-bottom-left-radius: 0;
 }
 
+.nav-contribute {
+  /*投稿按钮*/
+  margin: 0 30px 0 0;
+  display: flex;
+}
+
 .nav-extra {
   display: flex;
   align-items: center;
@@ -158,7 +167,8 @@ import { reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 // const activeIndex = ref('2')
 import { useRoute, useRouter } from 'vue-router'
-import { Search } from '@element-plus/icons-vue'
+import { Search, Upload } from '@element-plus/icons-vue'
+import { el } from 'element-plus/es/locale'
 const router = useRouter()
 const route = useRoute()
 const store = useStore()

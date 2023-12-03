@@ -2,7 +2,7 @@
   <el-row>
     <el-col :span="18" :offset="3">
       <div>
-        <el-card class="box-card">
+        <el-card class="box-card result-list-card">
           <el-empty v-if="articleList.artList.length === 0" description="暂无结果" />
           <el-row v-for="(articleInfo,index) in articleList.artList"
                   :key="index"
@@ -27,7 +27,8 @@
             :page-sizes="[10, 20, 30, 40]"
             :page-size="pageInfo.pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="pageInfo.total">
+            :total="pageInfo.total"
+            class="search-result-pageination">
           </el-pagination>
         </el-card>
       </div>
@@ -114,3 +115,14 @@ function gotoDetail (articleId : any) {
   }
 }
 </script>
+<style scoped>
+.result-list-card {
+  border-radius: 10px;
+}
+
+.search-result-pageination {
+  margin: 20px 0 10px 0;
+  display: flex;
+  justify-content: center;
+}
+</style>
