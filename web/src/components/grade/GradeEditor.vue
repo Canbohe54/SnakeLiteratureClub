@@ -1,6 +1,6 @@
 <template>
   <!-- Form -->
-    <el-button type="success" @click="() => {dialogFormVisible = true}" round>
+    <el-button type="success" @click="() => {dialogFormVisible = true;getGrade()}" round>
       评分与评价
     </el-button>
 
@@ -185,7 +185,7 @@ async function getGrade(){
 
 .demo-rate-block .demonstration {
   display: block;
-  color: var(--el-text-color-secondary);
+  //color: var(--el-text-color-secondary);
   font-size: 14px;
 
 }
