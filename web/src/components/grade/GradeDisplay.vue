@@ -14,7 +14,7 @@
                 <div>
                   <el-table :data="gradeInfo" border stripe style="width: 100%">
                     <el-table-column prop="expert_id" label="评分人" width="180" />
-                    <el-table-column prop="grade" label="评分" width="180" />
+                    <el-table-column prop="grade_all" label="评分" width="180" />
                     <el-table-column prop="advice" label="评价" />
                   </el-table>
                 </div>
