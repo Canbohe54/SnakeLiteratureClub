@@ -56,7 +56,7 @@ const handleSearch = async () => {
   font-size: 20px !important;
 }
 
-.search-input-text /deep/ .el-input-group__append {
+.search-input-text :deep(.el-input-group__append) {
   background-color: white;
 }
 </style>

@@ -4,6 +4,7 @@
             @select="handleSelect">
             <el-menu-item index="1" class="nav-menu-option">稿件</el-menu-item>
             <el-menu-item index="2" class="nav-menu-option">收藏</el-menu-item>
+            <el-menu-item index="3" class="nav-menu-option">关注</el-menu-item>
         </el-menu>
         <div class="infos-div">
             <div class="info-div">

@@ -1,8 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 // import HomeView from '../views/HomeView.vue'
 import LobbyView from '../views/LobbyView.vue'
-import { useStore } from 'vuex'
-const store = useStore() // 已连接vuex，可设置路由拦截
+import store from '@/store'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -27,8 +26,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/user',
-    name: 'user-center',
-    component: () => import('../views/UserCenterView.vue')
+    redirect: '/user/id=' + store.state.userInfo.id
   },
   {
     path: '/user/:id',
@@ -131,7 +129,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/grade',
-    name:'grade',
+    name: 'grade',
     component: () => import('../views/GradeEditView.vue')
   },
   {

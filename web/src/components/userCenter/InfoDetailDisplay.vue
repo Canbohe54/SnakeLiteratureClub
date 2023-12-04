@@ -2,23 +2,24 @@
     <el-row class="user-info-disp">
         <div class="user-info-table">
             <div class="user-info-main">
-                <el-avatar class="mr-3" :size="80" src="https://avatars.githubusercontent.com/u/43968296"></el-avatar>
+                <el-avatar class="mr-3" :size="80" :src="userInfo.avatar"></el-avatar>
                 <div class="user-nameid">
-                    <el-text class="user-name">Canbohe54</el-text>
-                    <el-tag type="warning">专家</el-tag>
+                    <el-text class="user-name">{{ userInfo.name }}</el-text>
+                    <el-tag :type="userTagType">{{ userInfo.identity }}</el-tag>
                 </div>
             </div>
             <div class="user-info-detail">
                 <p class="user-info-detail-p">
                     <el-text>单位：</el-text>
-                <el-text>South China Normal University</el-text>
+                <el-text>{{ userInfo.unit }}</el-text>
                 </p>
                 <p class="user-info-detail-p">
                     <el-text>邮箱：</el-text>
-                <el-text>Canbohe54@snake.club</el-text>
+                <el-text>{{ userInfo.email }}</el-text>
                 </p>
                 <p class="user-info-detail-p">
-                    <el-text>个人简介</el-text>
+                    <el-text>个人简介：</el-text>
+                  <el-text>{{ userInfo.introduction }}</el-text>
                 </p>
             </div>
         </div>
@@ -27,8 +28,64 @@
         </div>
     </el-row>
 </template>
-<script lang="ts">
+<script lang="ts" setup>
+import { ref, reactive } from 'vue'
+import { useStore } from 'vuex'
+import { SYNC_GET } from '@/scripts/Axios'
+import { useRoute } from 'vue-router'
 
+const store = useStore()
+const route = useRoute()
+
+interface UserInfo {
+  id: string,
+  name: string,
+  identity: string,
+  unit: string,
+  introduction: string,
+  email: string,
+  avatar: string
+}
+const userInfo = reactive<UserInfo>({
+  id: '123456',
+  name: 'Canbohe39',
+  identity: '学生',
+  unit: 'South China Normal University',
+  introduction: '这个人很懒，什么都没留下~',
+  email: 'Canbohe39@snake.club',
+  avatar: ''
+});
+
+// 若访问地址没有指定id，返回用户个人信息页
+(async () => {
+  if (route.query.id === '' || route.query.id === undefined) {
+    return
+  }
+  await SYNC_GET('/article/articleDetail', {
+    article_id: route.query.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      // TODO 拷贝response信息到本地
+    } else {
+      console.log('response error')
+    }
+  })
+})()
+
+const identityTagType = (userIdentity: string) => {
+  switch (userIdentity) {
+    case '专家':
+      return 'warning'
+    case '学生':
+      return 'success'
+    case '管理员':
+      return 'warning'
+    default:
+      return 'info'
+  }
+}
+
+const userTagType = ref(identityTagType(userInfo.identity))
 </script>
 <style scoped>
 .user-info-disp {
@@ -39,7 +96,7 @@
 
 .user-info-detail {
     text-align: start;
-    margin: 0 0 20px 0;
+    margin: 10px 0 20px 0;
 }
 
 .user-info-main {

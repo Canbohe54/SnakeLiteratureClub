@@ -103,7 +103,7 @@ const articleDetail: AttributeAddableObject = reactive({
 
 function errorCallback (response: any) {
   console.log(response)
-  if (response.status == 200) {
+  if (response.status === 200) {
     ElMessage({
       showClose: true,
       message: response.data.statusMsg,
