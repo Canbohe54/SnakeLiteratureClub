@@ -13,9 +13,9 @@
         内容与结构：<el-rate v-model="gradeData.grade_struct" size="large" :colors="colors" show-score />
         <br/>
         主题相关性：<el-rate v-model="gradeData.grade_theme" size="large" :colors="colors" show-score />
-        <br/>
-        <span class="demo2">文章评价</span>
-        <br/>
+        <div class="demo2">
+        <span >文章评价</span>
+        </div>
         <el-input v-model="gradeData.advice" :autosize="{ minRows: 4, maxRows: 6 }" type="textarea" placeholder="Please input"
                   clearable maxlength="100" show-word-limit/>
 
@@ -75,15 +75,15 @@ const articleDetail: AttributeAddableObject = reactive({
 });
 
 
-const gradeData = {
+const gradeData = reactive({
   expert_id: '',
   article_id: '',
-  grade_expr: ref(0),
-  grade_struct: ref(0),
-  grade_theme: ref(0),
+  grade_expr: 0,
+  grade_struct: 0,
+  grade_theme: 0,
   grade_all: '',
-  advice: ref('')
-}
+  advice: ''
+})
 const value1 = ref(0)
 const value2 = ref(0)
 const value3 = ref(0)
@@ -171,7 +171,7 @@ async function getGrade(){
 
 <style scoped>
 .demo-rate-block {
-  padding: 30px 0;
+  padding: 10px 0;
   text-align: center;
   border-right: solid 1px var(--el-border-color);
   display: inline-block;
@@ -187,7 +187,7 @@ async function getGrade(){
   display: block;
   color: var(--el-text-color-secondary);
   font-size: 14px;
-  margin-bottom: 20px;
+
 }
 
 .el-button--text {
@@ -201,5 +201,8 @@ async function getGrade(){
 }
 .dialog-footer button:first-child {
   margin-right: 10px;
+}
+.demo2 {
+  margin-bottom: 10px;
 }
 </style>
