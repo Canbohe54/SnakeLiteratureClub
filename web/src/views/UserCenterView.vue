@@ -6,10 +6,12 @@
         <el-header class="user-header">
           <InfoDetailDisplay />
         </el-header>
-        <el-header class="user-header">
+        <el-header class="user-center-bar">
           <UserCenterBar />
         </el-header>
-        <el-main>Main</el-main>
+        <el-main>
+          <router-view />
+        </el-main>
       </el-container>
     </div>
   </div>
@@ -23,6 +25,9 @@
 
 .user-center {
   margin: 0 50px;
+}
+.user-center-bar {
+  margin: 0 150px 10px;
 }
 .user-center-disp {
   margin: 0 100px;

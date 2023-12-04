@@ -2,9 +2,9 @@
     <div class="user-bar">
         <el-menu :default-active="activeIndex" class="el-menu-demo user-bar-menu nav-menu" mode="horizontal" :ellipsis="false"
             @select="handleSelect">
-            <el-menu-item index="1" class="nav-menu-option">稿件</el-menu-item>
-            <el-menu-item index="2" class="nav-menu-option">收藏</el-menu-item>
-            <el-menu-item index="3" class="nav-menu-option">关注</el-menu-item>
+            <el-menu-item index="article" class="nav-menu-option">稿件</el-menu-item>
+            <el-menu-item index="favor" class="nav-menu-option">收藏</el-menu-item>
+            <el-menu-item index="followed" class="nav-menu-option">关注</el-menu-item>
         </el-menu>
         <div class="infos-div">
             <div class="info-div">
@@ -24,9 +24,13 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+const activeIndex = ref('article')
+const route = useRoute()
+const router = useRouter()
 
-const activeIndex = ref('1')
 const handleSelect = (key: string, keyPath: string[]) => {
+  router.push('/user/' + route.path.split('/')[2] + '/' + key)
   console.log(key, keyPath)
 }
 </script>

@@ -31,7 +31,18 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/user/:id',
     name: 'user-info',
-    component: () => import('../views/UserCenterView.vue')
+    component: () => import('../views/UserCenterView.vue'),
+    children: [
+      {
+        path: 'article',
+        name: 'user-info-article',
+        component: () => import('../components/article/ArticleDisplay.vue')
+      },
+      {
+        path: '',
+        redirect: { name: 'user-info-article' }
+      }
+    ]
   },
   {
     path: '/account',
