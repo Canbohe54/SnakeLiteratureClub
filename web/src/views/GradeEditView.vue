@@ -2,17 +2,19 @@
   <div class="gradeEdit">
     <NavBar class="navbar" /><!--导航栏-->
     <GradeEditor class="graedit"/>
-
+    <GradeDisplay class="graDis"/>
   </div>
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import NavBar from '../components/NavBar.vue'
 import GradeEditor from "@/components/grade/GradeEditor.vue";
+import GradeDisplay from "@/components/grade/GradeDisplay.vue";
 @Options({
   components: {
     NavBar,
-    GradeEditor
+    GradeEditor,
+    GradeDisplay
   }
 })
 export default class GradeEditView extends Vue { }

@@ -155,13 +155,13 @@ async function getGrade(){
     expert_id: store.getters.getUserInfo.id,
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'success') {
-      gradeData.expert_id = response.data.expert_id;
-      gradeData.article_id = response.data.article_id;
-      gradeData.grade_expr = ref(response.data.grade_expr);
-      gradeData.grade_struct =  ref(response.data.grade_struct);
-      gradeData.grade_theme = ref(response.data.grade_theme);
-      gradeData.grade_all = response.data.grade_all;
-      gradeData.advice = ref(response.data.advice);
+      gradeData.expert_id = response.data.grade.expert_id;
+      gradeData.article_id = response.data.grade.article_id;
+      gradeData.grade_expr = ref(response.data.grade.grade_expr);
+      gradeData.grade_struct =  ref(response.data.grade.grade_struct);
+      gradeData.grade_theme = ref(response.data.grade.grade_theme);
+      gradeData.grade_all = response.data.grade.grade_all;
+      gradeData.advice = ref(response.data.grade.advice);
     } else {
       console.log(response)
     }
