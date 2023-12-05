@@ -6,7 +6,6 @@
         v-model="articleDetail.title"
         maxlength="50"
         show-word-limit
-        :rows="20"
         :autosize="{ minRows: 1, maxRows: 3}"
         type="textarea"
         placeholder="请输入标题（建议30字以内）"
@@ -14,13 +13,30 @@
       <el-input
         v-model="articleDetail.text"
         class="editor-text"
-        :rows="20"
         :autosize="{ minRows: 10, maxRows: 20}"
         type="textarea"
         placeholder="请输入正文"
       />
+      <el-card>
+        <el-collapse>
+          <el-collapse-item title="更多设置" name="1">
+            <div class="more-option-head"><span>文章描述</span></div>
+            <el-input
+              class="editor-description"
+              v-model="articleDetail.description"
+              maxlength="150"
+              show-word-limit
+              :autosize="{ minRows: 4, maxRows: 10}"
+              type="textarea"
+              placeholder="请输入描述（建议100字以内）"
+            />
 
-      <SearchFilter ref="SearchFilterRef"/>
+            <div class="more-option-head"><span>文章标签</span></div>
+            <SearchFilter ref="SearchFilterRef"/>
+
+          </el-collapse-item>
+        </el-collapse>
+      </el-card>
 
 
       <el-upload
@@ -44,24 +60,9 @@
         </template>
 
         <el-button class="3" :type="saveBtnType" @click="save">{{ saveBtnText }}</el-button>
-        <el-button class="3" type="success" @click="dialogFormVisible=true">发布</el-button>
+        <el-button class="3" type="success" @click="release">发布</el-button>
       </el-upload>
-      <el-dialog v-model="dialogFormVisible" title="SHipping address" draggable center>
-        <el-form ref="formRef" :model="form" :label-width="formWidth">
-          <el-form-item label="promotion_name" :label-width="formLabelWidth">
-            <el-input v-model="form.name" autocomplete="off"/>
-          </el-form-item>
-          <el-form-item label="region" :label-width="formLabelWidth">
-            <el-input v-model="form.region" autocomplete="off"/>
-          </el-form-item>
-        </el-form>
-        <span class="dialog-footer">
-              <el-button @click="dialogFormVisible = false">Cancel</el-button>
-              <el-button type="primary" @click="release">
-                Confirm
-              </el-button>
-        </span>
-      </el-dialog>
+
     </el-col>
   </el-row>
 </template>
@@ -73,28 +74,16 @@ import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 import {useStore} from 'vuex'
 import {useRoute} from 'vue-router'
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
-import {ElMessage, FormInstance} from 'element-plus'
+import {ElMessage} from 'element-plus'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 
 const upload = ref<UploadInstance>()
 const store = useStore()
 const route = useRoute()
-const dialogFormVisible = ref(false)
-const formLabelWidth = '140px'
-const formWidth = '20%'
-const formRef = ref<FormInstance>()
 const SearchFilterRef = ref()
 const saveBtnType = ref('success')
 const saveBtnText = ref('保存')
 
-interface releaseForm {
-  name: string
-  region: string
-} // 验证表单接口
-const form = reactive<releaseForm>({
-  name: '',
-  region: ''
-})
 const articleDetail: AttributeAddableObject = reactive({
   id: null,
   text: '',
@@ -105,10 +94,11 @@ const articleDetail: AttributeAddableObject = reactive({
   status: '',
   attr: ''
 })
-watch( articleDetail ,() => {
+watch(articleDetail, () => {
   saveBtnType.value = 'success'
   saveBtnText.value = '保存'
 })
+
 function errorCallback(response: any) {
   console.log(response)
   if (response.status === 200) {
@@ -185,7 +175,6 @@ const changeInputBox = (file: any) => {
 
 // 发布文章
 const release = async () => {
-  dialogFormVisible.value = false
   await SYNC_POST('/contributor/save', {
     token: store.getters.getToken,
     id: articleDetail.id,
@@ -239,7 +228,28 @@ const release = async () => {
   border: 1px solid var(--el-card-border-color);
   border-radius: 10px;
 }
+
 .upload-file {
   margin-right: 15px;
+}
+
+.more-option-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+
+.editor-description {
+  font-size: 18px;
+  margin-bottom: 20px;
+  box-shadow: var(--el-box-shadow-light);
+  border-radius: 10px;
+}
+
+:deep(.el-collapse,el-collapse-item__wrap) {
+  border: none;
 }
 </style>
