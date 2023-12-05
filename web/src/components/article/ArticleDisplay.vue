@@ -4,19 +4,17 @@
       <div>
         <el-card class="box-card result-list-card">
           <el-empty v-if="articleList.artList.length === 0" description="暂无结果" />
-          <el-row v-for="(articleInfo,index) in articleList.artList"
-                  :key="index"
-                  :span="8"
-                  :gutter="24"
-                  :offset="index > 0 ? 2 : 0">
-            <el-col :span="24" >
-                <el-card class="box-card result-single-card" @click='gotoDetail(articleInfo.id)' >
-                  <div>
-                    {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
-                    <h2>{{ articleInfo.title }}</h2>
-                    {{ articleInfo.description }}
-                  </div>
-                </el-card>
+          <el-row>
+            <el-col v-for="(articleInfo,index) in articleList.artList"
+                    :key="index"
+                    :span="12">
+              <el-card class="box-card" @click='gotoDetail(articleInfo.id)' >
+                <div>
+                  {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
+                  <h2>{{ articleInfo.title }}</h2>
+                  {{ articleInfo.description }}
+                </div>
+              </el-card>
             </el-col>
           </el-row>
 
@@ -36,15 +34,16 @@
   </el-row>
 </template>
 <script lang="ts" setup>
-import { reactive, watch, ref } from 'vue'
+import { reactive, watch } from 'vue'
 import { SYNC_GET } from '@/scripts/Axios'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
-import router from '@/router'
+import {useRoute} from "vue-router";
+import router from "@/router";
 
 const store = useStore()
 const route = useRoute()
-// 不知道为什么不能监听searcWord
+
+//不知道为什么不能监听searcWord
 // const searchWord = ref(route.query.wd)
 const pageInfo = {
   currentPage: 1,
@@ -52,7 +51,8 @@ const pageInfo = {
   total: 10
 }
 const articleList = reactive({
-  artList: []
+  artList: [],
+  originalArticleList: []
 })
 const articleStatus = [3]
 getArticleList()
@@ -88,6 +88,7 @@ async function getTextBy (artList: any) {
   )
 
   articleList.artList = artList
+  articleList.originalArticleList = artList
 }
 
 async function getArticleList () {
@@ -114,6 +115,8 @@ function gotoDetail (articleId : any) {
     router.push({ path: '/articleNotFound' })
   }
 }
+
+defineExpose({ articleList })
 </script>
 <style scoped>
 .result-list-card {
