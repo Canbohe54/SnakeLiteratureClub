@@ -5,8 +5,7 @@
         <el-text class="checkboxGroupName">{{ groupKey }}</el-text>
       </el-col>
       <el-col :span="21">
-        <el-checkbox-group class="checkboxGroup" tag="span" v-model="filterSelection[groupKey]" @change="filterOnChange()"
-                           :label="groupKey">
+        <el-checkbox-group class="checkboxGroup" tag="span" v-model="filterSelection[groupKey]" :label="groupKey">
           <el-checkbox-button class="checkboxButton" v-for="key in group" :label="key">{{ key }}</el-checkbox-button>
         </el-checkbox-group>
       </el-col>
@@ -20,7 +19,7 @@ import { AttributeAddableObject } from '@/scripts/ArticleTagFilter'
 
 const filterTagGroups = { 'group-A': ['A-filter', 'B-fil', 'C-fil', 'D-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil'], 'group-B': ['D-fil', 'E-fil'] }
 
-const filterSelection: AttributeAddableObject = ref({});
+const filterSelection = ref<AttributeAddableObject>({});
 
 // filterSelect初始化: 初始化结果为{'groupName_1': [], 'groupName_2': [], ...}
 // => 为了保证filterSelect中一定包含所有筛选组的键值(即filters对象中的所有键)
@@ -41,13 +40,6 @@ function loadSelection (attr: AttributeAddableObject<string[]>) {
 }
 
 defineExpose({ filterSelection, loadSelection })
-defineProps({
-  filterOnChange: {
-    type: Function,
-    required: false,
-    default: () => {}
-  }
-})
 </script>
 
 <style scoped>

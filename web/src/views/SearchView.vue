@@ -4,27 +4,29 @@
         <SearchBar />
       <el-row>
         <el-col :span="18" :offset="3">
-          <SearchFilter />
+          <SearchFilter ref="SearchFilterRef" @change="() => articleFiltrate()"/>
         </el-col>
       </el-row>
-        <ArticleDisplay/>
+        <ArticleDisplay ref="ArticleDisplayRef" :key="filtratedArticleList"/>
     </div>
 </template>
-<script lang="ts">
-import { Options, Vue } from 'vue-class-component'
+<script lang="ts" setup>
+import { ref } from "vue"
 import NavBar from '../components/NavBar.vue'
 import SearchBar from '../components/SearchBar.vue'
-import ArticleDisplay from "@/components/article/ArticleDisplay.vue";
-import SearchFilter from "@/components/search/SearchFilter.vue";
-@Options({
-  components: {
-    SearchFilter,
-    NavBar,
-    SearchBar,
-    ArticleDisplay
-  }
-})
-export default class SearchView extends Vue { }
+import ArticleDisplay from '@/components/article/ArticleDisplay.vue'
+import SearchFilter from '@/components/search/SearchFilter.vue'
+import { ArticleInfo, articleTagFilter } from "@/scripts/ArticleTagFilter";
+
+const SearchFilterRef = ref()
+const ArticleDisplayRef = ref()
+let filtratedArticleList = ref<ArticleInfo[]>()
+
+function articleFiltrate () {
+  const articleList = ArticleDisplayRef.value.articleList
+  articleList.artList = articleTagFilter(articleList.originalArticleList, SearchFilterRef.value.filterSelection)
+  filtratedArticleList = articleList.artList
+}
 </script>
 <style>
 .search {
