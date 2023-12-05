@@ -44,7 +44,7 @@ import router from '@/router'
 
 const store = useStore()
 const route = useRoute()
-// 不知道为什么不能监听searcWord
+// 不知道为什么不能监听searchWord
 // const searchWord = ref(route.query.wd)
 const pageInfo = {
   currentPage: 1,
@@ -96,7 +96,6 @@ async function getArticleList () {
     page_size: pageInfo.pageSize,
     keyword: route.query.wd,
     status_list: articleStatus,
-    l: 1
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       await getTextBy(response.data.articles.list)
