@@ -17,9 +17,9 @@
         type="textarea"
         placeholder="请输入正文"
       />
-      <el-card>
+      <el-card class="more-option-card">
         <el-collapse>
-          <el-collapse-item title="更多设置" name="1">
+          <el-collapse-item class="more-option" title="更多设置" name="1">
             <div class="more-option-head"><span>文章描述</span></div>
             <el-input
               class="editor-description"
@@ -32,7 +32,7 @@
             />
 
             <div class="more-option-head"><span>文章标签</span></div>
-            <SearchFilter ref="SearchFilterRef"/>
+            <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
 
           </el-collapse-item>
         </el-collapse>
@@ -84,6 +84,7 @@ const SearchFilterRef = ref()
 const saveBtnType = ref('success')
 const saveBtnText = ref('保存')
 
+
 const articleDetail: AttributeAddableObject = reactive({
   id: null,
   text: '',
@@ -94,10 +95,14 @@ const articleDetail: AttributeAddableObject = reactive({
   status: '',
   attr: ''
 })
+
 watch(articleDetail, () => {
   saveBtnType.value = 'success'
   saveBtnText.value = '保存'
 })
+const searchFilterChange = () => {
+  articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
+}
 
 function errorCallback(response: any) {
   console.log(response)
@@ -250,6 +255,14 @@ const release = async () => {
 }
 
 :deep(.el-collapse,el-collapse-item__wrap) {
-  border: none;
+  border-style: none;
+}
+
+.more-option :deep(.el-collapse-item__header) {
+  border-style: none;
+}
+
+.more-option-card:deep(.el-card__body) {
+  padding: 5px 20px;
 }
 </style>
