@@ -64,7 +64,7 @@ public interface GradeDao {
      * @return 平均分
      */
     @Select("select avg(grade_all) from grades where article_id = #{article_id} group by article_id ")
-    public int getAvgGradeByArticleId(@Param("article_id") String article_id);
+    public double getAvgGradeByArticleId(@Param("article_id") String article_id);
 
     /**
      * 根据稿件id查询评分的专家人数
