@@ -14,6 +14,11 @@
                   <h2>{{ articleInfo.title }}</h2>
                   {{ articleInfo.description }}
                 </div>
+
+                <div>
+                    <el-button type="primary" round>{{avgGrade}}</el-button>
+                </div>
+
               </el-card>
             </el-col>
           </el-row>
@@ -39,6 +44,8 @@ import { SYNC_GET } from '@/scripts/Axios'
 import { useStore } from 'vuex'
 import {useRoute} from "vue-router";
 import router from "@/router";
+
+let avgGrade = ''
 
 const store = useStore()
 const route = useRoute()
@@ -113,6 +120,22 @@ function gotoDetail (articleId : any) {
   } else {
     router.push({ path: '/articleNotFound' })
   }
+}
+
+async function getAvgGrade (artList: any) {
+  await Promise.all(
+    artList.map(async (item: any) => {
+      await SYNC_GET('/grade/getAvgGrade', {
+        article_id: item.id
+      }, response => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+          avgGrade = response.data.avg_grade
+        } else {
+          console.log(response)
+        }
+      })
+    })
+  )
 }
 
 defineExpose({ articleList })
