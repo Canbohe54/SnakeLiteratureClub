@@ -40,12 +40,13 @@
 </template>
 <script lang="ts" setup>
 import { reactive, watch } from 'vue'
-import { SYNC_GET } from '@/scripts/Axios'
+import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 import { useStore } from 'vuex'
 import {useRoute} from "vue-router";
 import router from "@/router";
 
 let avgGrade = ''
+let avgGradeDic : {[key:string]:number} = {};
 
 const store = useStore()
 const route = useRoute()
@@ -122,33 +123,33 @@ function gotoDetail (articleId : any) {
   }
 }
 
-// async function getAvgGrade (artList: any) {
-//   await Promise.all(
-//     artList.map(async (item: any) => {
-//       await SYNC_GET('/grade/getAvgGrade', {
-//         article_id: item.id
-//       }, response => {
-//         if (response.status === 200 && response.data.statusMsg === 'Success.') {
-//           avgGrade = response.data.avg_grade
-//         } else {
-//           console.log(response)
-//         }
-//       })
-//     })
-//   )
-// }
-
-async function getAvgGrade (articleId : any) {
-  await (SYNC_GET('/grade/getAvgGrade', {
-    article_id: articleId
-  }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'success') {
-      avgGrade = response.data.avg_grade
-    } else {
-      console.log(response)
-    }
-  }))
+async function getAvgGrade (artList: any) {
+  await Promise.all(
+    artList.map(async (item: any) => {
+      await SYNC_POST('/grade/getAvgGrade', {
+        article_id: item.id
+      }, response => {
+        if (response.status === 200 && response.data.statusMsg === 'success') {
+          avgGradeDic[item.id] = response.data.avg_grade
+        } else {
+          console.log(response)
+        }
+      })
+    })
+  )
 }
+
+// async function getAvgGrade (articleId : any) {
+//   await (SYNC_GET('/grade/getAvgGrade', {
+//     article_id: articleId
+//   }, async (response) => {
+//     if (response.status === 200 && response.data.statusMsg === 'success') {
+//       avgGrade = response.data.avg_grade
+//     } else {
+//       console.log(response)
+//     }
+//   }))
+// }
 
 defineExpose({ articleList })
 </script>
