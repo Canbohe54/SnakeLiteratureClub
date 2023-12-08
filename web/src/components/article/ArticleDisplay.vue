@@ -39,14 +39,16 @@
   </el-row>
 </template>
 <script lang="ts" setup>
-import { reactive, watch } from 'vue'
+import {reactive, ref, watch} from 'vue'
 import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 import { useStore } from 'vuex'
 import {useRoute} from "vue-router";
 import router from "@/router";
 
 let avgGrade = ''
-let avgGradeDic : {[key:string]:number} = {};
+// let avgGradeDic : {[key:string]:number} = {};
+let index = 0
+let avgGradeArray:number[] = new Array(9999)
 
 const store = useStore()
 const route = useRoute()
@@ -60,7 +62,7 @@ const pageInfo = {
 }
 const articleList = reactive({
   artList: [],
-  originalArticleList: []
+  originalArticleList: [],
 })
 const articleStatus = [3]
 getArticleList()
@@ -130,7 +132,8 @@ async function getAvgGrade (artList: any) {
         article_id: item.id
       }, response => {
         if (response.status === 200 && response.data.statusMsg === 'success') {
-          avgGradeDic[item.id] = response.data.avg_grade
+          avgGradeArray[index] = response.data.avg_grade
+          index++
         } else {
           console.log(response)
         }
