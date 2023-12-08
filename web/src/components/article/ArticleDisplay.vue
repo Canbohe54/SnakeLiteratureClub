@@ -122,20 +122,32 @@ function gotoDetail (articleId : any) {
   }
 }
 
-async function getAvgGrade (artList: any) {
-  await Promise.all(
-    artList.map(async (item: any) => {
-      await SYNC_GET('/grade/getAvgGrade', {
-        article_id: item.id
-      }, response => {
-        if (response.status === 200 && response.data.statusMsg === 'Success.') {
-          avgGrade = response.data.avg_grade
-        } else {
-          console.log(response)
-        }
-      })
-    })
-  )
+// async function getAvgGrade (artList: any) {
+//   await Promise.all(
+//     artList.map(async (item: any) => {
+//       await SYNC_GET('/grade/getAvgGrade', {
+//         article_id: item.id
+//       }, response => {
+//         if (response.status === 200 && response.data.statusMsg === 'Success.') {
+//           avgGrade = response.data.avg_grade
+//         } else {
+//           console.log(response)
+//         }
+//       })
+//     })
+//   )
+// }
+
+async function getAvgGrade (articleId : any) {
+  await (SYNC_GET('/grade/getAvgGrade', {
+    article_id: articleId
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'success') {
+      avgGrade = response.data.avg_grade
+    } else {
+      console.log(response)
+    }
+  }))
 }
 
 defineExpose({ articleList })
