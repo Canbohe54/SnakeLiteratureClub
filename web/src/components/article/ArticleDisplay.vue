@@ -109,6 +109,8 @@ async function getArticleList () {
     status_list: articleStatus,
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      // light attracts bugs
+      await getAvgGrade(response.data.articles.list)
       await getTextBy(response.data.articles.list)
       pageInfo.total = response.data.articles.total
     } else {
