@@ -16,7 +16,8 @@
                 </div>
 
                 <div>
-                    <el-button type="primary" round>{{avgGradeArray[index]}}</el-button>
+                    <el-button type="primary" round v-if = "avgGradeArray[index] != null">{{avgGradeArray[index]}}/15</el-button>
+                    <el-button type="primary" round v-else>暂无评分</el-button>
                 </div>
 
               </el-card>
@@ -128,6 +129,7 @@ function gotoDetail (articleId : any) {
 }
 
 async function getAvgGrade (artList: any) {
+  index2 = 0
   await Promise.all(
     artList.map(async (item: any) => {
       await SYNC_POST('/grade/getAvgGrade', {
