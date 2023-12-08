@@ -16,7 +16,7 @@
                 </div>
 
                 <div>
-                    <el-button type="primary" round>{{avgGrade}}</el-button>
+                    <el-button type="primary" round>{{avgGradeArray[index]}}</el-button>
                 </div>
 
               </el-card>
@@ -47,7 +47,7 @@ import router from "@/router";
 
 let avgGrade = ''
 // let avgGradeDic : {[key:string]:number} = {};
-let index = 0
+let index2 = 0
 let avgGradeArray:number[] = new Array(9999)
 
 const store = useStore()
@@ -132,8 +132,8 @@ async function getAvgGrade (artList: any) {
         article_id: item.id
       }, response => {
         if (response.status === 200 && response.data.statusMsg === 'success') {
-          avgGradeArray[index] = response.data.avg_grade
-          index++
+          avgGradeArray[index2] = response.data.avg_grade
+          index2++
         } else {
           console.log(response)
         }
