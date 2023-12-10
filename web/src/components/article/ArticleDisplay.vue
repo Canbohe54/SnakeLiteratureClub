@@ -42,16 +42,10 @@
 <script lang="ts" setup>
 import {reactive, ref, watch} from 'vue'
 import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
-import { useStore } from 'vuex'
 import {useRoute} from "vue-router";
 import router from "@/router";
 
-let avgGrade = ''
-// let avgGradeDic : {[key:string]:number} = {};
-let index2 = 0
-let avgGradeArray:number[] = new Array(9999)
 let  avgGradeMap = new Map()
-const store = useStore()
 const route = useRoute()
 
 // 不知道为什么不能监听searchWord
@@ -128,7 +122,6 @@ function gotoDetail (articleId : any) {
 }
 
 async function getAvgGrade (artList: any) {
-  index2 = 0
   await Promise.all(
     artList.map(async (item: any) => {
       await SYNC_POST('/grade/getAvgGrade', {
