@@ -1,6 +1,5 @@
 package com.snach.literatureclub.controller;
 
-import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.service.GradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -48,8 +47,10 @@ public class GradeController {
     }
 
     @RequestMapping("getGradeByArticleId")
-    public Map<String,Object> getGradeByArticleId(@RequestParam("article_id") String article_id){
-        return gradeService.getGradeByArticle_id(article_id);
+    public Map<String,Object> getGradeByArticleId(@RequestParam("article_id") String article_id,
+                                                  @RequestParam("page_num" )int pageNum,
+                                                  @RequestParam("page_size")int pageSize){
+        return gradeService.getGradeByArticle_id(article_id,pageNum,pageSize);
     }
 
     @RequestMapping("getGradeByExpertId")

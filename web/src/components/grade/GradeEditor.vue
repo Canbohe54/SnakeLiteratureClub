@@ -74,7 +74,6 @@ const articleDetail: AttributeAddableObject = reactive({
   attr: ''
 });
 
-
 const gradeData = reactive({
   expert_id: '',
   article_id: '',
@@ -84,13 +83,8 @@ const gradeData = reactive({
   grade_all: '',
   advice: ''
 })
-const value1 = ref(0)
-const value2 = ref(0)
-const value3 = ref(0)
+
 const colors = ref(['#99A9BF', '#F7BA2A', '#FF9900']) // same as { 2: '#99A9BF', 4: { value: '#F7BA2A', excluded: true }, 5: '#FF9900' }
-
-const input = ref('')
-
 
 function errorCallback(response: any) {
   console.log(response)
@@ -150,7 +144,7 @@ const save = async () => {
 }
 
 async function getGrade(){
-  await (SYNC_GET('/grade/getGradeByExpertIdAndArticleId', {
+  await (SYNC_POST('/grade/getGradeByExpertIdAndArticleId', {
     article_id: route.query.id,
     expert_id: store.getters.getUserInfo.id,
   }, async (response) => {

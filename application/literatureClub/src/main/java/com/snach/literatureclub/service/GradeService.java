@@ -1,14 +1,14 @@
 package com.snach.literatureclub.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Grade;
 import com.snach.literatureclub.dao.GradeDao;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
@@ -70,7 +70,7 @@ public interface GradeService {
      * @param article_id 稿件id
      * @return 返回格式{grades:#{List<Grade>,statusMsg: #{STRING}}
      */
-    Map<String, Object> getGradeByArticle_id(String article_id);
+    Map<String, Object> getGradeByArticle_id(String article_id, int pageNum, int pageSize);
 
     /**
      * 根据专家id获取该专家的全部评分信息
@@ -201,9 +201,10 @@ class GradeServiceImpl implements GradeService {
     }
 
     @Override
-    public Map<String, Object> getGradeByArticle_id(String article_id) {
+    public Map<String, Object> getGradeByArticle_id(String article_id,int pageNum, int pageSize) {
         Map<String, Object> res = new HashMap<String, Object>();
-        res.put("grades", gradeDao.getGradeByArticle_id(article_id));
+        PageHelper.startPage(pageNum,pageSize);
+        res.put("grades", new PageInfo<>(gradeDao.getGradeByArticle_id(article_id)));
         res.put("statusMsg", "success");
         return res;
     }

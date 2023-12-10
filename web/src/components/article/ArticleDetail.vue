@@ -1,10 +1,11 @@
 <template>
-  <div class="common-layout">
+  <div>
     <el-container>
       <el-main>
-        <el-card class="box-card">
-          <el-row><el-text>{{articleDetail.title}}</el-text></el-row>
-          <el-row><el-text>{{articleDetail.description}}</el-text></el-row>
+        <el-card>
+          <el-row class="box-card"><el-text>{{articleDetail.title}}</el-text></el-row>
+          <el-row class="box-card"><el-text>({{articleDetail.description}})</el-text></el-row>
+          <el-divider />
           <el-text>{{articleDetail.text}}</el-text>
         </el-card>
       </el-main>

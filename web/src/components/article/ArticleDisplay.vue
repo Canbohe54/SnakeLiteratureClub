@@ -40,7 +40,7 @@
   </el-row>
 </template>
 <script lang="ts" setup>
-import {reactive, ref, watch} from 'vue'
+import {reactive, watch} from 'vue'
 import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 import {useRoute} from "vue-router";
 import router from "@/router";
