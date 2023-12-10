@@ -203,7 +203,6 @@ class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> getUserBasicInfo(String userId) {
         Map<String, Object> response = new HashMap<>();
-        System.out.println("_____________________"+userId);
         User user_info = userDao.getUserById(userId);
         if(user_info==null){
             response.put("statusMsg", "Nonexistent");

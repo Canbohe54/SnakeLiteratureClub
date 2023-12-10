@@ -90,4 +90,7 @@ public interface GradeDao {
      */
     @Select("select count(*) from grades where expert_id = #{expert_id} and article_id = #{article_id}")
     public int existGrade(@Param("expert_id") String expert_id,@Param("article_id") String article_id);
+
+    @Select("SELECT count(*) FROM grades WHERE article_id = #{article_id}")
+    int countArticleGrade(@Param("article_id") String article_id);
 }
