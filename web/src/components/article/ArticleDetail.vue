@@ -31,7 +31,9 @@
     </el-container>
   </div>
 </template>
+<script lang="ts" setup>
 
+</script>
 <style>
 .box-card{
   display: flex;
