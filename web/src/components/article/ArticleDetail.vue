@@ -10,8 +10,10 @@
         </el-card>
       </el-main>
 
-      <div class="gradeEdit">
+      <div class="gradeEdit" v-if="store.getters.getUserInfo.identity=='专家'">
         <GradeEditor class="graedit"/>
+      </div>
+      <div class="gradeEdit">
         <GradeDisplay class="graDis"/>
       </div>
 
@@ -45,6 +47,7 @@ import {ElMessage} from "element-plus";
 import {SYNC_GET} from "@/scripts/Axios";
 import GradeEditor from "@/components/grade/GradeEditor.vue";
 import GradeDisplay from "@/components/grade/GradeDisplay.vue";
+import store from "@/store";
 
 const route = useRoute()
 
