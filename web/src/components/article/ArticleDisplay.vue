@@ -45,7 +45,7 @@ import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 import {useRoute} from "vue-router";
 import router from "@/router";
 
-let  avgGradeMap = new Map()
+let avgGradeMap = new Map()
 const route = useRoute()
 
 // 不知道为什么不能监听searchWord
@@ -115,7 +115,7 @@ async function getArticleList () {
 }
 function gotoDetail (articleId : any) {
   if (articleId !== '' && articleId !== undefined) {
-    router.push({ path: '/articleDetail', query: { article_id: articleId } })
+    router.push({ path: '/articleDetail', query: { id: articleId } })
   } else {
     router.push({ path: '/articleNotFound' })
   }
