@@ -16,7 +16,7 @@
                 </div>
 
                 <div>
-                    <el-button type="primary" round v-if = "avgGradeArray[index] != null">{{avgGradeArray[index]}}/15</el-button>
+                    <el-button type="primary" round v-if = "avgGradeMap.get(articleInfo.id) != '' ">{{avgGradeMap.get(articleInfo.id)}}/15</el-button>
                     <el-button type="primary" round v-else>暂无评分</el-button>
                 </div>
 
@@ -50,7 +50,7 @@ let avgGrade = ''
 // let avgGradeDic : {[key:string]:number} = {};
 let index2 = 0
 let avgGradeArray:number[] = new Array(9999)
-
+let  avgGradeMap = new Map()
 const store = useStore()
 const route = useRoute()
 
@@ -110,17 +110,16 @@ async function getArticleList () {
     status_list: articleStatus,
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      // light attracts bugs
+      console.log(response)
       await getAvgGrade(response.data.articles.list)
-      await getTextBy(response.data.articles.list)
       pageInfo.total = response.data.articles.total
+      await getTextBy(response.data.articles.list)
     } else {
       console.log(response)
     }
   }))
 }
 function gotoDetail (articleId : any) {
-  console.log(articleId)
   if (articleId !== '' && articleId !== undefined) {
     router.push({ path: '/articleDetail', query: { article_id: articleId } })
   } else {
@@ -135,9 +134,9 @@ async function getAvgGrade (artList: any) {
       await SYNC_POST('/grade/getAvgGrade', {
         article_id: item.id
       }, response => {
+        console.log(response)
         if (response.status === 200 && response.data.statusMsg === 'success') {
-          avgGradeArray[index2] = response.data.avg_grade
-          index2++
+          avgGradeMap.set(response.data.article_id,response.data.avg_grade)
         } else {
           console.log(response)
         }
@@ -145,18 +144,6 @@ async function getAvgGrade (artList: any) {
     })
   )
 }
-
-// async function getAvgGrade (articleId : any) {
-//   await (SYNC_GET('/grade/getAvgGrade', {
-//     article_id: articleId
-//   }, async (response) => {
-//     if (response.status === 200 && response.data.statusMsg === 'success') {
-//       avgGrade = response.data.avg_grade
-//     } else {
-//       console.log(response)
-//     }
-//   }))
-// }
 
 defineExpose({ articleList })
 </script>
