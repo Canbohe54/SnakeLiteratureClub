@@ -20,11 +20,6 @@
                   clearable maxlength="100" show-word-limit/>
 
         <br/>
-<!--        <el-row class="mb-4">-->
-<!--          <el-button type="cancle" round >取消</el-button>-->
-<!--          <el-button type="certain" round @click="save">确定</el-button>-->
-
-<!--        </el-row>-->
       </div>
     </el-form>
     <template #footer>
@@ -40,18 +35,17 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref} from "vue"
-import {SYNC_GET, SYNC_POST} from "@/scripts/Axios";
-import {ElMessage} from "element-plus";
-import {useStore} from "vuex";
-import {useRoute} from "vue-router";
-import {AttributeAddableObject} from "@/scripts/ArticleTagFilter";
+import { reactive, ref } from "vue"
+import { SYNC_POST } from "@/scripts/Axios";
+import { ElMessage } from "element-plus";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+
 
 const store = useStore()
 const route = useRoute()
 
 const dialogFormVisible = ref(false)
-const formLabelWidth = '140px'
 const form = reactive({
   name: '',
   region: '',
@@ -62,17 +56,6 @@ const form = reactive({
   resource: '',
   desc: '',
 })
-
-const articleDetail: AttributeAddableObject = reactive({
-  id: null,
-  text: '',
-  time: '',
-  textBy: '',
-  title: '',
-  description: '',
-  status: '',
-  attr: ''
-});
 
 const gradeData = reactive({
   expert_id: '',
@@ -103,21 +86,6 @@ function errorCallback(response: any) {
   }
 }
 
-//有article_id时初始化ArticleDetail
-(async () => {
-  if (route.query.id === '' || route.query.id === undefined) return
-  await SYNC_GET("/article/articleDetail", {
-    article_id: route.query.id
-  }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      for (const dataKey in response.data.article) {
-        articleDetail[dataKey] = response.data.article[dataKey]
-      }
-    } else {
-      errorCallback(response)
-    }
-  })
-})();
 const save = async () => {
   console.log("save")
   //to do:获取token测试
@@ -179,20 +147,9 @@ async function getGrade(){
 
 .demo-rate-block .demonstration {
   display: block;
-  //color: var(--el-text-color-secondary);
   font-size: 14px;
-
 }
 
-.el-button--text {
-  margin-right: 15px;
-}
-.el-select {
-  width: 300px;
-}
-.el-input {
-  width: 300px;
-}
 .dialog-footer button:first-child {
   margin-right: 10px;
 }

@@ -11,13 +11,16 @@
                   :offset="index > 0 ? 2 : 0">
             <el-col :span="24" >
               <el-card class="box-card result-single-card" >
-                <div>
-                  <el-table :data="gradeInfo" border stripe style="width: 100%">
-                    <el-table-column prop="expert_id" label="评分人" width="180" />
-                    <el-table-column prop="grade_all" label="评分" width="180" />
-                    <el-table-column prop="advice" label="评价" />
-                  </el-table>
-                </div>
+                <div>{{gradeInfo.text_by}}</div>
+                <div>{{gradeInfo.grade_all}}</div>
+                <div>{{gradeInfo.advice}}</div>
+<!--                <div>-->
+<!--                  <el-table :data="gradeInfo" border stripe style="width: 100%">-->
+<!--                    <el-table-column prop="expert_id" label="评分人" width="180" />-->
+<!--                    <el-table-column prop="grade_all" label="评分" width="180" />-->
+<!--                    <el-table-column prop="advice" label="评价" />-->
+<!--                  </el-table>-->
+<!--                </div>-->
               </el-card>
             </el-col>
           </el-row>
@@ -38,16 +41,11 @@
   </el-row>
 </template>
 <script lang="ts" setup>
-import { reactive, watch, ref } from 'vue'
-import { SYNC_GET } from '@/scripts/Axios'
-import { useStore } from 'vuex'
+import { reactive, watch } from 'vue'
+import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 import { useRoute } from 'vue-router'
-import router from '@/router'
 
-const store = useStore()
 const route = useRoute()
-// 不知道为什么不能监听searcWord
-// const searchWord = ref(route.query.wd)
 const pageInfo = {
   currentPage: 1,
   pageSize: 10,
@@ -56,10 +54,9 @@ const pageInfo = {
 const gradeList = reactive({
   graList: []
 })
-const gradeStatus = [3]
 getGradeList()
 
-watch(() => route.query.wd, () => {
+watch(() => route.query.id, () => {
   getGradeList()
 })
 // 监听 page size 改变的事件
@@ -78,7 +75,7 @@ async function getTextBy (graList: any) {
   await Promise.all(
     graList.map(async (item: any) => {
       await SYNC_GET('/usr/getUserBasicInfo', {
-        user_id: item.text_by
+        user_id: item.expert_id
       }, response => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
           item.text_by = response.data.user_info.name
@@ -88,29 +85,24 @@ async function getTextBy (graList: any) {
       })
     })
   )
-
+  console.log(graList)
   gradeList.graList = graList
 }
 
 async function getGradeList () {
-  await (SYNC_GET('/grade/getGradeByArticleId', {
+  await (SYNC_POST('/grade/getGradeByArticleId', {
     article_id: route.query.id,
+    page_num: pageInfo.currentPage,
+    page_size: pageInfo.pageSize,
   }, async (response) => {
+    console.log(response)
     if (response.status === 200 && response.data.statusMsg === 'success') {
-      await getTextBy(response.data.grades.list)
       pageInfo.total = response.data.grades.total
+      await getTextBy(response.data.grades.list)
     } else {
       console.log(response)
     }
   }))
-}
-function gotoDetail (articleId : any) {
-  console.log(articleId)
-  if (articleId !== '' && articleId !== undefined) {
-    router.push({ path: '/articleDetail', query: { article_id: articleId } })
-  } else {
-    router.push({ path: '/articleNotFound' })
-  }
 }
 </script>
 <style scoped>

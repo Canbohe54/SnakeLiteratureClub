@@ -4,7 +4,7 @@ export default createStore({
   state: {
     token: 'tokenNotNull',
     userInfo: {
-      id: '123456',
+      id: 'u9q35V2CVZQS',
       name: 'Canbohe54',
       identity: '专家',
       unit: 'South China Normal University',
