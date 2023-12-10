@@ -9,6 +9,11 @@
         </el-card>
       </el-main>
 
+      <div class="gradeEdit">
+        <GradeEditor class="graedit"/>
+        <GradeDisplay class="graDis"/>
+      </div>
+
       <el-footer>
         <el-card>
           <el-row>
@@ -37,6 +42,8 @@ import {AttributeAddableObject} from "@/scripts/ArticleTagFilter";
 import {useRoute} from "vue-router";
 import {ElMessage} from "element-plus";
 import {SYNC_GET} from "@/scripts/Axios";
+import GradeEditor from "@/components/grade/GradeEditor.vue";
+import GradeDisplay from "@/components/grade/GradeDisplay.vue";
 
 const route = useRoute()
 
