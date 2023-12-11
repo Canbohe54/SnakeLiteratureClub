@@ -5,6 +5,7 @@ import com.snach.literatureclub.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -31,7 +32,7 @@ public class UserController {
     /**
      * 用户注册
      *
-     * @param user 用户信息
+     * @param user  用户信息
      * @param vCode 用户输入的验证码
      * @return 执行状态
      * <p>返回格式 {statusMsg: #{String}}
@@ -75,8 +76,10 @@ public class UserController {
      * @return 收藏列表，执行状态
      */
     @RequestMapping(value = "getAllFavorites", method = RequestMethod.GET)
-    public Map<String, Object> getAllFavorites(String token) {
-        return userService.getAllFavorites(token);
+    public Map<String, Object> getAllFavorites(String token,
+                                               @RequestParam(name = "page_num") int pageNum,
+                                               @RequestParam(name = "page_size") int pageSize) {
+        return userService.getAllFavorites(token, pageNum, pageSize);
     }
 
     @RequestMapping(value = "login", method = RequestMethod.POST)
@@ -88,8 +91,9 @@ public class UserController {
     public Map<String, Object> search(@RequestParam("keyword") String keyword) {
         return userService.userSearch(keyword);
     }
-    @RequestMapping(value = "getUserBasicInfo",method = RequestMethod.GET)
-    public Map<String,Object> getUserBasicInfo(@RequestParam("user_id")String userId){
+
+    @RequestMapping(value = "getUserBasicInfo", method = RequestMethod.GET)
+    public Map<String, Object> getUserBasicInfo(@RequestParam("user_id") String userId) {
         return userService.getUserBasicInfo(userId);
     }
 }

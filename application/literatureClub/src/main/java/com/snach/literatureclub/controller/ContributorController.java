@@ -5,6 +5,7 @@ import com.snach.literatureclub.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -74,8 +75,11 @@ public class ContributorController {
      * @return 作者稿件列表, 执行状态 返回格式{ articles: [#{ARTICLE},...], statusMsg: #{STRING}}
      */
     @RequestMapping(value = "contributorArticles", method = RequestMethod.GET)
-    public Map<String, Object> contributorArticles(@RequestParam("contributor_id") String contributor_id) {
-        return articleService.getContributorArticles(contributor_id);
+    public Map<String, Object> contributorArticles(@RequestParam("contributor_id") String contributor_id,
+                                                   @RequestParam(name = "page_num") int pageNum,
+                                                   @RequestParam(name = "page_size") int pageSize,
+                                                   @RequestParam(name = "status_list") List<Integer> statusList) {
+        return articleService.getContributorArticles(contributor_id, pageNum, pageSize, statusList);
     }
 
 }

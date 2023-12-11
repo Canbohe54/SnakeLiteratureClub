@@ -1,5 +1,6 @@
 package com.snach.literatureclub.service;
 
+import com.github.pagehelper.PageHelper;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.dao.ArticleDao;
@@ -62,10 +63,12 @@ public interface UserService {
      * 获取用户收藏列表基础信息
      * 返回格式 {articles: [#{Article}], statusMsg: #{String}}
      *
-     * @param token 用于验证是否过期以及获取作者id
+     * @param token      用于验证是否过期以及获取作者id
+     * @param pageNum
+     * @param pageSize
      * @return 收藏列表基础信息和执行状态
      */
-    Map<String, Object> getAllFavorites(String token);
+    Map<String, Object> getAllFavorites(String token, int pageNum, int pageSize);
 
     /**
      * 用户登录
@@ -77,7 +80,8 @@ public interface UserService {
     Map<String, Object> login(String email, String password);
 
     Map<String, Object> userSearch(String keyword);
-    Map<String,Object> getUserBasicInfo(String userId);
+
+    Map<String, Object> getUserBasicInfo(String userId);
 }
 
 @Mapper
@@ -149,7 +153,7 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> getAllFavorites(String token) {
+    public Map<String, Object> getAllFavorites(String token, int pageNum, int pageSize) {
         Map<String, Object> response = new HashMap<String, Object>();
         // 检测token是否合法
         if (!tokenVerify(token)) {
@@ -159,13 +163,19 @@ class UserServiceImpl implements UserService {
         // 获取用户id
         String user_id = getPayload(token, "id");
         // 获取用户收藏稿件id
+        PageHelper.startPage(pageNum, pageSize);
         List<String> aIds = favoritesDao.getAIdByUId(user_id);
+        int total = aIds.size();
         // 通过稿件id获取稿件基本信息并返回
         List<Article> articles = new ArrayList<>();
         for (String aId : aIds) {
             articles.add(articleDao.getArticleBasicById(aId));
         }
-        response.put("articles", articles);
+        Map<String, Object> artInfo = new HashMap<>();
+        artInfo.put("list", articles);
+        artInfo.put("total", total);
+
+        response.put("articles", artInfo);
         response.put("statusMsg", "Success.");
         return response;
     }
@@ -191,8 +201,8 @@ class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> userSearch(String keyword) {
         Map<String, Object> response = new HashMap<>();
-        List<Map<String,Object>> users = new ArrayList<>();
-        for (User u:userDao.getUsersByKeyword(keyword)) {
+        List<Map<String, Object>> users = new ArrayList<>();
+        for (User u : userDao.getUsersByKeyword(keyword)) {
             users.add(u.safeGetUserInfo());
         }
         response.put("user_info", users);
@@ -204,7 +214,7 @@ class UserServiceImpl implements UserService {
     public Map<String, Object> getUserBasicInfo(String userId) {
         Map<String, Object> response = new HashMap<>();
         User user_info = userDao.getUserById(userId);
-        if(user_info==null){
+        if (user_info == null) {
             response.put("statusMsg", "Nonexistent");
             return response;
         }

@@ -72,9 +72,12 @@ public interface ArticleService {
      * 根据作者id查找其稿件基础信息，包括标题、修改时间和描述，用于创作者界面显示
      *
      * @param contributor_id 作者id
+     * @param pageNum
+     * @param pageSize
+     * @param statusList
      * @return 作者稿件列表, 执行状态 返回格式{ articles: [#{ARTICLE},...], statusMsg: #{STRING}}
      */
-    Map<String, Object> getContributorArticles(String contributor_id);
+    Map<String, Object> getContributorArticles(String contributor_id, int pageNum, int pageSize, List<Integer> statusList);
 
     /**
      * 根据稿件id查找稿件详细信息，包括标题、描述、修改时间和内容，用于编辑界面显示
@@ -90,7 +93,7 @@ public interface ArticleService {
      *
      * @return 所有的稿件信息的Article对象List
      */
-    Map<String, Object> getAllArticles(int pageNum,int pageSize);
+    Map<String, Object> getAllArticles(int pageNum, int pageSize);
 
     /**
      * 根据关键词搜索稿件
@@ -230,9 +233,10 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Map<String, Object> getContributorArticles(String contributor_id) {
+    public Map<String, Object> getContributorArticles(String contributor_id, int pageNum, int pageSize, List<Integer> statusList) {
         Map<String, Object> res = new HashMap<String, Object>();
-        res.put("articles", articleDao.getArticleByContributorId(contributor_id));
+        PageHelper.startPage(pageNum, pageSize);
+        res.put("articles", new PageInfo<>(articleDao.getArticleByContributorId(contributor_id)));
         res.put("statusMsg", "Success.");
         return res;
     }
@@ -246,10 +250,10 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Map<String, Object> getAllArticles(int pageNum,int pageSize) {
+    public Map<String, Object> getAllArticles(int pageNum, int pageSize) {
         Map<String, Object> res = new HashMap<String, Object>();
 
-        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum, pageSize);
         PageInfo<Article> pageInfo = new PageInfo<>(articleDao.getAllArticles());
 
         res.put("articles", pageInfo);
@@ -260,9 +264,9 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<Integer> statusList) {
         Map<String, Object> res = new HashMap<>();
-        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum, pageSize);
         if (tag == null) {
-            res.put("articles", new PageInfo<>(articleDao.getArticlesByKeyword(keyword,statusList)));
+            res.put("articles", new PageInfo<>(articleDao.getArticlesByKeyword(keyword, statusList)));
         } else {
             res.put("articles", new PageInfo<>(articleDao.getArticlesByKeywordAndTag(keyword, tag)));
         }
