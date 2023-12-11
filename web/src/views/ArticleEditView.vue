@@ -8,7 +8,7 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import NavBar from '../components/NavBar.vue'
-import ArticleEditor from "@/components/article/ArticleEditor.vue";
+import ArticleEditor from '@/components/article/ArticleEditor.vue'
 @Options({
   components: {
     NavBar,
@@ -18,6 +18,9 @@ import ArticleEditor from "@/components/article/ArticleEditor.vue";
 export default class ArticleEditView extends Vue { }
 </script>
 <style>
+.articleEdit {
+  margin: 0 50px;
+}
 .artedit {
   margin: 20px 50px;
 }

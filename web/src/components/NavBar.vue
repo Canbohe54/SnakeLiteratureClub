@@ -9,9 +9,9 @@
         </template>
         <template #content><!--菜单栏-->
           <div class="nav-content">
-            <el-menu :default-active=null class="el-menu-demo nav-menu" mode="horizontal" :ellipsis="false" @select="handleSelect">
+            <el-menu :default-active="(route.path === '/')?'lobby':null" router class="el-menu-demo nav-menu" mode="horizontal" :ellipsis="false" @select="handleSelect">
               <div class="flex-grow"></div>
-              <el-menu-item index="1" class="nav-menu-option">文学大厅</el-menu-item>
+              <el-menu-item index="lobby" class="nav-menu-option" route="/">文学大厅</el-menu-item>
               <!-- <el-sub-menu index="2">
             <template #title>Workspace</template>
             <el-menu-item index="2-1">item one</el-menu-item>
@@ -37,8 +37,8 @@
 
         <template #extra>
           <div class="nav-extra">
-            <div v-if="userInfo.identity === '学生'" class="nav-contribute">
-            <el-button type="primary" class="mr-2" plain><el-icon><Upload /></el-icon>&nbsp;投稿文章</el-button>
+            <div v-if="userInfo.identity === '学生' && route.path !== '/articleEditor'" class="nav-contribute">
+            <el-button type="primary" class="mr-2" plain :onclick="handleUpload"><el-icon><Upload /></el-icon>&nbsp;投稿文章</el-button>
           </div>
             <div class="flex items-center"><!--用户信息设置栏-->
               <el-dropdown @command="handleDropdownCommand">
@@ -191,6 +191,12 @@ const handleSearch = async () => {
     router.push({ path: '/search' })
   }
 }
+
+// 投稿文章
+const handleUpload = () => {
+  router.push('/articleEditor')
+}
+
 // 用户信息部分
 // const userInfo = reactive({ // 用户信息
 //   userName: 'Canbohe54',

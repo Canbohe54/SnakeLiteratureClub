@@ -40,12 +40,12 @@
   </el-row>
 </template>
 <script lang="ts" setup>
-import {reactive, watch} from 'vue'
-import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
-import {useRoute} from "vue-router";
-import router from "@/router";
+import { reactive, watch } from 'vue'
+import { SYNC_GET, SYNC_POST } from '@/scripts/Axios'
+import { useRoute } from 'vue-router'
+import router from '@/router'
 
-let avgGradeMap = new Map()
+const avgGradeMap = new Map()
 const route = useRoute()
 
 // 不知道为什么不能监听searchWord
@@ -57,7 +57,7 @@ const pageInfo = {
 }
 const articleList = reactive({
   artList: [],
-  originalArticleList: [],
+  originalArticleList: []
 })
 const articleStatus = [3]
 getArticleList()
@@ -101,7 +101,7 @@ async function getArticleList () {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
     keyword: route.query.wd,
-    status_list: articleStatus,
+    status_list: articleStatus
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       console.log(response)
@@ -129,7 +129,7 @@ async function getAvgGrade (artList: any) {
       }, response => {
         console.log(response)
         if (response.status === 200 && response.data.statusMsg === 'success') {
-          avgGradeMap.set(response.data.article_id,response.data.avg_grade)
+          avgGradeMap.set(response.data.article_id, response.data.avg_grade)
         } else {
           console.log(response)
         }

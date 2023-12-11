@@ -39,6 +39,14 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../components/article/ArticleDisplay.vue')
       },
       {
+        path: 'favor',
+        component: () => import('../components/article/ArticleDisplay.vue')
+      },
+      {
+        path: 'followed',
+        component: () => import('../components/userCenter/FollowedDisplay.vue')
+      },
+      {
         path: '',
         redirect: { name: 'user-info-article' }
       }

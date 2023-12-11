@@ -25,10 +25,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-const activeIndex = ref('article')
 const route = useRoute()
 const router = useRouter()
-
+const activeIndex = ref(route.path.split('/')[3])
 const handleSelect = (key: string, keyPath: string[]) => {
   router.push('/user/' + route.path.split('/')[2] + '/' + key)
   console.log(key, keyPath)

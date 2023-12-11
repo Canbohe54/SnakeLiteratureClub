@@ -5,7 +5,7 @@
                 <el-avatar class="mr-3" :size="80" :src="userInfo.avatar"></el-avatar>
                 <div class="user-nameid">
                     <el-text class="user-name">{{ userInfo.name }}</el-text>
-                    <el-tag :type="userTagType">{{ userInfo.identity }}</el-tag>
+                    <el-tag :type="userTagType" disable-transitions>{{ userInfo.identity }}</el-tag>
                 </div>
             </div>
             <div class="user-info-detail">
