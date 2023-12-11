@@ -4,7 +4,7 @@
       <el-main>
         <el-card>
           <el-row class="box-card"><el-text>{{articleDetail.title}}</el-text></el-row>
-          <el-row class="box-card"><el-text>({{articleDetail.description}})</el-text></el-row>
+          <el-row class="box-card"><el-text>({{articleDetail.text_by}})</el-text></el-row>
           <el-divider />
           <el-text>{{articleDetail.text}}</el-text>
         </el-card>
@@ -55,7 +55,7 @@ const articleDetail: AttributeAddableObject = reactive({
   id: null,
   text: '',
   time: '',
-  textBy: '',
+  text_by: '',
   title: '',
   description: '',
   status: '',
@@ -88,11 +88,23 @@ function errorCallback(response: any) {
       for (const dataKey in response.data.article) {
         articleDetail[dataKey] = response.data.article[dataKey]
       }
+      await getTextBy()
     } else {
       errorCallback(response)
     }
   })
 })()
+async function getTextBy () {
+      await SYNC_GET('/usr/getUserBasicInfo', {
+        user_id: articleDetail.text_by
+      }, async (response) => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+          articleDetail.text_by = response.data.user_info.name
+        } else {
+          console.log(response)
+        }
+      })
+}
 </script>
 <style>
 .box-card{

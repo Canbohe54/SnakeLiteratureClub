@@ -85,7 +85,6 @@ async function getTextBy (graList: any) {
       })
     })
   )
-  console.log(graList)
   gradeList.graList = graList
 }
 
