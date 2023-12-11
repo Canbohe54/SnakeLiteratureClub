@@ -53,7 +53,7 @@ const route = useRoute()
 const pageInfo = {
   currentPage: 1,
   pageSize: 10,
-  total: 10
+  total: 0
 }
 const articleList = reactive({
   artList: [],
