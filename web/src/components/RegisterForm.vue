@@ -225,7 +225,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
       regButton.buttonText = '正在注册...'
       let isPosted = false
       // TODO 加入额外选项
-      POST('/usr/reg', { name: regRuleForm.name, email: regRuleForm.email, password: regRuleForm.passwd, organization: regRuleForm.unit, attrs: { grade: stuGrade }, vCode: regRuleForm.emailCaptcha }, (response) => {
+      POST('/usr/reg', { name: regRuleForm.name, email: regRuleForm.email, password: regRuleForm.passwd, organization: regRuleForm.unit, attrs: { grade: stuGrade }, group: regRuleForm.identity, vCode: regRuleForm.emailCaptcha }, (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
           console.log(response.data.statusMsg)
           ElMessage({
