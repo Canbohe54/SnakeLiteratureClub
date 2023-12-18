@@ -4,6 +4,7 @@
       <div>
         <el-card class="box-card result-list-card">
           <el-empty v-if="gradeList.graList.length === 0" description="暂无结果" />
+          <div inline-div>评分人&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 评分&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp评价</div>
           <el-row v-for="(gradeInfo,index) in gradeList.graList"
                   :key="index"
                   :span="8"
@@ -11,14 +12,14 @@
                   :offset="index > 0 ? 2 : 0">
             <el-col :span="24" >
               <el-card class="box-card result-single-card" >
-                <div>{{gradeInfo.text_by}}</div>
-                <div>{{gradeInfo.grade_all}}</div>
-                <div>{{gradeInfo.advice}}</div>
+                <div inline-div>{{gradeInfo.text_by}}&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp {{gradeInfo.grade_all}}&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp{{gradeInfo.advice}}</div>
+<!--                <div inline-div>{{gradeInfo.grade_all}}</div>-->
+<!--                <div inline-div>{{gradeInfo.advice}}</div>-->
 <!--                <div>-->
-<!--                  <el-table :data="gradeInfo" border stripe style="width: 100%">-->
-<!--                    <el-table-column prop="expert_id" label="评分人" width="180" />-->
-<!--                    <el-table-column prop="grade_all" label="评分" width="180" />-->
-<!--                    <el-table-column prop="advice" label="评价" />-->
+<!--                  <el-table border stripe style="width: 100%">-->
+<!--                    <el-table-column label="评分人" width="180" > {{gradeInfo.text_by}}</el-table-column>-->
+<!--                    <el-table-column label="评分" width="180" >{{gradeInfo.grade_all}}</el-table-column>-->
+<!--                    <el-table-column label="评价" >{{gradeInfo.advice}}</el-table-column>-->
 <!--                  </el-table>-->
 <!--                </div>-->
               </el-card>
