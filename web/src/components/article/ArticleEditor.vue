@@ -59,7 +59,7 @@
           </div>
         </template>
 
-        <el-button class="3" :type="saveBtnType" @click="save">{{ saveBtnText }}</el-button>
+        <el-button class="3" :type="saveBtnType" @click="save" :disabled="saveBtnText === '已保存'">{{ saveBtnText }}</el-button>
         <el-button class="3" type="success" @click="release">发布</el-button>
       </el-upload>
 

@@ -6,7 +6,7 @@
             <el-empty v-if="articleList.artList.length === 0" description="暂无结果" />
             <el-row gutter="12">
               <el-col v-for="(articleInfo, index) in articleList.artList" :key="index" :span="12">
-                <el-card class="box-card result-card-body" @click='gotoDetail(articleInfo.id)' shadow="hover">
+                <el-card class="box-card result-card-body" shadow="hover">
                   <div>
                     {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
                     <h2>{{ articleInfo.title }}</h2>
@@ -60,87 +60,19 @@
     { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}' }]
   })
   const articleStatus = [3]
-  getArticleList()
   
   watch(() => route.query.wd, () => {
-    getArticleList()
   })
   // 监听 page size 改变的事件
   function handleSizeChange(newSize: any) {
     pageInfo.pageSize = newSize
-    getArticleList()
   }
   
   // 监听 页码值 改变的事件
   function handleCurrentChange(newPage: any) {
     pageInfo.currentPage = newPage
-    getArticleList()
   }
   
-  async function getTextBy(artList: any) {
-    await Promise.all(
-      artList.map(async (item: any) => {
-        await SYNC_GET('/usr/getUserBasicInfo', {
-          user_id: item.text_by
-        }, response => {
-          if (response.status === 200 && response.data.statusMsg === 'Success.') {
-            item.text_by = response.data.user_info.name
-          } else {
-            console.log(response)
-          }
-        })
-      })
-    )
-  
-    articleList.artList = artList
-    articleList.originalArticleList = artList
-  }
-  
-  async function getArticleList() {
-    let params: AttributeAddableObject = {
-      page_num: pageInfo.currentPage,
-      page_size: pageInfo.pageSize,
-      status_list: articleStatus,
-      keyword: route.query.wd
-    }
-    console.log(params)
-    await (SYNC_GET('/article/search', params, async (response) => {
-      if (response.status === 200 && response.data.statusMsg === 'Success.') {
-        console.log(response)
-        await getAvgGrade(response.data.articles.list)
-        pageInfo.total = response.data.articles.total
-        await getTextBy(response.data.articles.list)
-      } else {
-        console.log(response)
-      }
-    }))
-  }
-  function gotoDetail(articleId: any) {
-    if (articleId !== '' && articleId !== undefined) {
-      router.push({ path: '/articleDetail', query: { id: articleId } })
-    } else {
-      router.push({ path: '/articleNotFound' })
-    }
-  }
-  
-  async function getAvgGrade(artList: any) {
-    await Promise.all(
-      artList.map(async (item: any) => {
-        await SYNC_POST('/grade/getAvgGrade', {
-          article_id: item.id
-        }, response => {
-          console.log(response)
-          if (response.status === 200 && response.data.statusMsg === 'success') {
-            avgGradeMap.set(response.data.article_id, response.data.avg_grade)
-          } else {
-            console.log(response)
-          }
-        })
-      })
-    )
-  }
-  
-  defineExpose({ articleList })
   </script>
   <style scoped>
   .result-list-card :deep(.el-card__body) {

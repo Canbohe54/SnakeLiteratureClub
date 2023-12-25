@@ -48,12 +48,12 @@ interface UserInfo extends AttributeAddableObject{
   avatar: string
 }
 const userInfo = ref<UserInfo>({
-  id: '123456',
-  name: 'Canbohe39',
-  identity: '学生',
-  unit: 'South China Normal University',
-  introduction: '这个人很懒，什么都没留下~',
-  email: 'Canbohe39@snake.club',
+  id: '',
+  name: '',
+  identity: '',
+  unit: '',
+  introduction: '',
+  email: '',
   avatar: ''
 });
 
@@ -75,6 +75,7 @@ const userInfo = ref<UserInfo>({
       userInfo.value.unit = detail.organization
       userInfo.value.identity = detail.group
       userInfo.value.introduction = detail.introduction
+      userTagType.value = identityTagType(userInfo.value.identity)
     } else {
       console.log('response error')
     }
@@ -94,7 +95,7 @@ const identityTagType = (userIdentity: string) => {
   }
 }
 
-const userTagType = ref(identityTagType(userInfo.value.identity))
+const userTagType = ref()
 </script>
 <style scoped>
 .user-info-disp {

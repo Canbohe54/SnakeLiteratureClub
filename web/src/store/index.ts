@@ -10,7 +10,8 @@ export default createStore({
       unit: '',
       introduction: '',
       email: '',
-      avatar: ''
+      avatar: '',
+      stuGrade: ''
     }
   },
   getters: {
@@ -35,7 +36,8 @@ export default createStore({
         unit: userInfo.organization,
         introduction: userInfo.introduction,
         email: userInfo.email,
-        avatar: userInfo.pictureUrl
+        avatar: userInfo.pictureUrl,
+        stuGrade: userInfo.attr === '' ? '' : JSON.parse(userInfo.attr)['grade']
       }
       console.log(state.userInfo)
     },
@@ -48,7 +50,8 @@ export default createStore({
         unit: '',
         introduction: '',
         email: '',
-        avatar: ''
+        avatar: '',
+        stuGrade: ''
       }
     }
   },

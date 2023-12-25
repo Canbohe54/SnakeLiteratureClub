@@ -82,6 +82,21 @@ function handleCurrentChange (newPage: any) {
   pageInfo.currentPage = newPage
 }
 
+async function getUserFollowedList () {
+  // const res = await SYNC_GET('/user/followed', {
+  //   params: {
+  //     page: pageInfo.currentPage,
+  //     size: pageInfo.pageSize
+  //   }
+  // })
+  // if (res.code === 200) {
+  //   articleList.artList = res.data
+  //   articleList.originalArticleList = res.data
+  //   pageInfo.total = res.total
+  //   getTextBy(articleList.artList)
+  // }
+}
+
 </script>
 <style scoped>
 .followed-menu {

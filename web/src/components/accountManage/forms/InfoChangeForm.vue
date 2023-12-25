@@ -3,7 +3,8 @@
     <el-form label-width="80px" label-position="right" size="large">
       <el-form-item label="用户头像" class="info-items user-avatar">
         <el-tooltip class="tooltip" effect="dark" content="点击上传" placement="top">
-          <el-avatar class="user-avatar-preview" :size="150" :src="userInfo.avatar" @click="handleAvatarPreview"></el-avatar>
+          <el-avatar class="user-avatar-preview" :size="150" :src="userInfo.avatar"
+            @click="handleAvatarPreview"></el-avatar>
         </el-tooltip>
       </el-form-item>
       <el-form-item label="姓名" class="info-items info-input">
@@ -21,7 +22,7 @@
         <el-input v-model="userInfo.unit" placeholder="请输入单位"></el-input>
       </el-form-item>
       <el-form-item label="年级" v-if="userInfo.identity === '学生'" class="info-items info-grade">
-        <el-select v-model="stuGrade" placeholder="请选择学生年级">
+        <el-select v-model="userInfo.stuGrade" placeholder="请选择学生年级">
           <el-option label="一年级" value="一年级" class="stu-grade-option" />
           <el-option label="二年级" value="二年级" class="stu-grade-option" />
           <el-option label="三年级" value="三年级" class="stu-grade-option" />
@@ -39,13 +40,28 @@
       <el-form-item label="个人简介" class="info-introduction">
         <el-input type="textarea" v-model="userInfo.introduction" placeholder="请输入个人简介" class="info-textarea"></el-input>
       </el-form-item>
-      <el-button type="primary" class="mt-4">保存修改</el-button>
+      <el-button type="primary" class="mt-4" :onclick="handleInfoChange">保存修改</el-button>
     </el-form>
+
+    <el-dialog v-model="avatarDialogVisible" title="上传头像" width="30%">
+      <el-form>
+      <el-form-item label="图片链接：" label-width=100px>
+        <el-input v-model="userInfo.avatar"  />
+      </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="avatarDialogVisible = false">
+            上传
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 // do not use same name with ref!!!
 import { useStore } from 'vuex'
 const store = useStore()
@@ -54,17 +70,54 @@ const userInfo = reactive({
   name: store.state.userInfo.name,
   unit: store.state.userInfo.unit,
   identity: store.state.userInfo.identity,
-  introduction: store.state.userInfo.introduction
+  introduction: store.state.userInfo.introduction,
+  stuGrade: store.state.userInfo.stuGrade
 })
 // 缓存，点击提交后，通过后端修改，返回数据到store修改
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
 
-const stuGrade = ref('九年级') // 学生年级
 const userInfoInit = ref('')
 
 const handleAvatarPreview = () => {
+  avatarDialogVisible.value = true
   console.log('preview avatar')
 }
+
+const avatarDialogVisible = ref(false)
+
+const handleInfoChange = () => {
+  if (userInfo.name === '') {
+    ElMessage({
+      message: '用户名不能为空',
+      type: 'error'
+    })
+    return
+  }
+  if (userInfo.unit === '') {
+    ElMessage({
+      message: '单位不能为空',
+      type: 'error'
+    })
+    return
+  }
+  if (userInfo.name === store.state.userInfo.name && userInfo.unit === store.state.userInfo.unit && userInfo.introduction === store.state.userInfo.introduction && userInfo.avatar === store.state.userInfo.avatar && userInfo.stuGrade === store.state.userInfo.stuGrade) {
+    ElMessage({
+      message: '您未修改任何信息',
+      type: 'error'
+    })
+    return
+  }
+  const data = {
+    name: userInfo.name,
+    unit: userInfo.unit,
+    introduction: userInfo.introduction,
+    avatar: userInfo.avatar,
+    attr: userInfo.stuGrade === '' ? '' : JSON.stringify({
+      grade: userInfo.stuGrade
+    })
+  }
+}
+
 </script>
 <style scoped>
 .info-change-form {
