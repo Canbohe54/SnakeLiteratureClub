@@ -49,7 +49,7 @@ const routes: Array<RouteRecordRaw> = [
     ],
     beforeEnter: (to, from, next) => {
       console.log(to.path)
-      if (store.state.userInfo.id === '' || store.state.userInfo.id === undefined) {
+      if (store.getters.getUserInfo.id === '' || store.getters.getUserInfo.id === undefined) {
         next('/login')
       } else {
         next()
@@ -58,12 +58,12 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/user',
-    redirect: '/user/' + store.state.userInfo.id,
+    redirect: '/user/' + store.getters.getUserInfo.id + '/article',
     beforeEnter: (to, from, next) => {
-      if (store.state.userInfo.id === '' || store.state.userInfo.id === undefined) {
+      if (store.getters.getUserInfo.id === '' || store.getters.getUserInfo.id === undefined) {
         next('/login')
       } else {
-        next('/user/' + store.state.userInfo.id)
+        next('/user/' + store.getters.getUserInfo.id + '/article')
       }
     }
   },

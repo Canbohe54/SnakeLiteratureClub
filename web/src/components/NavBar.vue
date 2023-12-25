@@ -170,6 +170,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { Search, Upload } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { el } from 'element-plus/es/locale'
+import {watch} from "@vue/composition-api";
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
@@ -203,7 +204,18 @@ const handleUpload = () => {
 //   userName: 'Canbohe54',
 //   userIdentity: '专家'
 // })
-const userInfo = reactive(store.state.userInfo)
+const userInfo = reactive(store.getters.getUserInfo)
+
+// watch(() => store.getters.getUserInfo, () => {
+//   const info = store.getters.getUserInfo
+//   userInfo.email = info.email
+//   userInfo.id = info.id
+//   userInfo.avatar = info.avatar
+//   userInfo.name = info.name
+//   userInfo.unit = info.unit
+//   userInfo.identity = info.identity
+//   userInfo.introduction = info.introduction
+// })
 
 const identityTagType = (userIdentity: string) => {
   switch (userIdentity) {
@@ -219,7 +231,7 @@ const identityTagType = (userIdentity: string) => {
 }
 
 const userTagType = ref(identityTagType(userInfo.identity))
-const userInfoRedirect = ref(userInfo.identity === '未登录' ? '/login' : '/user')
+const userInfoRedirect = ref(store.getters.getUserInfo.identity === '未登录' ? '/login' : '/user/' + store.getters.getUserInfo.id)
 // 未登录则跳转到登录页面，已登录则跳转到个人信息页面 未完成
 
 // 下拉菜单部分
@@ -229,7 +241,7 @@ const handleDropdownCommand = (command: string | number | object) => {
       router.push('/login')
       break
     case 'userCenter':
-      router.push('/user')
+      router.push('/user/' + store.getters.getUserInfo.id)
       break
     case 'accManage':
       router.push('/account/info')

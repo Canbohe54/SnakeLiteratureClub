@@ -24,9 +24,20 @@ export default createStore({
   mutations: {
     setToken: (state, token) => {
       state.token = token
+      console.log(state.token)
     },
     setUserInfo: (state, userInfo) => {
-      state.userInfo = userInfo
+      console.log(userInfo)
+      state.userInfo = {
+        id: userInfo.id,
+        name: userInfo.name,
+        identity: userInfo.group,
+        unit: userInfo.organization,
+        introduction: userInfo.introduction,
+        email: userInfo.email,
+        avatar: userInfo.pictureUrl
+      }
+      console.log(state.userInfo)
     },
     clear: state => {
       state.token = ''

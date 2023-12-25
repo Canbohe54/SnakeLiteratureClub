@@ -97,6 +97,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
           store.commit('setUserInfo', response.data.userInfo)
           ElMessage.success('登录成功')
           router.push('/')
+          // location.reload()
         } else {
           console.log(response.data.statusMsg)
         }
