@@ -27,4 +27,5 @@ export default class GradeEditView extends Vue { }
 .navbar {
   margin: 0 0;
 }
+
 </style>

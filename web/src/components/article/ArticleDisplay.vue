@@ -46,7 +46,7 @@ import { useRoute } from 'vue-router'
 import router from '@/router'
 import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
 
-const props = defineProps(['queryRoute', 'queryParams'])
+// const props = defineProps(['queryRoute', 'queryParams'])
 
 const avgGradeMap = new Map()
 const route = useRoute()
@@ -105,14 +105,11 @@ async function getArticleList () {
   let params: AttributeAddableObject = {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
-    status_list: articleStatus
-  }
-  for (const key in props.queryParams) {
-    console.log(props.queryParams[key])
-    params[key] = props.queryParams[key]
+    status_list: articleStatus,
+    keyword: route.query.wd
   }
   console.log(params)
-  await (SYNC_GET(props.queryRoute, params, async (response) => {
+  await (SYNC_GET('/article/search', params, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       console.log(response)
       await getAvgGrade(response.data.articles.list)

@@ -32,11 +32,11 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'article',
         name: 'user-info-article',
-        component: () => import('../components/article/ArticleDisplay.vue')
+        component: () => import('../components/userCenter/UserArticleDisplay.vue')
       },
       {
         path: 'favor',
-        component: () => import('../components/article/ArticleDisplay.vue')
+        component: () => import('../components/userCenter/UserArticleDisplay.vue')
       },
       {
         path: 'followed',

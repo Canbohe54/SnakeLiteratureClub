@@ -6,7 +6,7 @@ export default createStore({
     userInfo: {
       id: 'u9q35V2CVZQS',
       name: 'Canbohe54',
-      identity: '学生',
+      identity: '专家',
       unit: 'South China Normal University',
       introduction: '这个人很懒，什么都没有留下~',
       email: 'Canbohe54@snake.club',

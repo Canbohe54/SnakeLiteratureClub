@@ -7,7 +7,7 @@
           <SearchFilter ref="SearchFilterRef" @change="() => articleFiltrate()"/>
         </el-col>
       </el-row>
-        <ArticleDisplay ref="ArticleDisplayRef" :key="filtratedArticleList" queryRoute="/article/search" :queryParams="{ keyword: route.query.wd }"/>
+        <ArticleDisplay ref="ArticleDisplayRef" :key="filtratedArticleList"/>
     </div>
 </template>
 <script lang="ts" setup>

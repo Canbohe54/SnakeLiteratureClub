@@ -19,10 +19,10 @@
 <!--            </el-col>-->
 <!--          </el-row>-->
 
-          <el-table :data="gradeList.graList" stripe style=" width: 1800px">
-            <el-table-column prop="text_by" label="评分人" width="600" />
-            <el-table-column prop="grade_all" label="评分" width="600" />
-            <el-table-column prop="advice" label="评价"  width="600" />
+          <el-table :data="gradeList.graList" stripe class="grade-table" flexible>
+            <el-table-column prop="text_by" label="评分人"  />
+            <el-table-column prop="grade_all" label="评分"  />
+            <el-table-column prop="advice" label="评价"   />
           </el-table>
 
           <el-pagination
@@ -105,6 +105,10 @@ async function getGradeList () {
 }
 </script>
 <style scoped>
+.grade-table {
+  display: flex;
+  justify-content: center;
+}
 .result-list-card {
   border-radius: 10px;
 }

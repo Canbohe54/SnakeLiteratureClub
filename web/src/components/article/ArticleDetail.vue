@@ -125,5 +125,6 @@ async function getTextBy () {
 
 .gradeDis{
   text-align:center;
+  margin: 20px 20px;
 }
 </style>
