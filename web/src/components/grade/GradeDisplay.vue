@@ -3,7 +3,7 @@
     <el-col>
       <div>
         <el-card >
-          <el-empty v-if="gradeList.graList.length === 0" description="暂无结果" />
+          <el-empty v-if="gradeList.graList.length === 0" description="暂无评分" />
 <!--          <div inline-div>评分人&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 评分&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp评价</div>-->
 <!--          <el-row v-for="(gradeInfo,index) in gradeList.graList"-->
 <!--                  :key="index"-->
@@ -19,13 +19,13 @@
 <!--            </el-col>-->
 <!--          </el-row>-->
 
-          <el-table :data="gradeList.graList" stripe class="grade-table" flexible>
+          <el-table v-else :data="gradeList.graList" stripe class="grade-table" flexible>
             <el-table-column prop="text_by" label="评分人"  />
             <el-table-column prop="grade_all" label="评分"  />
             <el-table-column prop="advice" label="评价"   />
           </el-table>
 
-          <el-pagination
+          <el-pagination v-else
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="pageInfo.currentPage"

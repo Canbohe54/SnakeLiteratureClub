@@ -63,7 +63,7 @@
                   <el-dropdown-menu v-else>
                     <el-dropdown-item command="userCenter">个人中心</el-dropdown-item>
                     <el-dropdown-item command="accManage" v-if="!route.path.match('/account')">账号设置</el-dropdown-item>
-                    <el-dropdown-item divided>退出登录</el-dropdown-item>
+                    <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -168,6 +168,7 @@ import { useStore } from 'vuex'
 // const activeIndex = ref('2')
 import { useRoute, useRouter } from 'vue-router'
 import { Search, Upload } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import { el } from 'element-plus/es/locale'
 const router = useRouter()
 const route = useRoute()
@@ -232,6 +233,14 @@ const handleDropdownCommand = (command: string | number | object) => {
       break
     case 'accManage':
       router.push('/account/info')
+      break
+    case 'logout':
+      store.commit('clear')
+      router.push('/')
+      if(route.path === '/'){
+        location.reload()
+      }
+      ElMessage.success('退出登录成功')
       break
     default:
       break

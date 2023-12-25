@@ -2,15 +2,15 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    token: 'tokenNotNull',
+    token: '',
     userInfo: {
-      id: 'u9q35V2CVZQS',
-      name: 'Canbohe54',
-      identity: '专家',
-      unit: 'South China Normal University',
-      introduction: '这个人很懒，什么都没有留下~',
-      email: 'Canbohe54@snake.club',
-      avatar: 'https://avatars.githubusercontent.com/u/43968296'
+      id: '',
+      name: '',
+      identity: '未登录',
+      unit: '',
+      introduction: '',
+      email: '',
+      avatar: ''
     }
   },
   getters: {
@@ -33,7 +33,7 @@ export default createStore({
       state.userInfo = {
         id:'',
         name: '',
-        identity: '',
+        identity: '未登录',
         unit: '',
         introduction: '',
         email: '',

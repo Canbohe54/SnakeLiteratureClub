@@ -3,10 +3,18 @@
     <el-container>
       <el-main>
         <el-card>
-          <el-row class="box-card"><el-text>{{articleDetail.title}}</el-text></el-row>
-          <el-row class="box-card"><el-text>({{articleDetail.text_by}})</el-text></el-row>
+          <el-row class="article-box-card"><el-text class="article-detail-title">{{articleDetail.title}}</el-text></el-row>
+          <el-row class="article-box-card"><el-text class="article-detail-author">（{{articleDetail.text_by}}） {{articleDetail.time}}</el-text></el-row>
+          <div style="display: flex; justify-content:center;align-items: flex-end;">
+            <el-button type="warning" link circle >收藏</el-button>
+            <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小</el-button>
+            <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中</el-button>
+            <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大</el-button>
+            
+          </div>
+          
           <el-divider />
-          <el-text>{{articleDetail.text}}</el-text>
+          <el-text :size="displaySize">{{articleDetail.text}}</el-text>
         </el-card>
       </el-main>
 
@@ -41,11 +49,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {AttributeAddableObject} from "@/scripts/ArticleTagFilter";
 import {useRoute} from "vue-router";
 import {ElMessage} from "element-plus";
 import {SYNC_GET} from "@/scripts/Axios";
+import {Star} from "@element-plus/icons-vue";
 import GradeEditor from "@/components/grade/GradeEditor.vue";
 import GradeDisplay from "@/components/grade/GradeDisplay.vue";
 import store from "@/store";
@@ -62,6 +71,8 @@ const articleDetail: AttributeAddableObject = reactive({
   status: '',
   attr: ''
 })
+
+const displaySize = ref("default")
 
 function errorCallback(response: any) {
   console.log(response)
@@ -108,9 +119,18 @@ async function getTextBy () {
 }
 </script>
 <style>
-.box-card{
+.article-box-card{
   display: flex;
   justify-content: center;
+}
+
+.article-detail-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.article-detail-author {
+  font-size: 14px;
 }
 
 .e{
