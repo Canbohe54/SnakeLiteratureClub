@@ -55,7 +55,11 @@ import UserCenterBar from '@/components/userCenter/UserCenterBar.vue'
     UserCenterBar
   },
   beforeRouteUpdate(to, from, next) {
-    location.reload()
+    if (to.params.id !== from.params.id) {
+      location.reload()
+    } else {
+      next()
+    }
   }
 })
 export default class UserCenterView extends Vue { }

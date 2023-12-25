@@ -23,14 +23,17 @@
     </div>
 </template>
 <script lang="ts" setup>
+import store from '@/store';
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 const activeIndex = ref(route.path.split('/')[3])
 const handleSelect = (key: string, keyPath: string[]) => {
+    console.log(store.getters.getUserInfo.id)
   console.log('/user/' + route.params.id + '/' + key)
-  // router.push('/user/' + route.params.id + '/' + key)
+  router.push('/user/' + route.params.id + '/' + key)
+  //router.go(0)
 }
 </script>
 
