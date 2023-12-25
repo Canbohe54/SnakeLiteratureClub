@@ -30,5 +30,5 @@ public interface UserDao {
     User login(@Param("email") String email, @Param("password") String password);
 
     @Update("UPDATE user SET name=#{user.name}, phone=#{user.phone}, email=#{user.email}, password=#{user.password}, `group`=#{user.group}, organization=#{user.organization},attr=#{user.attr} WHERE id=#{user.id};")
-    User updateUserInfo(@Param("user") User user);
+    void updateUserInfo(@Param("user") User user);
 }
