@@ -13,7 +13,8 @@
       <div class="gradeEdit" v-if="store.getters.getUserInfo.identity=='专家'">
         <GradeEditor class="graedit"/>
       </div>
-      <div class="gradeEdit">
+
+      <div class="gradeDis">
         <GradeDisplay class="graDis"/>
       </div>
 
@@ -122,4 +123,7 @@ async function getTextBy () {
   margin-right: 10px;
 }
 
+.gradeDis{
+  text-align:center;
+}
 </style>
