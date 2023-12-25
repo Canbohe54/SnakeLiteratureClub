@@ -1,20 +1,20 @@
 <template>
-  <div class="user-center">
-    <NavBar />
-    <div class="common-layout user-center-disp">
-      <el-container>
-        <el-header class="user-header">
-          <InfoDetailDisplay />
-        </el-header>
-        <el-header class="user-center-bar">
-          <UserCenterBar />
-        </el-header>
-        <el-main>
-          <router-view />
-        </el-main>
-      </el-container>
+    <div class="user-center">
+      <NavBar />
+      <div class="common-layout user-center-disp">
+        <el-container>
+          <el-header class="user-header">
+            <InfoDetailDisplay />
+          </el-header>
+          <el-header class="user-center-bar">
+            <UserCenterBar />
+          </el-header>
+          <el-main>
+            <router-view />
+          </el-main>
+        </el-container>
+      </div>
     </div>
-  </div>
 </template>
 <style scoped>
 .user-header {
@@ -53,6 +53,9 @@ import UserCenterBar from '@/components/userCenter/UserCenterBar.vue'
     NavBar,
     InfoDetailDisplay,
     UserCenterBar
+  },
+  beforeRouteUpdate(to, from, next) {
+    location.reload()
   }
 })
 export default class UserCenterView extends Vue { }

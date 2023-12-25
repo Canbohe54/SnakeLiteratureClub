@@ -7,7 +7,7 @@
           <SearchFilter ref="SearchFilterRef" @change="() => articleFiltrate()"/>
         </el-col>
       </el-row>
-        <ArticleDisplay ref="ArticleDisplayRef" :key="filtratedArticleList"/>
+        <ArticleDisplay ref="ArticleDisplayRef" :key="filtratedArticleList" queryRoute="/article/search" :queryParams="{ keyword: route.query.wd }"/>
     </div>
 </template>
 <script lang="ts" setup>
@@ -17,6 +17,9 @@ import SearchBar from '../components/SearchBar.vue'
 import ArticleDisplay from '@/components/article/ArticleDisplay.vue'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 import { ArticleInfo, articleTagFilter } from "@/scripts/ArticleTagFilter";
+import { useRoute } from "vue-router";
+
+const route = useRoute()
 
 const SearchFilterRef = ref()
 const ArticleDisplayRef = ref()

@@ -31,13 +31,14 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
-import { SYNC_GET } from '@/scripts/Axios'
+import { GET } from '@/scripts/Axios'
 import { useRoute } from 'vue-router'
+import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
 
 const store = useStore()
 const route = useRoute()
 
-interface UserInfo {
+interface UserInfo extends AttributeAddableObject{
   id: string,
   name: string,
   identity: string,
@@ -46,7 +47,7 @@ interface UserInfo {
   email: string,
   avatar: string
 }
-const userInfo = reactive<UserInfo>({
+const userInfo = ref<UserInfo>({
   id: '123456',
   name: 'Canbohe39',
   identity: '学生',
@@ -57,15 +58,23 @@ const userInfo = reactive<UserInfo>({
 });
 
 // 若访问地址没有指定id，返回用户个人信息页
-(async () => {
-  if (route.query.id === '' || route.query.id === undefined) {
+(() => {
+  console.log(`id: ${route.params.id}`)
+  if (route.params.id === '' || route.params.id === undefined) {
     return
   }
-  await SYNC_GET('/article/articleDetail', {
-    article_id: route.query.id
-  }, async (response) => {
+  GET('/usr/getUserBasicInfo', {
+    user_id: route.params.id
+  }, (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      // TODO 拷贝response信息到本地
+      let detail = response.data['user_info']
+      userInfo.value.avatar = detail.pictureUrl
+      userInfo.value.id = detail.id
+      userInfo.value.email = detail.email
+      userInfo.value.name = detail.name
+      userInfo.value.unit = detail.organization
+      userInfo.value.identity = detail.group
+      userInfo.value.introduction = detail.introduction
     } else {
       console.log('response error')
     }
@@ -85,7 +94,7 @@ const identityTagType = (userIdentity: string) => {
   }
 }
 
-const userTagType = ref(identityTagType(userInfo.identity))
+const userTagType = ref(identityTagType(userInfo.value.identity))
 </script>
 <style scoped>
 .user-info-disp {

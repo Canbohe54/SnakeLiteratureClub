@@ -29,8 +29,7 @@ const route = useRoute()
 const router = useRouter()
 const activeIndex = ref(route.path.split('/')[3])
 const handleSelect = (key: string, keyPath: string[]) => {
-  router.push('/user/' + route.path.split('/')[2] + '/' + key)
-  console.log(key, keyPath)
+  router.push('/user/' + route.params.id + '/' + key)
 }
 </script>
 

@@ -19,7 +19,6 @@
                     <el-button type="primary" round v-if = "avgGradeMap.get(articleInfo.id) != '' ">{{avgGradeMap.get(articleInfo.id)}}/15</el-button>
                     <el-button type="primary" round v-else>暂无评分</el-button>
                 </div>
-
               </el-card>
             </el-col>
           </el-row>
@@ -40,10 +39,14 @@
   </el-row>
 </template>
 <script lang="ts" setup>
+import ArticleInfoCard from "@/components/article/ArticleInfoCard.vue";
 import { reactive, watch } from 'vue'
 import { SYNC_GET, SYNC_POST } from '@/scripts/Axios'
 import { useRoute } from 'vue-router'
 import router from '@/router'
+import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
+
+const props = defineProps(['queryRoute', 'queryParams'])
 
 const avgGradeMap = new Map()
 const route = useRoute()
@@ -56,8 +59,10 @@ const pageInfo = {
   total: 0
 }
 const articleList = reactive({
-  artList: [],
-  originalArticleList: []
+  artList: [{'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学', 'attr': '{"tags": {}}'},
+            {'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}'}],
+  originalArticleList: [{'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学', 'attr': '{"tags": {}}'},
+                        {'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}'}]
 })
 const articleStatus = [3]
 getArticleList()
@@ -97,12 +102,17 @@ async function getTextBy (artList: any) {
 }
 
 async function getArticleList () {
-  await (SYNC_GET('/article/search', {
+  let params: AttributeAddableObject = {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
-    keyword: route.query.wd,
     status_list: articleStatus
-  }, async (response) => {
+  }
+  for (const key in props.queryParams) {
+    console.log(props.queryParams[key])
+    params[key] = props.queryParams[key]
+  }
+  console.log(params)
+  await (SYNC_GET(props.queryRoute, params, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       console.log(response)
       await getAvgGrade(response.data.articles.list)

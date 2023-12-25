@@ -25,10 +25,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/RegisterView.vue')
   },
   {
-    path: '/user',
-    redirect: '/user/id=' + store.state.userInfo.id
-  },
-  {
     path: '/user/:id',
     name: 'user-info',
     component: () => import('../views/UserCenterView.vue'),
@@ -50,7 +46,26 @@ const routes: Array<RouteRecordRaw> = [
         path: '',
         redirect: { name: 'user-info-article' }
       }
-    ]
+    ],
+    beforeEnter: (to, from, next) => {
+      console.log(to.path)
+      if (store.state.userInfo.id === '' || store.state.userInfo.id === undefined) {
+        next('/login')
+      } else {
+        next()
+      }
+    }
+  },
+  {
+    path: '/user',
+    redirect: '/user/' + store.state.userInfo.id,
+    beforeEnter: (to, from, next) => {
+      if (store.state.userInfo.id === '' || store.state.userInfo.id === undefined) {
+        next('/login')
+      } else {
+        next('/user/' + store.state.userInfo.id)
+      }
+    }
   },
   {
     path: '/account',
