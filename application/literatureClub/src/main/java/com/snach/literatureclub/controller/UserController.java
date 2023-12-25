@@ -96,4 +96,8 @@ public class UserController {
     public Map<String, Object> getUserBasicInfo(@RequestParam("user_id") String userId) {
         return userService.getUserBasicInfo(userId);
     }
+    @RequestMapping(value = "updateUserInfo",method = RequestMethod.POST)
+    public Map<String, Object> updateUserInfo(@RequestParam("token") String token, User user){
+        return userService.updateUserInfo(token,user);
+    }
 }

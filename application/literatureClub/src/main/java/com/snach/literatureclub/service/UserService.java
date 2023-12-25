@@ -82,6 +82,8 @@ public interface UserService {
     Map<String, Object> userSearch(String keyword);
 
     Map<String, Object> getUserBasicInfo(String userId);
+
+    Map<String, Object> updateUserInfo(String token, User user);
 }
 
 @Mapper
@@ -213,13 +215,27 @@ class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> getUserBasicInfo(String userId) {
         Map<String, Object> response = new HashMap<>();
-        System.out.println("user_id: --------"+userId);
         User user_info = userDao.getUserById(userId);
         if (user_info == null) {
             response.put("statusMsg", "Nonexistent");
             return response;
         }
         response.put("user_info", user_info.safeGetUserInfo());
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> updateUserInfo(String token, User user) {
+        Map<String, Object> response = new HashMap<>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+
+        userDao.updateUserInfo(user);
+//        response.put("user_info", user_info.safeGetUserInfo());
         response.put("statusMsg", "Success.");
         return response;
     }
