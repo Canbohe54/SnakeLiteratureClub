@@ -99,6 +99,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
           router.push('/')
           // location.reload()
         } else {
+          ElMessage.error(response.data.statusMsg)
           console.log(response.data.statusMsg)
         }
         isPosted = true

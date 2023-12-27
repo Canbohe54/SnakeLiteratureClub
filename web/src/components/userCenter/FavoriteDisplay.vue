@@ -106,6 +106,7 @@ async function getTextBy(artList: any) {
 async function getArticleList() {
     let params: AttributeAddableObject = {
         token: store.getters.getToken,
+        user_id: route.params.id,
         page_num: pageInfo.currentPage,
         page_size: pageInfo.pageSize,
     }
@@ -179,4 +180,3 @@ defineExpose({ articleList })
     margin-bottom: 10px;
 }
 </style>
-  
