@@ -31,4 +31,36 @@ public interface UserDao {
 
     @Update("UPDATE user SET name=#{user.name}, phone=#{user.phone}, email=#{user.email}, password=#{user.password}, `group`=#{user.group}, organization=#{user.organization},attr=#{user.attr} WHERE id=#{user.id};")
     void updateUserInfo(@Param("user") User user);
+
+    @Select("SELECT COUNT(*) FROM follow WHERE follow_user_id = #{follow_user_id} AND followed_user_id = #{followed_user_id}")
+    int isFollowedByUID(@Param("follow_user_id") String followUserId,@Param("followed_user_id") String followedUserId);
+
+    @Delete("DELETE FROM follow WHERE follow_user_id = #{follow_user_id} AND followed_user_id = #{followed_user_id}")
+    void unFollow(@Param("follow_user_id") String followUserId, @Param("followed_user_id") String followedUserId);
+
+    @Insert("INSERT INTO follow(follow_user_id, followed_user_id) VALUES (#{follow_user_id},#{followed_user_id})")
+    void follow(@Param("follow_user_id") String followUserId, @Param("followed_user_id") String followedUserId);
+
+    @Select({"<script>",
+            "SELECT ",
+            "fo.followed_user_id ",
+            "FROM follow fo left join user u on fo.followed_user_id = u.id ",
+            "WHERE fo.follow_user_id=#{userId} AND u.group in",
+            "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
+            "#{item}",
+            "</foreach>",
+            "</script>"
+    })
+    List<String> getAllFollowed(String userId, @Param("items") List<String> targetIdentity);
+    @Select({"<script>",
+            "SELECT ",
+            "fo.follow_user_id ",
+            "FROM follow fo left join user u on fo.follow_user_id = u.id ",
+            "WHERE fo.followed_user_id=#{userId} AND u.group in",
+            "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
+            "#{item}",
+            "</foreach>",
+            "</script>"
+    })
+    List<String> getAllFans(String userId, @Param("items") List<String> targetIdentity);
 }

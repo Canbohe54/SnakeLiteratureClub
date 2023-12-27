@@ -98,12 +98,49 @@ public class UserController {
         return userService.userSearch(keyword);
     }
 
+
     @RequestMapping(value = "getUserBasicInfo", method = RequestMethod.GET)
     public Map<String, Object> getUserBasicInfo(@RequestParam("user_id") String userId) {
         return userService.getUserBasicInfo(userId);
     }
-    @RequestMapping(value = "updateUserInfo",method = RequestMethod.POST)
-    public Map<String, Object> updateUserInfo(@RequestParam("token") String token, User user){
-        return userService.updateUserInfo(token,user);
+
+    @RequestMapping(value = "updateUserInfo", method = RequestMethod.POST)
+    public Map<String, Object> updateUserInfo(@RequestParam("token") String token, User user) {
+        return userService.updateUserInfo(token, user);
     }
+
+    /**
+     * 获取关注的userId列表
+     * 返回格式：{ all_followed: [#{String},...], total: #{NUMBER}, statusMsg: #{String}}
+     *
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "getAllFollowed", method = RequestMethod.GET)
+    public Map<String, Object> getAllFollowed(@RequestParam("user_id") String userId,
+                                              @RequestParam("target_identity") List<String> targetIdentity) {
+        return userService.getAllFollowed(userId, targetIdentity);
+    }
+
+    @RequestMapping(value = "getAllFans", method = RequestMethod.GET)
+    public Map<String, Object> getAllFans(@RequestParam("user_id") String userId,
+                                          @RequestParam("target_identity") List<String> targetIdentity) {
+        return userService.getAllFans(userId, targetIdentity);
+    }
+
+    @RequestMapping(value = "followByUID", method = RequestMethod.POST)
+    public Map<String, Object> followByUID(String token, @RequestParam("user_id") String userId) {
+        return userService.followByUID(token, userId);
+    }
+
+    @RequestMapping(value = "unfollowByUID", method = RequestMethod.POST)
+    public Map<String, Object> unfollowByUID(String token, @RequestParam("user_id") String userId) {
+        return userService.unfollowByUID(token, userId);
+    }
+
+    @RequestMapping(value = "getIsFollowedByUID", method = RequestMethod.GET)
+    public Map<String, Object> getIsFollowedByUID(String token, @RequestParam("user_id") String userId) {
+        return userService.getIsFollowedByUID(token, userId);
+    }
+
 }

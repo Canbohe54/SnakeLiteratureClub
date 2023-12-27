@@ -91,6 +91,37 @@ public interface UserService {
     Map<String, Object> getUserBasicInfo(String userId);
 
     Map<String, Object> updateUserInfo(String token, User user);
+
+    Map<String, Object> getAllFollowed(String userId, List<String> targetIdentity);
+
+    Map<String,Object> getAllFans(String userId, List<String> targetIdentity);
+
+    /**
+     * 通过userId进行关注
+     *
+     * @param token
+     * @param userId
+     * @return
+     */
+    Map<String, Object> followByUID(String token, String userId);
+
+    /**
+     * 通过userId取消关注
+     *
+     * @param token
+     * @param userId
+     * @return
+     */
+    Map<String, Object> unfollowByUID(String token, String userId);
+
+    /**
+     * 查看是否已关注userId
+     *
+     * @param token
+     * @param userId
+     * @return
+     */
+    Map<String, Object> getIsFollowedByUID(String token, String userId);
 }
 
 @Mapper
@@ -258,6 +289,76 @@ class UserServiceImpl implements UserService {
 
         userDao.updateUserInfo(user);
 //        response.put("user_info", user_info.safeGetUserInfo());
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getAllFollowed(String userId, List<String> targetIdentity) {
+        Map<String, Object> response = new HashMap<>();
+        List<String> allFollowed = userDao.getAllFollowed(userId, targetIdentity);
+        response.put("all_followed", allFollowed);
+        response.put("total", allFollowed.size());
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getAllFans(String userId, List<String> targetIdentity) {
+        Map<String, Object> response = new HashMap<>();
+        List<String> allFans = userDao.getAllFans(userId, targetIdentity);
+        response.put("all_fans", allFans);
+        response.put("total", allFans.size());
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> followByUID(String token, String userId) {
+        Map<String, Object> response = new HashMap<>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        String followUserId = getPayload(token, "id");
+        userDao.follow(followUserId, userId);
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> unfollowByUID(String token, String userId) {
+        Map<String, Object> response = new HashMap<>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        // 获取用户id
+        String followUserId = getPayload(token, "id");
+        userDao.unFollow(followUserId, userId);
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getIsFollowedByUID(String token, String userId) {
+        Map<String, Object> response = new HashMap<>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        // 获取用户id
+        String followUserId = getPayload(token, "id");
+        response.put("follow_user_id", followUserId);
+        response.put("followed_user_id", userId);
+        if (userDao.isFollowedByUID(followUserId, userId) == 0) {
+            response.put("followed", "true");
+        } else {
+            response.put("followed", "false");
+        }
         response.put("statusMsg", "Success.");
         return response;
     }
