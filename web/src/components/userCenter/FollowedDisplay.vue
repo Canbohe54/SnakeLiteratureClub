@@ -174,7 +174,7 @@ const handleCommand = (command: string | number | object) => {
       user_id: command
     }, response => {
       if (response.status === 200 && response.data.statusMsg === 'Success.') {
-        ElMessage.success('取消关注成功')
+        ElMessage.info('取消关注成功')
         getUserFollowedList('all', ['all'])
         location.reload()
       } else {

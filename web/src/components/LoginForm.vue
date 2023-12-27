@@ -99,8 +99,14 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
           await router.push('/')
           location.reload()
         } else {
-          ElMessage.error(response.data.statusMsg)
-          console.log(response.data.statusMsg)
+          if (response.data.statusMsg === 'Nonexistent'){
+            ElMessage.error('用户不存在')
+          }else if(response.data.statusMsg === 'Password error.'){
+            ElMessage.error('用户名或密码错误')
+          } else {
+            ElMessage.error(response.data.statusMsg)
+            console.log(response.data.statusMsg)
+          }
         }
         isPosted = true
       })

@@ -176,8 +176,8 @@ const save = async () => {
       console.log('Save successfully!')
       ElMessage({
         showClose: true,
-        message: 'Save successfully!',
-        type: 'success'
+        message: '草稿已保存',
+        type: 'info'
       })
       saveBtnType.value = 'info'
       saveBtnText.value = '已保存'
@@ -217,7 +217,7 @@ const release = async () => {
       console.log('Release successfully!')
       ElMessage({
         showClose: true,
-        message: 'Release successfully!',
+        message: '已成功发布文章!',
         type: 'success'
       })
     } else {
@@ -235,7 +235,7 @@ const handleDelArticleClicked =async () => {
       ElMessage({
         showClose: true,
         message: '删除文章成功',
-        type: 'success'
+        type: 'warning'
       })
       router.back()
     } else {
