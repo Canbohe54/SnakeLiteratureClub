@@ -4,7 +4,7 @@
       <el-main>
         <el-card>
           <el-row class="article-box-card"><el-text class="article-detail-title">{{articleDetail.title}}</el-text></el-row>
-          <el-row class="article-box-card"><el-text class="article-detail-author">（{{articleDetail.text_by}}） {{articleDetail.time}}</el-text></el-row>
+          <el-row class="article-box-card"><el-text class="article-detail-author">（<el-button link :onclick="handleAuthorClicked">{{articleDetail.text_by}}</el-button>） {{articleDetail.time}}</el-text></el-row>
           <div style="display: flex; justify-content:center;align-items: flex-end;">
             <el-button type="warning" link circle :onclick="handleFavorite">{{ isFavorited?'取消收藏':'收藏' }}</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小</el-button>
@@ -51,14 +51,15 @@
 <script lang="ts" setup>
 import {reactive, ref} from "vue";
 import {AttributeAddableObject} from "@/scripts/ArticleTagFilter";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
-import {SYNC_GET} from "@/scripts/Axios";
+import {SYNC_GET, SYNC_POST} from "@/scripts/Axios";
 import {Star} from "@element-plus/icons-vue";
 import GradeEditor from "@/components/grade/GradeEditor.vue";
 import GradeDisplay from "@/components/grade/GradeDisplay.vue";
 import {useStore} from "vuex";
 
+const router = useRouter()
 const route = useRoute()
 const store = useStore()
 
@@ -67,6 +68,7 @@ const articleDetail: AttributeAddableObject = reactive({
   text: '',
   time: '',
   text_by: '',
+  text_by_id: '',
   title: '',
   description: '',
   status: '',
@@ -111,6 +113,7 @@ function errorCallback(response: any) {
   })
 })()
 async function getTextBy () {
+      articleDetail.text_by_id = articleDetail.text_by
       await SYNC_GET('/usr/getUserBasicInfo', {
         user_id: articleDetail.text_by
       }, async (response) => {
@@ -142,7 +145,7 @@ async function getIsFavorited() {
 
 async function handleFavorite() {
   if (isFavorited.value) {
-    await SYNC_GET('/usr/cancelFavorite', {
+    await SYNC_POST('/usr/cancelFavorite', {
       token: store.getters.getToken,
       article_id: articleDetail.id
     }, async (response) => {
@@ -158,7 +161,7 @@ async function handleFavorite() {
       }
     })
   } else {
-    await SYNC_GET('/usr/addFavorite', {
+    await SYNC_POST('/usr/addFavorite', {
       token: store.getters.getToken,
       article_id: articleDetail.id
     }, async (response) => {
@@ -173,6 +176,14 @@ async function handleFavorite() {
         errorCallback(response)
       }
     })
+  }
+}
+
+const handleAuthorClicked = () => {
+  if (articleDetail.text_by !== '' && articleDetail.text_by !== undefined) {
+    router.push('/user/'+articleDetail.text_by_id)
+  } else {
+    router.push({path: '/userNotFound'})
   }
 }
 

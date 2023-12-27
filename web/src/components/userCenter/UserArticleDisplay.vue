@@ -6,10 +6,10 @@
           <el-empty v-if="articleList.artList.length === 0" description="暂无结果" />
           <el-row gutter="12">
             <el-col v-for="(articleInfo, index) in articleList.artList" :key="index" :span="12">
-              <el-card class="box-card result-card-body" @click='gotoDetail(articleInfo.id)' shadow="hover">
+              <el-card class="box-card result-card-body" @click='gotoDetail(articleInfo.id, articleInfo.status)' shadow="hover">
                 <div>
-                  {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
-                  <h2>{{ articleInfo.title }}</h2>
+                   {{ articleInfo.time }}
+                  <h2>{{ articleInfo.title }} {{ articleInfo.status === 1 ? "*（草稿）":"" }}</h2>
                   <div style="min-height: 40px;">
                       {{ articleInfo.description.length > 20 ? articleInfo.description.slice(0, 20) + '...' : articleInfo.description }}
                   </div>
@@ -54,12 +54,12 @@ const pageInfo = {
   total: 0
 }
 const articleList = reactive({
-  artList: [{ 'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学', 'attr': '{"tags": {}}' },
-  { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}' }],
-  originalArticleList: [{ 'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学', 'attr': '{"tags": {}}' },
-  { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}' }]
+  artList: [{ 'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学', 'attr': '{"tags": {}}', 'status': '3' },
+  { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}', 'status': '3' }],
+  originalArticleList: [{ 'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学', 'attr': '{"tags": {}}', 'status': '3' },
+  { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}', 'status': '3' }]
 })
-const articleStatus = [3]
+const articleStatus = [1,3]
 getArticleList()
 
 watch(() => route.query.wd, () => {
@@ -100,11 +100,11 @@ async function getArticleList() {
   let params: AttributeAddableObject = {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
-    status_list: articleStatus,
-    keyword: route.query.wd
+    contributor_id: route.params.id,
+    status_list: articleStatus
   }
   console.log(params)
-  await (SYNC_GET('/article/search', params, async (response) => {
+  await (SYNC_GET('/contributor/contributorArticles', params, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       console.log(response)
       await getAvgGrade(response.data.articles.list)
@@ -115,9 +115,13 @@ async function getArticleList() {
     }
   }))
 }
-function gotoDetail(articleId: any) {
+function gotoDetail(articleId: any, articleStatus: any) {
   if (articleId !== '' && articleId !== undefined) {
-    router.push({ path: '/articleDetail', query: { id: articleId } })
+    if (articleStatus === 1) {
+      router.push({ path: '/articleEditor', query: { id: articleId } })
+    } else {
+      router.push({ path: '/articleDetail', query: { id: articleId } })
+    }
   } else {
     router.push({ path: '/articleNotFound' })
   }

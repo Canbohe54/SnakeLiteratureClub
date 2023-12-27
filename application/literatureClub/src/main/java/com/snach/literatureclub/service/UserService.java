@@ -177,7 +177,7 @@ class UserServiceImpl implements UserService {
         // 通过稿件id获取稿件基本信息并返回
         List<Article> articles = new ArrayList<>();
         for (String aId : aIds) {
-            articles.add(articleDao.getArticleById(aId));
+            articles.add(articleDao.getArticleBasicById(aId));
         }
         Map<String, Object> artInfo = new HashMap<>();
         artInfo.put("list", articles);
