@@ -210,7 +210,7 @@ const release = async () => {
     title: articleDetail.title,
     description: articleDetail.description,
     status: 3, // 已发布
-    attr: articleDetail.attr
+    attr: `{"tags":${articleDetail.attr}}`
   }
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
