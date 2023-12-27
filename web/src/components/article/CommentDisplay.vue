@@ -1,4 +1,20 @@
 <template>
+  <el-card class="CommentAdd">
+    <el-text class="CommentInputTag">评论:</el-text>
+    <el-input
+        class="CommentInputBox"
+        v-model="CommentInputText"
+        :disabled="store.getters.getToken === ''"
+        :placeholder="store.getters.getToken === '' ? '请先登录后评论! ' : ''"
+        type="textarea"
+        :autosize="{ maxRows: 3, minRows: 3 }"/>
+    <div class="CommentAddSubmit">
+      <el-button
+          @click="addComment(props.articleId, CommentInputText)"
+          :disabled="store.getters.getToken === ''"
+      >评论</el-button>
+    </div>
+  </el-card>
   <el-card>
     <ul class="CommentList" v-if="commentDisplayConf.maxCommentRowsNum > 0" v-infinite-scroll="loadCommentList">
       <li v-for="(item) in commentList">
@@ -21,6 +37,7 @@
     </div>
     <el-text v-if="commentDisplayConf.nowDisplayRowsNum >= commentDisplayConf.maxCommentRowsNum" type="info">我也是有底线的~</el-text>
   </el-card>
+  <p style="height: 20px" />
 </template>
 
 <script lang="ts" setup>
@@ -50,10 +67,10 @@ const store = useStore()
 const commentList = ref<Comment[]>([])
 const commentDisplayConf = ref({
   nowDisplayRowsNum: 0,
-  eachLoadLimit: 1,
+  eachLoadLimit: 10,
   maxCommentRowsNum: 0
 })
-const ConfirmDeleteCommentDialog = ref(false)
+const CommentInputText = ref('')
 
 async function getUserInfo (userId: string) {
   let userInfo
@@ -129,6 +146,27 @@ async function deleteComment (commentId: string) {
   })
 }
 
+async function addComment (textOn: string, text: string) {
+  await SYNC_POST('/comm/add', {
+    token: store.getters.getToken,
+    textOn: textOn,
+    text: text
+  }, async (response) => {
+    if (response.data.statusMsg === 'Success.') {
+      ElMessage({
+        message: '评论添加成功! ',
+        type: 'success'
+      })
+      location.reload()
+    } else {
+      ElMessage({
+        message: response.data.statusMsg,
+        type: 'warning'
+      })
+    }
+  })
+}
+
 function toUserPage (id: string) {
   router.push(`/user/${id}/article`)
 }
@@ -159,5 +197,27 @@ await loadCommentList()
 .CommentDivider {
   margin-top: 10px;
   margin-bottom: 15px;
+}
+
+.CommentInputTag {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0 0 10px 5px;
+  font-size: 20px;
+}
+
+.CommentAdd {
+  margin-bottom: 20px;
+}
+
+.CommentInputBox {
+  font-size: 15px;
+}
+
+.CommentAddSubmit {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+  margin-right: 15px;
 }
 </style>
