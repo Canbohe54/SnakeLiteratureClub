@@ -91,9 +91,7 @@ const followInfo = ref(
     }]
 )
 
-const followId = ref({
-  value: []
-})
+const followId = ref([])
 
 const pageInfo = {
   currentPage: 1,
@@ -159,7 +157,7 @@ async function getUserFollowedList(key: string, keyPath: string[]) {
   }, response => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       //console.log(response.data)
-      followId.value = response.data.all_followed
+      followId.value = response.data.all_followed.list
       console.log(followId.value)
       getUserBasicInfo()
     } else {
@@ -178,6 +176,7 @@ const handleCommand = (command: string | number | object) => {
       if (response.status === 200 && response.data.statusMsg === 'Success.') {
         ElMessage.success('取消关注成功')
         getUserFollowedList('all', ['all'])
+        location.reload()
       } else {
         console.log(response)
       }

@@ -25,7 +25,7 @@
         </div>
         <div>
           <!-- :class="isUserMyFollowed!=='true'?'followed':''" -->
-            <el-button :type="isUserMyFollowed? 'info': 'primary' " class="followed" plain v-if="route.params.id !== store.getters.getUserInfo.id" :onclick="handleFollowPeople">{{ isUserMyFollowed?"已关注":"关注" }}</el-button>
+            <el-button :type="isUserMyFollowed==='true'? 'info': 'primary' " class="followed" plain v-if="route.params.id !== store.getters.getUserInfo.id" :onclick="handleFollowPeople">{{ isUserMyFollowed==='true'?"已关注":"关注" }}</el-button>
         </div>
     </el-row>
 </template>
@@ -59,7 +59,7 @@ const userInfo = ref<UserInfo>({
   avatar: ''
 })
 
-const isUserMyFollowed = ref(false);
+const isUserMyFollowed = ref('false');
 
 // 若访问地址没有指定id，返回用户个人信息页
 (async () => {
@@ -97,15 +97,15 @@ const isUserMyFollowed = ref(false);
 })()
 
 async function handleFollowPeople() {
-  if (isUserMyFollowed.value) {
+  if (isUserMyFollowed.value === 'true') {
     await SYNC_POST('/usr/unfollowByUID', {
       token: store.getters.getToken,
       user_id: route.params.id
     }, (response) => {
       console.log("unfollow")
       if (response.status === 200 && response.data.statusMsg === 'Success.') {
-        isUserMyFollowed.value = false
-        ElMessage.success('关注成功')
+        isUserMyFollowed.value = 'false'
+        ElMessage.success('取消关注成功')
         location.reload()
       } else {
         console.log('response error')
@@ -118,8 +118,9 @@ async function handleFollowPeople() {
     }, (response) => {
       console.log("follow")
       if (response.status === 200 && response.data.statusMsg === 'Success.') {
-        isUserMyFollowed.value = true
-        ElMessage.success('取消关注成功')
+        isUserMyFollowed.value = 'true'
+        ElMessage.success('关注成功')
+        location.reload()
       } else {
         console.log('response error')
       }
