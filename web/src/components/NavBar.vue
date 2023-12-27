@@ -241,7 +241,6 @@ const handleDropdownCommand = (command: string | number | object) => {
       router.push('/login')
       break
     case 'userCenter':
-      console.log(111111111)
       const temp = store.getters.getUserInfo.id
       console.log(temp)
       router.push('/user/' + temp)
