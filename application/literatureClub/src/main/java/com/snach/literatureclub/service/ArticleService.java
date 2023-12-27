@@ -236,7 +236,7 @@ class ArticleServiceImpl implements ArticleService {
     public Map<String, Object> getContributorArticles(String contributor_id, int pageNum, int pageSize, List<Integer> statusList) {
         Map<String, Object> res = new HashMap<String, Object>();
         PageHelper.startPage(pageNum, pageSize);
-        res.put("articles", new PageInfo<>(articleDao.getArticleByContributorId(contributor_id)));
+        res.put("articles", new PageInfo<>(articleDao.getArticleByContributorId(contributor_id, statusList)));
         res.put("statusMsg", "Success.");
         return res;
     }
