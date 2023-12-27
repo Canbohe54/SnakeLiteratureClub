@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios'
 import qs from 'qs'
-axios.defaults.baseURL = 'http://10.242.62.167:19198'
+axios.defaults.baseURL = 'http://localhost:19198'
 
 export function GET (url: string, params: object = {}, onReady?: (response: AxiosResponse) => void, onError?: (error?: any) => void) {
   axios({

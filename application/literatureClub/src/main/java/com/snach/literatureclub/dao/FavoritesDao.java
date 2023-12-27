@@ -35,4 +35,13 @@ public interface FavoritesDao {
      */
     @Select("SELECT article_id FROM favorites WHERE user_id = #{user_id}")
     List<String> getAIdByUId(String user_id);
+
+    /**
+    * 根据用户id和稿件id，搜索其是否为收藏稿件
+    * @param user_id 用户id
+    * @param article_id 文章id
+    * @return 若无则为空
+    * */
+    @Select(value = "SELECT COUNT(*) FROM favorites WHERE user_id = #{user_id} AND article_id = #{article_id}")
+    int isArticleFavorited(String user_id, String article_id);
 }

@@ -82,6 +82,11 @@ public class UserController {
         return userService.getAllFavorites(token, pageNum, pageSize);
     }
 
+    @RequestMapping(value = "isArticleFavor", method = RequestMethod.GET)
+    public Map<String, Object> getIsArticleFavorited(@RequestParam("token") String token, @RequestParam("article_id") String article_id) {
+        return userService.isArticleFavorited(token, article_id);
+    }
+
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public Map<String, Object> login(@RequestParam("email") String email, @RequestParam("password") String password) {
         return userService.login(email, password);

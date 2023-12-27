@@ -71,6 +71,12 @@ public interface UserService {
     Map<String, Object> getAllFavorites(String token, int pageNum, int pageSize);
 
     /**
+     * @param token 用户id
+     * @param article_id
+     * @return 是否收藏该文章
+    * */
+    Map<String, Object> isArticleFavorited(String token, String article_id);
+    /**
      * 用户登录
      *
      * @param email    邮箱
@@ -171,13 +177,29 @@ class UserServiceImpl implements UserService {
         // 通过稿件id获取稿件基本信息并返回
         List<Article> articles = new ArrayList<>();
         for (String aId : aIds) {
-            articles.add(articleDao.getArticleBasicById(aId));
+            articles.add(articleDao.getArticleById(aId));
         }
         Map<String, Object> artInfo = new HashMap<>();
         artInfo.put("list", articles);
         artInfo.put("total", total);
 
         response.put("articles", artInfo);
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> isArticleFavorited(String token, String article_id) {
+        Map<String, Object> response = new HashMap<String, Object>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        // 获取用户id
+        String user_id = getPayload(token, "id");
+        int isFavor = favoritesDao.isArticleFavorited(user_id, article_id);
+        response.put("isFavor",isFavor==0?"False":"True");
         response.put("statusMsg", "Success.");
         return response;
     }

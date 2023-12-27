@@ -6,7 +6,7 @@
           <el-row class="article-box-card"><el-text class="article-detail-title">{{articleDetail.title}}</el-text></el-row>
           <el-row class="article-box-card"><el-text class="article-detail-author">（{{articleDetail.text_by}}） {{articleDetail.time}}</el-text></el-row>
           <div style="display: flex; justify-content:center;align-items: flex-end;">
-            <el-button type="warning" link circle >收藏</el-button>
+            <el-button type="warning" link circle :onclick="handleFavorite">{{ isFavorited?'取消收藏':'收藏' }}</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大</el-button>
@@ -57,9 +57,10 @@ import {SYNC_GET} from "@/scripts/Axios";
 import {Star} from "@element-plus/icons-vue";
 import GradeEditor from "@/components/grade/GradeEditor.vue";
 import GradeDisplay from "@/components/grade/GradeDisplay.vue";
-import store from "@/store";
+import {useStore} from "vuex";
 
 const route = useRoute()
+const store = useStore()
 
 const articleDetail: AttributeAddableObject = reactive({
   id: null,
@@ -73,6 +74,8 @@ const articleDetail: AttributeAddableObject = reactive({
 })
 
 const displaySize = ref("default")
+
+const isFavorited = ref(false)
 
 function errorCallback(response: any) {
   console.log(response)
@@ -101,6 +104,7 @@ function errorCallback(response: any) {
         articleDetail[dataKey] = response.data.article[dataKey]
       }
       await getTextBy()
+      await getIsFavorited()
     } else {
       errorCallback(response)
     }
@@ -117,6 +121,61 @@ async function getTextBy () {
         }
       })
 }
+
+async function getIsFavorited() {
+  await SYNC_GET('/usr/isArticleFavor', {
+    token: store.getters.getToken,
+    article_id: articleDetail.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      console.log(response)
+      if (response.data.isFavor === "True") {
+        isFavorited.value = true
+      } else {
+        isFavorited.value = false
+      }
+    } else {
+      errorCallback(response)
+    }
+  })
+}
+
+async function handleFavorite() {
+  if (isFavorited.value) {
+    await SYNC_GET('/usr/cancelFavorite', {
+      token: store.getters.getToken,
+      article_id: articleDetail.id
+    }, async (response) => {
+      if (response.status === 200 && response.data.statusMsg === 'Success.') {
+        ElMessage({
+          showClose: true,
+          message: '取消收藏成功',
+          type: 'success'
+        })
+        isFavorited.value = false
+      } else {
+        errorCallback(response)
+      }
+    })
+  } else {
+    await SYNC_GET('/usr/addFavorite', {
+      token: store.getters.getToken,
+      article_id: articleDetail.id
+    }, async (response) => {
+      if (response.status === 200 && response.data.statusMsg === 'Success.') {
+        ElMessage({
+          showClose: true,
+          message: '收藏成功',
+          type: 'success'
+        })
+        isFavorited.value = true
+      } else {
+        errorCallback(response)
+      }
+    })
+  }
+}
+
 </script>
 <style>
 .article-box-card{
