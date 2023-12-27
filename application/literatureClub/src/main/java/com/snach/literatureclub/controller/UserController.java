@@ -77,9 +77,10 @@ public class UserController {
      */
     @RequestMapping(value = "getAllFavorites", method = RequestMethod.GET)
     public Map<String, Object> getAllFavorites(String token,
+                                               @RequestParam("user_id") String user_id,
                                                @RequestParam(name = "page_num") int pageNum,
                                                @RequestParam(name = "page_size") int pageSize) {
-        return userService.getAllFavorites(token, pageNum, pageSize);
+        return userService.getAllFavorites(token, user_id, pageNum, pageSize);
     }
 
     @RequestMapping(value = "isArticleFavor", method = RequestMethod.GET)

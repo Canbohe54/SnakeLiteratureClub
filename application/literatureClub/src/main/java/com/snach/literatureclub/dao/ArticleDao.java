@@ -64,7 +64,7 @@ public interface ArticleDao {
      * @param article_id 稿件id
      * @return id对应的稿件信息的Article对象
      */
-    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr, a.text_by text_by FROM article a WHERE id = #{id}")
+    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr, a.text_by textBy FROM article a WHERE id = #{id}")
     Article getArticleBasicById(@Param("id") String article_id);
 
     /**
