@@ -6,8 +6,8 @@
           <el-row class="article-box-card"><el-text class="article-detail-title">{{articleDetail.title}}</el-text></el-row>
           <el-row class="article-box-card"><el-text class="article-detail-author">（<el-button link :onclick="handleAuthorClicked">{{articleDetail.text_by}}</el-button>） {{articleDetail.time}}</el-text></el-row>
           <div style="display: flex; justify-content:center;align-items: flex-end;">
-            <el-button type="primary" link v-if="articleDetail.text_by_id === store.state.userInfo.id" @click="handleUpdateArticleClicked">修改文章</el-button>
-            <el-button type="danger" link v-if="articleDetail.text_by_id === store.state.userInfo.id" @click="delArticleDialogVisible=true">删除文章</el-button>
+            <el-button type="primary" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id" @click="handleUpdateArticleClicked">修改文章</el-button>
+            <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id" @click="delArticleDialogVisible=true">删除文章</el-button>
             <el-button type="warning" link circle :onclick="handleFavorite">{{ isFavorited?'取消收藏':'收藏' }}</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中</el-button>
@@ -136,7 +136,6 @@ async function getIsFavorited() {
     article_id: articleDetail.id
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      console.log(response)
       if (response.data.isFavor === "True") {
         isFavorited.value = true
       } else {

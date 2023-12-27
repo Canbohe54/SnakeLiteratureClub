@@ -105,7 +105,6 @@ async function getTextBy(artList: any) {
 
 async function getArticleList() {
   if (route.params.id === store.getters.getUserInfo.id) {
-
     articleStatus.value = [1, 2, 3]
   } else {
     articleStatus.value = [3]
