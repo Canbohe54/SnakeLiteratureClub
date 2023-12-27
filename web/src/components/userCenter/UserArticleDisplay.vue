@@ -96,13 +96,16 @@ async function getTextBy(artList: any) {
       })
     })
   )
-
+  artList.sort((a: any, b: any) => {
+    return a.status - b.status
+  })
   articleList.artList = artList
   articleList.originalArticleList = artList
 }
 
 async function getArticleList() {
-  if (route.params.id === store.getters.userId) {
+  if (route.params.id === store.state.userInfo.id) {
+    
     articleStatus.value = [1, 2, 3]
   } else {
     articleStatus.value = [3]
