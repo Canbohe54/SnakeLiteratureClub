@@ -58,7 +58,7 @@ public interface ArticleDao {
 //            "WHERE c.contributor_id = #{contributor_id}")
     @Select({"<script>",
             "SELECT ",
-            "a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr, a.text_by textBy",
+            "a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr ",
             "FROM article a left join contributor_article_list c on a.id = c.article_id ",
             "WHERE c.contributor_id = #{contributor_id} AND a.status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
@@ -67,7 +67,17 @@ public interface ArticleDao {
             "</script>"
     })
     List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id, @Param("items") List<Integer> statusList);
-
+    /**
+    * 获取用户文章数量
+    * */
+    @Select({"<script>",
+            "SELECT ",
+            "COUNT(*)",
+            "FROM article a left join contributor_article_list c on a.id = c.article_id ",
+            "WHERE c.contributor_id = #{contributor_id} AND a.status = 3",
+            "</script>"
+    })
+    int getArticleNumByContributorId(@Param("contributor_id") String contributor_id);
     /**
      * 根据稿件id获取单个稿件的基础信息
      *
@@ -91,7 +101,7 @@ public interface ArticleDao {
      *
      * @return 所有的稿件信息的Article对象List
      */
-    @Select("SELECT id, time, text_by as textBy, title, description, status, attr FROM article")
+    @Select("SELECT id, time, text_by as textBy, title, description, status, attr FROM article WHERE status = 3")
     List<Article> getAllArticles();
 
     /**

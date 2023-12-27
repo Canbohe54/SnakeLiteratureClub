@@ -63,4 +63,22 @@ public interface UserDao {
             "</script>"
     })
     List<String> getAllFans(String userId, @Param("items") List<String> targetIdentity);
+
+    @Select({"<script>",
+            "SELECT ",
+            "COUNT(*) ",
+            "FROM follow fo left join user u on fo.follow_user_id = u.id ",
+            "WHERE fo.followed_user_id=#{contributor_id}",
+            "</script>"
+    })
+    int getFansNumById(@Param("contributor_id") String contributor_id);
+
+    @Select({"<script>",
+            "SELECT ",
+            "COUNT(*) ",
+            "FROM follow fo left join user u on fo.followed_user_id = u.id ",
+            "WHERE fo.follow_user_id=#{contributor_id}",
+            "</script>"
+    })
+    int getFollowNumById(@Param("contributor_id") String contributor_id);
 }

@@ -254,7 +254,7 @@ const handleDropdownCommand = async (command: string | number | object) => {
       break
     case 'logout':
       store.commit('clear')
-      router.push('/')
+      await router.push('/')
       location.reload()
       ElMessage.success('退出登录成功')
       break
