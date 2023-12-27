@@ -105,6 +105,7 @@ const save = async () => {
         message: 'Save successfully!',
         type: 'success',
       })
+      location.reload()
     }else {
       errorCallback(response)
     }

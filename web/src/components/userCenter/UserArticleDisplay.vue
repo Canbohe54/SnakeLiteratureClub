@@ -6,12 +6,14 @@
           <el-empty v-if="articleList.artList.length === 0" description="暂无结果" />
           <el-row gutter="12">
             <el-col v-for="(articleInfo, index) in articleList.artList" :key="index" :span="12">
-              <el-card class="box-card result-card-body" @click='gotoDetail(articleInfo.id, articleInfo.status)' shadow="hover">
+              <el-card class="box-card result-card-body" @click='gotoDetail(articleInfo.id, articleInfo.status)'
+                shadow="hover">
                 <div>
-                   {{ articleInfo.time }}
-                  <h2>{{ articleInfo.title }} {{ articleInfo.status === 1 ? "*（草稿）":"" }}</h2>
+                  {{ articleInfo.time }}
+                  <h2>{{ articleInfo.title }} {{ articleInfo.status === 1 ? "*（草稿）" : "" }}</h2>
                   <div style="min-height: 40px;">
-                      {{ articleInfo.description.length > 20 ? articleInfo.description.slice(0, 20) + '...' : articleInfo.description }}
+                    {{ articleInfo.description.length > 20 ? articleInfo.description.slice(0, 20) + '...' :
+                      articleInfo.description }}
                   </div>
                 </div>
 
@@ -40,11 +42,14 @@ import { SYNC_GET, SYNC_POST } from '@/scripts/Axios'
 import { useRoute } from 'vue-router'
 import router from '@/router'
 import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
+import { ref } from 'vue'
+import { useStore } from "vuex";
 
 // const props = defineProps(['queryRoute', 'queryParams'])
 
 const avgGradeMap = new Map()
 const route = useRoute()
+const store = useStore()
 
 // 不知道为什么不能监听searchWord
 // const searchWord = ref(route.query.wd)
@@ -59,7 +64,7 @@ const articleList = reactive({
   originalArticleList: [{ 'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学', 'attr': '{"tags": {}}', 'status': '3' },
   { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}', 'status': '3' }]
 })
-const articleStatus = [1,3]
+const articleStatus = ref([])
 getArticleList()
 
 watch(() => route.query.wd, () => {
@@ -97,11 +102,16 @@ async function getTextBy(artList: any) {
 }
 
 async function getArticleList() {
+  if (route.params.id === store.getters.userId) {
+    articleStatus.value = [1, 2, 3]
+  } else {
+    articleStatus.value = [3]
+  }
   let params: AttributeAddableObject = {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
     contributor_id: route.params.id,
-    status_list: articleStatus
+    status_list: articleStatus.value
   }
   console.log(params)
   await (SYNC_GET('/contributor/contributorArticles', params, async (response) => {

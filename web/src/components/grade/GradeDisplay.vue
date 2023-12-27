@@ -18,14 +18,14 @@
 <!--              </el-card>-->
 <!--            </el-col>-->
 <!--          </el-row>-->
-
-          <el-table v-else :data="gradeList.graList" stripe class="grade-table" flexible>
+          <div v-else>
+            <el-table :data="gradeList.graList" stripe class="grade-table" flexible>
             <el-table-column prop="text_by" label="评分人"  />
             <el-table-column prop="grade_all" label="评分"  />
             <el-table-column prop="advice" label="评价"   />
           </el-table>
 
-          <el-pagination v-else
+          <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="pageInfo.currentPage"
@@ -35,6 +35,7 @@
             :total="pageInfo.total"
             class="search-result-pageination">
           </el-pagination>
+          </div>
         </el-card>
       </div>
     </el-col>
