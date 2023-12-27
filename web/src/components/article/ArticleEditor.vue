@@ -61,8 +61,24 @@
 
         <el-button class="3" :type="saveBtnType" @click="save" :disabled="saveBtnText === '已保存'">{{ saveBtnText }}</el-button>
         <el-button class="3" type="success" @click="release">发布</el-button>
+        <el-button type="danger" @click="delArticleDialogVisible=true">删除文章</el-button>
       </el-upload>
-
+      <el-dialog
+        draggable
+        v-model="delArticleDialogVisible"
+        title="删除文章"
+        width="30%"
+      >
+        <span>确定删除文章？</span>
+        <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="delArticleDialogVisible = false">取消</el-button>
+        <el-button type="danger" @click="handleDelArticleClicked">
+          删除
+        </el-button>
+      </span>
+        </template>
+      </el-dialog>
     </el-col>
   </el-row>
 </template>
@@ -76,6 +92,7 @@ import {useRoute} from 'vue-router'
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import {ElMessage} from 'element-plus'
 import SearchFilter from '@/components/search/SearchFilter.vue'
+import router from "@/router";
 
 const upload = ref<UploadInstance>()
 const store = useStore()
@@ -83,6 +100,7 @@ const route = useRoute()
 const SearchFilterRef = ref()
 const saveBtnType = ref('success')
 const saveBtnText = ref('保存')
+const delArticleDialogVisible = ref(false)
 
 
 const articleDetail: AttributeAddableObject = reactive({
@@ -202,6 +220,24 @@ const release = async () => {
       errorCallback(response)
     }
   })
+}
+const handleDelArticleClicked =async () => {
+  await SYNC_POST('/contributor/delArticle', {
+    token: store.getters.getToken,
+    article_id: articleDetail.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      ElMessage({
+        showClose: true,
+        message: '删除文章成功',
+        type: 'success'
+      })
+    } else {
+      errorCallback(response)
+    }
+  })
+  delArticleDialogVisible.value = false
+  router.back()
 }
 </script>
 

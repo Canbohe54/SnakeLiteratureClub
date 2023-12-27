@@ -4,15 +4,16 @@
       <el-main>
         <el-card>
           <el-row class="article-box-card"><el-text class="article-detail-title">{{articleDetail.title}}</el-text></el-row>
-          <el-row class="article-box-card"><el-text class="article-detail-author">（{{articleDetail.text_by}}） {{articleDetail.time}}</el-text></el-row>
+          <el-row class="article-box-card"><el-text class="article-detail-author">（<el-button link :onclick="handleAuthorClicked">{{articleDetail.text_by}}</el-button>） {{articleDetail.time}}</el-text></el-row>
           <div style="display: flex; justify-content:center;align-items: flex-end;">
-            <el-button type="warning" link circle >收藏</el-button>
+            <el-button type="primary" link v-if="articleDetail.text_by_id === store.state.userInfo.id" @click="handleUpdateArticleClicked">修改文章</el-button>
+            <el-button type="danger" link v-if="articleDetail.text_by_id === store.state.userInfo.id" @click="delArticleDialogVisible=true">删除文章</el-button>
+            <el-button type="warning" link circle :onclick="handleFavorite">{{ isFavorited?'取消收藏':'收藏' }}</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大</el-button>
-            
           </div>
-          
+
           <el-divider />
           <el-text :size="displaySize">{{articleDetail.text}}</el-text>
         </el-card>
@@ -47,25 +48,44 @@
       </el-footer>
     </el-container>
   </div>
+  <el-dialog
+    draggable
+    v-model="delArticleDialogVisible"
+    title="删除文章"
+    width="30%"
+  >
+    <span>确定删除文章？</span>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="delArticleDialogVisible = false">取消</el-button>
+        <el-button type="danger" @click="handleDelArticleClicked">
+          删除
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 <script lang="ts" setup>
 import {reactive, ref} from "vue";
 import {AttributeAddableObject} from "@/scripts/ArticleTagFilter";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
-import {SYNC_GET} from "@/scripts/Axios";
+import {SYNC_GET, SYNC_POST} from "@/scripts/Axios";
 import {Star} from "@element-plus/icons-vue";
 import GradeEditor from "@/components/grade/GradeEditor.vue";
 import GradeDisplay from "@/components/grade/GradeDisplay.vue";
-import store from "@/store";
+import {useStore} from "vuex";
 
+const router = useRouter()
 const route = useRoute()
+const store = useStore()
 
 const articleDetail: AttributeAddableObject = reactive({
   id: null,
   text: '',
   time: '',
   text_by: '',
+  text_by_id: '',
   title: '',
   description: '',
   status: '',
@@ -74,6 +94,9 @@ const articleDetail: AttributeAddableObject = reactive({
 
 const displaySize = ref("default")
 
+const isFavorited = ref(false)
+
+const delArticleDialogVisible = ref(false)
 function errorCallback(response: any) {
   console.log(response)
   if (response.status === 200) {
@@ -101,12 +124,14 @@ function errorCallback(response: any) {
         articleDetail[dataKey] = response.data.article[dataKey]
       }
       await getTextBy()
+      await getIsFavorited()
     } else {
       errorCallback(response)
     }
   })
 })()
 async function getTextBy () {
+      articleDetail.text_by_id = articleDetail.text_by
       await SYNC_GET('/usr/getUserBasicInfo', {
         user_id: articleDetail.text_by
       }, async (response) => {
@@ -116,6 +141,93 @@ async function getTextBy () {
           console.log(response)
         }
       })
+}
+
+async function getIsFavorited() {
+  await SYNC_GET('/usr/isArticleFavor', {
+    token: store.getters.getToken,
+    article_id: articleDetail.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      console.log(response)
+      if (response.data.isFavor === "True") {
+        isFavorited.value = true
+      } else {
+        isFavorited.value = false
+      }
+    } else {
+      errorCallback(response)
+    }
+  })
+}
+
+async function handleFavorite() {
+  if (isFavorited.value) {
+    await SYNC_POST('/usr/cancelFavorite', {
+      token: store.getters.getToken,
+      article_id: articleDetail.id
+    }, async (response) => {
+      if (response.status === 200 && response.data.statusMsg === 'Success.') {
+        ElMessage({
+          showClose: true,
+          message: '取消收藏成功',
+          type: 'success'
+        })
+        isFavorited.value = false
+      } else {
+        errorCallback(response)
+      }
+    })
+  } else {
+    await SYNC_POST('/usr/addFavorite', {
+      token: store.getters.getToken,
+      article_id: articleDetail.id
+    }, async (response) => {
+      if (response.status === 200 && response.data.statusMsg === 'Success.') {
+        ElMessage({
+          showClose: true,
+          message: '收藏成功',
+          type: 'success'
+        })
+        isFavorited.value = true
+      } else {
+        errorCallback(response)
+      }
+    })
+  }
+}
+
+const handleAuthorClicked = () => {
+  if (articleDetail.text_by !== '' && articleDetail.text_by !== undefined) {
+    router.push('/user/'+articleDetail.text_by_id)
+  } else {
+    router.push({path: '/userNotFound'})
+  }
+}
+const handleDelArticleClicked =async () => {
+  await SYNC_POST('/contributor/delArticle', {
+    token: store.getters.getToken,
+    article_id: articleDetail.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      ElMessage({
+        showClose: true,
+        message: '删除文章成功',
+        type: 'success'
+      })
+    } else {
+      errorCallback(response)
+    }
+  })
+  delArticleDialogVisible.value = false
+  router.back()
+}
+const handleUpdateArticleClicked = () => {
+  if (articleDetail.id !== '' && articleDetail.id !== undefined) {
+    router.push({ path: '/articleEditor', query: { id: articleDetail.id } })
+  } else {
+    router.push({ path: '/articleNotFound' })
+  }
 }
 </script>
 <style>

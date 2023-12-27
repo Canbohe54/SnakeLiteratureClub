@@ -36,7 +36,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'favor',
-        component: () => import('../components/userCenter/UserArticleDisplay.vue')
+        component: () => import('../components/userCenter/FavoriteDisplay.vue')
       },
       {
         path: 'followed',

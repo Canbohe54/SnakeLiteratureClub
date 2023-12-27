@@ -63,12 +63,19 @@ public interface UserService {
      * 获取用户收藏列表基础信息
      * 返回格式 {articles: [#{Article}], statusMsg: #{String}}
      *
-     * @param token      用于验证是否过期以及获取作者id
+     * @param token    用于验证是否过期以及获取作者id
      * @param pageNum
      * @param pageSize
      * @return 收藏列表基础信息和执行状态
      */
-    Map<String, Object> getAllFavorites(String token, int pageNum, int pageSize);
+    Map<String, Object> getAllFavorites(String token, String user_id, int pageNum, int pageSize);
+
+    /**
+     * @param token      用户id
+     * @param article_id
+     * @return 是否收藏该文章
+     */
+    Map<String, Object> isArticleFavorited(String token, String article_id);
 
     /**
      * 用户登录
@@ -84,6 +91,37 @@ public interface UserService {
     Map<String, Object> getUserBasicInfo(String userId);
 
     Map<String, Object> updateUserInfo(String token, User user);
+
+    Map<String, Object> getAllFollowed(String userId, List<String> targetIdentity);
+
+    Map<String,Object> getAllFans(String userId, List<String> targetIdentity);
+
+    /**
+     * 通过userId进行关注
+     *
+     * @param token
+     * @param userId
+     * @return
+     */
+    Map<String, Object> followByUID(String token, String userId);
+
+    /**
+     * 通过userId取消关注
+     *
+     * @param token
+     * @param userId
+     * @return
+     */
+    Map<String, Object> unfollowByUID(String token, String userId);
+
+    /**
+     * 查看是否已关注userId
+     *
+     * @param token
+     * @param userId
+     * @return
+     */
+    Map<String, Object> getIsFollowedByUID(String token, String userId);
 }
 
 @Mapper
@@ -155,15 +193,14 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> getAllFavorites(String token, int pageNum, int pageSize) {
+    public Map<String, Object> getAllFavorites(String token, String user_id, int pageNum, int pageSize) {
         Map<String, Object> response = new HashMap<String, Object>();
         // 检测token是否合法
         if (!tokenVerify(token)) {
             response.put("statusMsg", "Invalid token.");
             return response;
         }
-        // 获取用户id
-        String user_id = getPayload(token, "id");
+
         // 获取用户收藏稿件id
         PageHelper.startPage(pageNum, pageSize);
         List<String> aIds = favoritesDao.getAIdByUId(user_id);
@@ -178,6 +215,22 @@ class UserServiceImpl implements UserService {
         artInfo.put("total", total);
 
         response.put("articles", artInfo);
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> isArticleFavorited(String token, String article_id) {
+        Map<String, Object> response = new HashMap<String, Object>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        // 获取用户id
+        String user_id = getPayload(token, "id");
+        int isFavor = favoritesDao.isArticleFavorited(user_id, article_id);
+        response.put("isFavor", isFavor == 0 ? "False" : "True");
         response.put("statusMsg", "Success.");
         return response;
     }
@@ -236,6 +289,76 @@ class UserServiceImpl implements UserService {
 
         userDao.updateUserInfo(user);
 //        response.put("user_info", user_info.safeGetUserInfo());
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getAllFollowed(String userId, List<String> targetIdentity) {
+        Map<String, Object> response = new HashMap<>();
+        List<String> allFollowed = userDao.getAllFollowed(userId, targetIdentity);
+        response.put("all_followed", allFollowed);
+        response.put("total", allFollowed.size());
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getAllFans(String userId, List<String> targetIdentity) {
+        Map<String, Object> response = new HashMap<>();
+        List<String> allFans = userDao.getAllFans(userId, targetIdentity);
+        response.put("all_fans", allFans);
+        response.put("total", allFans.size());
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> followByUID(String token, String userId) {
+        Map<String, Object> response = new HashMap<>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        String followUserId = getPayload(token, "id");
+        userDao.follow(followUserId, userId);
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> unfollowByUID(String token, String userId) {
+        Map<String, Object> response = new HashMap<>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        // 获取用户id
+        String followUserId = getPayload(token, "id");
+        userDao.unFollow(followUserId, userId);
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getIsFollowedByUID(String token, String userId) {
+        Map<String, Object> response = new HashMap<>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        // 获取用户id
+        String followUserId = getPayload(token, "id");
+        response.put("follow_user_id", followUserId);
+        response.put("followed_user_id", userId);
+        if (userDao.isFollowedByUID(followUserId, userId) == 0) {
+            response.put("followed", "true");
+        } else {
+            response.put("followed", "false");
+        }
         response.put("statusMsg", "Success.");
         return response;
     }

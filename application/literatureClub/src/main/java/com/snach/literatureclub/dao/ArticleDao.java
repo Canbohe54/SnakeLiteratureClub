@@ -53,10 +53,20 @@ public interface ArticleDao {
      * @param contributor_id 作者id
      * @return
      */
-    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr " +
-            "FROM article a left join contributor_article_list c on a.id = c.article_id " +
-            "WHERE c.contributor_id = #{contributor_id}")
-    List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id);
+//    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr " +
+//            "FROM article a left join contributor_article_list c on a.id = c.article_id " +
+//            "WHERE c.contributor_id = #{contributor_id}")
+    @Select({"<script>",
+            "SELECT ",
+            "a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr ",
+            "FROM article a left join contributor_article_list c on a.id = c.article_id ",
+            "WHERE c.contributor_id = #{contributor_id} AND a.status in",
+            "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
+            "#{item}",
+            "</foreach>",
+            "</script>"
+    })
+    List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id, @Param("items") List<Integer> statusList);
 
     /**
      * 根据稿件id获取单个稿件的基础信息
@@ -64,7 +74,7 @@ public interface ArticleDao {
      * @param article_id 稿件id
      * @return id对应的稿件信息的Article对象
      */
-    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr FROM article a WHERE id = #{id}")
+    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr, a.text_by textBy FROM article a WHERE id = #{id}")
     Article getArticleBasicById(@Param("id") String article_id);
 
     /**
@@ -93,11 +103,11 @@ public interface ArticleDao {
      */
     @Select({"<script>",
             "SELECT ",
-              "id, text, time, text_by as textBy, title, description, status, attr ",
+            "id, text, time, text_by as textBy, title, description, status, attr ",
             "FROM article WHERE title LIKE '%${keyword}%' AND attr LIKE '%\"tags\":%\"${tag}\"%]%' AND status in",
-              "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
-                "#{item}",
-              "</foreach>",
+            "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
+            "#{item}",
+            "</foreach>",
             "</script>"
     })
     List<Article> getArticlesByKeywordAndTag(String keyword, String tag);
@@ -109,15 +119,15 @@ public interface ArticleDao {
      * @return 所有符合条件的稿件
      */
     @Select({"<script>",
-                "SELECT ",
-                  "id, text, time, text_by as textBy, title, description, status, attr ",
-                "FROM article WHERE title LIKE '%${keyword}%' AND status in",
-                "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
-                  "#{item}",
-                "</foreach>",
+            "SELECT ",
+            "id, text, time, text_by as textBy, title, description, status, attr ",
+            "FROM article WHERE title LIKE '%${keyword}%' AND status in",
+            "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
+            "#{item}",
+            "</foreach>",
             "</script>"
     })
-    List<Article> getArticlesByKeyword(String keyword, @Param("items") List<Integer> statusList );
+    List<Article> getArticlesByKeyword(String keyword, @Param("items") List<Integer> statusList);
 
     /**
      * 插入作者与稿件关系
