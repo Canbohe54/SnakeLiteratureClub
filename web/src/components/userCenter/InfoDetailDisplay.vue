@@ -31,7 +31,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
-import { GET } from '@/scripts/Axios'
+import {GET, SYNC_GET} from '@/scripts/Axios'
 import { useRoute } from 'vue-router'
 import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
 
@@ -58,13 +58,13 @@ const userInfo = ref<UserInfo>({
 });
 
 // 若访问地址没有指定id，返回用户个人信息页
-(() => {
+(async () => {
   if (route.params.id === '' || route.params.id === undefined) {
     return
   }
-  GET('/usr/getUserBasicInfo', {
+  await SYNC_GET('/usr/getUserBasicInfo', {
     user_id: route.params.id
-  }, (response) => {
+  }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       let detail = response.data['user_info']
       userInfo.value.avatar = detail.pictureUrl
@@ -77,6 +77,7 @@ const userInfo = ref<UserInfo>({
       userTagType.value = identityTagType(userInfo.value.identity)
     } else {
       console.log('response error')
+      console.log(response)
     }
   })
 })()
