@@ -168,7 +168,7 @@ const save = async () => {
     title: articleDetail.title,
     description: articleDetail.description,
     status: 1, // 保存成功
-    attr: articleDetail.attr
+    attr: JSON.stringify({ tags: articleDetail.attr })
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       console.log('Save successfully!')

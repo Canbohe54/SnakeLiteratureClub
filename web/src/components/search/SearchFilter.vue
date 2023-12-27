@@ -17,7 +17,7 @@
 import { ref } from 'vue'
 import { AttributeAddableObject } from '@/scripts/ArticleTagFilter'
 
-const filterTagGroups = { 'group-A': ['A-filter', 'B-fil', 'C-fil', 'D-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil', 'C-fil'], 'group-B': ['D-fil', 'E-fil'] }
+const filterTagGroups = { '体裁': ['记叙文', '诗歌', '议论文', '散文', '小说', '说明文'], 'group-B': ['D-fil', 'E-fil'] }
 
 const filterSelection = ref<AttributeAddableObject>({});
 
