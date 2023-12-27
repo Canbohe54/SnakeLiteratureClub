@@ -46,14 +46,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '',
         redirect: { name: 'user-info-article' }
       }
-    ],
-    beforeEnter: (to, from, next) => {
-      if (store.getters.getUserInfo.id === '' || store.getters.getUserInfo.id === undefined) {
-        next('/login')
-      } else {
-        next()
-      }
-    }
+    ]
   },
   {
     path: '/user',

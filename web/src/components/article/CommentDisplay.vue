@@ -1,15 +1,18 @@
 <template>
   <el-card>
-    <ul v-if="commentDisplayConf.maxCommentRowsNum > 0" v-infinite-scroll="loadCommentList" style="list-style: none; padding-left: 5px">
+    <ul class="CommentList" v-if="commentDisplayConf.maxCommentRowsNum > 0" v-infinite-scroll="loadCommentList">
       <li v-for="(item) in commentList">
-        <el-row>
-          <el-avatar> user </el-avatar>
+        <el-row class="CommentDisplay">
+          <el-avatar :src="item.commenterAvatar" @click="toUserPage(item.commenterId)"/>
           <div class="blank"></div>
-          <el-text>{{ item.commenter }}</el-text>
+          <el-text class="CommenterName" @click="toUserPage(item.commenterId)">{{ item.commenter }}</el-text>
           <div class="e"></div>
           <el-text>{{ item.text }}</el-text>
         </el-row>
-        <el-divider/>
+        <el-row class="CommentExtra" v-if="item.commenterId === store.getters.getUserInfo.id">
+          <el-button size="small" @click="deleteComment(item.id)">Delete</el-button>
+        </el-row>
+        <el-divider class="CommentDivider"/>
       </li>
     </ul>
     <div v-else>
@@ -24,6 +27,8 @@
 import { ref } from 'vue'
 import { SYNC_GET, SYNC_POST } from '@/scripts/Axios'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 interface Comment {
   commenter: string,
@@ -40,12 +45,15 @@ const props = defineProps({
     required: true
   }
 })
+const router = useRouter()
+const store = useStore()
 const commentList = ref<Comment[]>([])
 const commentDisplayConf = ref({
   nowDisplayRowsNum: 0,
   eachLoadLimit: 1,
   maxCommentRowsNum: 0
 })
+const ConfirmDeleteCommentDialog = ref(false)
 
 async function getUserInfo (userId: string) {
   let userInfo
@@ -101,9 +109,55 @@ async function loadCommentList () {
   })
 }
 
+async function deleteComment (commentId: string) {
+  await SYNC_POST('/comm/del', {
+    token: store.getters.getToken,
+    id: commentId
+  }, async (response) => {
+    if (response.data.statusMsg === 'Success.') {
+      ElMessage({
+        message: '评论删除成功! ',
+        type: 'success'
+      })
+      location.reload()
+    } else {
+      ElMessage({
+        message: response.data.statusMsg,
+        type: 'warning'
+      })
+    }
+  })
+}
+
+function toUserPage (id: string) {
+  router.push(`/user/${id}/article`)
+}
+
 await loadCommentList()
 </script>
 
-<style>
+<style lang="scss" scoped>
+.CommentList {
+  list-style: none;
+  padding-left: 5px;
+}
 
+.CommentDisplay {
+  margin-bottom: 0;
+}
+
+.CommenterName {
+  width: 70px;
+}
+
+.CommentExtra {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 5px;
+}
+
+.CommentDivider {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
 </style>
