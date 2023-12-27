@@ -70,7 +70,7 @@ class CommentServiceImpl implements CommentService {
             }
             resultList.add(onComment);
         }
-        response.put("remainder", rootCommentCount - startAt - limit + 1);
+        response.put("rowsNum", rootCommentCount);
         response.put("statusMsg", "Success.");
         response.put("res", resultList);
         return response;
