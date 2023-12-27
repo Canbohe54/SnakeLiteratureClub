@@ -18,7 +18,7 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { POST } from '@/scripts/Axios'
+import {POST, SYNC_POST} from '@/scripts/Axios'
 import router from '@/router'
 
 interface CancelAccForm {
@@ -28,7 +28,12 @@ interface CancelAccForm {
 const cancelAccForm = reactive<CancelAccForm>({
   confirm: ''
 })
-
+const cancelAccButton = reactive<any>({ // 注册按钮
+  disabled: false,
+  buttonText: '立即注销',
+  duration: 2,
+  timer: null
+})
 const validateConfirm = (rule: any, value: any, callback: any) => { // 验证密码
   if (value === '') {
     callback(new Error('请输入“确认注销”以抹除账户'))
@@ -44,7 +49,51 @@ const cancelAccRules = reactive<FormRules>({
     { required: true, validator: validateConfirm, trigger: 'blur' }
   ]
 })
-
+const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
+                                                               // 不要忘记传学生年级
+  if (!formEl) return
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      // cancelAccButton.disabled = true
+      // cancelAccButton.buttonText = '正在注销...'
+      let isPosted = false
+      // TODO 加入额外选项
+      await SYNC_POST('/usr/eraseUser', { }, (response) => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+          console.log(response.data.statusMsg)
+          ElMessage({
+            message: '注销成功',
+            type: 'success',
+            duration: 2000
+          })
+          router.push('/')
+        } else {
+          ElMessage.error('注销失败，请检查网络连接')
+          console.log(response.data.statusMsg)
+        }
+        isPosted = true
+      })
+      cancelAccButton.timer && clearInterval(cancelAccButton.timer)
+      cancelAccButton.timer = setInterval(() => {
+        if (cancelAccButton.duration === 0) {
+          cancelAccButton.disabled = false
+          cancelAccButton.buttonText = '立即注销'
+          cancelAccButton.duration = 2
+          cancelAccButton.timer && clearInterval(cancelAccButton.timer)
+          if (isPosted === false) {
+            ElMessage.error('注销失败，请检查网络连接')
+          }
+        } else {
+          cancelAccButton.duration--
+          cancelAccButton.buttonText = '正在注销...'
+        }
+      }, 1000)
+      console.log('submit!')
+    } else {
+      console.log('error submit!', fields)
+    }
+  })
+}
 const cancelAccFormRef = ref<FormInstance>()
 
 </script>

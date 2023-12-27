@@ -81,4 +81,7 @@ public interface UserDao {
             "</script>"
     })
     int getFollowNumById(@Param("contributor_id") String contributor_id);
+
+    @Delete("DELETE FROM user WHERE id=#{id}")
+    void eraseUser(@Param("id") String userId);
 }

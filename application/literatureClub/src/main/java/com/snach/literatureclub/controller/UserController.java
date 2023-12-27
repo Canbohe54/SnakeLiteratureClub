@@ -165,4 +165,9 @@ public class UserController {
     public Map<String, Object> getFollowNum(@RequestParam("user_id")String userId){
         return userService.getFollowNum(userId);
     }
+
+    @RequestMapping(value = "eraseUser",method = RequestMethod.POST)
+    public Map<String, Object> eraseUser(String token){
+        return userService.eraseUser(token);
+    }
 }

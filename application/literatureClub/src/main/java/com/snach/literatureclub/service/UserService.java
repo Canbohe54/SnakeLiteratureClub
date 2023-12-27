@@ -129,6 +129,8 @@ public interface UserService {
     Map<String, Object> getFansNum(String userId);
 
     Map<String, Object> getFollowNum(String userId);
+
+    Map<String, Object> eraseUser(String token);
 }
 
 @Mapper
@@ -391,6 +393,21 @@ class UserServiceImpl implements UserService {
     public Map<String, Object> getFollowNum(String userId) {
         Map<String, Object> response = new HashMap<>();
         response.put("follow_num",userDao.getFollowNumById(userId));
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> eraseUser(String token) {
+        Map<String, Object> response = new HashMap<>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        // 获取用户id
+        String userId = getPayload(token, "id");
+        userDao.eraseUser(userId);
         response.put("statusMsg", "Success.");
         return response;
     }
