@@ -13,13 +13,16 @@
             </el-form-item>
         </el-form>
     </div>
-    <el-button type="danger" :disabled="cancelAccForm.confirm !== '确认注销'">注销账户</el-button>
+    <el-button type="danger" :disabled="cancelAccForm.confirm !== '确认注销'" @click="handleCancel(cancelAccFormRef)">注销账户</el-button>
 </template>
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import {POST, SYNC_POST} from '@/scripts/Axios'
-import router from '@/router'
+import {useStore} from 'vuex'
+import {useRouter} from 'vue-router'
+const store = useStore()
+const router = useRouter()
 
 interface CancelAccForm {
     confirm: string
@@ -49,8 +52,7 @@ const cancelAccRules = reactive<FormRules>({
     { required: true, validator: validateConfirm, trigger: 'blur' }
   ]
 })
-const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
-                                                               // 不要忘记传学生年级
+const handleCancel = async (formEl: FormInstance | undefined) => { // 提交表单
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
     if (valid) {
@@ -58,12 +60,14 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
       // cancelAccButton.buttonText = '正在注销...'
       let isPosted = false
       // TODO 加入额外选项
-      await SYNC_POST('/usr/eraseUser', { }, (response) => {
+      await SYNC_POST('/usr/eraseUser', {
+        token: store.getters.getToken
+      }, (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
           console.log(response.data.statusMsg)
           ElMessage({
             message: '注销成功',
-            type: 'success',
+            type: 'warning',
             duration: 2000
           })
           router.push('/')

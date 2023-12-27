@@ -105,7 +105,7 @@ async function handleFollowPeople() {
       console.log("unfollow")
       if (response.status === 200 && response.data.statusMsg === 'Success.') {
         isUserMyFollowed.value = 'false'
-        ElMessage.success('取消关注成功')
+        ElMessage.info('取消关注成功')
         location.reload()
       } else {
         console.log('response error')

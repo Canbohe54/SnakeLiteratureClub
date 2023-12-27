@@ -157,7 +157,7 @@ async function handleFavorite() {
         ElMessage({
           showClose: true,
           message: '取消收藏成功',
-          type: 'success'
+          type: 'info'
         })
         isFavorited.value = false
       } else {
@@ -199,7 +199,7 @@ const handleDelArticleClicked =async () => {
       ElMessage({
         showClose: true,
         message: '删除文章成功',
-        type: 'success'
+        type: 'warning'
       })
     } else {
       errorCallback(response)
