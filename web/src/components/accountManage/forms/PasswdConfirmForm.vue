@@ -52,7 +52,7 @@ const identityTagType = (userIdentity: string) => {
       return 'info'
   }
 }
-const userInfo = reactive(store.state.userInfo)
+const userInfo = reactive(store.getters.getUserInfo)
 const userTagType = ref(identityTagType(userInfo.identity))
 
 const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密码

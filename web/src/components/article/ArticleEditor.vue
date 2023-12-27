@@ -111,7 +111,7 @@ const articleDetail: AttributeAddableObject = reactive({
   title: '',
   description: '',
   status: '',
-  attr: ''
+  attr: '{}'
 })
 
 watch(articleDetail, () => {
@@ -159,9 +159,11 @@ function errorCallback(response: any) {
 // 保存草稿
 const save = async () => {
   // to do:获取token测试
+  // console.log(store.getters.getToken)
   await SYNC_POST('/contributor/save', {
     token: store.getters.getToken,
-    id: articleDetail.id,
+    article: {
+      id: articleDetail.id,
     text: articleDetail.text,
     time: null,
     textBy: '',
@@ -169,9 +171,10 @@ const save = async () => {
     description: articleDetail.description,
     status: 1, // 保存成功
     attr: articleDetail.attr
+    }
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      console.log('Save successfully!')
+      console.log(response)
       ElMessage({
         showClose: true,
         message: 'Save successfully!',
@@ -200,7 +203,8 @@ const changeInputBox = (file: any) => {
 const release = async () => {
   await SYNC_POST('/contributor/save', {
     token: store.getters.getToken,
-    id: articleDetail.id,
+    article: {
+      id: articleDetail.id,
     text: articleDetail.text,
     time: null,
     textBy: '',
@@ -208,6 +212,7 @@ const release = async () => {
     description: articleDetail.description,
     status: 3, // 已发布
     attr: articleDetail.attr
+  }
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       console.log('Release successfully!')
@@ -219,8 +224,9 @@ const release = async () => {
     } else {
       errorCallback(response)
     }
-  })
-}
+  }
+  )}
+
 const handleDelArticleClicked =async () => {
   await SYNC_POST('/contributor/delArticle', {
     token: store.getters.getToken,
@@ -232,6 +238,7 @@ const handleDelArticleClicked =async () => {
         message: '删除文章成功',
         type: 'success'
       })
+      router.back()
     } else {
       errorCallback(response)
     }

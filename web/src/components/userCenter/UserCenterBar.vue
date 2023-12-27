@@ -9,26 +9,72 @@
         <div class="infos-div">
             <div class="info-div">
                 <p class="info-detail"><el-text>作品数</el-text></p>
-                <p class="info-detail"><el-text>0</el-text></p>
+                <p class="info-detail"><el-text>{{ userDigitInfo.articleNum }}</el-text></p>
             </div>
             <div class="info-div">
                 <p class="info-detail"><el-text>关注数</el-text></p>
-                <p class="info-detail"><el-text>0</el-text></p>
+                <p class="info-detail"><el-text>{{ userDigitInfo.followNum }}</el-text></p>
             </div>
             <div class="info-div">
                 <p class="info-detail"><el-text>粉丝数</el-text></p>
-                <p class="info-detail"><el-text>0</el-text></p>
+                <p class="info-detail"><el-text>{{ userDigitInfo.fansNum }}</el-text></p>
             </div>
         </div>
     </div>
 </template>
 <script lang="ts" setup>
 import store from '@/store';
-import { ref } from 'vue'
+import { onMounted, onUpdated, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 const route = useRoute()
 const router = useRouter()
 const activeIndex = ref(route.path.split('/')[3])
+
+onUpdated(() => {
+    activeIndex.value = route.path.split('/')[3]
+})
+
+const userDigitInfo = reactive({
+    articleNum: 0,
+    followNum: 0,
+    fansNum: 0
+})
+
+async function getUserDigitInfo() {
+    const id = route.params.id
+    await SYNC_GET('/usr/getAllArticleNum', {
+        user_id: route.params.id
+    }, response => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+            userDigitInfo.articleNum = response.data.article_num
+        } else {
+            console.log(response)
+        }
+    })
+    await SYNC_GET('/usr/getFollowNum', {
+        user_id: route.params.id
+    }, response => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+            userDigitInfo.followNum = response.data.follow_num
+        } else {
+            console.log(response)
+        }
+    })
+    await SYNC_GET('/usr/getFansNum', {
+        user_id: route.params.id
+    }, response => {
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+            userDigitInfo.fansNum = response.data.fans_num
+            console.log(response)
+        } else {
+            console.log(response)
+        }
+    })
+}
+
+getUserDigitInfo()
+
 const handleSelect = (key: string, keyPath: string[]) => {
     console.log(store.getters.getUserInfo.id)
   console.log('/user/' + route.params.id + '/' + key)

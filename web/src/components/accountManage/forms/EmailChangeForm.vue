@@ -26,7 +26,7 @@ import { useStore } from 'vuex'
 import router from '@/router'
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
 const store = useStore()
-const oriEmail = ref(store.state.userInfo.email) // 原邮箱地址
+const oriEmail = ref(store.getters.getUserInfo.email) // 原邮箱地址
 interface EmailChangeForm {
   newEmail: string
   emailCaptcha: string

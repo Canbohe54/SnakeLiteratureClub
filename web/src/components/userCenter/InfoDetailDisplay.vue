@@ -24,16 +24,18 @@
             </div>
         </div>
         <div>
-            <el-button type="info" plain class="followed">已关注</el-button>
+          <!-- :class="isUserMyFollowed!=='true'?'followed':''" -->
+            <el-button :type="isUserMyFollowed? 'info': 'primary' " class="followed" plain v-if="route.params.id !== store.getters.getUserInfo.id" :onclick="handleFollowPeople">{{ isUserMyFollowed?"已关注":"关注" }}</el-button>
         </div>
     </el-row>
 </template>
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
-import { GET } from '@/scripts/Axios'
+import { GET, SYNC_GET, SYNC_POST } from '@/scripts/Axios'
 import { useRoute } from 'vue-router'
 import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
+import { ElMessage } from 'element-plus';
 
 const store = useStore()
 const route = useRoute()
@@ -55,7 +57,9 @@ const userInfo = ref<UserInfo>({
   introduction: '',
   email: '',
   avatar: ''
-});
+})
+
+const isUserMyFollowed = ref(false);
 
 // 若访问地址没有指定id，返回用户个人信息页
 (() => {
@@ -80,7 +84,50 @@ const userInfo = ref<UserInfo>({
       console.log('response error')
     }
   })
+  SYNC_GET('/usr/getIsFollowedByUID', {
+    token: store.getters.getToken,
+    user_id: route.params.id
+  }, (response) => {
+    console.log(response)
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      isUserMyFollowed.value = response.data['followed']
+      console.log(isUserMyFollowed.value)
+    } else {
+      console.log('response error')
+    }
+  })
 })()
+
+async function handleFollowPeople() {
+  if (isUserMyFollowed.value) {
+    await SYNC_POST('/usr/unfollowByUID', {
+      token: store.getters.getToken,
+      user_id: route.params.id
+    }, (response) => {
+      console.log("unfollow")
+      if (response.status === 200 && response.data.statusMsg === 'Success.') {
+        isUserMyFollowed.value = false
+        ElMessage.success('关注成功')
+        location.reload()
+      } else {
+        console.log('response error')
+      }
+    })
+  } else {
+    await SYNC_POST('/usr/followByUID', {
+      token: store.getters.getToken,
+      user_id: route.params.id
+    }, (response) => {
+      console.log("follow")
+      if (response.status === 200 && response.data.statusMsg === 'Success.') {
+        isUserMyFollowed.value = true
+        ElMessage.success('取消关注成功')
+      } else {
+        console.log('response error')
+      }
+    })
+  }
+}
 
 const identityTagType = (userIdentity: string) => {
   switch (userIdentity) {
@@ -130,12 +177,12 @@ const userTagType = ref()
 .followed {
     margin-top: 24px;
     /*hover */
-    --el-button-hover-text-color: var(--el-color-info);
+    /* --el-button-hover-text-color: var(--el-color-info);
     --el-button-hover-bg-color: var(--el-color-info-light-9);
-    --el-button-hover-border-color: var(--el-color-info-light-5);
+    --el-button-hover-border-color: var(--el-color-info-light-5); */
     /*active */
-    --el-button-active-text-color: var(--el-color-info);
+    /* --el-button-active-text-color: var(--el-color-info);
     --el-button-active-bg-color: var(--el-color-info-light-9);
-    --el-button-active-border-color: var(--el-color-info-light-5);
+    --el-button-active-border-color: var(--el-color-info-light-5); */
 }
 </style>

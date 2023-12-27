@@ -36,7 +36,7 @@ import router from '@/router'
 import { useStore } from 'vuex'
 import { checkPasswordRule, level } from '../../uiScripts/CheckPassword'
 const store = useStore()
-const userInfo = reactive(store.state.userInfo)
+const userInfo = reactive(store.getters.getUserInfo)
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
 interface ConfirmEmail {
   email: string

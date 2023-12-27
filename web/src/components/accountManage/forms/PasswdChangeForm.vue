@@ -27,6 +27,7 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { POST } from '@/scripts/Axios'
 import router from '@/router'
 import { checkPasswordRule, level } from '../../uiScripts/CheckPassword'
+import store from '@/store'
 
 interface PasswdChangeForm {
   passwd: string
@@ -84,6 +85,7 @@ const onSubmit = () => { // 提交修改
       POST('/usr/changepasswd', { passwd: passwdChangeForm.passwd }, (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
           ElMessage.success('密码修改成功')
+          store.commit('clear')
           router.push('/login')
         } else {
           ElMessage.error('密码修改失败')

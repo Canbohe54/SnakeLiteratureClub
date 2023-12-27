@@ -42,20 +42,20 @@
           </div>
             <div class="flex items-center"><!--用户信息设置栏-->
               <el-dropdown @command="handleDropdownCommand">
-                <router-link :to="userInfoRedirect" class="user-info-link">
+                <!-- <router-link :to="userInfoRedirect" class="user-info-link"> -->
                   <span class="el-dropdown-link">
                     <div class="user-display"> <!--用户信息-->
-                      <el-tag class="ml-2 user-display-content" :type="userTagType" disable-transitions><span
+                      <el-tag class="ml-2 user-display-content" :type="userTagType" disable-transitions @click.native="toMyUserCenter"><span
                           v-if="userInfo.name !== '' && userInfo.name !== undefined">{{ userInfo.name }} ·
                         </span>{{ userInfo.identity }}</el-tag>
                       <el-avatar class="mr-3 user-display-content" :size="40"
-                        :src="userInfo.avatar" />
+                        :src="userInfo.avatar" @click.native="toMyUserCenter" />
                     </div>
                     <!-- <el-icon class="el-icon--right">
                   <arrow-down />
                 </el-icon> -->
                   </span>
-                </router-link>
+                <!-- </router-link> -->
                 <template #dropdown>
                   <el-dropdown-menu v-if="userInfo.identity === '未登录'">
                     <el-dropdown-item command="login">点击登录！</el-dropdown-item>
@@ -137,6 +137,12 @@
   /*用户信息展示栏内容*/
   margin: 0 8px 0 0;
   font-size: 12px;
+  
+}
+
+.user-display-content:hover {
+  /*用户信息展示栏内容*/
+  cursor: pointer;
 }
 
 .example-showcase .el-dropdown-link {
@@ -163,7 +169,7 @@
 </style>
 <script lang="ts" setup>
 // import { ArrowDown } from '@element-plus/icons-vue'
-import { reactive, ref } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 // const activeIndex = ref('2')
 import { useRoute, useRouter } from 'vue-router'
@@ -235,13 +241,13 @@ const userInfoRedirect = ref(store.getters.getUserInfo.identity === '未登录' 
 // 未登录则跳转到登录页面，已登录则跳转到个人信息页面 未完成
 
 // 下拉菜单部分
-const handleDropdownCommand = (command: string | number | object) => {
+const handleDropdownCommand = async (command: string | number | object) => {
   switch (command) {
     case 'login':
       router.push('/login')
       break
     case 'userCenter':
-      router.push('/user/' + store.getters.getUserInfo.id)
+      toMyUserCenter()
       break
     case 'accManage':
       router.push('/account/info')
@@ -249,13 +255,22 @@ const handleDropdownCommand = (command: string | number | object) => {
     case 'logout':
       store.commit('clear')
       router.push('/')
-      if(route.path === '/'){
-        location.reload()
-      }
+      location.reload()
       ElMessage.success('退出登录成功')
       break
     default:
       break
   }
 }
+
+const toMyUserCenter = async () => {
+  if (store.getters.getToken === '') {
+    router.push('/login')
+  } else {
+    //await router.push({ path: '/user', params: { id: store.getters.getUserInfo.id }})
+    location.href = '/#/user/' + store.getters.getUserInfo.id
+    //location.reload()
+  }
+}
+
 </script>

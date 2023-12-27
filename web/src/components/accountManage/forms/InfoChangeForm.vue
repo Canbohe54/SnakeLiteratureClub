@@ -66,12 +66,12 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { useStore } from 'vuex'
 const store = useStore()
 const userInfo = reactive({
-  avatar: store.state.userInfo.avatar,
-  name: store.state.userInfo.name,
-  unit: store.state.userInfo.unit,
-  identity: store.state.userInfo.identity,
-  introduction: store.state.userInfo.introduction,
-  stuGrade: store.state.userInfo.stuGrade
+  avatar: store.getters.getUserInfo.avatar,
+  name: store.getters.getUserInfo.name,
+  unit: store.getters.getUserInfo.unit,
+  identity: store.getters.getUserInfo.identity,
+  introduction: store.getters.getUserInfo.introduction,
+  stuGrade: store.getters.getUserInfo.stuGrade
 })
 // 缓存，点击提交后，通过后端修改，返回数据到store修改
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
@@ -100,7 +100,7 @@ const handleInfoChange = () => {
     })
     return
   }
-  if (userInfo.name === store.state.userInfo.name && userInfo.unit === store.state.userInfo.unit && userInfo.introduction === store.state.userInfo.introduction && userInfo.avatar === store.state.userInfo.avatar && userInfo.stuGrade === store.state.userInfo.stuGrade) {
+  if (userInfo.name === store.getters.getUserInfo.name && userInfo.unit === store.getters.getUserInfo.unit && userInfo.introduction === store.getters.getUserInfo.introduction && userInfo.avatar === store.getters.getUserInfo.avatar && userInfo.stuGrade === store.getters.getUserInfo.stuGrade) {
     ElMessage({
       message: '您未修改任何信息',
       type: 'error'
