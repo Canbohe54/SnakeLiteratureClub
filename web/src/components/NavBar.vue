@@ -137,7 +137,7 @@
   /*用户信息展示栏内容*/
   margin: 0 8px 0 0;
   font-size: 12px;
-  
+
 }
 
 .user-display-content:hover {

@@ -76,10 +76,7 @@ async function getUserDigitInfo() {
 getUserDigitInfo()
 
 const handleSelect = (key: string, keyPath: string[]) => {
-    console.log(store.getters.getUserInfo.id)
-  console.log('/user/' + route.params.id + '/' + key)
   router.push('/user/' + route.params.id + '/' + key)
-  //router.go(0)
 }
 </script>
 

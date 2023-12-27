@@ -58,7 +58,7 @@ public interface ArticleDao {
 //            "WHERE c.contributor_id = #{contributor_id}")
     @Select({"<script>",
             "SELECT ",
-            "a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr ",
+            "a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr, a.text_by textBy",
             "FROM article a left join contributor_article_list c on a.id = c.article_id ",
             "WHERE c.contributor_id = #{contributor_id} AND a.status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",

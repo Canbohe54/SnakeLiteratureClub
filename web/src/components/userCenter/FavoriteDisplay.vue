@@ -84,13 +84,10 @@ function handleCurrentChange(newPage: any) {
 async function getTextBy(artList: any) {
     await Promise.all(
         artList.map(async (item: any) => {
-            console.log(item)
             await SYNC_GET('/usr/getUserBasicInfo', {
                 user_id: item.text_by
             }, response => {
                 if (response.status === 200 && response.data.statusMsg === 'Success.') {
-                    console.log('text_by')
-                    console.log(response)
                     item.text_by = response.data.user_info.name
                 } else {
                     console.log(response)
@@ -110,10 +107,8 @@ async function getArticleList() {
         page_num: pageInfo.currentPage,
         page_size: pageInfo.pageSize,
     }
-    console.log(params)
     await (SYNC_GET('/usr/getAllFavorites', params, async (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
-            console.log(response)
             await getAvgGrade(response.data.articles.list)
             pageInfo.total = response.data.articles.total
             await getTextBy(response.data.articles.list)
@@ -136,7 +131,6 @@ async function getAvgGrade(artList: any) {
             await SYNC_POST('/grade/getAvgGrade', {
                 article_id: item.id
             }, response => {
-                console.log(response)
                 if (response.status === 200 && response.data.statusMsg === 'success') {
                     avgGradeMap.set(response.data.article_id, response.data.avg_grade)
                 } else {
