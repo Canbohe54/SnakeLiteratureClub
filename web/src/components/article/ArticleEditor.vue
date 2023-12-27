@@ -159,22 +159,21 @@ function errorCallback(response: any) {
 // 保存草稿
 const save = async () => {
   // to do:获取token测试
-  // console.log(store.getters.getToken)
   await SYNC_POST('/contributor/save', {
     token: store.getters.getToken,
     article: {
       id: articleDetail.id,
-    text: articleDetail.text,
-    time: null,
-    textBy: '',
-    title: articleDetail.title,
-    description: articleDetail.description,
-    status: 1, // 保存成功
-    attr: articleDetail.attr
+      text: articleDetail.text,
+      time: null,
+      textBy: '',
+      title: articleDetail.title,
+      description: articleDetail.description,
+      status: 1, // 保存成功
+      attr: `{"tags":${articleDetail.attr}}`
     }
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      console.log(response)
+      console.log('Save successfully!')
       ElMessage({
         showClose: true,
         message: 'Save successfully!',
