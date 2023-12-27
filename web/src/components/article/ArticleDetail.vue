@@ -28,23 +28,9 @@
       </div>
 
       <el-footer>
-        <el-card>
-          <el-row>
-            <el-avatar> user </el-avatar>
-            <div class="blank"></div>
-            <el-text>username </el-text>
-            <div class="e"></div>
-            <el-text>comments</el-text>
-          </el-row>
-          <el-divider />
-          <el-row>
-            <el-avatar> user </el-avatar>
-            <div class="blank"></div>
-            <el-text>username </el-text>
-            <div class="e"></div>
-            <el-text>comments</el-text>
-          </el-row>
-        </el-card>
+        <suspense>
+          <CommentDisplay :articleId="route.query.id" />
+        </suspense>
       </el-footer>
     </el-container>
   </div>
@@ -75,6 +61,7 @@ import {Star} from "@element-plus/icons-vue";
 import GradeEditor from "@/components/grade/GradeEditor.vue";
 import GradeDisplay from "@/components/grade/GradeDisplay.vue";
 import {useStore} from "vuex";
+import CommentDisplay from "@/components/article/CommentDisplay.vue";
 
 const router = useRouter()
 const route = useRoute()
