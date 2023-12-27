@@ -118,8 +118,10 @@ public class UserController {
      */
     @RequestMapping(value = "getAllFollowed", method = RequestMethod.GET)
     public Map<String, Object> getAllFollowed(@RequestParam("user_id") String userId,
-                                              @RequestParam("target_identity") List<String> targetIdentity) {
-        return userService.getAllFollowed(userId, targetIdentity);
+                                              @RequestParam("target_identity") List<String> targetIdentity,
+                                              @RequestParam(name = "page_num")int pageNum,
+                                              @RequestParam(name = "page_size")int pageSize) {
+        return userService.getAllFollowed(userId, targetIdentity, pageNum, pageSize);
     }
 
     @RequestMapping(value = "getAllFans", method = RequestMethod.GET)
@@ -142,5 +144,25 @@ public class UserController {
     public Map<String, Object> getIsFollowedByUID(String token, @RequestParam("user_id") String userId) {
         return userService.getIsFollowedByUID(token, userId);
     }
-
+    /**
+     * 获取用户文章数
+     * */
+    @RequestMapping(value = "getAllArticleNum", method = RequestMethod.GET)
+    public Map<String, Object> getAllArticleNum(@RequestParam("user_id")String userId){
+        return userService.getAllArticleNum(userId);
+    }
+    /**
+     * 获取用户粉丝数
+     * */
+    @RequestMapping(value = "getFansNum", method = RequestMethod.GET)
+    public Map<String, Object> getFansNum(@RequestParam("user_id")String userId){
+        return userService.getFansNum(userId);
+    }
+    /**
+     * 获取用户关注数
+     * */
+    @RequestMapping(value = "getFollowNum", method = RequestMethod.GET)
+    public Map<String, Object> getFollowNum(@RequestParam("user_id")String userId){
+        return userService.getFollowNum(userId);
+    }
 }

@@ -1,6 +1,7 @@
 package com.snach.literatureclub.service;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.dao.ArticleDao;
@@ -92,7 +93,7 @@ public interface UserService {
 
     Map<String, Object> updateUserInfo(String token, User user);
 
-    Map<String, Object> getAllFollowed(String userId, List<String> targetIdentity);
+    Map<String, Object> getAllFollowed(String userId, List<String> targetIdentity, int pageNum, int pageSize);
 
     Map<String,Object> getAllFans(String userId, List<String> targetIdentity);
 
@@ -122,6 +123,12 @@ public interface UserService {
      * @return
      */
     Map<String, Object> getIsFollowedByUID(String token, String userId);
+
+    Map<String, Object> getAllArticleNum(String userId);
+
+    Map<String, Object> getFansNum(String userId);
+
+    Map<String, Object> getFollowNum(String userId);
 }
 
 @Mapper
@@ -294,10 +301,11 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> getAllFollowed(String userId, List<String> targetIdentity) {
+    public Map<String, Object> getAllFollowed(String userId, List<String> targetIdentity, int pageNum, int pageSize) {
         Map<String, Object> response = new HashMap<>();
+        PageHelper.startPage(pageNum, pageSize);
         List<String> allFollowed = userDao.getAllFollowed(userId, targetIdentity);
-        response.put("all_followed", allFollowed);
+        response.put("all_followed", new PageInfo<>(allFollowed));
         response.put("total", allFollowed.size());
         response.put("statusMsg", "Success.");
         return response;
@@ -355,10 +363,34 @@ class UserServiceImpl implements UserService {
         response.put("follow_user_id", followUserId);
         response.put("followed_user_id", userId);
         if (userDao.isFollowedByUID(followUserId, userId) == 0) {
-            response.put("followed", "false");
-        } else {
             response.put("followed", "true");
+        } else {
+            response.put("followed", "false");
         }
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getAllArticleNum(String userId) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("article_num",articleDao.getArticleNumByContributorId(userId));
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getFansNum(String userId) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("fans_num",userDao.getFansNumById(userId));
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getFollowNum(String userId) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("follow_num",userDao.getFollowNumById(userId));
         response.put("statusMsg", "Success.");
         return response;
     }
