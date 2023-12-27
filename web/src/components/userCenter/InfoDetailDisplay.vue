@@ -62,14 +62,13 @@ const userInfo = ref<UserInfo>({
 const isUserMyFollowed = ref(false);
 
 // 若访问地址没有指定id，返回用户个人信息页
-(() => {
-  console.log(`id: ${route.params.id}`)
+(async () => {
   if (route.params.id === '' || route.params.id === undefined) {
     return
   }
-  GET('/usr/getUserBasicInfo', {
+  await SYNC_GET('/usr/getUserBasicInfo', {
     user_id: route.params.id
-  }, (response) => {
+  }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       let detail = response.data['user_info']
       userInfo.value.avatar = detail.pictureUrl
@@ -84,11 +83,10 @@ const isUserMyFollowed = ref(false);
       console.log('response error')
     }
   })
-  SYNC_GET('/usr/getIsFollowedByUID', {
+  await SYNC_GET('/usr/getIsFollowedByUID', {
     token: store.getters.getToken,
     user_id: route.params.id
-  }, (response) => {
-    console.log(response)
+  }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       isUserMyFollowed.value = response.data['followed']
       console.log(isUserMyFollowed.value)

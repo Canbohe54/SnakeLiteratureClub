@@ -206,22 +206,7 @@ const handleUpload = () => {
 }
 
 // 用户信息部分
-// const userInfo = reactive({ // 用户信息
-//   userName: 'Canbohe54',
-//   userIdentity: '专家'
-// })
 const userInfo = reactive(store.getters.getUserInfo)
-
-// watch(() => store.getters.getUserInfo, () => {
-//   const info = store.getters.getUserInfo
-//   userInfo.email = info.email
-//   userInfo.id = info.id
-//   userInfo.avatar = info.avatar
-//   userInfo.name = info.name
-//   userInfo.unit = info.unit
-//   userInfo.identity = info.identity
-//   userInfo.introduction = info.introduction
-// })
 
 const identityTagType = (userIdentity: string) => {
   switch (userIdentity) {
