@@ -28,6 +28,21 @@ public interface CommentDao {
     @Select("SELECT id, text, time, text_by as textBy, text_on as textOn, reply FROM comments WHERE text_on = #{textId} ORDER BY time DESC")
     List<Comment> loadComment(String textId);
 
+    @Select("SELECT id, text, time, text_by as textBy, text_on as textOn, reply FROM comments WHERE text_on = #{textId} AND reply = '' ORDER BY time DESC")
+    List<Comment> loadRootComment(String textId);
+
+    @Select("SELECT id, text, time, text_by as textBy, text_on as textOn, reply FROM comments WHERE text_on = #{textId} ORDER BY time DESC LIMIT #{startAt}, #{limit}")
+    List<Comment> loadCommentLimit(String textId, int startAt, int limit);
+
+    @Select("SELECT id, text, time, text_by as textBy, text_on as textOn, reply FROM comments WHERE text_on = #{textId} AND reply = '' ORDER BY time DESC LIMIT #{startAt}, #{limit}")
+    List<Comment> loadRootCommentLimit(String textId, int startAt, int limit);
+
+    @Select("SELECT count(1) FROM comments WHERE text_on = #{textId} AND reply = ''")
+    int getRootCommentCount(String textId);
+
+    @Select("SELECT count(1) FROM comments WHERE text_on = #{textId}")
+    int getCommentCount(String textId);
+
     /**
      * 添加评论
      *

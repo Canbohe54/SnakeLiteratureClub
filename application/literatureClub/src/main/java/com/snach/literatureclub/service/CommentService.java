@@ -22,7 +22,7 @@ public interface CommentService {
      * 关于`根评论`及`子评论`:
      * @see Comment
      */
-    Map<String, Object> loadComment(String articleId, Boolean recursive);
+    Map<String, Object> loadComment(String articleId, Boolean recursive, int startAt, int limit);
 
     /**
      * 添加评论
@@ -52,7 +52,7 @@ class CommentServiceImpl implements CommentService {
     private static final Calendar calendar = Calendar.getInstance();
 
     @Override
-    public Map<String, Object> loadComment(String articleId, Boolean recursive) {
+    public Map<String, Object> loadComment(String articleId, Boolean recursive, int startAt, int limit) {
         Map<String, Object> response = new HashMap<>();
         if (idType(articleId) != Type.ARTICLE) {
             response.put("statusMsg", "Invalid id.");
@@ -60,7 +60,8 @@ class CommentServiceImpl implements CommentService {
             return response;
         }
         List<Object> resultList = new ArrayList<>();
-        List<Comment> onArticle = commentDao.loadComment(articleId);
+        List<Comment> onArticle = commentDao.loadRootCommentLimit(articleId, startAt, limit);
+        int rootCommentCount = commentDao.getRootCommentCount(articleId);
         resultList.add(onArticle);
         if (recursive) {
             List<List<Comment>> onComment = new ArrayList<>();
@@ -69,6 +70,7 @@ class CommentServiceImpl implements CommentService {
             }
             resultList.add(onComment);
         }
+        response.put("remainder", rootCommentCount - startAt - limit + 1);
         response.put("statusMsg", "Success.");
         response.put("res", resultList);
         return response;
@@ -80,6 +82,9 @@ class CommentServiceImpl implements CommentService {
         if (!tokenVerify(token)) {
             response.put("statusMsg", "Invalid token.");
             return response;
+        }
+        if (reply == null) {
+            reply = "";
         }
         commentDao.insertComment(generateId(Type.COMMENT), text, calendar.getTime(), getPayload(token, "id"), textOn, reply);
         response.put("statusMsg", "Success.");
