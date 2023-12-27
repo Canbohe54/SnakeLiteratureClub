@@ -59,7 +59,6 @@ const userInfo = ref<UserInfo>({
 
 // 若访问地址没有指定id，返回用户个人信息页
 (() => {
-  console.log(`id: ${route.params.id}`)
   if (route.params.id === '' || route.params.id === undefined) {
     return
   }

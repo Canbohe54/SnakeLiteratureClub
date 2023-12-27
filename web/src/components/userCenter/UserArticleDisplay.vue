@@ -105,7 +105,7 @@ async function getTextBy(artList: any) {
 
 async function getArticleList() {
   if (route.params.id === store.state.userInfo.id) {
-    
+
     articleStatus.value = [1, 2, 3]
   } else {
     articleStatus.value = [3]
@@ -116,10 +116,8 @@ async function getArticleList() {
     contributor_id: route.params.id,
     status_list: articleStatus.value
   }
-  console.log(params)
   await (SYNC_GET('/contributor/contributorArticles', params, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      console.log(response)
       await getAvgGrade(response.data.articles.list)
       pageInfo.total = response.data.articles.total
       await getTextBy(response.data.articles.list)
@@ -146,7 +144,6 @@ async function getAvgGrade(artList: any) {
       await SYNC_POST('/grade/getAvgGrade', {
         article_id: item.id
       }, response => {
-        console.log(response)
         if (response.status === 200 && response.data.statusMsg === 'success') {
           avgGradeMap.set(response.data.article_id, response.data.avg_grade)
         } else {

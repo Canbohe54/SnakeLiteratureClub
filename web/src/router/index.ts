@@ -48,13 +48,9 @@ const routes: Array<RouteRecordRaw> = [
       }
     ],
     beforeEnter: (to, from, next) => {
-      console.log(to.path)
-      console.log(store.getters.getUserInfo.id)
       if (store.getters.getUserInfo.id === '' || store.getters.getUserInfo.id === undefined) {
-        console.log('未登录')
         next('/login')
       } else {
-        console.log('已登录')
         next()
       }
     }
