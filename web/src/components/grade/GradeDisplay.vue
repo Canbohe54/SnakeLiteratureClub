@@ -18,23 +18,25 @@
 <!--              </el-card>-->
 <!--            </el-col>-->
 <!--          </el-row>-->
+          <div v-else>
+            <el-table :data="gradeList.graList" stripe class="grade-table" flexible>
+              <el-table-column prop="text_by" label="评分人"  />
+              <el-table-column prop="grade_all" label="评分"  />
+              <el-table-column prop="advice" label="评价"   />
+            </el-table>
 
-          <el-table v-else :data="gradeList.graList" stripe class="grade-table" flexible>
-            <el-table-column prop="text_by" label="评分人"  />
-            <el-table-column prop="grade_all" label="评分"  />
-            <el-table-column prop="advice" label="评价"   />
-          </el-table>
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="pageInfo.currentPage"
+              :page-sizes="[10, 20, 30, 40]"
+              :page-size="pageInfo.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="pageInfo.total"
+              class="search-result-pageination">
+            </el-pagination>
+          </div>
 
-          <el-pagination v-else
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="pageInfo.currentPage"
-            :page-sizes="[10, 20, 30, 40]"
-            :page-size="pageInfo.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pageInfo.total"
-            class="search-result-pageination">
-          </el-pagination>
         </el-card>
       </div>
     </el-col>
@@ -94,7 +96,6 @@ async function getGradeList () {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
   }, async (response) => {
-    console.log(response)
     if (response.status === 200 && response.data.statusMsg === 'success') {
       pageInfo.total = response.data.grades.total
       await getTextBy(response.data.grades.list)

@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import { getCookie, setCookie, removeCookie, clearCookie } from '@/scripts/cookie'
 
 export default createStore({
   state: {
@@ -16,20 +17,24 @@ export default createStore({
   },
   getters: {
     getToken: state => {
-      return state.token
+      return getCookie('token')
+      // return state.token
     },
     getUserInfo: state => {
-      return state.userInfo
+      const s = getCookie('userInfo')
+      if (s === '') {
+        return {}
+      }
+      return JSON.parse(s)
+      // return state.userInfo
     }
   },
   mutations: {
     setToken: (state, token) => {
-      state.token = token
-      console.log(state.token)
+      setCookie('token', token)
     },
     setUserInfo: (state, userInfo) => {
-      console.log(userInfo)
-      state.userInfo = {
+      const parsedUserInfo = {
         id: userInfo.id,
         name: userInfo.name,
         identity: userInfo.group,
@@ -39,20 +44,11 @@ export default createStore({
         avatar: userInfo.pictureUrl,
         stuGrade: userInfo.attr === '' ? '' : JSON.parse(userInfo.attr)['grade']
       }
-      console.log(state.userInfo)
+      setCookie('userInfo', JSON.stringify(parsedUserInfo))
     },
     clear: state => {
-      state.token = ''
-      state.userInfo = {
-        id:'',
-        name: '',
-        identity: '未登录',
-        unit: '',
-        introduction: '',
-        email: '',
-        avatar: '',
-        stuGrade: ''
-      }
+      setCookie('token', '')
+      setCookie('userInfo', '{"identity":"未登录"}')
     }
   },
   actions: {

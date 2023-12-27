@@ -125,7 +125,6 @@ async function getAvgGrade(artList: any) {
       await SYNC_POST('/grade/getAvgGrade', {
         article_id: item.id
       }, response => {
-        console.log(response)
         if (response.status === 200 && response.data.statusMsg === 'success') {
           avgGradeMap.set(response.data.article_id, response.data.avg_grade)
         } else {

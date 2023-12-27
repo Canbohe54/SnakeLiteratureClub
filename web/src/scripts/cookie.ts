@@ -1,14 +1,24 @@
-export function getCookie (key: string) {
+export function getCookie (key: string): string {
   const arr = document.cookie.split('; ')
-  for (const item in arr) {
+  for (const item of arr) {
     const loc = item.indexOf('=')
     if (item.substring(0, loc) === key) {
-      return item.substring(loc + 1)
+      return unescape(item.substring(loc + 1))
     }
   }
-  return null
+  return ''
 }
 
 export function setCookie (key: string, value: string) {
-  document.cookie = document.cookie + '; ' + key + '=' + value
+  document.cookie = `${key}=${value};`
+}
+
+export function removeCookie (key: string) {
+  const expire = new Date()
+  expire.setTime(expire.getTime() - 1)
+  document.cookie = `${key}=;expire=${expire.toUTCString()}`
+}
+
+export function clearCookie () {
+  document.cookie = ''
 }

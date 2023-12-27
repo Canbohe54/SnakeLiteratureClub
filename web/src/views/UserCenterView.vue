@@ -41,13 +41,7 @@ import { Options, Vue } from 'vue-class-component'
 import NavBar from '@/components/NavBar.vue'
 import InfoDetailDisplay from '@/components/userCenter/InfoDetailDisplay.vue'
 import UserCenterBar from '@/components/userCenter/UserCenterBar.vue'
-// 页面需要添加监听，若无用户token，则跳转到登录页面
-// 旧vue写法： 可惜用不得
-// mounted() {
-//   if (!localStorage.getItem('token')) {
-//     this.$router.push('/login')
-//   }
-// }
+
 @Options({
   components: {
     NavBar,
@@ -55,7 +49,7 @@ import UserCenterBar from '@/components/userCenter/UserCenterBar.vue'
     UserCenterBar
   },
   beforeRouteUpdate(to, from, next) {
-    if (to.params.id !== from.params.id) {
+    if (from.params.id !== to.params.id) {
       location.reload()
     } else {
       next()

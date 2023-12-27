@@ -89,15 +89,15 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
       loginButton.disabled = true
       loginButton.buttonText = '正在登录...'
       let isPosted = false
-      console.log('submit!')
-      POST('/usr/login', { email: loginRuleForm.email, password: loginRuleForm.passwd }, (response) => {
+      POST('/usr/login', { email: loginRuleForm.email, password: loginRuleForm.passwd }, async (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
-          console.log(response.data)
           store.commit('setToken', response.data.token)
           store.commit('setUserInfo', response.data.userInfo)
           ElMessage.success('登录成功')
-          router.push('/')
-          // location.reload()
+          console.log(document.cookie)
+          console.log('push')
+          await router.push('/')
+          location.reload()
         } else {
           console.log(response.data.statusMsg)
         }

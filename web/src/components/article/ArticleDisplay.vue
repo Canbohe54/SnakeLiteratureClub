@@ -106,7 +106,6 @@ async function getArticleList() {
   console.log(params)
   await (SYNC_GET('/article/search', params, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      console.log(response)
       await getAvgGrade(response.data.articles.list)
       pageInfo.total = response.data.articles.total
       await getTextBy(response.data.articles.list)
@@ -129,7 +128,6 @@ async function getAvgGrade(artList: any) {
       await SYNC_POST('/grade/getAvgGrade', {
         article_id: item.id
       }, response => {
-        console.log(response)
         if (response.status === 200 && response.data.statusMsg === 'success') {
           avgGradeMap.set(response.data.article_id, response.data.avg_grade)
         } else {
