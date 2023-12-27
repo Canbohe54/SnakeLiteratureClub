@@ -6,13 +6,14 @@
           <el-row class="article-box-card"><el-text class="article-detail-title">{{articleDetail.title}}</el-text></el-row>
           <el-row class="article-box-card"><el-text class="article-detail-author">（<el-button link :onclick="handleAuthorClicked">{{articleDetail.text_by}}</el-button>） {{articleDetail.time}}</el-text></el-row>
           <div style="display: flex; justify-content:center;align-items: flex-end;">
+            <el-button type="primary" link v-if="articleDetail.text_by_id === store.state.userInfo.id" @click="handleUpdateArticleClicked">修改文章</el-button>
+            <el-button type="danger" link v-if="articleDetail.text_by_id === store.state.userInfo.id" @click="delArticleDialogVisible=true">删除文章</el-button>
             <el-button type="warning" link circle :onclick="handleFavorite">{{ isFavorited?'取消收藏':'收藏' }}</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大</el-button>
-            
           </div>
-          
+
           <el-divider />
           <el-text :size="displaySize">{{articleDetail.text}}</el-text>
         </el-card>
@@ -47,6 +48,22 @@
       </el-footer>
     </el-container>
   </div>
+  <el-dialog
+    draggable
+    v-model="delArticleDialogVisible"
+    title="删除文章"
+    width="30%"
+  >
+    <span>确定删除文章？</span>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="delArticleDialogVisible = false">取消</el-button>
+        <el-button type="danger" @click="handleDelArticleClicked">
+          删除
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 <script lang="ts" setup>
 import {reactive, ref} from "vue";
@@ -79,6 +96,7 @@ const displaySize = ref("default")
 
 const isFavorited = ref(false)
 
+const delArticleDialogVisible = ref(false)
 function errorCallback(response: any) {
   console.log(response)
   if (response.status === 200) {
@@ -186,7 +204,31 @@ const handleAuthorClicked = () => {
     router.push({path: '/userNotFound'})
   }
 }
-
+const handleDelArticleClicked =async () => {
+  await SYNC_POST('/contributor/delArticle', {
+    token: store.getters.getToken,
+    article_id: articleDetail.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      ElMessage({
+        showClose: true,
+        message: '删除文章成功',
+        type: 'success'
+      })
+    } else {
+      errorCallback(response)
+    }
+  })
+  delArticleDialogVisible.value = false
+  router.back()
+}
+const handleUpdateArticleClicked = () => {
+  if (articleDetail.id !== '' && articleDetail.id !== undefined) {
+    router.push({ path: '/articleEditor', query: { id: articleDetail.id } })
+  } else {
+    router.push({ path: '/articleNotFound' })
+  }
+}
 </script>
 <style>
 .article-box-card{
