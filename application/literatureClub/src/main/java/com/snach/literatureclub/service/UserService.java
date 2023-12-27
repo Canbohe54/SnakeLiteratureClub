@@ -355,9 +355,9 @@ class UserServiceImpl implements UserService {
         response.put("follow_user_id", followUserId);
         response.put("followed_user_id", userId);
         if (userDao.isFollowedByUID(followUserId, userId) == 0) {
-            response.put("followed", "true");
-        } else {
             response.put("followed", "false");
+        } else {
+            response.put("followed", "true");
         }
         response.put("statusMsg", "Success.");
         return response;
