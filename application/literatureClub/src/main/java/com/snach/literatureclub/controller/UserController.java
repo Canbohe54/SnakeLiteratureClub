@@ -99,7 +99,7 @@ public class UserController {
     }
 
     @RequestMapping(value="confirmEmail", method = RequestMethod.POST)
-    public Map<String, Object> confirmEmail(@RequestParam("email") String email, @RequestParam("vCode") String vCode){
+    public Map<String, Object> confirmEmail(@RequestParam("email") String email, @RequestParam("v_code") String vCode){
         return userService.confirmEmail(email, vCode);
     }
 
@@ -177,7 +177,17 @@ public class UserController {
     }
 
     @RequestMapping(value = "eraseUser",method = RequestMethod.POST)
-    public Map<String, Object> eraseUser(String token){
-        return userService.eraseUser(token);
+    public Map<String, Object> eraseUser(String token, @RequestParam("hard_token")String hardToken){
+        return userService.eraseUser(token, hardToken);
+    }
+
+    @RequestMapping(value = "changePasswd", method = RequestMethod.POST)
+    public Map<String, Object> changePasswd(@RequestParam("user_id") String userId, @RequestParam("new_password")String newPassword, @RequestParam("hard_token")String hardToken){
+        return userService.changePasswd(userId, newPassword, hardToken);
+    }
+
+    @RequestMapping(value = "changeEmail", method = RequestMethod.POST)
+    public Map<String, Object> changeEmail(@RequestParam("user_id") String userId, @RequestParam("new_email")String newEmail, @RequestParam("hard_token")String hardToken, @RequestParam("v_code")String vCode){
+        return userService.changeEmail(userId, newEmail, hardToken, vCode);
     }
 }

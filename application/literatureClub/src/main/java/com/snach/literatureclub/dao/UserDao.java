@@ -15,6 +15,8 @@ public interface UserDao {
 
     @Select("SELECT * FROM user WHERE id = #{id}")
     User getUserById(String id);
+    @Select("SELECT user.id FROM user WHERE user.email = #{email}")
+    String getIdByEmail(String email);
 
     @Select("SELECT * FROM user WHERE name LIKE '%${keyword}%'")
     List<User> getUsersByKeyword(String keyword);
@@ -87,4 +89,9 @@ public interface UserDao {
 
     @Delete("DELETE FROM user WHERE id=#{id}")
     void eraseUser(@Param("id") String userId);
+
+    @Update("UPDATE user SET user.password = #{newPassword} WHERE user.id = #{userId}")
+    void changePassword(String userId, String newPassword);
+    @Update("UPDATE user SET user.email = #{newEmail} WHERE user.id = #{userId}")
+    void changeEmail(String userId, String newEmail);
 }

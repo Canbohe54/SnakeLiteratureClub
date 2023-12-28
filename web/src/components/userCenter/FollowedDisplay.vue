@@ -75,20 +75,7 @@ const activeIndex = ref('all')
 
 const followInfo = ref(
 [
-    {
-      id: 1,
-      name: 'Canbohe54',
-      avatar: 'https://avatars.githubusercontent.com/u/43968297?v=4',
-      identity: '专家',
-      description: '这个人很懒，什么都没留下~'
-    },
-    {
-      id: 2,
-      name: 'Canbohe54',
-      avatar: 'https://avatars.githubusercontent.com/u/43968297?v=4',
-      identity: '专家',
-      description: '这个人很懒，什么都没留下~'
-    }]
+    ]
 )
 
 const followId = ref([])

@@ -22,7 +22,7 @@
             </el-form>
             <div class="loginBottom">
                 <div></div>
-                <el-button type="primary" class="loginButton">验证</el-button>
+                <el-button type="primary" class="loginButton" @click="onConfirmEmail(emailConfirmRef)">验证</el-button>
                 <div></div>
             </div>
         </div>
@@ -35,7 +35,9 @@ import { POST } from '@/scripts/Axios'
 import router from '@/router'
 import { useStore } from 'vuex'
 import { checkPasswordRule, level } from '../../uiScripts/CheckPassword'
+import { useRoute } from 'vue-router'
 const store = useStore()
+const route = useRoute()
 const userInfo = reactive(store.getters.getUserInfo)
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
 interface ConfirmEmail {
@@ -55,7 +57,7 @@ const emailCaptchaButton = reactive<any>({ // 邮箱验证码按钮
 })
 const emailConfirmRef = ref<FormInstance>()
 
-const sendEmailCaptcha = () => { // 发送邮箱验证码
+const sendEmailCaptcha = async () => { // 发送邮箱验证码
   emailConfirmRef.value?.validateField('email', (valid) => {
     if (valid) {
       emailCaptchaButton.disabled = true
@@ -110,6 +112,36 @@ const emailChangeRules = reactive<FormRules<ConfirmEmail>>({ // 表单验证规�
   email: [{ required: true, validator: validateEmail, trigger: 'blur' }],
   emailCaptcha: [{ required: true, validator: validateEmailCaptcha, trigger: 'blur' }]
 })
+
+const onConfirmEmail = async (formEl: FormInstance | undefined) => { // 提交表单
+  if (!formEl) return
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      POST('/usr/confirmEmail', { email: emailConfirm.email, v_code: emailConfirm.emailCaptcha }, (response) => {
+        if (response.status === 200 && response.data.statusMsg === 'pass') {
+          ElMessage({
+            message: '邮箱验证成功',
+            type: 'success',
+            duration: 2000
+          })
+          console.log(route.path)
+          if (route.path.split('/')[2] === 'password') {
+            router.push({path:'/account/password/change',query:{kouji: response.data.user_id, tadokoro:response.data.hard_token}})
+          } else if (route.path.split('/')[2] === 'cancel') {
+            router.push({path:'/account/cancel/cancel',query:{kouji: response.data.user_id, tadokoro:response.data.hard_token}})
+          } else{}
+            
+        } else {
+          ElMessage.error('邮箱验证失败，请检查网络连接')
+          console.log(response.data.statusMsg)
+        }
+      })
+    } else {
+      console.log('error submit!!')
+      return false
+    }
+  })
+}
 </script>
 <style scoped>
 .confirm {

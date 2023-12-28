@@ -134,7 +134,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/ForgetPasswdView.vue'),
     children: [
       {
-        path: 'verify',
+        path: 'confirm',
         component: () => import('../components/accountManage/forms/EmailConfirmForm.vue')
       },
       {

@@ -130,11 +130,15 @@ public interface UserService {
 
     Map<String, Object> getFollowNum(String userId);
 
-    Map<String, Object> eraseUser(String token);
+    Map<String, Object> eraseUser(String token, String hardToken);
 
     Map<String, Object> verifyPasswd(String token, String password);
 
     Map<String, Object> confirmEmail(String email, String vcode);
+
+    Map<String, Object> changePasswd(String userId, String newPassword, String hardToken);
+
+    Map<String, Object> changeEmail(String userId, String newEmail, String hardToken, String vCode);
 }
 
 @Mapper
@@ -402,15 +406,19 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> eraseUser(String token) {
+    public Map<String, Object> eraseUser(String token, String hardToken) { // 可用，获取专用注销token
         Map<String, Object> response = new HashMap<>();
         // 检测token是否合法
         if (!tokenVerify(token)) {
-            response.put("statusMsg", "Invalid token.");
+            response.put("statusMsg", "Invalid user token.");
             return response;
         }
         // 获取用户id
-        String userId = getPayload(token, "id");
+        String userId = getHardPayload(token, "id");
+        if (!verifyHardSession(userId, hardToken)){
+            response.put("statusMsg", "Invalid hard token.");
+            return response;
+        }
         userDao.eraseUser(userId);
         response.put("statusMsg", "Success.");
         return response;
@@ -425,8 +433,9 @@ class UserServiceImpl implements UserService {
             return response;
         }
         String userId = getPayload(token, "id");
-        if (userDao.verifyPasswd(userId,password) == 0){
+        if (userDao.verifyPasswd(userId,password) == 1){
             response.put("statusMsg", "pass");
+            response.put("hard_token",getHardSession(userId));
             return response;
         }
         response.put("statusMsg","failed");
@@ -438,9 +447,41 @@ class UserServiceImpl implements UserService {
         Map<String, Object> response = new HashMap<>();
         if (verifyCode(email, vCode)) {
             response.put("statusMsg", "pass");
+            String userId = userDao.getIdByEmail(email);
+            response.put("user_id",userId);
+            response.put("hard_token", getHardSession(userId));
             return response;
         }
         response.put("statusMsg","failed");
         return response;
     }
+
+    @Override
+    public Map<String, Object> changePasswd(String userId, String newPassword, String hardToken) {
+        Map<String, Object> response = new HashMap<>();
+        if (!verifyHardSession(userId, hardToken)){
+            response.put("statusMsg", "Invalid hard token.");
+            return response;
+        }
+        userDao.changePassword(userId, newPassword);
+        response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> changeEmail(String userId, String newEmail, String hardToken, String vCode) {
+        Map<String, Object> response = new HashMap<>();
+        if (!verifyCode(newEmail, vCode)) {
+            response.put("statusMsg", "Wrong Verifying Code.");
+            return response;
+        }
+        if(!verifyHardSession(userId,hardToken)){
+            response.put("statusMsg", "Invalid hard token.");
+            return response;
+        }
+        userDao.changeEmail(userId, newEmail);
+        response.put("statusMsg","Success.");
+        return response;
+    }
+
 }
