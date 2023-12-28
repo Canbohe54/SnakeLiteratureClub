@@ -49,8 +49,6 @@ class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentDao commentDao;
 
-    private static final Calendar calendar = Calendar.getInstance();
-
     @Override
     public Map<String, Object> loadComment(String articleId, Boolean recursive, int startAt, int limit) {
         Map<String, Object> response = new HashMap<>();
@@ -86,6 +84,7 @@ class CommentServiceImpl implements CommentService {
         if (reply == null) {
             reply = "";
         }
+        Calendar calendar = Calendar.getInstance();
         commentDao.insertComment(generateId(Type.COMMENT), text, calendar.getTime(), getPayload(token, "id"), textOn, reply);
         response.put("statusMsg", "Success.");
         return response;

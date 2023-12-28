@@ -4,7 +4,7 @@
       <div>
         <el-card class="box-card result-list-card">
           <el-empty v-if="articleList.artList.length === 0" description="暂无结果" />
-          <el-row gutter="12">
+          <el-row :gutter=12>
             <el-col v-for="(articleInfo, index) in articleList.artList" :key="index" :span="12">
               <el-card class="box-card result-card-body" @click='gotoDetail(articleInfo.id)' shadow="hover">
                 <div>
@@ -103,7 +103,6 @@ async function getArticleList() {
     status_list: articleStatus,
     keyword: route.query.wd
   }
-  console.log(params)
   await (SYNC_GET('/article/search', params, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       await getAvgGrade(response.data.articles.list)
