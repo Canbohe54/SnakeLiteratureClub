@@ -4,24 +4,31 @@
       <div>
         <el-card >
           <el-empty v-if="gradeList.graList.length === 0" description="暂无评分" />
-<!--          <div inline-div>评分人&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 评分&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp评价</div>-->
-<!--          <el-row v-for="(gradeInfo,index) in gradeList.graList"-->
-<!--                  :key="index"-->
-<!--                  :span="8"-->
-<!--                  :gutter="24"-->
-<!--                  :offset="index > 0 ? 2 : 0">-->
-<!--            <el-col :span="24" >-->
-<!--              <el-card class="box-card result-single-card" >-->
-<!--                <div inline-div>-->
-<!--                  {{gradeInfo.text_by}}&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp {{gradeInfo.grade_all}}&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp{{gradeInfo.advice}}-->
-<!--                </div>-->
-<!--              </el-card>-->
-<!--            </el-col>-->
-<!--          </el-row>-->
           <div v-else>
             <el-table :data="gradeList.graList" stripe class="grade-table" flexible>
-              <el-table-column prop="text_by" label="评分人"  />
-              <el-table-column prop="grade_all" label="评分"  />
+              <el-table-column prop="text_by" label="评分人"/>
+
+              <el-table-column label="评分">
+                <template #default="scope">
+                  <el-popover effect="light" trigger="hover" placement="top" width="auto">
+                    <template #default>
+                      <div>
+                        文字与表达：<el-rate v-model="scope.row.grade_expr" size="large" :colors="colors" show-score disabled />
+                      </div>
+                      <div>
+                        内容与结构：<el-rate v-model="scope.row.grade_struct" size="large" :colors="colors" show-score disabled />
+                      </div>
+                      <div>
+                        主题相关性：<el-rate v-model="scope.row.grade_theme" size="large" :colors="colors" show-score disabled />
+                      </div>
+                    </template>
+                    <template #reference>
+                      <el-tag>{{ scope.row.grade_all }}</el-tag>
+                    </template>
+                  </el-popover>
+                </template>
+              </el-table-column>
+
               <el-table-column prop="advice" label="评价"   />
             </el-table>
 
@@ -46,6 +53,9 @@
 import { reactive, watch } from 'vue'
 import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 import { useRoute } from 'vue-router'
+import { ref } from "vue"
+
+const colors = ref(['#99A9BF', '#F7BA2A', '#FF9900'])
 
 const route = useRoute()
 const pageInfo = {
