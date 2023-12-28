@@ -32,7 +32,7 @@ public interface UserDao {
     @Select("SELECT COUNT(*) FROM user WHERE id = #{user_id} AND password = #{password}")
     int verifyPasswd(@Param("user_id") String userId, @Param("password") String password);
 
-    @Update("UPDATE user SET name=#{user.name}, phone=#{user.phone}, email=#{user.email}, password=#{user.password}, `group`=#{user.group}, organization=#{user.organization},attr=#{user.attr} WHERE id=#{user.id};")
+    @Update("UPDATE user SET name=#{user.name}, phone=#{user.phone}, email=#{user.email}, password=#{user.password}, `group`=#{user.group}, organization=#{user.organization},attr=#{user.attr},pictureUrl=#{user.pictureUrl} WHERE id=#{user.id};")
     void updateUserInfo(@Param("user") User user);
 
     @Select("SELECT COUNT(*) FROM follow WHERE follow_user_id = #{follow_user_id} AND followed_user_id = #{followed_user_id}")
