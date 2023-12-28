@@ -130,7 +130,7 @@ public interface ArticleDao {
      */
     @Select({"<script>",
             "SELECT ",
-            "id, text, time, text_by as textBy, title, description, status, attr ",
+            "id, time, text_by as textBy, title, description, status, attr ",
             "FROM article WHERE title LIKE '%${keyword}%' AND status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
             "#{item}",
