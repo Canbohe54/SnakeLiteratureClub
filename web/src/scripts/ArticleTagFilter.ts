@@ -20,9 +20,9 @@ function containsValue<VT> (arrayLikeItem: VT[], value: VT) {
   return false
 }
 
-function articleTagCheck (articleAttr: AttributeAddableObject, filterSelection: AttributeAddableObject<string>): boolean {
+function articleTagCheck (articleAttr: AttributeAddableObject, filterSelection: AttributeAddableObject<Array<string>>): boolean {
   for (const groupKey in filterSelection) {
-    if (!containsKey(articleAttr, groupKey) && !isSelectionEmpty(filterSelection)) {
+    if (!isSelectionGroupEmpty(filterSelection[groupKey]) && !containsKey(articleAttr, groupKey) && !isSelectionEmpty(filterSelection)) {
       return false
     }
     for (const tagName of filterSelection[groupKey]) {
@@ -52,4 +52,8 @@ function isSelectionEmpty (filterSelection: AttributeAddableObject) {
     }
   }
   return true
+}
+
+function isSelectionGroupEmpty (filterSelectionGroup: Array<any>) {
+  return filterSelectionGroup.length === 0
 }
