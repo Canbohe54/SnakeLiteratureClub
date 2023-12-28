@@ -150,6 +150,7 @@ function errorCallback(response: any) {
         articleDetail[dataKey] = response.data.article[dataKey]
       }
       SearchFilterRef.value.loadSelection(JSON.parse(articleDetail.attr))
+      articleDetail.attr=JSON.parse(articleDetail.attr).tags
     } else {
       errorCallback(response)
     }
