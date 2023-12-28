@@ -143,7 +143,7 @@ async function getAvgGrade(artList: any) {
       }, response => {
         if (response.status === 200 && response.data.statusMsg === 'success') {
           if(Math.round(response.data.avg_grade) == response.data.avg_grade){
-            avgGradeMap.set(response.data.article_id, response.data.avg_grade.toFixed(0))
+            avgGradeMap.set(response.data.article_id, response.data.avg_grade)
           }else{
             avgGradeMap.set(response.data.article_id, response.data.avg_grade.toFixed(2))
           }
