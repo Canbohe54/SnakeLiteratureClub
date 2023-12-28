@@ -24,7 +24,7 @@ import java.util.Map;
 public class User implements Serializable {
     String name;
     String id;
-    String phone;
+    @Deprecated String phone;
     String email;
     String password;
     String group;
