@@ -161,16 +161,14 @@ const save = async () => {
   // to do:获取token测试
   await SYNC_POST('/contributor/save', {
     token: store.getters.getToken,
-    article: {
-      id: articleDetail.id,
-      text: articleDetail.text,
-      time: null,
-      textBy: '',
-      title: articleDetail.title,
-      description: articleDetail.description,
-      status: 1, // 保存成功
-      attr: `{"tags":${articleDetail.attr}}`
-    }
+    id: articleDetail.id,
+    text: articleDetail.text,
+    time: null,
+    textBy: '',
+    title: articleDetail.title,
+    description: articleDetail.description,
+    status: 1, // 保存成功
+    attr: `{"tags":${articleDetail.attr}}`
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       console.log('Save successfully!')
@@ -202,7 +200,6 @@ const changeInputBox = (file: any) => {
 const release = async () => {
   await SYNC_POST('/contributor/save', {
     token: store.getters.getToken,
-    article: {
       id: articleDetail.id,
     text: articleDetail.text,
     time: null,
@@ -211,7 +208,6 @@ const release = async () => {
     description: articleDetail.description,
     status: 3, // 已发布
     attr: `{"tags":${articleDetail.attr}}`
-  }
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       console.log('Release successfully!')

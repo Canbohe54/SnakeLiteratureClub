@@ -1,4 +1,6 @@
 <template>
+  <el-row>
+    <el-col :span="18" :offset="3">
   <div>
     <el-container>
       <el-main>
@@ -15,7 +17,7 @@
           </div>
 
           <el-divider />
-          <el-text :size="displaySize">{{articleDetail.text}}</el-text>
+          <el-text class="article-text" :size="displaySize">{{articleDetail.text}}</el-text>
         </el-card>
       </el-main>
 
@@ -50,7 +52,10 @@
       </span>
     </template>
   </el-dialog>
+    </el-col>
+  </el-row>
 </template>
+
 <script lang="ts" setup>
 import {reactive, ref} from "vue";
 import {AttributeAddableObject} from "@/scripts/ArticleTagFilter";
@@ -244,5 +249,9 @@ const handleUpdateArticleClicked = () => {
 .gradeDis{
   text-align:center;
   margin: 20px 20px;
+}
+.article-text {
+  white-space:pre-wrap;
+  text-align: start !important;
 }
 </style>
