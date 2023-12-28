@@ -16,7 +16,7 @@
         <div class="demo2">
         <span >文章评价</span>
         </div>
-        <el-input v-model="gradeData.advice" :autosize="{ minRows: 4, maxRows: 6 }" type="textarea" placeholder="Please input"
+        <el-input v-model="gradeData.advice" :autosize="{ minRows: 4, maxRows: 6 }" type="textarea" placeholder="请输入您的评价"
                   clearable maxlength="100" show-word-limit/>
 
         <br/>
@@ -90,6 +90,14 @@ function errorCallback(response: any) {
 const save = async () => {
   console.log("save")
   //to do:获取token测试
+  if(gradeData.grade_expr == undefined || gradeData.grade_struct == undefined || gradeData.grade_theme == undefined){
+    ElMessage({
+      showClose: true,
+      message: '请先进行评分！',
+      type: 'warning',
+    })
+    return
+  }
   await SYNC_POST("/grade/add", {
     token: store.getters.getToken,
     article_id: route.query.id,
