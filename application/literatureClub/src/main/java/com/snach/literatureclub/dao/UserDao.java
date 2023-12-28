@@ -15,6 +15,7 @@ public interface UserDao {
 
     @Select("SELECT * FROM user WHERE id = #{id}")
     User getUserById(String id);
+
     @Select("SELECT user.id FROM user WHERE user.email = #{email}")
     String getIdByEmail(String email);
 
@@ -34,11 +35,11 @@ public interface UserDao {
     @Select("SELECT COUNT(*) FROM user WHERE id = #{user_id} AND password = #{password}")
     int verifyPasswd(@Param("user_id") String userId, @Param("password") String password);
 
-    @Update("UPDATE user SET name=#{user.name}, phone=#{user.phone}, email=#{user.email}, password=#{user.password}, `group`=#{user.group}, organization=#{user.organization},attr=#{user.attr},pictureUrl=#{user.pictureUrl} WHERE id=#{user.id};")
+    @Update("UPDATE user SET name=#{user.name}, phone=#{user.phone},introdution=#{user.introduction} ,`group`=#{user.group}, organization=#{user.organization},attr=#{user.attr},pictureUrl=#{user.pictureUrl} WHERE id=#{user.id};")
     void updateUserInfo(@Param("user") User user);
 
     @Select("SELECT COUNT(*) FROM follow WHERE follow_user_id = #{follow_user_id} AND followed_user_id = #{followed_user_id}")
-    int isFollowedByUID(@Param("follow_user_id") String followUserId,@Param("followed_user_id") String followedUserId);
+    int isFollowedByUID(@Param("follow_user_id") String followUserId, @Param("followed_user_id") String followedUserId);
 
     @Delete("DELETE FROM follow WHERE follow_user_id = #{follow_user_id} AND followed_user_id = #{followed_user_id}")
     void unFollow(@Param("follow_user_id") String followUserId, @Param("followed_user_id") String followedUserId);
@@ -57,6 +58,7 @@ public interface UserDao {
             "</script>"
     })
     List<String> getAllFollowed(String userId, @Param("items") List<String> targetIdentity);
+
     @Select({"<script>",
             "SELECT ",
             "fo.follow_user_id ",
@@ -92,6 +94,7 @@ public interface UserDao {
 
     @Update("UPDATE user SET user.password = #{newPassword} WHERE user.id = #{userId}")
     void changePassword(String userId, String newPassword);
+
     @Update("UPDATE user SET user.email = #{newEmail} WHERE user.id = #{userId}")
     void changeEmail(String userId, String newEmail);
 }
