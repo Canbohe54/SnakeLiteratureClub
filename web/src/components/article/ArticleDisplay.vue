@@ -65,6 +65,9 @@ getArticleList()
 watch(() => route.query.wd, () => {
   getArticleList()
 })
+watch(articleList,() => {
+  pageInfo.total = articleList.artList.length
+})
 // 监听 page size 改变的事件
 function handleSizeChange(newSize: any) {
   pageInfo.pageSize = newSize
