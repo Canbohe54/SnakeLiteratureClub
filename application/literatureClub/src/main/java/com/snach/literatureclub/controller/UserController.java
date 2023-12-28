@@ -93,6 +93,16 @@ public class UserController {
         return userService.login(email, password);
     }
 
+    @RequestMapping(value = "verifyPasswd", method = RequestMethod.POST)
+    public Map<String, Object> verifyPasswd(@RequestParam("token") String token, @RequestParam("password") String password) {
+        return userService.verifyPasswd(token, password);
+    }
+
+    @RequestMapping(value="confirmEmail", method = RequestMethod.POST)
+    public Map<String, Object> confirmEmail(@RequestParam("email") String email, @RequestParam("vCode") String vCode){
+        return userService.confirmEmail(email, vCode);
+    }
+
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public Map<String, Object> search(@RequestParam("keyword") String keyword) {
         return userService.userSearch(keyword);

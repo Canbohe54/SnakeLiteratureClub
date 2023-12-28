@@ -131,6 +131,10 @@ public interface UserService {
     Map<String, Object> getFollowNum(String userId);
 
     Map<String, Object> eraseUser(String token);
+
+    Map<String, Object> verifyPasswd(String token, String password);
+
+    Map<String, Object> confirmEmail(String email, String vcode);
 }
 
 @Mapper
@@ -409,6 +413,34 @@ class UserServiceImpl implements UserService {
         String userId = getPayload(token, "id");
         userDao.eraseUser(userId);
         response.put("statusMsg", "Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> verifyPasswd(String token, String password) {
+        Map<String, Object> response = new HashMap<String, Object>();
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            response.put("statusMsg", "Invalid token.");
+            return response;
+        }
+        String userId = getPayload(token, "id");
+        if (userDao.verifyPasswd(userId,password) == 0){
+            response.put("statusMsg", "pass");
+            return response;
+        }
+        response.put("statusMsg","failed");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> confirmEmail(String email, String vCode) {
+        Map<String, Object> response = new HashMap<>();
+        if (verifyCode(email, vCode)) {
+            response.put("statusMsg", "pass");
+            return response;
+        }
+        response.put("statusMsg","failed");
         return response;
     }
 }

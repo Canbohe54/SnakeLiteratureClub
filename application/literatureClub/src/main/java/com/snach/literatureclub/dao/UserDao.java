@@ -29,6 +29,9 @@ public interface UserDao {
     @Select("select * from user where email = #{email} and password = #{password}")
     User login(@Param("email") String email, @Param("password") String password);
 
+    @Select("SELECT COUNT(*) FROM user WHERE id = #{user_id} AND password = #{password}")
+    int verifyPasswd(@Param("user_id") String userId, @Param("password") String password);
+
     @Update("UPDATE user SET name=#{user.name}, phone=#{user.phone}, email=#{user.email}, password=#{user.password}, `group`=#{user.group}, organization=#{user.organization},attr=#{user.attr} WHERE id=#{user.id};")
     void updateUserInfo(@Param("user") User user);
 
