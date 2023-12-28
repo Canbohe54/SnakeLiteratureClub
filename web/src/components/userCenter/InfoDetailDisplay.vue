@@ -70,6 +70,7 @@ const isUserMyFollowed = ref('false');
     user_id: route.params.id
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      console.log(response)
       let detail = response.data['user_info']
       userInfo.value.avatar = detail.pictureUrl
       userInfo.value.id = detail.id

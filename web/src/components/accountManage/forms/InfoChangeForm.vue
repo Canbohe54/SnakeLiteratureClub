@@ -40,7 +40,7 @@
       <el-form-item label="个人简介" class="info-introduction">
         <el-input type="textarea" v-model="userInfo.introduction" placeholder="请输入个人简介" class="info-textarea"></el-input>
       </el-form-item>
-      <el-button type="primary" class="mt-4" :onclick="handleInfoChange">保存修改</el-button>
+      <el-button type="primary" class="mt-4" @click="async () => {handleInfoChange()}">保存修改</el-button>
     </el-form>
 
     <el-dialog v-model="avatarDialogVisible" title="上传头像" width="30%">
@@ -51,7 +51,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="avatarDialogVisible = false">
+          <el-button type="primary" @click="() => {avatarDialogVisible = false}">
             上传
           </el-button>
         </span>
@@ -64,6 +64,8 @@ import { reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 // do not use same name with ref!!!
 import { useStore } from 'vuex'
+import {POST, SYNC_POST} from "@/scripts/Axios";
+import router from "@/router";
 const store = useStore()
 const userInfo = reactive({
   avatar: store.getters.getUserInfo.avatar,
@@ -116,8 +118,49 @@ const handleInfoChange = () => {
       grade: userInfo.stuGrade
     })
   }
+  updateSubmit()
+}
+const updateSubmit = async () => {
+  let parma = {
+    token: store.getters.getToken,
+    id:store.getters.getUserInfo.id,
+    name:userInfo.name,
+    organization:userInfo.unit,
+    introduction:userInfo.introduction,
+    pictureUrl:userInfo.avatar,
+    attr: `{ "grade": "${userInfo.stuGrade}" }`
+  }
+  await SYNC_POST('/usr/updateUserInfo', parma, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      console.log('Save successfully!')
+      ElMessage({
+        showClose: true,
+        message: '修改成功！',
+        type: 'success'
+      })
+    } else {
+      errorCallback(response)
+      console.log(response)
+    }
+  })
 }
 
+function errorCallback(response: any) {
+  console.log(response)
+  if (response.status == 200) {
+    ElMessage({
+      showClose: true,
+      message: response.data.statusMsg,
+      type: 'error',
+    })
+  } else {
+    ElMessage({
+      showClose: true,
+      message: "Network Error!",
+      type: 'error',
+    })
+  }
+}
 </script>
 <style scoped>
 .info-change-form {
