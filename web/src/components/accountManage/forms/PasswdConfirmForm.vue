@@ -7,16 +7,16 @@
       <el-tag :type="userTagType"  disable-transitions>{{ userInfo.name }} · {{ userInfo.identity }}</el-tag>
     </div>
     <div class="passwd-confirm-form">
-      <el-form label-width="80px" label-position="top" size="large">
-        <el-form-item label="请输入密码" class="confirm-passwd">
+      <el-form ref="confirmPasswdRef" :model="confirmPasswd" :rules="confirmPasswdRules" label-width="80px" label-position="top" size="large" >
+        <el-form-item label="请输入密码" class="confirm-passwd" prop="passwd">
           <el-input v-model="confirmPasswd.passwd" show-password></el-input>
         </el-form-item>
       </el-form>
       <div class="loginBottom">
         <div></div>
-        <el-button type="primary" class="loginButton">验证</el-button>
+        <el-button type="primary" class="loginButton" @click="onSubmit(confirmPasswdRef)">验证</el-button>
         <div>
-          <router-link to="/forgetPassword" class="forget-password-confirm">忘记密码？</router-link>
+          <router-link to="/forget/confirm" class="forget-password-confirm">忘记密码？</router-link>
         </div>
       </div>
     </div>
@@ -27,9 +27,11 @@ import { reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { POST } from '@/scripts/Axios'
 import router from '@/router'
+import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { checkPasswordRule, level } from '../../uiScripts/CheckPassword'
 const store = useStore()
+const route = useRoute()
 interface ConfirmPasswd {
   passwd: string
 }
@@ -72,6 +74,43 @@ const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密�
 const confirmPasswdRules = reactive<FormRules<ConfirmPasswd>>({ // 表单验证规则
   passwd: [{ required: true, validator: validatePasswd, trigger: 'blur' }]
 })
+
+const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
+  console.log(formEl)
+  if (!formEl) return
+  await formEl.validate(async (valid, fields) => {
+    
+    if (valid) {
+      POST('/usr/verifyPasswd', { 
+        token: store.getters.getToken,
+        password: confirmPasswd.passwd
+      }, (response) => {
+        if (response.status === 200 && response.data.statusMsg === 'pass') {
+          ElMessage({
+            message: '密码验证成功',
+            type: 'success',
+            duration: 2000
+          })
+          console.log(route.path)
+          if (route.path.split('/')[2] === 'password') {
+            router.push({path:'/account/password/change',query:{kouji: store.getters.getUserInfo.id, tadokoro:response.data.hard_token}})
+          } else if (route.path.split('/')[2] === 'cancel') {
+            router.push({path:'/account/cancel/confirm',query:{kouji: store.getters.getUserInfo.id, tadokoro:response.data.hard_token}})
+          } else if (route.path.split('/')[2] === 'email'){
+            router.push({path:'/account/email/change',query:{kouji: store.getters.getUserInfo.id, tadokoro:response.data.hard_token}})
+          }
+            
+        } else {
+          ElMessage.error('密码验证失败，请检查网络连接')
+          console.log(response.data.statusMsg)
+        }
+      })
+    } else {
+      console.log('error submit!!')
+      return false
+    }
+  })
+}
 </script>
 <style scoped>
 .confirm {

@@ -9,7 +9,7 @@
     </el-form>
     <div class="loginBottom">
         <div>
-          <router-link to="/forget" class="forget-password">忘记密码？</router-link>
+          <router-link to="/forget/confirm" class="forget-password">忘记密码？</router-link>
         </div>
         <el-button type="primary" @click="onSubmit(loginRuleFormRef)" class="loginButton" :disabled="loginButton.disabled">{{ loginButton.buttonText }}</el-button>
         <div>

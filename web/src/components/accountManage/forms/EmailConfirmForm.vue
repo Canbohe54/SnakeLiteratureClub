@@ -22,7 +22,7 @@
             </el-form>
             <div class="loginBottom">
                 <div></div>
-                <el-button type="primary" class="loginButton" @click="onConfirmEmail(emailConfirmRef)">验证</el-button>
+                <el-button type="primary" class="confirmButton" @click="onConfirmEmail(emailConfirmRef)">验证</el-button>
                 <div></div>
             </div>
         </div>
@@ -115,6 +115,7 @@ const emailChangeRules = reactive<FormRules<ConfirmEmail>>({ // 表单验证规�
 
 const onConfirmEmail = async (formEl: FormInstance | undefined) => { // 提交表单
   if (!formEl) return
+  
   await formEl.validate(async (valid, fields) => {
     if (valid) {
       POST('/usr/confirmEmail', { email: emailConfirm.email, v_code: emailConfirm.emailCaptcha }, (response) => {
@@ -129,7 +130,10 @@ const onConfirmEmail = async (formEl: FormInstance | undefined) => { // 提交�
             router.push({path:'/account/password/change',query:{kouji: response.data.user_id, tadokoro:response.data.hard_token}})
           } else if (route.path.split('/')[2] === 'cancel') {
             router.push({path:'/account/cancel/cancel',query:{kouji: response.data.user_id, tadokoro:response.data.hard_token}})
-          } else{}
+          } else if (route.path.split('/')[1] === 'forget'){
+            router.push({path:'/forget/change',query:{kouji: response.data.user_id, tadokoro:response.data.hard_token}})
+
+          }else{}
             
         } else {
           ElMessage.error('邮箱验证失败，请检查网络连接')

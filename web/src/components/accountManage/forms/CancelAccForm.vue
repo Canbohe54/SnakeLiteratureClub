@@ -20,9 +20,10 @@ import { reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import {POST, SYNC_POST} from '@/scripts/Axios'
 import {useStore} from 'vuex'
-import {useRouter} from 'vue-router'
+import {useRouter, useRoute} from 'vue-router'
 const store = useStore()
 const router = useRouter()
+const route = useRoute()
 
 interface CancelAccForm {
     confirm: string
@@ -61,7 +62,8 @@ const handleCancel = async (formEl: FormInstance | undefined) => { // 提交表�
       let isPosted = false
       // TODO 加入额外选项
       await SYNC_POST('/usr/eraseUser', {
-        token: store.getters.getToken
+        token: store.getters.getToken,
+        hard_token: route.query.tadokoro
       }, (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
           console.log(response.data.statusMsg)
@@ -71,7 +73,10 @@ const handleCancel = async (formEl: FormInstance | undefined) => { // 提交表�
             duration: 2000
           })
           router.push('/')
-        } else {
+        }else if (response.data.statusMsg === "Invalid hard token."){
+            ElMessage.error('会话已过期，请重新验证')
+            router.go(-1)
+        }else {
           ElMessage.error('注销失败，请检查网络连接')
           console.log(response.data.statusMsg)
         }

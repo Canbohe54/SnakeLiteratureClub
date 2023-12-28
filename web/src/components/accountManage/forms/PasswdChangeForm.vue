@@ -1,24 +1,27 @@
 <template>
-<div class="passwd-change-form">
-    <el-form ref="passwdChangeFormRef" :model="passwdChangeForm" :rules="passwdChangeRules" label-width="120px" label-position="right" size="large">
-    <el-form-item label="新密码" prop="passwd" class="passwd-items passwd-input">
-      <el-input v-model="passwdChangeForm.passwd" placeholder="请输入新密码" show-password></el-input>
-    </el-form-item>
-    <el-form-item v-if="passwdChangeForm.passwd !== '' && passwdChangeForm.passwd !== undefined" label="" algin="center" justify-content="start" style="height: 25px">
-      <!-- 展示长度条 -->
-      <div class="paschange-bar" v-if="passwdChangeForm.passwd !== '' && passwdChangeForm.passwd !== undefined"
-        :style="{ background: barColor, width: width + '%' }">
-        <!-- 展示文字 -->
-        <div class="paschange-strength" :style="{ color: barColor }" v-if="passwdChangeForm.passwd !== '' && passwdChangeForm.passwd !== undefined">
-          {{ strength }}
+  <div class="passwd-change-form">
+    <el-form ref="passwdChangeFormRef" :model="passwdChangeForm" :rules="passwdChangeRules" label-width="120px"
+      label-position="right" size="large">
+      <el-form-item label="新密码" prop="passwd" class="passwd-items passwd-input">
+        <el-input v-model="passwdChangeForm.passwd" placeholder="请输入新密码" show-password></el-input>
+      </el-form-item>
+      <el-form-item v-if="passwdChangeForm.passwd !== '' && passwdChangeForm.passwd !== undefined" label="" algin="center"
+        justify-content="start" style="height: 25px">
+        <!-- 展示长度条 -->
+        <div class="paschange-bar" v-if="passwdChangeForm.passwd !== '' && passwdChangeForm.passwd !== undefined"
+          :style="{ background: barColor, width: width + '%' }">
+          <!-- 展示文字 -->
+          <div class="paschange-strength" :style="{ color: barColor }"
+            v-if="passwdChangeForm.passwd !== '' && passwdChangeForm.passwd !== undefined">
+            {{ strength }}
+          </div>
         </div>
-      </div>
-    </el-form-item>
-    <el-form-item label="确认密码" prop="passwd2" class="passwd-items passwd-input">
-      <el-input v-model="passwdChangeForm.passwd2" placeholder="请再次输入密码"></el-input>
-    </el-form-item>
-    <el-button type="primary" class="mt-4" @click="onSubmit">提交修改</el-button>
-  </el-form>
+      </el-form-item>
+      <el-form-item label="确认密码" prop="passwd2" class="passwd-items passwd-input">
+        <el-input v-model="passwdChangeForm.passwd2" placeholder="请再次输入密码"></el-input>
+      </el-form-item>
+      <el-button type="primary" class="mt-4" @click="onSubmit">提交修改</el-button>
+    </el-form>
   </div>
 </template>
 <script lang="ts" setup>
@@ -28,6 +31,10 @@ import { POST } from '@/scripts/Axios'
 import router from '@/router'
 import { checkPasswordRule, level } from '../../uiScripts/CheckPassword'
 import store from '@/store'
+import { useRoute } from 'vue-router'
+import { pa } from 'element-plus/es/locale'
+
+const route = useRoute()
 
 interface PasswdChangeForm {
   passwd: string
@@ -81,13 +88,21 @@ const passwdChangeFormRef = ref<FormInstance>()
 
 const onSubmit = () => { // 提交修改
   passwdChangeFormRef.value?.validate((valid) => {
+    console.log(route.query.kouji)
+    console.log(route.query.tadokoro)
+    console.log(passwdChangeForm.passwd)
     if (valid) {
-      POST('/usr/changepasswd', { passwd: passwdChangeForm.passwd }, (response) => {
+      POST('/usr/changePasswd', { 
+        user_id: route.query.kouji,
+        new_password: passwdChangeForm.passwd,
+        hard_token: route.query.tadokoro
+      }, (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
           ElMessage.success('密码修改成功')
           store.commit('clear')
           router.push('/login')
         } else {
+          console.log(response.data.statusMsg)
           ElMessage.error('密码修改失败')
         }
       })
@@ -142,14 +157,17 @@ watch(
   justify-content: center;
   margin: 100px 50px;
 }
-.passwd-change-form /deep/ .el-form-item__content {
-}
+
+.passwd-change-form /deep/ .el-form-item__content {}
+
 .passwd-input {
   width: 400px;
 }
+
 .passwd-input /deep/ .el-input__inner {
   text-align: center;
 }
+
 .passwd-items {
   display: flex;
   align-items: center;
@@ -173,5 +191,4 @@ watch(
   margin: 2px 0 5px 5px;
   position: absolute;
   border-radius: 2px;
-}
-</style>
+}</style>

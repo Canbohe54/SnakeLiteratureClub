@@ -14,7 +14,7 @@
         </template>
       </el-input>
     </el-form-item>
-    <el-button type="primary" class="mt-4" @click="onSubmit">提交修改</el-button>
+    <el-button type="primary" class="mt-4" @click="onSubmit(emailChangeFormRef)">提交修改</el-button>
   </el-form>
   </div>
 </template>
@@ -24,8 +24,10 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { POST } from '@/scripts/Axios'
 import { useStore } from 'vuex'
 import router from '@/router'
+import { useRoute } from 'vue-router'
 const regExpEmail = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])+$/ // 邮箱正则表达式
 const store = useStore()
+const route = useRoute()
 const oriEmail = ref(store.getters.getUserInfo.email) // 原邮箱地址
 interface EmailChangeForm {
   newEmail: string
@@ -105,11 +107,21 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
   await formEl.validate((valid, fields) => {
     if (valid) {
       console.log('submit!')
-      POST('/usr/changeEmail', { email: emailChangeForm.newEmail, vcode: emailChangeForm.emailCaptcha }, (response) => {
+      POST('/usr/changeEmail', { 
+        new_email: emailChangeForm.newEmail,
+        v_code: emailChangeForm.emailCaptcha,
+        hard_token: route.query.tadokoro,
+        user_id: route.query.kouji }, (response) => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
           ElMessage.success('邮箱修改成功')
         } else {
           console.log(response.data.statusMsg)
+          if (response.data.statusMsg === "Invalid hard token."){
+            ElMessage.error('会话已过期，请重新验证')
+            router.go(-1)
+          }else{
+            ElMessage.error('邮箱修改失败')
+          }
         }
       })
     } else {
