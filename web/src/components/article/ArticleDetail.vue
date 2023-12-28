@@ -116,7 +116,9 @@ function errorCallback(response: any) {
         articleDetail[dataKey] = response.data.article[dataKey]
       }
       await getTextBy()
-      await getIsFavorited()
+      if (store.getters.getToken !== '') {
+        await getIsFavorited()
+      }
     } else {
       errorCallback(response)
     }
@@ -153,6 +155,10 @@ async function getIsFavorited() {
 }
 
 async function handleFavorite() {
+  if(store.getters.getToken === ''){
+    router.push('/login')
+    return 
+  }
   if (isFavorited.value) {
     await SYNC_POST('/usr/cancelFavorite', {
       token: store.getters.getToken,
