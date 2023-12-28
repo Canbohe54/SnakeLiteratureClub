@@ -29,7 +29,7 @@
                 </template>
               </el-table-column>
 
-              <el-table-column prop="advice" label="评价"   />
+              <el-table-column prop="advice" label="评价"/>
             </el-table>
 
             <el-pagination
