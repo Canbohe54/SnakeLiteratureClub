@@ -24,6 +24,7 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
+        <el-button type="danger" style="float: left;" @click="() => {dialogFormVisible = false; deleteGrade()}">删除</el-button>
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="() => {dialogFormVisible = false; save()}" >
           确定
@@ -108,6 +109,32 @@ const save = async () => {
       location.reload()
     }else {
       errorCallback(response)
+    }
+  })
+}
+
+async function deleteGrade () {
+  await SYNC_POST('/grade/delete', {
+    token: store.getters.getToken,
+    article_id: route.query.id,
+    expert_id: store.getters.getUserInfo.id
+  }, async (response) => {
+    if (response.data.statusMsg === 'Grades do not exist.') {
+      ElMessage({
+        message: '尚未评分与评价！',
+        type: 'warning'
+      })
+    } else if(response.data.statusMsg === 'success'){
+        ElMessage({
+        message: '评分与评价删除成功！',
+        type: 'success'
+      })
+      location.reload()
+    } else {
+      ElMessage({
+        message: response.data.statusMsg,
+        type: 'error'
+      })
     }
   })
 }
