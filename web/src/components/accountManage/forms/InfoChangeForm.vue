@@ -133,6 +133,17 @@ const updateSubmit = async () => {
   await SYNC_POST('/usr/updateUserInfo', parma, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       console.log('Save successfully!')
+      const userInfoAtStore = store.getters.getUserInfo
+      const payload = {
+        id: userInfoAtStore.id,
+        name: userInfo.name,
+        group: userInfoAtStore.identity,
+        organization: userInfo.unit,
+        introduction: userInfo.introduction,
+        pictureUrl: userInfo.avatar,
+        attr: `{ "grade": "${userInfo.stuGrade}" }`
+      }
+      store.commit('setUserInfo', payload)
       ElMessage({
         showClose: true,
         message: '修改成功！',
