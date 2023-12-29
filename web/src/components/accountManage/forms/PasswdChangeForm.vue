@@ -103,7 +103,13 @@ const onSubmit = () => { // 提交修改
           router.push('/login')
         } else {
           console.log(response.data.statusMsg)
-          ElMessage.error('密码修改失败')
+          if (response.data.statusMsg === "Invalid hard token."){
+            ElMessage.error('会话已过期，请重新验证')
+            router.go(-1)
+          }else{
+            ElMessage.error('密码修改失败')
+          }
+
         }
       })
     } else {
