@@ -138,13 +138,6 @@ class GradeServiceImpl implements GradeService {
         int grade_all = grade_expr + grade_struct + grade_theme;
         Grade grade = new Grade(expert_id, article_id, grade_expr, grade_struct, grade_theme, grade_all, advice);
         gradeDao.insertGrade(grade);
-        res.put("article_id", article_id);
-        res.put("expert_id", expert_id);
-        res.put("grade_expr", grade_expr);
-        res.put("grade_struct", grade_struct);
-        res.put("grade_theme", grade_theme);
-        res.put("grade_all", grade_all);
-        res.put("advice", advice);
         res.put("statusMsg", "success");
         return res;
     }
