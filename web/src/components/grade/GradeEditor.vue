@@ -90,14 +90,24 @@ function errorCallback(response: any) {
 const save = async () => {
   console.log("save")
   //to do:获取token测试
-  if(gradeData.grade_expr == undefined || gradeData.grade_struct == undefined || gradeData.grade_theme == undefined){
-    ElMessage({
-      showClose: true,
-      message: '请先进行评分！',
-      type: 'warning',
-    })
-    return
+  // if(gradeData.grade_expr == undefined || gradeData.grade_struct == undefined || gradeData.grade_theme == undefined){
+  //   ElMessage({
+  //     showClose: true,
+  //     message: '请先进行评分！',
+  //     type: 'warning',
+  //   })
+  //   return
+  // }
+  if(gradeData.grade_expr == undefined){
+    gradeData.grade_expr = 0;
   }
+  if(gradeData.grade_struct == undefined){
+    gradeData.grade_struct = 0;
+  }
+  if(gradeData.grade_theme == undefined){
+    gradeData.grade_theme = 0;
+  }
+  if(gradeData.advice == undefined) gradeData.advice = ''
   await SYNC_POST("/grade/add", {
     token: store.getters.getToken,
     article_id: route.query.id,

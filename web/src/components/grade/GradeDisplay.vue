@@ -35,7 +35,16 @@
                 </template>
               </el-table-column>
 
-              <el-table-column prop="advice" label="评价"/>
+              <el-table-column prop="advice" label="评价">
+                <template #default="scope">
+                  <div style="display: flex; align-items: center" v-if="scope.row.advice !='' ">
+                    {{scope.row.advice}}
+                  </div>
+                  <div style="display: flex; align-items: center" v-else>
+                    暂无评价
+                  </div>
+                </template>
+              </el-table-column>
             </el-table>
 
             <el-pagination
