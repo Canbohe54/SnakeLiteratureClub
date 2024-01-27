@@ -4,4 +4,4 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 RUN mvn package
-CMD ["java","-Djava.security.egd=file:/dev/./urandom","-Dserver.port=19198","-jar","/LiteratureClubApplication.jar"]
+CMD ["java","-Djava.security.egd=file:/dev/./urandom","-Dserver.port=8080","-jar","/LiteratureClubApplication.jar"]
