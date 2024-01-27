@@ -3,6 +3,7 @@ package com.snach.literatureclub.service;
 import jakarta.mail.internet.MimeMessage;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -43,8 +44,11 @@ class MailServiceImpl implements MailService {
     static {
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            File file = ResourceUtils.getFile("classpath:statics/mailTemplate/mailTemplate_zh.html");
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            ClassPathResource resource = new ClassPathResource("statics/mailTemplate/mailTemplate_zh.html");
+            InputStream inputStream = resource.getInputStream();
+//            File file = ResourceUtils.getFile("classpath:statics/mailTemplate/mailTemplate_zh.html");
+//            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuilder.append(line);
