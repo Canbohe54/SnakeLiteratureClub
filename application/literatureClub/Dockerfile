@@ -5,7 +5,7 @@ FROM openjdk:17
 VOLUME /tmp
 
 # Make port 8080 available to the world outside this container
-EXPOSE 8080
+EXPOSE 19198
 
 # Add the application's jar to the container
 ADD target/literatureClub-0.0.1-SNAPSHOT.jar app.jar
