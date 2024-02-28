@@ -17,7 +17,7 @@
           </div>
 
           <el-divider />
-          <el-text class="article-text" :size="displaySize">{{articleDetail.text}}</el-text>
+          <el-text class="article-text" :size="displaySize" >{{articleDetail.text}}</el-text>
         </el-card>
       </el-main>
 
@@ -157,7 +157,7 @@ async function getIsFavorited() {
 async function handleFavorite() {
   if(store.getters.getToken === ''){
     router.push('/login')
-    return 
+    return
   }
   if (isFavorited.value) {
     await SYNC_POST('/usr/cancelFavorite', {
@@ -257,6 +257,7 @@ const handleUpdateArticleClicked = () => {
   margin: 20px 20px;
 }
 .article-text {
+  display: flex;
   white-space:pre-wrap;
   text-align: start !important;
 }
