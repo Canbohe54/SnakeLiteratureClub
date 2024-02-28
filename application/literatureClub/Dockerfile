@@ -1,7 +1,14 @@
-# build docker for project
-FROM maven:3.8.3-openjdk-17
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn package
-CMD ["java","-Djava.security.egd=file:/dev/./urandom","-Dserver.port=19198","-jar","/LiteratureClubApplication.jar"]
+# Use OpenJDK 17 as the base image
+FROM openjdk:17
+
+# Add a volume pointing to /tmp
+VOLUME /tmp
+
+# Make port 8080 available to the world outside this container
+EXPOSE 19198
+
+# Add the application's jar to the container
+ADD target/literatureClub-0.0.1-SNAPSHOT.jar app.jar
+
+# Run the jar file
+ENTRYPOINT ["java","-jar","/app.jar"]
