@@ -37,7 +37,7 @@
     </div>
     <el-text v-if="commentDisplayConf.nowDisplayRowsNum >= commentDisplayConf.maxCommentRowsNum" type="info">我也是有底线的~</el-text>
   </el-card>
-  <p style="height: 20px" />
+  <p style="height: 20px" ></p>
 </template>
 
 <script lang="ts" setup>
@@ -46,6 +46,7 @@ import { SYNC_GET, SYNC_POST } from '@/scripts/Axios'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { toUserPage } from '@/scripts/userInfo'
 
 interface Comment {
   commenter: string,
@@ -167,9 +168,9 @@ async function addComment (textOn: string, text: string) {
   })
 }
 
-function toUserPage (id: string) {
-  router.push(`/user/${id}/article`)
-}
+// function toUserPage (id: string) {
+//   router.push(`/user/${id}/article`)
+// }
 
 await loadCommentList()
 </script>

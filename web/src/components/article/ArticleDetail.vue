@@ -10,7 +10,7 @@
           <div style="display: flex; justify-content:center;align-items: flex-end;">
             <el-button type="primary" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id" @click="handleUpdateArticleClicked">修改文章</el-button>
             <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id" @click="delArticleDialogVisible=true">删除文章</el-button>
-            <el-button type="warning" link circle :onclick="handleFavorite">{{ isFavorited?'取消收藏':'收藏' }}</el-button>
+            <el-button type="warning" link :onclick="handleFavorite">{{ isFavorited?'取消收藏':'收藏' }}</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中</el-button>
             <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大</el-button>
@@ -67,6 +67,7 @@ import GradeEditor from "@/components/grade/GradeEditor.vue";
 import GradeDisplay from "@/components/grade/GradeDisplay.vue";
 import {useStore} from "vuex";
 import CommentDisplay from "@/components/article/CommentDisplay.vue";
+import { toUserPage } from "@/scripts/userInfo";
 
 const router = useRouter()
 const route = useRoute()
@@ -196,7 +197,8 @@ async function handleFavorite() {
 
 const handleAuthorClicked = () => {
   if (articleDetail.text_by !== '' && articleDetail.text_by !== undefined) {
-    router.push('/user/'+articleDetail.text_by_id)
+    // router.push('/user/'+articleDetail.text_by_id)
+    toUserPage(articleDetail.text_by_id)
   } else {
     router.push({path: '/userNotFound'})
   }

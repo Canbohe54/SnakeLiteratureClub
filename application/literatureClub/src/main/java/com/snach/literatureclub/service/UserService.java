@@ -140,6 +140,8 @@ public interface UserService {
     Map<String, Object> changePasswd(String userId, String newPassword, String hardToken);
 
     Map<String, Object> changeEmail(String userId, String newEmail, String hardToken, String vCode);
+
+    Map<String, Object> isUserExist(String userId);
 }
 
 @Mapper
@@ -482,6 +484,22 @@ class UserServiceImpl implements UserService {
         }
         userDao.changeEmail(userId, newEmail);
         response.put("statusMsg","Success.");
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> isUserExist(String userId) {
+        Map<String, Object> response = new HashMap<>();
+        if(userId.isEmpty()){
+            response.put("statusMsg", "nonexistent");
+            return response;
+        }
+        User user = userDao.getUserById(userId);
+        if(user == null){
+            response.put("statusMsg", "nonexistent");
+        }else{
+            response.put("statusMsg", "Success.");
+        }
         return response;
     }
 

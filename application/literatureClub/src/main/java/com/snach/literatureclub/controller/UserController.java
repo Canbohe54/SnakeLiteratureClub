@@ -190,4 +190,9 @@ public class UserController {
     public Map<String, Object> changeEmail(@RequestParam("user_id") String userId, @RequestParam("new_email")String newEmail, @RequestParam("hard_token")String hardToken, @RequestParam("v_code")String vCode){
         return userService.changeEmail(userId, newEmail, hardToken, vCode);
     }
+
+    @RequestMapping(value = "isUserExist", method = RequestMethod.GET)
+    public Map<String, Object> isUserExist(@RequestParam("user_id")String userId){
+        return userService.isUserExist(userId);
+    }
 }
