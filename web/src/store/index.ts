@@ -23,7 +23,7 @@ export default createStore({
     getUserInfo: state => {
       const s = getCookie('userInfo')
       if (s === '') {
-        return {}
+        return JSON.parse('{"identity":"未登录"}')
       }
       return JSON.parse(s)
       // return state.userInfo

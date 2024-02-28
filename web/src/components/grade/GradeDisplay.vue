@@ -16,7 +16,7 @@
               </el-table-column>
               <el-table-column label="评分">
                 <template #default="scope">
-                  <el-popover effect="light" trigger="hover" placement="top" width="auto">
+                  <el-popover effect="light" trigger="hover" placement="right" width="auto">
                     <template #default>
                       <div>
                         文字与表达：<el-rate v-model="scope.row.grade_expr" size="large" :colors="colors" show-score disabled />
@@ -146,6 +146,10 @@ async function getGradeList () {
 .grade-user-info {
   display: flex;
   align-items: center;
+}
+
+.grade-user-info:hover {
+  cursor: pointer;
 }
 
 .result-list-card {

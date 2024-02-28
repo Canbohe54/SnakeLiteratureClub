@@ -23,8 +23,8 @@ import GradeEditor from "@/components/grade/GradeEditor.vue";
 export default class ArticleDetailView extends Vue { }
 </script>
 <style>
-.artdetail {
-  margin: 20px 50px;
+.articleDetail {
+  margin: 0 50px;
 }
 
 .navbar {

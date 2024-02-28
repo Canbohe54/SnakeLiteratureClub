@@ -19,7 +19,7 @@
     <ul class="CommentList" v-if="commentDisplayConf.maxCommentRowsNum > 0" v-infinite-scroll="loadCommentList">
       <li v-for="(item) in commentList">
         <el-row class="CommentDisplay">
-          <el-avatar :src="item.commenterAvatar" @click="toUserPage(item.commenterId)"/>
+          <el-avatar :src="item.commenterAvatar" @click="toUserPage(item.commenterId)" class="CommenterAvatar"/>
           <div class="blank"></div>
           <el-text class="CommenterName" @click="toUserPage(item.commenterId)">{{ item.commenter }}</el-text>
           <div class="e"></div>
@@ -186,6 +186,10 @@ await loadCommentList()
 
 .CommenterName {
   width: 70px;
+}
+
+.CommenterAvatar:hover, .CommenterName:hover {
+  cursor: pointer;
 }
 
 .CommentExtra {
