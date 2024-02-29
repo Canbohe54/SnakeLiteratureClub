@@ -42,7 +42,7 @@
       <el-upload
         ref="upload"
         class="upload-demo"
-        accept=".txt"
+        accept=".txt;;*.docx"
         action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
         :limit="1"
         :on-change="changeInputBox"
@@ -185,14 +185,26 @@ const save = async () => {
     }
   })
 }
-// 上传文件后显示到inputBox
-const changeInputBox = (file: any) => {
-  upload.value!.clearFiles()
+const analyzeTXT = (file: any) => {
   const fileReader = new FileReader()
   fileReader.onload = async (e) => {
     articleDetail.text = e.target?.result as string
   }
   fileReader.readAsText(file.raw)
+}
+const analyzeDOCX = (file: any) => {
+  
+}
+// 上传文件后显示到inputBox
+const changeInputBox = (file: any) => {
+  upload.value!.clearFiles()
+  let subFileNames = file.name.split('.')
+  if(subFileNames[subFileNames.length - 1] == 'txt'){
+    analyzeTXT(file)
+  }else if (subFileNames[subFileNames.length - 1] == 'docx'){
+    analyzeDOCX(file)
+  }
+
   saveBtnType.value = 'success'
   saveBtnText.value = '保存'
 }
