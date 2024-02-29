@@ -92,7 +92,8 @@ import {useRoute} from 'vue-router'
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import {ElMessage} from 'element-plus'
 import SearchFilter from '@/components/search/SearchFilter.vue'
-import router from "@/router";
+import router from '@/router'
+import mammoth from 'mammoth'
 
 const upload = ref<UploadInstance>()
 const store = useStore()
@@ -193,7 +194,13 @@ const analyzeTXT = (file: any) => {
   fileReader.readAsText(file.raw)
 }
 const analyzeDOCX = (file: any) => {
-  
+  const fileReader = new FileReader();
+  fileReader.onload = async (event) =>{
+    const arrayBuffer = event.target?.result as ArrayBuffer
+    //...
+    articleDetail.text = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
+  }
+  fileReader.readAsArrayBuffer(file.raw);
 }
 // 上传文件后显示到inputBox
 const changeInputBox = (file: any) => {

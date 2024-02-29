@@ -27,12 +27,21 @@ async function uploadBase64Image(base64Image: any, mime: any) {
   // })
 }
 
+// const mammothOptions = {
+//   convertImage: mammoth.images.imgElement(function(image) {
+//     return image.read("base64").then(async (imageBuffer) => {
+//       const result = await uploadBase64Image(imageBuffer, image.contentType);
+//       return {
+//         src: result.data.path // 获取图片线上的URL地址
+//       };
+//     });
+//   })
+// };
 const mammothOptions = {
   convertImage: mammoth.images.imgElement(function(image) {
-    return image.read("base64").then(async (imageBuffer) => {
-      const result = await uploadBase64Image(imageBuffer, image.contentType);
+    return image.readAsBase64String().then(function(imageBuffer) {
       return {
-        src: result.data.path // 获取图片线上的URL地址
+        src: "data:" + image.contentType + ";base64," + imageBuffer
       };
     });
   })
