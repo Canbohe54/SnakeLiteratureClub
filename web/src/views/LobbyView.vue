@@ -1,10 +1,11 @@
 <template>
-  <div class="lobby">
-    <NavBar class="navbar"/><!--导航栏-->
-    <h1>This is Lobby Page</h1>
-    <Carousel/>
-    <LobbyArticle/>
-  </div>
+  <el-scrollbar height="100vh">
+    <div class="container">
+      <NavBar class="navbar"/><!--导航栏-->
+      <Carousel/>
+      <LobbyArticle class="lobby_article"/>
+    </div>
+  </el-scrollbar>
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
@@ -25,11 +26,14 @@ console.log(useStore())
 })
 export default class LobbyView extends Vue {}
 </script>
-<style>
-.lobby {
-  margin: 0 50px;
-}
+<style src="../styles/responsive.scss" lang="scss"></style>
+<style scoped>
 .navbar {
   margin: 0 0;
 }
+
+.lobby_article {
+  margin: 20px 0;
+}
+
 </style>

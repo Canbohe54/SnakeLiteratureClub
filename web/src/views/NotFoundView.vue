@@ -1,6 +1,6 @@
 <template>
     <logo-title />
-    <div class="notfound">
+    <div class="container">
         <h1>404 Not Found</h1>
     </div>
 </template>
@@ -14,8 +14,4 @@ import LogoTitle from '@/components/LogoTitle.vue'
 })
 export default class NotFoundView extends Vue {}
 </script>
-<style>
-    .notfound {
-        margin: 0 50px;
-    }
-</style>
+<style src="../styles/responsive.scss" lang="scss"></style>

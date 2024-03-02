@@ -1,5 +1,6 @@
 <template>
-    <div class="user-center">
+  <el-scrollbar height="100vh">
+    <div class="container">
       <NavBar />
       <div class="common-layout user-center-disp">
         <el-container>
@@ -15,7 +16,9 @@
         </el-container>
       </div>
     </div>
+  </el-scrollbar>
 </template>
+<style src="../styles/responsive.scss" lang="scss"></style>
 <style scoped>
 .user-header {
   --el-header-padding: 0 0;
@@ -23,15 +26,14 @@
   /* border-bottom: 1px solid var(--el-border-color); */
 }
 
-.user-center {
-  margin: 0 50px;
-}
 .user-center-bar {
   margin: 0 150px 10px;
 }
+
 .user-center-disp {
   margin: 0 100px;
 }
+
 .navbar {
   margin: 0 0;
 }

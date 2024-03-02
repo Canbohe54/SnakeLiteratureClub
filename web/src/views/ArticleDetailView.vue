@@ -1,10 +1,12 @@
 <template>
-  <div class="articleDetail">
-    <NavBar class="navbar" /><!--导航栏-->
-    <ArticleDetail class="artdetail"/>
+  <el-scrollbar height="100vh">
+    <div class="container">
+      <NavBar class="navbar" /><!--导航栏-->
+      <ArticleDetail class="artdetail"/>
 <!--    <GradeDisplay/>-->
 <!--    <GradeEditor/>-->
-  </div>
+    </div>
+  </el-scrollbar>
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
@@ -22,11 +24,8 @@ import GradeEditor from "@/components/grade/GradeEditor.vue";
 })
 export default class ArticleDetailView extends Vue { }
 </script>
+<style src="../styles/responsive.scss" lang="scss"></style>
 <style>
-.articleDetail {
-  margin: 0 50px;
-}
-
 .navbar {
   margin: 0 0;
 }

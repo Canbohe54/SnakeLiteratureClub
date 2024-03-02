@@ -1,14 +1,16 @@
 <template>
-    <div class="search">
-        <NavBar class="navbar" /><!--导航栏-->
-        <SearchBar />
+  <el-scrollbar height="100vh">
+    <div class="container">
+      <NavBar class="navbar" /><!--导航栏-->
+      <SearchBar />
       <el-row>
         <el-col :span="18" :offset="3">
-          <SearchFilter ref="SearchFilterRef" @change="() => articleFiltrate()"/>
+          <SearchFilter ref="SearchFilterRef" @change="() => articleFiltrate()" />
         </el-col>
       </el-row>
-        <ArticleDisplay ref="ArticleDisplayRef" :key="filtratedArticleList"/>
+      <ArticleDisplay ref="ArticleDisplayRef" :key="filtratedArticleList" />
     </div>
+  </el-scrollbar>
 </template>
 <script lang="ts" setup>
 import { ref } from "vue"
@@ -25,18 +27,15 @@ const SearchFilterRef = ref()
 const ArticleDisplayRef = ref()
 let filtratedArticleList = ref<ArticleInfo[]>()
 
-function articleFiltrate () {
+function articleFiltrate() {
   const articleList = ArticleDisplayRef.value.articleList
   articleList.artList = articleTagFilter(articleList.originalArticleList, SearchFilterRef.value.filterSelection)
   filtratedArticleList = articleList.artList
 }
 </script>
+<style src="../styles/responsive.scss" lang="scss"></style>
 <style>
-.search {
-    margin: 0 50px;
-}
-
 .navbar {
-    margin: 0 0;
+  margin: 0 0;
 }
 </style>

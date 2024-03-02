@@ -1,9 +1,10 @@
 <template>
-  <div class="articleEdit">
-    <NavBar class="navbar" /><!--导航栏-->
-    <ArticleEditor class="artedit"/>
-
-  </div>
+  <el-scrollbar height="100vh">
+    <div class="container">
+      <NavBar class="navbar" /><!--导航栏-->
+      <ArticleEditor class="artedit"/>
+    </div>
+  </el-scrollbar>
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
@@ -17,10 +18,8 @@ import ArticleEditor from '@/components/article/ArticleEditor.vue'
 })
 export default class ArticleEditView extends Vue { }
 </script>
+<style src="../styles/responsive.scss" lang="scss"></style>
 <style>
-.articleEdit {
-  margin: 0 50px;
-}
 .artedit {
   margin: 20px 50px;
 }

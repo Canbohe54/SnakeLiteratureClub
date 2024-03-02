@@ -34,10 +34,10 @@
 }
 .acc-manage-bar {
     min-height: 100vh;
-  border-right: 1px solid var(--el-border-color);
+    border-right: 1px solid var(--el-border-color);
 }
 .acc-bar-menu-item {
-    padding: 10px 0 10px 60px!important;
+    padding: 10px 0 10px 30px!important;
 }
 .el-menu--vertical.el-menu { /*取消菜单栏右边框*/
   border-right: none !important;

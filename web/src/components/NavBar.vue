@@ -12,6 +12,7 @@
             <el-menu :default-active="(route.path === '/')?'lobby':null" router class="el-menu-demo nav-menu" mode="horizontal" :ellipsis="false" @select="handleSelect">
               <div class="flex-grow"></div>
               <el-menu-item index="lobby" class="nav-menu-option" route="/">文学大厅</el-menu-item>
+              <el-menu-item index="excellent" class="nav-menu-option" route="/">优秀作文</el-menu-item>
               <!-- <el-sub-menu index="2">
             <template #title>Workspace</template>
             <el-menu-item index="2-1">item one</el-menu-item>
