@@ -26,7 +26,6 @@ console.log(useStore())
 })
 export default class LobbyView extends Vue {}
 </script>
-<style src="../styles/responsive.scss" lang="scss"></style>
 <style scoped>
 .navbar {
   margin: 0 0;

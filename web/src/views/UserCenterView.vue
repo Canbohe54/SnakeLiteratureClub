@@ -18,7 +18,6 @@
     </div>
   </el-scrollbar>
 </template>
-<style src="../styles/responsive.scss" lang="scss"></style>
 <style scoped>
 .user-header {
   --el-header-padding: 0 0;

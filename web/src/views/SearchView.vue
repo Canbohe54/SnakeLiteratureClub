@@ -33,7 +33,6 @@ function articleFiltrate() {
   filtratedArticleList = articleList.artList
 }
 </script>
-<style src="../styles/responsive.scss" lang="scss"></style>
 <style>
 .navbar {
   margin: 0 0;

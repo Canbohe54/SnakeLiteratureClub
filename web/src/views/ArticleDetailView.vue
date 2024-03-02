@@ -24,7 +24,6 @@ import GradeEditor from "@/components/grade/GradeEditor.vue";
 })
 export default class ArticleDetailView extends Vue { }
 </script>
-<style src="../styles/responsive.scss" lang="scss"></style>
 <style>
 .navbar {
   margin: 0 0;

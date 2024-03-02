@@ -6,7 +6,10 @@
   <router-view/>
 </template>
 
+<style src="./styles/responsive.scss" lang="scss"></style>
 <style lang="scss">
+@import 'element-plus/theme-chalk/display.css';
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

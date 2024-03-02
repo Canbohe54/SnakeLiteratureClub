@@ -14,4 +14,3 @@ import LogoTitle from '@/components/LogoTitle.vue'
 })
 export default class NotFoundView extends Vue {}
 </script>
-<style src="../styles/responsive.scss" lang="scss"></style>
