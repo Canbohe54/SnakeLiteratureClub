@@ -17,6 +17,9 @@
         type="textarea"
         placeholder="请输入正文"
       />
+      <el-dialog v-model="dialogVisible">
+        <img  :src="dialogImageUrl" alt="Preview Image">
+      </el-dialog>
       <el-card class="more-option-card">
         <el-collapse>
           <el-collapse-item class="more-option" title="更多设置" name="1">
@@ -30,8 +33,23 @@
               type="textarea"
               placeholder="请输入描述（建议100字以内）"
             />
+            <div class="more-option-head"><span>参考插图</span></div>
+            <el-upload
+              v-model:file-list="imageFileList"
+              action="''"
+              list-type="picture-card"
+              :on-preview="handlePictureCardPreview"
+              :auto-upload="false"
+              :on-remove="imgRemove"
+              :on-success="imgSuccess"
+              :on-error="imgError"
+            >
+              <el-icon><Plus /></el-icon>
+            </el-upload>
 
+            <el-image v-for="(imgData, index) in imageList" :key="index" :src="imgData" :preview-src-list=imageList></el-image>
             <div class="more-option-head"><span>文章标签</span></div>
+
             <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
 
           </el-collapse-item>
@@ -55,7 +73,7 @@
         </template>
         <template #tip>
           <div class="el-upload__tip text-red">
-            限制1个文件，新文件将覆盖旧文件
+            限制1个.docx或.txt文件，上传新内容将覆盖旧内容
           </div>
         </template>
 
@@ -94,6 +112,9 @@ import {ElMessage} from 'element-plus'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 import router from '@/router'
 import mammoth from 'mammoth'
+import {Plus} from "@element-plus/icons-vue"
+import {base64ToFile} from "@/scripts/ImageUtil"
+import type { UploadFile } from 'element-plus'
 
 const upload = ref<UploadInstance>()
 const store = useStore()
@@ -102,7 +123,6 @@ const SearchFilterRef = ref()
 const saveBtnType = ref('success')
 const saveBtnText = ref('保存')
 const delArticleDialogVisible = ref(false)
-
 
 const articleDetail: AttributeAddableObject = reactive({
   id: null,
@@ -114,7 +134,10 @@ const articleDetail: AttributeAddableObject = reactive({
   status: '',
   attr: '{}'
 })
-
+let imageList = ref<Array<string>>([])
+let imageFileList = ref<UploadFile[]>([])
+const dialogImageUrl = ref('')
+const dialogVisible = ref(false)
 watch(articleDetail, () => {
   saveBtnType.value = 'success'
   saveBtnText.value = '保存'
@@ -194,11 +217,39 @@ const analyzeTXT = (file: any) => {
   fileReader.readAsText(file.raw)
 }
 const analyzeDOCX = (file: any) => {
-  const fileReader = new FileReader();
+  const fileReader = new FileReader()
   fileReader.onload = async (event) =>{
     const arrayBuffer = event.target?.result as ArrayBuffer
-    //...
-    articleDetail.text = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
+    mammoth.convertToHtml({arrayBuffer: arrayBuffer})
+      .then(async function(result){
+        let html = result.value; // The generated HTML
+        let match = html.match(/<img(.|\n)*?\/>/mg)
+
+        //提取src="后的base64图片
+        const base64List = (match?.map((item: any) => {
+          return item.toString().match(/src=".*"/mg)[0].toString().slice(5,-1)
+        })) as Array<string>
+        console.log(base64List)
+        imageFileList.value = base64List.map((item: any, index: any) => {
+          let file:File = base64ToFile(item, index)
+          let upLoadFile: UploadFile = {
+            name: file.name,
+            uid: file.uid,
+            status:'ready',
+            size: file.size,
+            url: URL.createObjectURL(file),
+            percentage: 0,
+          }
+          return upLoadFile
+        })
+        console.log(imageFileList)
+        let content = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
+        articleDetail.text = content.replace(/(\n\n)/gm,'\n')
+        let messages = result.messages; // Any messages, such as warnings during conversion
+      })
+      .catch(function(error) {
+        console.error(error);
+      });
   }
   fileReader.readAsArrayBuffer(file.raw);
 }
@@ -260,6 +311,21 @@ const handleDelArticleClicked =async () => {
   })
   delArticleDialogVisible.value = false
   router.back()
+}
+function imgSuccess (response: any, file: any, fileList: any){
+  imageFileList = fileList
+}
+function imgError (response: any){
+  errorCallback(response)
+}
+function imgRemove(file: any, fileList: any) {
+  imageFileList = fileList
+}
+
+const handlePictureCardPreview = (file: any) => {
+  console.log(file.name)
+  dialogImageUrl.value = file.url
+  dialogVisible.value = true
 }
 </script>
 
