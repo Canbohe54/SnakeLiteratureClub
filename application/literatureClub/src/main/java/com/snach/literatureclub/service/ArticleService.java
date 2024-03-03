@@ -19,7 +19,7 @@ import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
 import static com.snach.literatureclub.utils.IdTools.generateId;
 
 @Service
-public interface                                                          ArticleService {
+public interface ArticleService {
     /**
      * 用户新增稿件，id由时间戳生成，将稿件根据action进行保存
      * 若action为草稿保存则无需审核，为发布则需要审核
