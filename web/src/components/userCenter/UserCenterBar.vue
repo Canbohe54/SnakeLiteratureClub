@@ -66,7 +66,6 @@ async function getUserDigitInfo() {
     }, response => {
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
             userDigitInfo.fansNum = response.data.fans_num
-            console.log(response)
         } else {
             console.log(response)
         }

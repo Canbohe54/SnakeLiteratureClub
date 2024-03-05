@@ -28,3 +28,17 @@ export const base64ToFile = (baseUrl: any, filename = 'file') => {
     type: mime
   })
 }
+function generateRandomString(length: number): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let result = ''
+
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length)
+        result += characters.charAt(randomIndex)
+    }
+
+    return result;
+}
+export const generateImageName = (filename: String) => {
+  return generateRandomString(10) + filename
+}
