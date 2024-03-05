@@ -5,14 +5,20 @@ import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.dao.ArticleDao;
 import com.snach.literatureclub.utils.IdTools;
+import com.snach.literatureclub.utils.QiniuKodoUtil;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 import static com.snach.literatureclub.utils.TokenTools.getPayload;
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
@@ -26,12 +32,13 @@ public interface ArticleService {
      * 返回稿件基本信息（标题、描述、时间和id）和各事件执行状态
      * 返回格式{article_id: #{String}, title: #{String}, description: #{String}, time:#{Date}, fileStatue: #{INTEGER}, statusMsg: #{STRING} }
      *
-     * @param token   用于验证是否过期以及获取作者id
-     * @param article 稿件信息 id初次创建为null
+     * @param token     用于验证是否过期以及获取作者id
+     * @param article   稿件信息 id初次创建为null
+     * @param imageList 文献对应的参考插图列表
      * @return 稿件基本信息（标题、描述、时间和id）,保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
      * @see Article
      */
-    Map<String, Object> addArticle(String token, Article article);
+    Map<String, Object> addArticle(String token, List<MultipartFile> imageList, Article article);
 
     /**
      * 用户更改稿件基础信息，包括标题和描述，根据id进行更新，同时更新修改时间
@@ -57,7 +64,7 @@ public interface ArticleService {
      * @return 保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
      * @see Article
      */
-    Map<String, Object> updateArticle(String token, Article article);
+    Map<String, Object> updateArticle(String token, List<MultipartFile> imageList, Article article);
 
     /**
      * 根据id删除稿件
@@ -112,9 +119,11 @@ public interface ArticleService {
 class ArticleServiceImpl implements ArticleService {
     @Autowired
     private ArticleDao articleDao;
+    @Autowired
+    private QiniuKodoUtil qiniuKodoUtil;
 
     @Override
-    public Map<String, Object> addArticle(String token, Article article) {
+    public Map<String, Object> addArticle(String token, List<MultipartFile> imageList, Article article) {
         Map<String, Object> res = new HashMap<String, Object>();
         // 检测token是否合法
         if (!tokenVerify(token)) {
@@ -123,22 +132,48 @@ class ArticleServiceImpl implements ArticleService {
         }
         // 获取作者id
         String contributor_id = getPayload(token, "id");
-        if (article.getId() == null) {
+
+        if (article.getId() == null || article.getId().equals("null")) {
             //没有稿件id，时间戳生成id
             article.setId(generateId(IdTools.Type.ARTICLE));
         } else {
             //若已有稿件id，则进行更新
-            return updateArticle(token, article);
+            return updateArticle(token, imageList, article);
         }
         article.setTextBy(contributor_id);
         //修改时间
-        //SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
         article.setTime(date);
+        //上传图片
+        StringBuilder allImageURL = new StringBuilder("[");
+        for (int i = 0; i < imageList.size(); i++) {
+            try {
+                MultipartFile file = imageList.get(i);
+                File f = new File(file.getOriginalFilename());
+                BufferedOutputStream out = new BufferedOutputStream(
+                        new FileOutputStream(f));
+                out.write(file.getBytes());
+                out.flush();
+                out.close();
+
+                String imageName = article.getId() + "/" + f.getName();
+                qiniuKodoUtil.upload(f, "articles/" + imageName);
+                allImageURL.append("\"").append(qiniuKodoUtil.getFileUrl(article.getId())).append("\"");
+                if (i != imageList.size() - 1) {
+                    allImageURL.append(",");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        allImageURL.append("]");
+        article.setImageURL(allImageURL.toString());
+
         //插入article表
         articleDao.insertArticle(article);
         // 稿件投稿者关系更新
         articleDao.insertRelation(contributor_id, article.getId());
+
 
         res.put("article_id", article.getId());
         res.put("title", article.getTitle());
@@ -183,7 +218,7 @@ class ArticleServiceImpl implements ArticleService {
 
 
     @Override
-    public Map<String, Object> updateArticle(String token, Article article) {
+    public Map<String, Object> updateArticle(String token, List<MultipartFile> imageList, Article article) {
         Map<String, Object> res = new HashMap<String, Object>();
         // 检测token是否合法
         if (!tokenVerify(token)) {
@@ -201,6 +236,7 @@ class ArticleServiceImpl implements ArticleService {
         // 修改时间
         Date date = new Date(System.currentTimeMillis());
         article.setTime(date);
+
         // 更新详细信息
         articleDao.updateArticleDetail(article);
 

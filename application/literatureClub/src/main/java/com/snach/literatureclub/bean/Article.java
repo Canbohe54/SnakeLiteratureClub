@@ -25,6 +25,7 @@ public class Article extends BaseText implements Serializable {
     String description;
     int status;
     String attr;  // 标签
+    String imageURL;
 
     public Article(String id, String text, Date time, String textBy, String title, String description, int status, String attr) {
         super(id, text, time, textBy);

@@ -1,4 +1,4 @@
-package com.cmxz.snakesmartmemo.util;
+package com.snach.literatureclub.utils;
 
 import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;
@@ -37,7 +37,7 @@ public class QiniuKodoUtil {
     /**
      * 文件名前缀
      */
-    String prefix = "notes/";
+    String prefix = "articles/";
     /**
      * 每次迭代的长度限制，最大1000，推荐值 1000
      */
@@ -107,7 +107,7 @@ public class QiniuKodoUtil {
     public void upload(File file, String fileName) {
         UploadManager uploadManager = new UploadManager(cfg);
         /**
-         *  如果是Windows情况下，格式是 D:\\qiniu\\test.png
+         *  如果是Windows情况下，格式是 qiniu/test.png
          * 以文件最低级目录名作为文件名
          */
         //String[] strings = localFilePath.split("\\\\");
@@ -142,7 +142,6 @@ public class QiniuKodoUtil {
     public String getFileUrl(String fileName) throws UnsupportedEncodingException {
         String encodedFileName = URLEncoder.encode(fileName, "utf-8").replace("+", "%20");
         String finalUrl = String.format("%s/%s", "http://" + domain, encodedFileName);
-        System.out.println(finalUrl);
         return finalUrl;
     }
 
@@ -176,7 +175,7 @@ public class QiniuKodoUtil {
     }
 
     public boolean inList(String id, String fileName) {
-        String fullName = "notes/" + id + "/" + fileName;
+        String fullName = "articles/" + id + "/" + fileName;
         ArrayList<FileInfo[]> fileList = listSpaceFiles(id);
         for (FileInfo[] items : fileList) {
             for (FileInfo item : items) {

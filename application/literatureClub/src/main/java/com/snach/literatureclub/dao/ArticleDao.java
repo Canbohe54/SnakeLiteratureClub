@@ -15,8 +15,8 @@ public interface ArticleDao {
      *
      * @param article 封装有稿件信息的Article对象
      */
-    @Insert("INSERT INTO article(id, title,description,text,`time`,status,attr,text_by) " +
-            "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.attr},#{article.textBy})")
+    @Insert("INSERT INTO article(id, title,description,text,`time`,status,attr,text_by,image_url) " +
+            "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.attr},#{article.textBy},#{article.imageURL})")
     void insertArticle(@Param("article") Article article);
 
     /**
@@ -25,7 +25,14 @@ public interface ArticleDao {
      * @param article 封装有稿件信息的Article对象
      * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
      */
-    @Update("UPDATE article SET title = #{article.title}, description = #{article.description}, text = #{article.text}, time = #{article.time},status = #{article.status}, attr = #{article.attr} " +
+    @Update("UPDATE article SET " +
+                "title = #{article.title}, " +
+                "description = #{article.description}, " +
+                "text = #{article.text}, " +
+                "time = #{article.time}, " +
+                "status = #{article.status}, " +
+                "attr = #{article.attr}, " +
+                "image_url = #{article.imageURL} " +
             "WHERE id = #{article.id}")
     int updateArticleDetail(@Param("article") Article article);
 
@@ -58,7 +65,7 @@ public interface ArticleDao {
 //            "WHERE c.contributor_id = #{contributor_id}")
     @Select({"<script>",
             "SELECT ",
-            "a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr ",
+            "a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr, a.image_url imageURL ",
             "FROM article a left join contributor_article_list c on a.id = c.article_id ",
             "WHERE c.contributor_id = #{contributor_id} AND a.status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
@@ -93,7 +100,7 @@ public interface ArticleDao {
      * @param id 稿件id
      * @return id对应的稿件信息的Article对象
      */
-    @Select("SELECT id, text, time, text_by as textBy, title, description, status, attr FROM article WHERE id = #{id}")
+    @Select("SELECT id, text, time, text_by as textBy, title, description, status, attr, image_url as imageURL FROM article WHERE id = #{id}")
     Article getArticleById(@Param("id") String id);
 
     /**
@@ -113,7 +120,7 @@ public interface ArticleDao {
      */
     @Select({"<script>",
             "SELECT ",
-            "id, text, time, text_by as textBy, title, description, status, attr ",
+            "id, text, time, text_by as textBy, title, description, status, attr, image_url as imageURL",
             "FROM article WHERE title LIKE '%${keyword}%' AND attr LIKE '%\"tags\":%\"${tag}\"%]%' AND status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
             "#{item}",
@@ -130,7 +137,7 @@ public interface ArticleDao {
      */
     @Select({"<script>",
             "SELECT ",
-            "id, time, text_by as textBy, title, description, status, attr ",
+            "id, time, text_by as textBy, title, description, status, attr, image_url as imageURL ",
             "FROM article WHERE title LIKE '%${keyword}%' AND status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
             "#{item}",
