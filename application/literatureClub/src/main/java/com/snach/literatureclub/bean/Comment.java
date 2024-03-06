@@ -21,7 +21,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Comment extends BaseText implements Serializable {
+public class Comment extends Text {
 
     String textOn;
 

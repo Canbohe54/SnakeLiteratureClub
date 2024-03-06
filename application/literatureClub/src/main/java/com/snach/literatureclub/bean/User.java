@@ -1,5 +1,6 @@
 package com.snach.literatureclub.bean;
 
+import com.snach.literatureclub.common.Identity;
 import lombok.*;
 
 import java.io.Serializable;
@@ -22,17 +23,26 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 public class User implements Serializable {
-    String name;
+    // Login Info
     String id;
-    @Deprecated String phone;
-    String email;
+    String phone;
     String password;
-    String group;
+    Identity group;
+
+    // Personal Info
+    String name;
+    @Deprecated String email;
     String introduction;
     String organization;
-    String pictureUrl;
-    String attr;
+    String pictureUrl;  // ?
 
+    // Extra Info
+    @Deprecated String attr;
+    Map<String, Object> cache;  // ?
+    // -> Contributor
+    String grade;
+
+    @Deprecated
     public User(String name, String id, String phone, String email, String introduction, String organization, String pictureUrl, String attr) {
         this.name = name;
         this.id = id;
@@ -42,6 +52,25 @@ public class User implements Serializable {
         this.organization = organization;
         this.pictureUrl = pictureUrl;
         this.attr = attr;
+    }
+
+    // new constructor (remove 'phone', 'attr')
+    public User(String name, String id, String email, String introduction, String organization, String pictureUrl, String grade) {
+        this.name = name;
+        this.id = id;
+        this.email = email;
+        this.introduction = introduction;
+        this.organization = organization;
+        this.pictureUrl = pictureUrl;
+        this.grade = grade;
+    }
+
+    public void setGroup(String group) {
+        this.group = Identity.conv(group);
+    }
+
+    public boolean checkIdentity(Identity identity) {
+        return this.group == identity;
     }
 
     public Map<String, Object> safeGetUserInfo() {
