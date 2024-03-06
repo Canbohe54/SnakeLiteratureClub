@@ -144,31 +144,33 @@ class ArticleServiceImpl implements ArticleService {
         //修改时间
         Date date = new Date(System.currentTimeMillis());
         article.setTime(date);
-        //上传图片
-        StringBuilder allImageURL = new StringBuilder("[");
-        for (int i = 0; i < imageList.size(); i++) {
-            try {
-                MultipartFile file = imageList.get(i);
-                File f = new File(file.getOriginalFilename());
-                BufferedOutputStream out = new BufferedOutputStream(
-                        new FileOutputStream(f));
-                out.write(file.getBytes());
-                out.flush();
-                out.close();
 
-                String imageName = article.getId() + "/" + f.getName();
-                qiniuKodoUtil.upload(f, "articles/" + imageName);
-                allImageURL.append("\"").append(qiniuKodoUtil.getFileUrl(article.getId())).append("\"");
-                if (i != imageList.size() - 1) {
-                    allImageURL.append(",");
+        if(imageList != null) {
+            //上传图片
+            StringBuilder allImageURL = new StringBuilder("[");
+            for (int i = 0; i < imageList.size(); i++) {
+                try {
+                    MultipartFile file = imageList.get(i);
+                    File f = new File(file.getOriginalFilename());
+                    BufferedOutputStream out = new BufferedOutputStream(
+                            new FileOutputStream(f));
+                    out.write(file.getBytes());
+                    out.flush();
+                    out.close();
+
+                    String imageName = article.getId() + "/" + f.getName();
+                    qiniuKodoUtil.upload(f, "articles/" + imageName);
+                    allImageURL.append("\"").append(qiniuKodoUtil.getFileUrl(article.getId())).append("\"");
+                    if (i != imageList.size() - 1) {
+                        allImageURL.append(",");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+            allImageURL.append("]");
+            article.setImageURL(allImageURL.toString());
         }
-        allImageURL.append("]");
-        article.setImageURL(allImageURL.toString());
-
         //插入article表
         articleDao.insertArticle(article);
         // 稿件投稿者关系更新

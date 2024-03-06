@@ -2,20 +2,20 @@
   <el-row>
     <el-col :span="18" :offset="3">
       <el-input
-        class="editor-header"
-        v-model="articleDetail.title"
-        maxlength="50"
-        show-word-limit
-        :autosize="{ minRows: 1, maxRows: 3}"
-        type="textarea"
-        placeholder="请输入标题（建议30字以内）"
+          class="editor-header"
+          v-model="articleDetail.title"
+          maxlength="50"
+          show-word-limit
+          :autosize="{ minRows: 1, maxRows: 3}"
+          type="textarea"
+          placeholder="请输入标题（建议30字以内）"
       />
       <el-input
-        v-model="articleDetail.text"
-        class="editor-text"
-        :autosize="{ minRows: 10, maxRows: 20}"
-        type="textarea"
-        placeholder="请输入正文"
+          v-model="articleDetail.text"
+          class="editor-text"
+          :autosize="{ minRows: 10, maxRows: 20}"
+          type="textarea"
+          placeholder="请输入正文"
       />
       <el-dialog v-model="dialogVisible">
         <img :src="dialogImageUrl" alt="Preview Image">
@@ -25,41 +25,38 @@
           <el-collapse-item class="more-option" title="更多设置" name="1">
             <div class="more-option-head"><span>文章描述</span></div>
             <el-input
-              class="editor-description"
-              v-model="articleDetail.description"
-              maxlength="150"
-              show-word-limit
-              :autosize="{ minRows: 4, maxRows: 10}"
-              type="textarea"
-              placeholder="请输入描述（建议100字以内）"
+                class="editor-description"
+                v-model="articleDetail.description"
+                maxlength="150"
+                show-word-limit
+                :autosize="{ minRows: 4, maxRows: 10}"
+                type="textarea"
+                placeholder="请输入描述（建议100字以内）"
             />
             <div class="more-option-head"><span>参考插图</span></div>
             <el-upload
-              v-model:file-list="imageFileList"
-              action="''"
-              list-type="picture-card"
-              :on-preview="handlePictureCardPreview"
-              :auto-upload="false"
-              :on-remove="imgRemove"
-              :on-success="imgSuccess"
-              :on-error="imgError"
-              accept="image/jpg,image/jpeg,image/png"
-              multiple
+                v-model:file-list="imageFileList"
+                action="''"
+                list-type="picture-card"
+                :on-preview="handlePictureCardPreview"
+                :auto-upload="false"
+                :on-remove="imgRemove"
+                :on-success="imgSuccess"
+                :on-error="imgError"
+                accept="image/jpg,image/jpeg,image/png"
+                multiple
             >
               <el-icon>
                 <Plus/>
 
               </el-icon>
-<!--              <template #tip>-->
-<!--                <div class="el-upload__tip">-->
-<!--                  jpg/png文件-->
-<!--                </div>-->
-<!--              </template>-->
-<!--              <div>格式为png、jpeg或jpg</div>-->
+              <!--              <template #tip>-->
+              <!--                <div class="el-upload__tip">-->
+              <!--                  jpg/png文件-->
+              <!--                </div>-->
+              <!--              </template>-->
+              <!--              <div>格式为png、jpeg或jpg</div>-->
             </el-upload>
-
-<!--            <el-image v-for="(imgData, index) in imageList" :key="index" :src="imgData"-->
-<!--                      :preview-src-list=imageList></el-image>-->
 
             <div class="more-option-head"><span>文章标签</span></div>
             <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
@@ -70,14 +67,14 @@
 
 
       <el-upload
-        ref="upload"
-        class="upload-demo"
-        accept=".txt;;*.docx"
-        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-        :limit="1"
-        :on-change="changeInputBox"
-        :auto-upload="false"
-        :show-file-list="false"
+          ref="upload"
+          class="upload-demo"
+          accept=".txt;;*.docx"
+          action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+          :limit="1"
+          :on-change="changeInputBox"
+          :auto-upload="false"
+          :show-file-list="false"
       >
 
         <template #trigger>
@@ -97,10 +94,10 @@
         <el-button type="danger" @click="delArticleDialogVisible=true">删除文章</el-button>
       </el-upload>
       <el-dialog
-        draggable
-        v-model="delArticleDialogVisible"
-        title="删除文章"
-        width="30%"
+          draggable
+          v-model="delArticleDialogVisible"
+          title="删除文章"
+          width="30%"
       >
         <span>确定删除文章？</span>
         <template #footer>
@@ -117,19 +114,19 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, watch } from 'vue'
-import type { UploadInstance } from 'element-plus'
-import { SYNC_GET, SYNC_POST } from '@/scripts/Axios'
-import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
-import { AttributeAddableObject} from '@/scripts/ArticleTagFilter'
-import { ElMessage } from 'element-plus'
+import {reactive, ref, watch} from 'vue'
+import type {UploadInstance, UploadRawFile} from 'element-plus'
+import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
+import {useStore} from 'vuex'
+import {useRoute} from 'vue-router'
+import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
+import {ElMessage} from 'element-plus'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 import router from '@/router'
 import mammoth from 'mammoth'
-import { Plus} from "@element-plus/icons-vue"
-import { base64ToFile } from "@/scripts/ImageUtil"
-import type { UploadFile } from 'element-plus'
+import {Plus} from "@element-plus/icons-vue"
+import {base64ToFile, generateImageName} from "@/scripts/ImageUtil"
+import type {UploadFile} from 'element-plus'
 
 const upload = ref<UploadInstance>()
 const store = useStore()
@@ -198,10 +195,15 @@ function errorCallback(response: any) {
 // 保存草稿
 const save = async () => {
   let param = new FormData()
-  imageFileList.value.forEach((val: any, index: any) => {
-    param.append("image_list", val.raw)
-    console.log(param)
-  })
+  if (imageFileList.value.length > 0){
+    imageFileList.value.forEach((val: any, index: any) => {
+      const newImageName = generateImageName(val.raw.name)
+      param.append("image_list", val.raw as Blob, newImageName)
+    })
+  } else {
+    param.append("image_list","")
+  }
+
   param.append("token", store.getters.getToken)
   param.append("id", articleDetail.id)
   param.append("text", articleDetail.text)
@@ -209,11 +211,8 @@ const save = async () => {
   param.append("title", articleDetail.title)
   param.append("description", articleDetail.description)
   param.append("status", '3')
-  const tem ="{\"tags\":" + articleDetail.attr.toString() + "}"
-  console.log("tem: "+tem)
-  console.log(articleDetail.attr)
   param.append("attr", `{"tags":${articleDetail.attr}}`)
-  param.append("imageURL", '')
+  param.append("imageURL", '{}')
 
   await SYNC_POST('/contributor/save', param, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
@@ -242,35 +241,38 @@ const analyzeDOCX = (file: any) => {
   fileReader.onload = async (event) => {
     const arrayBuffer = event.target?.result as ArrayBuffer
     mammoth.convertToHtml({arrayBuffer: arrayBuffer})
-      .then(async function (result) {
-        let html = result.value; // The generated HTML
-        let match = html.match(/<img(.|\n)*?\/>/mg)
+        .then(async function (result) {
+          let html = result.value; // The generated HTML
+          let match = html.match(/<img(.|\n)*?\/>/mg)
 
-        //提取src="后的base64图片
-        const base64List = (match?.map((item: any) => {
-          return item.toString().match(/src=".*"/mg)[0].toString().slice(5, -1)
-        })) as Array<string>
+          //提取src="后的base64图片
+          const base64List = (match?.map((item: any) => {
+            return item.toString().match(/src=".*"/mg)[0].toString().slice(5, -1)
+          })) as Array<string>
 
-        imageFileList.value = base64List.map((item: any, index: any) => {
-          let file: File = base64ToFile(item, index)
-          let upLoadFile: UploadFile = {
-            name: file.name,
-            uid: file.uid,
-            status: 'ready',
-            size: file.size,
-            url: URL.createObjectURL(file),
-            percentage: 0,
-          }
-          return upLoadFile
+          imageFileList.value = base64List.map((item: any, index: any) => {
+            let file: File = base64ToFile(item, index)
+            const newImageName = generateImageName(file.name)
+
+            let upLoadFile: UploadFile = {
+              name: newImageName,
+              uid: file.uid,
+              status: 'ready',
+              size: file.size,
+              url: URL.createObjectURL(file),
+              percentage: 0,
+              raw: file
+            }
+            return upLoadFile
+          })
+
+          let content = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
+          articleDetail.text = content.replace(/(\n\n)/gm, '\n')
+          let messages = result.messages; // Any messages, such as warnings during conversion
         })
-
-        let content = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
-        articleDetail.text = content.replace(/(\n\n)/gm, '\n')
-        let messages = result.messages; // Any messages, such as warnings during conversion
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+        .catch(function (error) {
+          console.error(error);
+        });
   }
   fileReader.readAsArrayBuffer(file.raw);
 }
@@ -292,10 +294,15 @@ const changeInputBox = (file: any) => {
 const release = async () => {
   let param = new FormData();
 
-  imageFileList.value.forEach((val: any, index: any) => {
-    param.append("image_list", val.raw)
-    console.log(param)
-  })
+  if (imageFileList.value.length > 0){
+    imageFileList.value.forEach((val: any, index: any) => {
+      const newImageName = generateImageName(val.raw.name)
+      console.log(val.raw)
+      param.append("image_list", val.raw as Blob, newImageName)
+    })
+  } else {
+    param.append("image_list","")
+  }
   param.append("token", store.getters.getToken)
   param.append("id", articleDetail.id)
   param.append("text", articleDetail.text)
@@ -303,36 +310,22 @@ const release = async () => {
   param.append("title", articleDetail.title)
   param.append("description", articleDetail.description)
   param.append("status", '3')
-  const tem ="{\"tags\":" + articleDetail.attr.toString() + "}"
-  console.log("tem: "+tem)
-  console.log(articleDetail.attr)
   param.append("attr", `{"tags":${articleDetail.attr}}`)
-  param.append("imageURL", '')
-  // {
-  //   token: store.getters.getToken,
-  //     id: articleDetail.id,
-  //   text: articleDetail.text,
-  //   time: null,
-  //   textBy: '',
-  //   title: articleDetail.title,
-  //   description: articleDetail.description,
-  //   status: 3, // 已发布
-  //   attr: `{"tags":${articleDetail.attr}}`,
-  //   image_list: param.values(),
-  //   imageURL: ""
-  // }
+  param.append("imageURL", '{}')
+
   await SYNC_POST('/contributor/save', param, async (response) => {
-      if (response.status === 200 && response.data.statusMsg === 'Success.') {
-        console.log('Release successfully!')
-        ElMessage({
-          showClose: true,
-          message: '已成功发布文章!',
-          type: 'success'
-        })
-      } else {
-        errorCallback(response)
+        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+          console.log('Release successfully!')
+          ElMessage({
+            showClose: true,
+            message: '已成功发布文章!',
+            type: 'success'
+          })
+          location.href = '/#/user/' + store.getters.getUserInfo.id
+        } else {
+          errorCallback(response)
+        }
       }
-    }
   )
 }
 
