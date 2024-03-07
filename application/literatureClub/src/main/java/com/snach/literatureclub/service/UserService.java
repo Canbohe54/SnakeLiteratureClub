@@ -162,14 +162,14 @@ class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> register(User user, String vCode) {
         Map<String, Object> response = new HashMap<>();
-        if (!verifyCode(user.getEmail(), vCode)) {
-            response.put("statusMsg", "Wrong Verifying Code.");
-            return response;
-        }
-        if (userDao.existEmail(user.getEmail()) != 0) {
-            response.put("statusMsg", "Email already exists.");
-            return response;
-        }
+//        if (!verifyCode(user.getEmail(), vCode)) {
+//            response.put("statusMsg", "Wrong Verifying Code.");
+//            return response;
+//        }
+//        if (userDao.existEmail(user.getEmail()) != 0) {
+//            response.put("statusMsg", "Email already exists.");
+//            return response;
+//        }
         if (user.getPassword() == null) {
             response.put("statusMsg", "The password cannot be empty.");
             return response;

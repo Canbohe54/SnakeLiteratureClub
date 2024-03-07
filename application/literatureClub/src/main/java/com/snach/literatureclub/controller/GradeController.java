@@ -1,5 +1,6 @@
 package com.snach.literatureclub.controller;
 
+import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.GradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ public class GradeController {
     private GradeService gradeService;
 
     @RequestMapping("add")
+    @ResponseNotIntercept
     public Map<String,Object> addGrade(@RequestParam("token") String token,
                                        @RequestParam("article_id") String article_id,
                                        @RequestParam("expert_id") String expert_id,
@@ -25,6 +27,7 @@ public class GradeController {
     }
 
     @RequestMapping("delete")
+    @ResponseNotIntercept
     public Map<String,Object> deleteGrade(@RequestParam("token") String token,
                                        @RequestParam("article_id") String article_id,
                                        @RequestParam("expert_id") String expert_id){
@@ -32,6 +35,7 @@ public class GradeController {
     }
 
     @RequestMapping("update")
+    @ResponseNotIntercept
     public Map<String,Object> updateGrade(@RequestParam("token") String token,
                                        @RequestParam("article_id") String article_id,
                                        @RequestParam("expert_id") String expert_id,
@@ -42,11 +46,13 @@ public class GradeController {
         return gradeService.updateGrade(token,article_id,expert_id,grade_expr,grade_struct,grade_theme,advice);
     }
     @RequestMapping("exist")
+    @ResponseNotIntercept
     public Map<String,Object> existGrade(String expert_id,String article_id){
         return gradeService.existGrade(expert_id,article_id);
     }
 
     @RequestMapping("getGradeByArticleId")
+    @ResponseNotIntercept
     public Map<String,Object> getGradeByArticleId(@RequestParam("article_id") String article_id,
                                                   @RequestParam("page_num" )int pageNum,
                                                   @RequestParam("page_size")int pageSize){
@@ -54,27 +60,32 @@ public class GradeController {
     }
 
     @RequestMapping("getGradeByExpertId")
+    @ResponseNotIntercept
     public Map<String,Object> getGradeByExpertId(@RequestParam("expert_id") String expert_id){
         return gradeService.getGradeByExpert_id(expert_id);
     }
 
     @RequestMapping("getGradeByExpertIdAndArticleId")
+    @ResponseNotIntercept
     public Map<String,Object> getGradeByExpertIdAndArticleId(@RequestParam("expert_id") String expert_id,
                                                              @RequestParam("article_id") String article_id){
         return gradeService.getGradeByExpertIdAndArticleId(expert_id,article_id);
     }
 
     @RequestMapping("getAvgGrade")
+    @ResponseNotIntercept
     public Map<String,Object> getAvgGradeByArticleId(@RequestParam("article_id") String article_id){
         return gradeService.getAvgGradeByArticleId(article_id);
     }
 
     @RequestMapping("getCount")
+    @ResponseNotIntercept
     public Map<String,Object> getCountByArticleId(@RequestParam("article_id") String article_id){
         return gradeService.getCountByArticleId(article_id);
     }
 
     @RequestMapping("getSortByGradeAll")
+    @ResponseNotIntercept
     public Map<String,Object> getSortByGradeAll(@RequestParam("expert_id") String expert_id){
         return gradeService.getSortByGradeAll(expert_id);
     }

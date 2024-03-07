@@ -84,18 +84,7 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-# ========================== ↓↓↓↓↓↓ 七牛云配置 ↓↓↓↓↓↓ ==========================
-#qiniu:
-#  kodo:
-#    accessKey: wrc6ZCQCAntE73vpn2KBK0eFLvD-B7Y7BhnTRJrr
-#    secretKey: MTZS6Lq_J09KnHTAhJgsEk_z-IzKk5i0M5-RNM18
-#    # 对象储存
-#    bucket: # 空间名称
-#    zone:  # 存储区域
-#    domain: rm4232llv.hn-bkt.clouddn.com # 访问域名
 
-#logging:
-#  config: classpath:logback-spring.xml
 pagehelper:
   helper-dialect: mysql
   reasonable: true

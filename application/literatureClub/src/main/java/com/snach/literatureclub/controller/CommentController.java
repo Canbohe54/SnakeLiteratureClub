@@ -1,5 +1,6 @@
 package com.snach.literatureclub.controller;
 
+import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ public class CommentController {
 
     @RequestMapping(value = "load", method = RequestMethod.POST)
     @ResponseBody
+    @ResponseNotIntercept
     public Map<String, Object> loadComment(@RequestParam("id") String id,
                                            @RequestParam(value = "recursive", defaultValue = "false") Boolean recursive,
                                            @RequestParam(value = "startAt", defaultValue = "0") int startAt,
@@ -24,6 +26,7 @@ public class CommentController {
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
+    @ResponseNotIntercept
     public Map<String, Object> addComment(@RequestParam("token") String token,
                            @RequestParam("text") String text,
                            @RequestParam("textOn") String textOn,
@@ -33,6 +36,7 @@ public class CommentController {
 
     @RequestMapping(value = "del", method = RequestMethod.POST)
     @ResponseBody
+    @ResponseNotIntercept
     public Map<String, Object> deleteComment(@RequestParam("token") String token,
                               @RequestParam("id") String id) {
         return commentService.deleteComment(token, id);

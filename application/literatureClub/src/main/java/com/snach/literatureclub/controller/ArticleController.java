@@ -2,6 +2,7 @@ package com.snach.literatureclub.controller;
 
 
 import com.snach.literatureclub.bean.Article;
+import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class ArticleController {
      * @param pageSize 页面显示条数
      * @return 所有的稿件信息的Article对象List
      */
+    @ResponseNotIntercept
     @RequestMapping(value = "allArticles", method = RequestMethod.GET)
     public Map<String, Object> allArticles(@RequestParam(name = "token", required = false) String token,
                                            @RequestParam(name = "page_num")int pageNum,
@@ -44,11 +46,12 @@ public class ArticleController {
      * @param article_id 稿件id
      * @return 稿件详细信息, 执行状态
      */
+    @ResponseNotIntercept
     @RequestMapping(value = "articleDetail", method = RequestMethod.GET)
     public Map<String, Object> articleDetail(@RequestParam("article_id") String article_id) {
         return articleService.getArticleById(article_id);
     }
-
+    @ResponseNotIntercept
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public Map<String, Object> articleSearch(@RequestParam(value = "keyword") String keyword,
                                              @RequestParam(value = "tag", required = false) String tag,

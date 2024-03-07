@@ -1,6 +1,7 @@
 package com.snach.literatureclub.controller;
 
 import com.snach.literatureclub.bean.Article;
+import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,12 @@ public class ContributorController {
      * @see Article
      */
     @RequestMapping(value = "save", method = RequestMethod.POST)
+    @ResponseNotIntercept
     public Map<String, Object> save(@RequestParam("token") String token, @RequestParam("image_list") @Nullable List<MultipartFile> imageList, Article article) {
         return articleService.addArticle(token, imageList, article);
     }
     @RequestMapping(value = "contribute",method = RequestMethod.POST)
+    @ResponseNotIntercept
     public Map<String, Object> contribute(String token, MultipartFile article){
         return articleService.contribute(token, article);
     }
