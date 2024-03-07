@@ -1,4 +1,4 @@
-package com.snach.literatureclub.common.annotations;
+package com.snach.literatureclub.common.annotation;
 
 import java.lang.annotation.*;
 

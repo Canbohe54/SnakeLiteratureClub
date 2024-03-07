@@ -1,7 +1,7 @@
 package com.snach.literatureclub.common.param.response;
 
 import com.alibaba.fastjson.JSON;
-import com.snach.literatureclub.common.annotations.ResponseNotIntercept;
+import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -9,9 +9,6 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
-
-
-
 
 @RestControllerAdvice
 public class ResponseResult implements ResponseBodyAdvice<Object> {

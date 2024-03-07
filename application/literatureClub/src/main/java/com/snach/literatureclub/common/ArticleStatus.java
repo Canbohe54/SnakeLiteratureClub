@@ -3,6 +3,7 @@ package com.snach.literatureclub.common;
 import lombok.Getter;
 
 import java.util.Date;
+
 @Getter
 public enum ArticleStatus {
     // 草稿状态，未提交
@@ -15,15 +16,17 @@ public enum ArticleStatus {
     PUBLISHED("published"),
     LOCKED("locked");
 
+    private String status;
+    private int expire = -1;
+
+    ArticleStatus(String status) {
+        this.status = status;
+    }
+
     public void setStatus(String status) {
         this.status = status;
     }
 
-    private String status;
-    private int expire = -1;
-    ArticleStatus(String status){
-        this.status = status;
-    }
     public void setExpire(int expire) {
         this.expire = expire;
     }

@@ -1,5 +1,7 @@
 package com.snach.literatureclub.bean;
 
+import com.snach.literatureclub.bean.attribute.UserAttribute;
+import com.snach.literatureclub.bean.attribute.UserAttributeFactory;
 import com.snach.literatureclub.common.Identity;
 import lombok.*;
 
@@ -31,38 +33,23 @@ public class User implements Serializable {
 
     // Personal Info
     String name;
-    @Deprecated String email;
     String introduction;
     String organization;
-    String pictureUrl;  // ?
+    String pictureUrl;
 
     // Extra Info
-    @Deprecated String attr;
-    Map<String, Object> cache;  // ?
-    // -> Contributor
-    String grade;
+    UserAttribute attrs;
 
-    @Deprecated
-    public User(String name, String id, String phone, String email, String introduction, String organization, String pictureUrl, String attr) {
-        this.name = name;
+    public User(String id, String phone, String password, String group, String name, String introduction, String organization, String pictureUrl, String attrs) {
         this.id = id;
         this.phone = phone;
-        this.email = email;
-        this.introduction = introduction;
-        this.organization = organization;
-        this.pictureUrl = pictureUrl;
-        this.attr = attr;
-    }
-
-    // new constructor (remove 'phone', 'attr')
-    public User(String name, String id, String email, String introduction, String organization, String pictureUrl, String grade) {
+        this.password = password;
+        this.group = Identity.conv(group);
         this.name = name;
-        this.id = id;
-        this.email = email;
         this.introduction = introduction;
         this.organization = organization;
         this.pictureUrl = pictureUrl;
-        this.grade = grade;
+        this.attrs = UserAttributeFactory.load(this.group, attrs);
     }
 
     public void setGroup(String group) {
