@@ -32,12 +32,24 @@ public class Article extends Text {
         this.attr = attr;
     }
 
+    public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr) {
+        super(id, time, text, textBy);
+        this.status = status;
+        this.title = title;
+        this.description = description;
+        this.attr = attr;
+    }
+
     public void setStatus(int status) {
         this.status = ArticleStatus.conv(status);
     }
 
     public void setStatus(ArticleStatus status) {
         this.status = status;
+    }
+
+    public void setStatus(String status) {
+        this.status = ArticleStatus.conv(status);
     }
 
     public boolean checkStatusExpired() {

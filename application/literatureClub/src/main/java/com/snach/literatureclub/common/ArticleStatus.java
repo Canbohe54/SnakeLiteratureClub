@@ -1,20 +1,29 @@
 package com.snach.literatureclub.common;
 
-import java.util.Calendar;
-import java.util.Date;
+import lombok.Getter;
 
+import java.util.Date;
+@Getter
 public enum ArticleStatus {
     // 草稿状态，未提交
-    Rough,
+    ROUGH("rough"),
     // 已提交，未审核
-    Submitted,
+    SUBMITTED("submitted"),
     // 审核不通过
-    FailAudited,
+    FAIL_AUDITED("failAudited"),
     // 审核通过，发布
-    Published,
-    Locked;
-    private int expire = -1;
+    PUBLISHED("published"),
+    LOCKED("locked");
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    private String status;
+    private int expire = -1;
+    ArticleStatus(String status){
+        this.status = status;
+    }
     public void setExpire(int expire) {
         this.expire = expire;
     }
@@ -33,5 +42,9 @@ public enum ArticleStatus {
 
     public static ArticleStatus conv(int status) {
         return ArticleStatus.values()[status];
+    }
+
+    public static ArticleStatus conv(String status) {
+        return ArticleStatus.values()[Integer.getInteger(status)];
     }
 }

@@ -37,6 +37,10 @@ public class ContributorController {
     public Map<String, Object> save(@RequestParam("token") String token, @RequestParam("image_list") @Nullable List<MultipartFile> imageList, Article article) {
         return articleService.addArticle(token, imageList, article);
     }
+    @RequestMapping(value = "contribute",method = RequestMethod.POST)
+    public Map<String, Object> contribute(String token, MultipartFile article){
+        return articleService.contribute(token, article);
+    }
 
     /**
      * 用户更改稿件基础信息，包括标题和描述，根据id进行更新，同时更新修改时间

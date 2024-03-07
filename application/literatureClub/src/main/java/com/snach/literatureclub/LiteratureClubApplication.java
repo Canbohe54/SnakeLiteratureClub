@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @MapperScan("com.snach.literatureclub.dao")
 //@SpringBootApplication(exclude= {DataSourceAutoConfiguration.class})
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.snach.literatureclub"})
 public class LiteratureClubApplication {
 
     public static void main(String[] args) {

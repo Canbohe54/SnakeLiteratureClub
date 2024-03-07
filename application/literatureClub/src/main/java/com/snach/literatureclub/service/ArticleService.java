@@ -3,6 +3,7 @@ package com.snach.literatureclub.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
+import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.dao.ArticleDao;
 import com.snach.literatureclub.utils.IdTools;
 import com.snach.literatureclub.utils.QiniuKodoUtil;
@@ -112,6 +113,10 @@ public interface ArticleService {
      * @return 搜索到的所有稿件信息 返回格式{ articles: [#{Article}, ...], statusMsg: #{String} }
      */
     Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<Integer> statusList);
+    /**
+     *
+     */
+    Map<String,Object> contribute(String token, MultipartFile article);
 }
 
 @Service
@@ -128,7 +133,8 @@ class ArticleServiceImpl implements ArticleService {
         // 检测token是否合法
         if (!tokenVerify(token)) {
             res.put("statusMsg", "Invalid token.");
-            return res;
+            throw new InvalidTokenException();
+
         }
         // 获取作者id
         String contributor_id = getPayload(token, "id");
@@ -164,6 +170,9 @@ class ArticleServiceImpl implements ArticleService {
                     if (i != imageList.size() - 1) {
                         allImageURL.append(",");
                     }
+                    File tem = new File(f.toURI());
+                    if (!f.delete())
+                        System.out.println("删除失败");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -171,6 +180,7 @@ class ArticleServiceImpl implements ArticleService {
             allImageURL.append("]");
             article.setImageURL(allImageURL.toString());
         }
+
         //插入article表
         articleDao.insertArticle(article);
         // 稿件投稿者关系更新
@@ -310,5 +320,10 @@ class ArticleServiceImpl implements ArticleService {
         }
         res.put("statusMsg", "Success.");
         return res;
+    }
+
+    @Override
+    public Map<String, Object> contribute(String token, MultipartFile article) {
+        return null;
     }
 }
