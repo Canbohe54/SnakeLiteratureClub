@@ -1,6 +1,7 @@
 <template>
   <el-scrollbar height="100vh">
     <div class="container">
+      <NavBarResponsive/>
       <NavBar class="navbar"/><!--导航栏-->
       <Carousel/>
       <LobbyArticle class="lobby_article"/>
@@ -14,14 +15,15 @@ import infroll from '../components/temp_infroll.vue'
 import { useStore } from 'vuex'
 import Carousel from "../components/Carousel.vue";
 import LobbyArticle from "@/components/LobbyArticle.vue";
+import NavBarResponsive from "@/components/NavBarResponsive.vue";
 
-console.log(useStore())
 @Options({
   components: {
     NavBar,
     infroll,
     Carousel,
-    LobbyArticle
+    LobbyArticle,
+    NavBarResponsive
   }
 })
 export default class LobbyView extends Vue {}

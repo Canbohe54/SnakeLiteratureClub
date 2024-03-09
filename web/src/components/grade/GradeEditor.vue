@@ -1,37 +1,32 @@
 <template>
-  <!-- Form -->
-    <el-button type="success" @click="() => {dialogFormVisible = true;getGrade()}" round>
-      评分与评价
-    </el-button>
+    <el-collapse v-model="dialogFormVisible">
+      <el-collapse-item title="评分、评价与推荐" name="1">
+        <el-form :model="form">
+          <div class="demo-rate-block">
+            <span class="demonstration">文章评分</span>
+            文字与表达：<el-rate v-model="gradeData.grade_expr" size="large" :colors="colors" show-score />
+            <br />
+            内容与结构：<el-rate v-model="gradeData.grade_struct" size="large" :colors="colors" show-score />
+            <br />
+            主题相关性：<el-rate v-model="gradeData.grade_theme" size="large" :colors="colors" show-score />
+            <div class="demo2">
+              <span>文章评价</span>
+            </div>
+            <el-input v-model="gradeData.advice" :autosize="{ minRows: 4, maxRows: 6 }" type="textarea"
+              placeholder="请输入您的评价" clearable maxlength="100" show-word-limit />
+            <br />
+            <el-checkbox v-model="checked1" label="推荐该文章刊登出版" size="large" />
+          </div>
 
-  <el-dialog v-model="dialogFormVisible" title="评分与评价">
-    <el-form :model="form">
-      <div class="demo-rate-block">
-        <span class="demonstration">文章评分</span>
-        文字与表达：<el-rate v-model="gradeData.grade_expr" size="large" :colors="colors" show-score />
-        <br/>
-        内容与结构：<el-rate v-model="gradeData.grade_struct" size="large" :colors="colors" show-score />
-        <br/>
-        主题相关性：<el-rate v-model="gradeData.grade_theme" size="large" :colors="colors" show-score />
-        <div class="demo2">
-        <span >文章评价</span>
-        </div>
-        <el-input v-model="gradeData.advice" :autosize="{ minRows: 4, maxRows: 6 }" type="textarea" placeholder="请输入您的评价"
-                  clearable maxlength="100" show-word-limit/>
-
-        <br/>
-      </div>
-    </el-form>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button type="danger" style="float: left;" @click="() => {dialogFormVisible = false; deleteGrade()}">删除</el-button>
+        </el-form>
+        <el-button type="danger" style="float: left;"
+          @click="() => { dialogFormVisible = false; deleteGrade() }">删除</el-button>
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="() => {dialogFormVisible = false; save()}" >
+        <el-button type="primary" @click="() => { dialogFormVisible = false; save() }">
           确定
         </el-button>
-      </span>
-    </template>
-  </el-dialog>
+      </el-collapse-item>
+    </el-collapse>
 
 </template>
 
@@ -98,16 +93,16 @@ const save = async () => {
   //   })
   //   return
   // }
-  if(gradeData.grade_expr == undefined){
+  if (gradeData.grade_expr == undefined) {
     gradeData.grade_expr = 0;
   }
-  if(gradeData.grade_struct == undefined){
+  if (gradeData.grade_struct == undefined) {
     gradeData.grade_struct = 0;
   }
-  if(gradeData.grade_theme == undefined){
+  if (gradeData.grade_theme == undefined) {
     gradeData.grade_theme = 0;
   }
-  if(gradeData.advice == undefined) gradeData.advice = ''
+  if (gradeData.advice == undefined) gradeData.advice = ''
   await SYNC_POST("/grade/add", {
     token: store.getters.getToken,
     article_id: route.query.id,
@@ -125,13 +120,13 @@ const save = async () => {
         type: 'success',
       })
       location.reload()
-    }else {
+    } else {
       errorCallback(response)
     }
   })
 }
 
-async function deleteGrade () {
+async function deleteGrade() {
   await SYNC_POST('/grade/delete', {
     token: store.getters.getToken,
     article_id: route.query.id,
@@ -142,8 +137,8 @@ async function deleteGrade () {
         message: '尚未评分与评价！',
         type: 'warning'
       })
-    } else if(response.data.statusMsg === 'success'){
-        ElMessage({
+    } else if (response.data.statusMsg === 'success') {
+      ElMessage({
         message: '评分与评价删除成功！',
         type: 'success'
       })
@@ -157,7 +152,7 @@ async function deleteGrade () {
   })
 }
 
-async function getGrade(){
+async function getGrade() {
   await (SYNC_POST('/grade/getGradeByExpertIdAndArticleId', {
     article_id: route.query.id,
     expert_id: store.getters.getUserInfo.id,
@@ -166,7 +161,7 @@ async function getGrade(){
       gradeData.expert_id = response.data.grade.expert_id;
       gradeData.article_id = response.data.grade.article_id;
       gradeData.grade_expr = ref(response.data.grade.grade_expr);
-      gradeData.grade_struct =  ref(response.data.grade.grade_struct);
+      gradeData.grade_struct = ref(response.data.grade.grade_struct);
       gradeData.grade_theme = ref(response.data.grade.grade_theme);
       gradeData.grade_all = response.data.grade.grade_all;
       gradeData.advice = ref(response.data.grade.advice);
@@ -199,6 +194,7 @@ async function getGrade(){
 .dialog-footer button:first-child {
   margin-right: 10px;
 }
+
 .demo2 {
   margin-bottom: 10px;
 }
