@@ -17,9 +17,7 @@
         </div>
     </el-scrollbar>
 </template>
-<style src="../styles/responsive.scss" lang="scss"></style>
 <style>
-@import 'element-plus/theme-chalk/display.css';
 
 .acc-manage {
     margin: 0 50px 0 0;
