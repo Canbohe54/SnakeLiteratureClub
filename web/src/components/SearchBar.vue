@@ -1,23 +1,15 @@
 <template>
   <!--  <h1>你的搜索内容：{{ searchWord }}</h1>-->
-  <el-row>
-    <el-col :span="8" :offset="8">
-
-      <div class="mt-4 search-input">
-        <el-input v-model="searchWord" class="input-with-select search-input-text" @keydown.enter="handleSearch"
-                  placeholder="请输入关键词搜索" size="large">
+      <div>
+        <el-input v-model="searchWord" class="search-input-text" @keydown.enter="handleSearch"
+                  placeholder="输入关键词搜索" size="large">
           <template #append>
             <el-button class="search-btn" @click="handleSearch">
-              <el-icon color="#00AEEC" class="el-icon-right">
-                <Search/>
-              </el-icon>
+                <Search class="search-button" />
             </el-button>
           </template>
         </el-input>
       </div>
-    </el-col>
-
-  </el-row>
 
 </template>
 <script lang="ts" setup>
@@ -41,22 +33,41 @@ const handleSearch = async () => {
 
 </script>
 <style scoped>
-.search-input {
-  margin: 20px 0 10px 0;
-  padding: 5px 0 5px 3px;
-}
 
 .search-btn {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 4px 15px 0 12px;
 }
 
-.search-input-text input {
-  font-size: 20px !important;
+.search-input-text :deep(.el-input__wrapper) {
+  border-radius: 1rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .search-input-text :deep(.el-input-group__append) {
   background-color: white;
+  border-radius: 1rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
+
+.search-input-text :deep(.el-input-group__append):hover {
+  background-color: #f4f4f5;
+  border-color: var(--el-input-hover-border-color);
+  box-shadow: 0 0 0 0.05rem var(--el-input-hover-border-color) inset;
+}
+
+.search-input-text :deep(.is-focus){
+  border-color: var(--el-input-hover-border-color);
+  box-shadow: 0 0 0 1px var(--el-input-hover-border-color) inset;
+}
+
+.search-button {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
 </style>
