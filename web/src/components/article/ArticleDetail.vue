@@ -20,15 +20,12 @@
           <el-text class="article-text" :size="displaySize" >{{articleDetail.text}}</el-text>
         </el-card>
       </el-main>
-
+      <el-card class="gradePanel">
+        <GradeDisplay class="graDis"/>
       <div class="gradeEdit" v-if="store.getters.getUserInfo.identity=='专家'">
         <GradeEditor class="graedit"/>
       </div>
-
-      <div class="gradeDis">
-        <GradeDisplay class="graDis"/>
-      </div>
-
+      </el-card>
       <el-footer>
         <suspense>
           <CommentDisplay :articleId="route.query.id" />
@@ -229,7 +226,7 @@ const handleUpdateArticleClicked = () => {
   }
 }
 </script>
-<style>
+<style scoped>
 .article-box-card{
   display: flex;
   justify-content: center;
@@ -254,9 +251,12 @@ const handleUpdateArticleClicked = () => {
   margin-right: 10px;
 }
 
+.gradePanel {
+  margin: 20px 20px;
+}
+
 .gradeDis{
   text-align:center;
-  margin: 20px 20px;
 }
 .article-text {
   display: flex;

@@ -2,7 +2,13 @@
   <el-scrollbar height="100vh">
     <div class="container">
       <NavBar class="navbar" /><!--导航栏-->
-      <SearchBar />
+      <el-row>
+        <el-col :span="8" :offset="8">
+          <div class="mt-4 search-bar">
+            <SearchBar />
+          </div>
+        </el-col>
+      </el-row>
       <el-row>
         <el-col :span="18" :offset="3">
           <SearchFilter ref="SearchFilterRef" @change="() => articleFiltrate()" />
@@ -36,5 +42,10 @@ function articleFiltrate() {
 <style>
 .navbar {
   margin: 0 0;
+}
+
+.search-bar {
+  margin: 20px 0 10px 0;
+  padding: 5px 0 5px 3px;
 }
 </style>

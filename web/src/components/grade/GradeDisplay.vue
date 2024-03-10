@@ -1,8 +1,4 @@
 <template>
-  <el-row>
-    <el-col>
-      <div>
-        <el-card >
           <el-empty v-if="gradeList.graList.length === 0" description="暂无评分" />
           <div v-else>
             <el-table :data="gradeList.graList" stripe class="grade-table" flexible>
@@ -58,11 +54,6 @@
               class="search-result-pageination">
             </el-pagination>
           </div>
-
-        </el-card>
-      </div>
-    </el-col>
-  </el-row>
 </template>
 <script lang="ts" setup>
 import { reactive, watch } from 'vue'
