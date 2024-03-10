@@ -10,6 +10,27 @@
           type="textarea"
           placeholder="请输入标题（建议30字以内）"
       />
+      <el-upload
+        ref="upload"
+        class="upload-demo"
+        accept=".txt;;*.docx"
+        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+        :limit="1"
+        :on-change="changeInputBox"
+        :auto-upload="false"
+
+      >
+        <template #trigger>
+          <el-button class="upload-file" type="primary">上传文章</el-button>
+        </template>
+        <el-button class="preview_file" v-show="Object.keys(articleDetail.raw).length != 0">预览文章</el-button>
+        <template #tip>
+          <div class="el-upload__tip text-red">
+            限制1个.docx或.txt文件，上传新内容将覆盖旧内容
+          </div>
+        </template>
+
+      </el-upload>
       <el-input
           v-model="articleDetail.text"
           class="editor-text"
@@ -66,25 +87,7 @@
       </el-card>
 
 
-      <el-upload
-          ref="upload"
-          class="upload-demo"
-          accept=".txt;;*.docx"
-          action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-          :limit="1"
-          :on-change="changeInputBox"
-          :auto-upload="false"
-          :show-file-list="false"
-      >
 
-        <template #trigger>
-          <el-button class="upload-file" type="primary">上传文件</el-button>
-        </template>
-        <template #tip>
-          <div class="el-upload__tip text-red">
-            限制1个.docx或.txt文件，上传新内容将覆盖旧内容
-          </div>
-        </template>
 
         <el-button class="3" :type="saveBtnType" @click="save" :disabled="saveBtnText === '已保存'">{{
             saveBtnText
@@ -92,7 +95,6 @@
         </el-button>
         <el-button class="3" type="success" @click="release">发布</el-button>
         <el-button type="danger" @click="delArticleDialogVisible=true">删除文章</el-button>
-      </el-upload>
       <el-dialog
           draggable
           v-model="delArticleDialogVisible"
@@ -143,8 +145,9 @@ const articleDetail: AttributeAddableObject = reactive({
   textBy: '',
   title: '',
   description: '',
-  status: '',
-  attr: '{}'
+  status: 'ROUGH',
+  attr: '{}',
+  raw: {}
 })
 let imageFileList = ref<UploadFile[]>([])
 const dialogImageUrl = ref('')
@@ -195,27 +198,29 @@ function errorCallback(response: any) {
 // 保存草稿
 const save = async () => {
   let param = new FormData()
-  if (imageFileList.value.length > 0){
-    imageFileList.value.forEach((val: any, index: any) => {
-      const newImageName = generateImageName(val.raw.name)
-      param.append("image_list", val.raw as Blob, newImageName)
-    })
-  } else {
-    param.append("image_list","")
-  }
+  param.append("raw_file", articleDetail.raw, generateImageName(articleDetail.raw.name))
+  // if (articleDetail.raw.length > 0){
+  //   imageFileList.value.forEach((val: any, index: any) => {
+  //     const newImageName = generateImageName(val.raw.name)
+  //     param.append("raw_file", val.raw as Blob, newImageName)
+  //   })
+  // } else {
+  //   param.append("raw","")
+  // }
 
-  param.append("token", store.getters.getToken)
+  param.append("token", 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjExNDUxNCJ9.AzE55n2_JDJolF-UQ94Qgun_szDCqsu_KYDDD6Tcebw')
+  // param.append("token", store.getters.getToken)
   param.append("id", articleDetail.id)
   param.append("text", articleDetail.text)
   param.append("textBy", '')
   param.append("title", articleDetail.title)
   param.append("description", articleDetail.description)
-  param.append("status", '3')
+  param.append("status", 'ROUGH')
   param.append("attr", `{"tags":${articleDetail.attr}}`)
   param.append("imageURL", '{}')
 
-  await SYNC_POST('/contributor/save', param, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+  await SYNC_POST('/contributor/contribute', param, async (response) => {
+    if (response.status === 200 && response.data.message === 'Success.') {
       console.log('Save successfully!')
       ElMessage({
         showClose: true,
@@ -279,6 +284,7 @@ const analyzeDOCX = (file: any) => {
 // 上传文件后显示到inputBox
 const changeInputBox = (file: any) => {
   upload.value!.clearFiles()
+  articleDetail.raw = file.raw
   let subFileNames = file.name.split('.')
   if (subFileNames[subFileNames.length - 1] == 'txt') {
     analyzeTXT(file)
@@ -370,9 +376,13 @@ const handlePictureCardPreview = (file: any) => {
 
 <style scoped>
 .upload-demo {
-  margin: 20px 0;
+  display: flex;
+  margin: 20px 10px;
 }
-
+.preview_file {
+  display: flex;
+  margin: 0 10px 0 0;
+}
 .editor-header {
   font-size: 25px;
   margin-bottom: 10px;
