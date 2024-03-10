@@ -44,7 +44,7 @@ spring:
 
       # Spring监控配置，说明请参考Druid Github Wiki，配置_Druid和Spring关联监控配置
       # Spring监控AOP切入点，如x.y.z.service.*,配置多个英文逗号分隔
-      aop-patterns: 'com.cmxz.snakesmartmemo.*'
+      aop-patterns: 'com.snach.literatureclub.*'
 
       #     配置监控属性： 在druid-starter的： com.alibaba.druid.spring.boot.autoconfigure.stat包下进行的逻辑配置
       web-stat-filter: # WebStatFilter配置，

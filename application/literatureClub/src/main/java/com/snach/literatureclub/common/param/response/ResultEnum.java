@@ -7,7 +7,7 @@ import lombok.Getter;
 public enum ResultEnum implements IResult {
     SUCCESS(2001, "Success."),
     VALIDATE_FAILED(2002, "Invalid Parameter."),
-    COMMON_FAILED(2003, "Api call failed."),
+    COMMON_FAILED(2003, "Api call failed. Server Error."),
     FORBIDDEN(2004, "Insufficient permission.");
     private Integer statusCode;
     private String statusMessage;

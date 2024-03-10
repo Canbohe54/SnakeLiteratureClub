@@ -12,14 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 import static com.snach.literatureclub.utils.TokenTools.getPayload;
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
@@ -113,10 +110,11 @@ public interface ArticleService {
      * @return 搜索到的所有稿件信息 返回格式{ articles: [#{Article}, ...], statusMsg: #{String} }
      */
     Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<Integer> statusList);
+
     /**
      *
      */
-    Map<String,Object> contribute(String token, MultipartFile article);
+    Article contribute(String token, Article article, MultipartFile mulArticle);
 }
 
 @Service
@@ -151,7 +149,7 @@ class ArticleServiceImpl implements ArticleService {
         Date date = new Date(System.currentTimeMillis());
         article.setTime(date);
 
-        if(imageList != null) {
+        if (imageList != null) {
             //上传图片
             StringBuilder allImageURL = new StringBuilder("[");
             for (int i = 0; i < imageList.size(); i++) {
@@ -178,7 +176,6 @@ class ArticleServiceImpl implements ArticleService {
                 }
             }
             allImageURL.append("]");
-            article.setImageURL(allImageURL.toString());
         }
 
         //插入article表
@@ -214,7 +211,7 @@ class ArticleServiceImpl implements ArticleService {
         Date date = new Date(System.currentTimeMillis());
 
         // 更新基本信息
-        Article article = new Article(id, "", date, "", title, description, status, attr);
+        Article article = new Article();
         articleDao.updateArticleInfo(article);
 
 
@@ -323,7 +320,34 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Map<String, Object> contribute(String token, MultipartFile article) {
-        return null;
+    public Article contribute(String token, Article article, MultipartFile mulArticle) {
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            throw new InvalidTokenException();
+        }
+
+        // 获取作者id
+        article.setTextBy(getPayload(token, "id"));
+        // 原始文件
+        try {
+            article.setRaw(mulArticle.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 稿件id
+        if (article.getId() == null || article.getId().equals("null")) {
+            //没有稿件id，时间戳生成id
+            article.setId(generateId(IdTools.Type.ARTICLE));
+        } else {
+            //若已有稿件id，则进行更新
+//            return updateArticle(token, imageList, article);
+        }
+        //修改时间
+        Date date = new Date(System.currentTimeMillis());
+        article.setTime(date);
+
+        articleDao.insertArticle(article);
+        return article;
     }
 }

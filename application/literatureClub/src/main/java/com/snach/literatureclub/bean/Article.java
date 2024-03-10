@@ -1,17 +1,21 @@
 package com.snach.literatureclub.bean;
 
 import com.snach.literatureclub.common.ArticleStatus;
+import jakarta.annotation.Nullable;
 import lombok.*;
 import org.apache.ibatis.javassist.tools.reflect.Reflection;
 
+import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * title        稿件标题
  * description  稿件描述
  * status       稿件状态 1：保存成功 2：待审核 3.已发布 4.未通过 0：保存失败
  * attr         稿件其他多值属性，如标签
- *
+ * mentor       指导老师id
  * @see Text
  */
 @Data
@@ -23,14 +27,18 @@ public class Article extends Text {
     String description;
     ArticleStatus status;
     String attr;
-    String imageURL;
+    byte[] raw;
+    @Nullable
+    String mentor;
 
-    public Article(String id, String text, Date time, String textBy, String title, String description, int status, String attr) {
+    public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr, byte[] rawFile, String mentor) {
         super(id, time, text, textBy);
-        this.status = ArticleStatus.conv(status);
+        this.status = status;
         this.title = title;
         this.description = description;
         this.attr = attr;
+        this.raw = rawFile;
+        this.mentor = mentor;
     }
 
     public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr) {
@@ -55,5 +63,20 @@ public class Article extends Text {
 
     public boolean checkStatusExpired() {
         return this.status.checkExpire(this.time);
+    }
+
+    public Map<String,Object> getBasicInfo(){
+        Map<String,Object> articleBasicInfo = new HashMap<>();
+        for(Field field : Article.class.getDeclaredFields()){
+            if (!field.getName().equalsIgnoreCase("raw")) {
+                try {
+                    field.setAccessible(true);
+                    articleBasicInfo.put(field.getName(), field.get(this));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return articleBasicInfo;
     }
 }

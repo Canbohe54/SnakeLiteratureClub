@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -40,9 +39,8 @@ public class ContributorController {
         return articleService.addArticle(token, imageList, article);
     }
     @RequestMapping(value = "contribute",method = RequestMethod.POST)
-    @ResponseNotIntercept
-    public Map<String, Object> contribute(String token, MultipartFile article){
-        return articleService.contribute(token, article);
+    public Map<String, Object> contribute(String token, Article article, @RequestParam("raw_file") MultipartFile raw){
+        return articleService.contribute(token, article, raw).getBasicInfo();
     }
 
     /**
