@@ -2,6 +2,7 @@ package com.snach.literatureclub.controller;
 
 
 import com.snach.literatureclub.bean.Article;
+import com.snach.literatureclub.common.ArticleStatus;
 import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class ArticleController {
                                              @RequestParam(value = "tag", required = false) String tag,
                                              @RequestParam(name = "page_num")int pageNum,
                                              @RequestParam(name = "page_size")int pageSize,
-                                             @RequestParam(name = "status_list")List<Integer> statusList) {
+                                             @RequestParam(name = "status_list")List<ArticleStatus> statusList) {
         return articleService.searchArticle(keyword, tag,pageNum,pageSize,statusList);
     }
 }

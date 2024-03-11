@@ -3,6 +3,7 @@ package com.snach.literatureclub.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
+import com.snach.literatureclub.common.ArticleStatus;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.dao.ArticleDao;
 import com.snach.literatureclub.utils.IdTools;
@@ -109,7 +110,7 @@ public interface ArticleService {
      * @param statusList
      * @return 搜索到的所有稿件信息 返回格式{ articles: [#{Article}, ...], statusMsg: #{String} }
      */
-    Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<Integer> statusList);
+    Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleStatus> statusList);
 
     /**
      *
@@ -307,7 +308,7 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<Integer> statusList) {
+    public Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleStatus> statusList) {
         Map<String, Object> res = new HashMap<>();
         PageHelper.startPage(pageNum, pageSize);
         if (tag == null) {

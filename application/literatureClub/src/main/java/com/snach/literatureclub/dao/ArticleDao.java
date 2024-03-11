@@ -1,9 +1,9 @@
 package com.snach.literatureclub.dao;
 
 import com.snach.literatureclub.bean.Article;
+import com.snach.literatureclub.common.ArticleStatus;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -107,7 +107,7 @@ public interface ArticleDao {
      *
      * @return 所有的稿件信息的Article对象List
      */
-    @Select("SELECT id, time, text_by as textBy, title, description, status, attr FROM article WHERE status = 3")
+    @Select("SELECT id, time, text_by as textBy, title, description, status, attr FROM article WHERE status = 'PUBLISHED'")
     List<Article> getAllArticles();
 
     /**
@@ -143,7 +143,7 @@ public interface ArticleDao {
             "</foreach>",
             "</script>"
     })
-    List<Article> getArticlesByKeyword(String keyword, @Param("items") List<Integer> statusList);
+    List<Article> getArticlesByKeyword(String keyword, @Param("items") List<ArticleStatus> statusList);
 
     /**
      * 插入作者与稿件关系
