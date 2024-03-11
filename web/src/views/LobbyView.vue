@@ -2,7 +2,7 @@
   <el-scrollbar height="100vh">
     <div class="container">
       <NavBarResponsive/>
-      <NavBar class="navbar"/><!--导航栏-->
+      <NavBarOld class="navbar" hidden/><!--导航栏-->
       <Carousel/>
       <LobbyArticle class="lobby_article"/>
     </div>
@@ -10,7 +10,7 @@
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import NavBar from '../components/NavBar.vue'
+import NavBarOld from '../components/NavBarOld.vue'
 import infroll from '../components/temp_infroll.vue'
 import { useStore } from 'vuex'
 import Carousel from "../components/Carousel.vue";
@@ -19,7 +19,7 @@ import NavBarResponsive from "@/components/NavBarResponsive.vue";
 
 @Options({
   components: {
-    NavBar,
+    NavBarOld,
     infroll,
     Carousel,
     LobbyArticle,

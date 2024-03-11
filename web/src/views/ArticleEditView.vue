@@ -8,7 +8,7 @@
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import NavBar from '../components/NavBar.vue'
+import NavBar from '../components/NavBarOld.vue'
 import ArticleEditor from '@/components/article/ArticleEditor.vue'
 @Options({
   components: {

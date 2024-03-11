@@ -90,6 +90,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
       loginButton.buttonText = '正在登录...'
       let isPosted = false
       POST('/usr/login', { email: loginRuleForm.email, password: loginRuleForm.passwd }, async (response) => {
+        console.log(response)
         if (response.status === 200 && response.data.statusMsg === 'Success.') {
           store.commit('setToken', response.data.token)
           store.commit('setUserInfo', response.data.userInfo)

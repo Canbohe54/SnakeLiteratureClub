@@ -1,40 +1,41 @@
 <template>
     <el-row class="resp-nav">
-        <el-col :lg="3" :md="4" :sm="2" :xs="2" class="logoTitle">
+        <el-col :lg="3" :md="4" :sm="2" :xs="2" class="nav-logo-title">
             <div>
                 <router-link to="/">
-                    <span class="logo"></span>
-                    <span class="titleLink hidden-sm-and-down">蛇拾文学社</span>
+                    <span class="nav-logo"></span>
+                    <span class="nav-title-link hidden-sm-and-down">蛇拾文学社</span>
                 </router-link>
             </div>
         </el-col>
         <el-col :lg="10" :md="10" class="hidden-sm-and-down"><!--md及以上时的菜单，horizontal，展开的-->
             <el-menu :default-active="menu_option[0].index" class="el-menu-demo nav-menu" mode="horizontal" router>
-                <el-menu-item v-for="item in menu_option" :key="item.index" :index="item.index" :route="item.route" class="nav-menu-option">
+                <el-menu-item v-for="item in menu_option" :key="item.index" :index="item.index" :route="item.route"
+                    class="nav-menu-option">
                     {{ item.title }}
                 </el-menu-item>
             </el-menu>
         </el-col>
-        <el-col :span="5" class="hidden-sm-and-down lg-search"><!--搜索框，仅在大于md上显示-->
-            <!-- <div class="mt-4 search-input">
-                <el-input placeholder="搜索" class="input-with-select">
-                    <template #append>
-                        <el-button :icon="Search" type="primary" />
-                    </template>
-                </el-input>
-            </div> -->
+        <el-col :span="5" class="hidden-sm-and-down lg-search flex-center"><!--搜索框，仅在大于md上显示-->
             <SearchBar />
         </el-col>
-        <el-col :span="4" class="hidden-sm-and-down"><!--用户信息，仅在大于md上显示-->
-            <el-link>
-                点击登录
-            </el-link>
+        <el-col :span="4" class="hidden-sm-and-down flex-center"><!--用户信息，仅在大于md上显示-->
+            <el-popover placement="bottom" :width="200" trigger="hover">
+                <template #reference>
+                    <el-avatar>登录</el-avatar>
+                </template>
+                <UserSimpInfoCard />
+            </el-popover>
         </el-col>
-        <el-col :span="2" class="hidden-md-and-up" id="sm_down_menu_icon"><!--sm及以下时的菜单，vertical，折叠的，整合了以上三个功能-->
-            <div :underline="false" style="display: flex; justify-content: center; align-items: center;" :onclick="handleSearchRedirect">
+        <el-col :span="4" class="hidden-md-and-up flex-center"
+            id="sm_down_menu_icon"><!--sm及以下时的菜单，vertical，折叠的，整合了以上三个功能-->
+            <div :underline="false" class="flex-center" :onclick="handleUserBar">
+                <User class="search-button" />
+            </div>
+            <div :underline="false" class="flex-center" :onclick="handleSearchRedirect">
                 <Search class="search-button" />
             </div>
-            <div style="margin-right:20px; display: flex; justify-content: center; align-items: center;">
+            <div class="menu-toggle-container">
                 <div class="menu-toggle" :onclick="handleSmMenu"></div>
             </div>
         </el-col>
@@ -56,12 +57,26 @@
 
         </el-col>
     </el-row>
+    <el-row class="hidden-md-and-up"><!--sm及以下时的用户信息栏，vertical，折叠的-->
+        <el-col :span="24">
+            <el-collapse-transition>
+                <div v-show="user_bar_expand">
+                    <UserSimpInfoCard />
+                    <el-menu class="el-menu-demo sm-user-menu-detail" mode="vertical" router>
+                        <el-menu-item index="login" class="sm-menu-items">点击登录！</el-menu-item>
+                        <el-menu-item index="register" class="sm-menu-items">点击注册！</el-menu-item>
+                    </el-menu>
+                </div>
+            </el-collapse-transition>
+        </el-col>
+    </el-row>
 </template>
 <script setup>
 import { ref, reactive } from 'vue';
-import { Search, Upload } from '@element-plus/icons-vue';
+import { Search, Upload, User } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import SearchBar from './SearchBar.vue';
+import UserSimpInfoCard from './user/UserSimpInfoCard.vue';
 
 const router = useRouter();
 const menu_option = reactive([
@@ -88,6 +103,7 @@ const menu_option = reactive([
 ])
 
 const sm_menu_expand = ref(false);
+const user_bar_expand = ref(false);
 
 function handleSmMenu() {
     if (sm_menu_expand.value) {
@@ -99,6 +115,14 @@ function handleSmMenu() {
         //改变为展开状态
         $(".menu-toggle").toggleClass("menu-toggle-active", true);
 
+    }
+}
+
+function handleUserBar() {
+    if (user_bar_expand.value) {
+        user_bar_expand.value = false;
+    } else {
+        user_bar_expand.value = true;
     }
 }
 
@@ -114,12 +138,12 @@ function handleSearchRedirect() {
     border-bottom: 1px solid #ebeef5;
 }
 
-.logoTitle {
+.nav-logo-title {
     display: flex;
     align-items: center;
 }
 
-.logo {
+.nav-logo {
     display: flex;
     float: left;
     height: 32px;
@@ -129,7 +153,7 @@ function handleSearchRedirect() {
     background-size: contain;
 }
 
-.titleLink {
+.nav-title-link {
     display: flex;
     float: left;
     text-decoration: none;
@@ -139,41 +163,24 @@ function handleSearchRedirect() {
 }
 
 .lg-search {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin: 0;
     padding: 0;
 }
 
-.input-with-select .el-input__wrapper {
-    border-radius: 8px;
+.nav-menu {
+    /*取消菜单栏下边框*/
+    border-bottom: none !important;
+    text-decoration: none;
+    width: 500px;
 }
 
-.input-with-select .el-input-group__append {
-    background-color: var(--el-fill-color-blank);
-    border-radius: 8px;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.nav-menu { /*取消菜单栏下边框*/
-  border-bottom: none !important;
-  text-decoration: none;
-  width: 500px;
-}
 .nav-menu-option:hover {
-  color: var(--el-menu-hover-text-color)!important;
-  background-color: var(--el-menu-bg-color)!important;
-}
-.nav-menu-option:focus {
-  background-color: var(--el-menu-bg-color)!important;
+    color: var(--el-menu-hover-text-color) !important;
+    background-color: var(--el-menu-bg-color) !important;
 }
 
-#sm_down_menu_icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.nav-menu-option:focus {
+    background-color: var(--el-menu-bg-color) !important;
 }
 
 .sm-menu-detail {
@@ -187,6 +194,16 @@ function handleSearchRedirect() {
     padding: 20px 0;
 }
 
+.sm-user-menu-detail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 20px 0;
+}
+
 .sm-menu-items {
     width: 100%;
     justify-content: center;
@@ -197,11 +214,24 @@ function handleSearchRedirect() {
 .search-button {
     width: 1.5em;
     height: 1.5em;
-    margin-right: 10px;
+    margin: 0 10px 0 0;
 }
 
 .search-button:hover {
     color: #409eff;
+}
+
+.menu-toggle-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0;
+}
+
+@media screen and (max-width: 576px) {
+    .menu-toggle-container {
+        margin-right: 40px;
+    }
 }
 
 .menu-toggle {
@@ -265,5 +295,4 @@ function handleSearchRedirect() {
     background-color: #409eff;
     box-shadow: 0 0 #409eff;
 }
-
 </style>

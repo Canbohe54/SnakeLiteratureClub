@@ -10,7 +10,7 @@
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import NavBar from '../components/NavBar.vue'
+import NavBar from '../components/NavBarOld.vue'
 import ArticleDetail from "@/components/article/ArticleDetail.vue"
 import GradeDisplay from "@/components/grade/GradeDisplay.vue";
 import GradeEditor from "@/components/grade/GradeEditor.vue";

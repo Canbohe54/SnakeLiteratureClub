@@ -1,6 +1,9 @@
 <template>
     <div class="logoTitle">
-    <router-link to="/"><span class="logo"></span><span class="titleLink">蛇拾文学社</span></router-link>
+    <router-link to="/">
+        <span class="logo"></span>
+        <span class="titleLink hidden-sm-and-down">蛇拾文学社</span>
+    </router-link>
     </div>
 </template>
 <style>
