@@ -59,7 +59,7 @@ const articleList = reactive({
   originalArticleList: [{ 'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学', 'attr': '{"tags": {}}' },
   { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}' }]
 })
-const articleStatus = [3]
+const articleStatus = ['PUBLISHED']
 getArticleList()
 
 watch(() => route.query.wd, () => {
@@ -86,7 +86,7 @@ async function getTextBy(artList: any) {
       await SYNC_GET('/usr/getUserBasicInfo', {
         user_id: item.text_by
       }, response => {
-        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+        if (response.status === 200 && (response.data.statusMsg === 'Success.' || response.data.statusMsg === 'Nonexistent')) {
           item.text_by = response.data.user_info.name
         } else {
           console.log(response)
@@ -100,11 +100,15 @@ async function getTextBy(artList: any) {
 }
 
 async function getArticleList() {
+  let k = ''
+  if(route.query.wd){
+    k = route.query.wd.toString()
+  }
   let params: AttributeAddableObject = {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
     status_list: articleStatus,
-    keyword: route.query.wd
+    keyword: k
   }
   await (SYNC_GET('/article/search', params, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
