@@ -37,12 +37,25 @@ async function uploadBase64Image(base64Image: any, mime: any) {
 //     });
 //   })
 // };
-const mammothOptions = {
-  convertImage: mammoth.images.imgElement(function(image) {
-    return image.readAsBase64String().then(function(imageBuffer) {
-      return {
-        src: "data:" + image.contentType + ";base64," + imageBuffer
-      };
-    });
-  })
-};
+function transformElement(element : any) {
+  if (element.children) {
+    var children = element.children.map(transformElement);
+    element = { ...element, children: children };
+  }
+  if (element.type === 'paragraph') {
+    element = transformParagraph(element);
+  }
+  return element;
+}
+
+function transformParagraph(element : any) {
+  if (element.alignment === 'center' && !element.styleId) {
+    return { ...element, styleName: 'center' }; // 给标签增加style-name
+  } else {
+    return element;
+  }
+}
+export const mammothOptions = {
+  styleMap: ['u => u'],
+  transformDocument: transformElement,
+}

@@ -1,4 +1,4 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <el-row>
     <el-col :span="18" :offset="3">
       <el-input
@@ -11,26 +11,34 @@
           placeholder="请输入标题（建议30字以内）"
       />
       <el-upload
-        ref="upload"
-        class="upload-demo"
-        accept=".txt;;*.docx"
-        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-        :limit="1"
-        :on-change="changeInputBox"
-        :auto-upload="false"
+          ref="upload"
+          class="upload-demo"
+          accept=".txt;;*.docx;;*.pdf"
+          action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+          :limit="1"
+          :on-change="changeInputBox"
+          :auto-upload="false"
 
       >
         <template #trigger>
-          <el-button class="upload-file" type="primary">上传文章</el-button>
+          <el-tooltip
+              class="box-item"
+              effect="light"
+              content="限制1个.docx或.txt文件，上传新内容将覆盖旧内容"
+              placement="top"
+          >
+            <el-button class="upload-file" type="primary">上传文章</el-button>
+          </el-tooltip>
         </template>
-        <el-button class="preview_file" v-show="Object.keys(articleDetail.raw).length != 0">预览文章</el-button>
-        <template #tip>
-          <div class="el-upload__tip text-red">
-            限制1个.docx或.txt文件，上传新内容将覆盖旧内容
-          </div>
-        </template>
+        <el-button class="preview_file" v-show="Object.keys(articleDetail.raw).length != 0"
+                   @click="handleDocumentPreView(articleDetail.raw)">预览文章
+        </el-button>
 
+        <el-dialog id="docContainer" v-model="docDialogVisible" style="width: fit-content;height: fit-content;">
+        </el-dialog>
       </el-upload>
+<!--                <div id="docContainer" style="width: fit-content;height: fit-content;"></div>-->
+
       <el-input
           v-model="articleDetail.text"
           class="editor-text"
@@ -71,12 +79,6 @@
                 <Plus/>
 
               </el-icon>
-              <!--              <template #tip>-->
-              <!--                <div class="el-upload__tip">-->
-              <!--                  jpg/png文件-->
-              <!--                </div>-->
-              <!--              </template>-->
-              <!--              <div>格式为png、jpeg或jpg</div>-->
             </el-upload>
 
             <div class="more-option-head"><span>文章标签</span></div>
@@ -87,14 +89,12 @@
       </el-card>
 
 
-
-
-        <el-button class="3" :type="saveBtnType" @click="save" :disabled="saveBtnText === '已保存'">{{
-            saveBtnText
-          }}
-        </el-button>
-        <el-button class="3" type="success" @click="release">发布</el-button>
-        <el-button type="danger" @click="delArticleDialogVisible=true">删除文章</el-button>
+      <el-button class="3" :type="saveBtnType" @click="save" :disabled="saveBtnText === '已保存'">{{
+          saveBtnText
+        }}
+      </el-button>
+      <el-button class="3" type="success" @click="release">发布</el-button>
+      <el-button type="danger" @click="delArticleDialogVisible=true">删除文章</el-button>
       <el-dialog
           draggable
           v-model="delArticleDialogVisible"
@@ -117,18 +117,20 @@
 
 <script lang="ts" setup>
 import {reactive, ref, watch} from 'vue'
-import type {UploadInstance, UploadRawFile} from 'element-plus'
+import type {UploadFile, UploadInstance} from 'element-plus'
+import {ElMessage} from 'element-plus'
 import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 import {useStore} from 'vuex'
 import {useRoute} from 'vue-router'
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
-import {ElMessage} from 'element-plus'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 import router from '@/router'
 import mammoth from 'mammoth'
-import {Plus} from "@element-plus/icons-vue"
-import {base64ToFile, generateImageName} from "@/scripts/ImageUtil"
-import type {UploadFile} from 'element-plus'
+import {Plus} from '@element-plus/icons-vue'
+import {base64ToFile, generateImageName} from '@/scripts/ImageUtil'
+import '@vue-office/docx/lib/index.css'
+import { fileToBlob } from '@/scripts/DocumentUtil'
+import {renderAsync} from 'docx-preview'
 
 const upload = ref<UploadInstance>()
 const store = useStore()
@@ -137,6 +139,8 @@ const SearchFilterRef = ref()
 const saveBtnType = ref('success')
 const saveBtnText = ref('保存')
 const delArticleDialogVisible = ref(false)
+const docDialogVisible = ref(false)
+const docBlob = ref<Blob>()
 
 const articleDetail: AttributeAddableObject = reactive({
   id: null,
@@ -199,15 +203,6 @@ function errorCallback(response: any) {
 const save = async () => {
   let param = new FormData()
   param.append("raw_file", articleDetail.raw, generateImageName(articleDetail.raw.name))
-  // if (articleDetail.raw.length > 0){
-  //   imageFileList.value.forEach((val: any, index: any) => {
-  //     const newImageName = generateImageName(val.raw.name)
-  //     param.append("raw_file", val.raw as Blob, newImageName)
-  //   })
-  // } else {
-  //   param.append("raw","")
-  // }
-
   param.append("token", 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjExNDUxNCJ9.AzE55n2_JDJolF-UQ94Qgun_szDCqsu_KYDDD6Tcebw')
   // param.append("token", store.getters.getToken)
   param.append("id", articleDetail.id)
@@ -300,14 +295,14 @@ const changeInputBox = (file: any) => {
 const release = async () => {
   let param = new FormData();
 
-  if (imageFileList.value.length > 0){
+  if (imageFileList.value.length > 0) {
     imageFileList.value.forEach((val: any, index: any) => {
       const newImageName = generateImageName(val.raw.name)
       console.log(val.raw)
       param.append("image_list", val.raw as Blob, newImageName)
     })
   } else {
-    param.append("image_list","")
+    param.append("image_list", "")
   }
   param.append("token", store.getters.getToken)
   param.append("id", articleDetail.id)
@@ -368,21 +363,45 @@ function imgRemove(file: any, fileList: any) {
 }
 
 const handlePictureCardPreview = (file: any) => {
-  console.log(file)
   dialogImageUrl.value = file.url
   dialogVisible.value = true
+}
+
+const handleDocumentPreView = async (file: any) => {
+  fileToBlob(file).then((result) => {
+    docBlob.value = result as Blob
+
+    let docContainer = document.getElementById("docContainer");
+    renderAsync(
+        result,
+        docContainer, // HTMLElement 渲染文档内容的元素,
+        null, // HTMLElement, 用于呈现文档样式、数字、字体的元素。如果为 null，则将使用 reportContainer。
+    ).then(res => {
+      // console.log("res---->", res)
+    })
+  })
+
+  docDialogVisible.value = true
+}
+const renderedHandler = async () => {
+  console.log("渲染完成")
+}
+const errorHandler = async () => {
+  console.log("渲染失败")
 }
 </script>
 
 <style scoped>
 .upload-demo {
   display: flex;
-  margin: 20px 10px;
+  margin: 0 20px 10px 0;
 }
+
 .preview_file {
   display: flex;
   margin: 0 10px 0 0;
 }
+
 .editor-header {
   font-size: 25px;
   margin-bottom: 10px;
@@ -437,5 +456,26 @@ const handlePictureCardPreview = (file: any) => {
 
 .more-option-card:deep(.el-card__body) {
   padding: 5px 20px;
+}
+
+:deep(.docx-wrapper) {
+  background-color: transparent; /* 去除黑边 */
+  padding: 0;
+}
+
+:deep(.docx-wrapper section.docx) {
+  margin: 0;
+}
+
+.sm-menu-items {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  padding: 10px 0;
+}
+
+#docContainer {
+  background-color: transparent;
+  box-shadow: none;
 }
 </style>
