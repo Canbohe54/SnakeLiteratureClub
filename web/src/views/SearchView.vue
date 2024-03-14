@@ -20,7 +20,7 @@
 </template>
 <script lang="ts" setup>
 import { ref } from "vue"
-import NavBar from '../components/NavBarOld.vue'
+import NavBar from "@/components/NavBarResponsive.vue";
 import SearchBar from '../components/SearchBar.vue'
 import ArticleDisplay from '@/components/article/ArticleDisplay.vue'
 import SearchFilter from '@/components/search/SearchFilter.vue'

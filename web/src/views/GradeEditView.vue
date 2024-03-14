@@ -7,7 +7,7 @@
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import NavBar from '../components/NavBarOld.vue'
+import NavBar from "@/components/NavBarResponsive.vue";
 import GradeEditor from "@/components/grade/GradeEditor.vue";
 import GradeDisplay from "@/components/grade/GradeDisplay.vue";
 @Options({
