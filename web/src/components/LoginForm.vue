@@ -23,7 +23,7 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { checkPasswordRule } from './uiScripts/CheckPassword'
 import { POST } from '@/scripts/Axios'
 import router from '@/router'
-import { useStore } from "vuex";
+import { useStore } from 'vuex'
 // do not use same name with ref!!!
 
 const store = useStore()
@@ -100,9 +100,9 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
           await router.push('/')
           location.reload()
         } else {
-          if (response.data.statusMsg === 'Nonexistent'){
+          if (response.data.statusMsg === 'Nonexistent') {
             ElMessage.error('用户不存在')
-          }else if(response.data.statusMsg === 'Password error.'){
+          } else if (response.data.statusMsg === 'Password error.') {
             ElMessage.error('用户名或密码错误')
           } else {
             ElMessage.error(response.data.statusMsg)

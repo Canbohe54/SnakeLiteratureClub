@@ -3,7 +3,7 @@ import { getCookie, setCookie, removeCookie, clearCookie } from '@/scripts/cooki
 
 export default createStore({
   state: {
-    token: '',
+    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjExNDUxNCJ9.AzE55n2_JDJolF-UQ94Qgun_szDCqsu_KYDDD6Tcebw',
     userInfo: {
       id: '',
       name: '',

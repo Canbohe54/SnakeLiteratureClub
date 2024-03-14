@@ -1,25 +1,39 @@
 <template>
-    <div class="logoTitle">
-    <router-link to="/">
-        <span class="logo"></span>
-        <span class="titleLink hidden-sm-and-down">蛇拾文学社</span>
-    </router-link>
-    </div>
+    <el-row class="resp-nav">
+        <el-col :lg="3" :md="4" :sm="2" :xs="2" class="logo-title">
+            <div>
+                <router-link to="/">
+                    <span class="nav-logo"></span>
+                    <span class="nav-title-link hidden-sm-and-down">蛇拾文学社</span>
+                </router-link>
+            </div>
+        </el-col>
+    </el-row>
+
 </template>
 <style>
-.logoTitle {
-    margin: 10px 50px 0 50px;
+.resp-nav {
+    display: flex;
+    justify-content: space-between;
 }
-.logo {
-  display: flex;
-  float: left;
-  height: 32px;
-  width: 32px;
-  margin: 0.5px 10px 0 16px;
-  background: url("../assets/logo.png") no-repeat center center;
-  background-size: contain;
+
+.logo-title {
+    display: flex;
+    align-items: center;
+    height: 60px;
 }
-.titleLink {
+
+.nav-logo {
+    display: flex;
+    float: left;
+    height: 32px;
+    width: 32px;
+    margin: 0.5px 10px 0 16px;
+    background: url("../assets/logo.png") no-repeat center center;
+    background-size: contain;
+}
+
+.nav-title-link {
     display: flex;
     float: left;
     text-decoration: none;

@@ -16,11 +16,11 @@
                 </el-menu-item>
             </el-menu>
         </el-col>
-        <el-col :span="5" class="hidden-sm-and-down lg-search flex-center"><!--搜索框，仅在大于md上显示-->
+        <el-col :span="5" class="hidden-sm-and-down lg-search flex-center" v-if="route.path!=='/search'"><!--搜索框，仅在大于md上显示-->
             <SearchBar />
         </el-col>
         <el-col :span="4" class="hidden-sm-and-down flex-center"><!--用户信息，仅在大于md上显示-->
-            <el-popover placement="bottom" :width="200" trigger="hover">
+            <el-popover placement="bottom" :width="200" trigger="hover" popper-style="border-radius: 8px;">
                 <template #reference>
                     <el-avatar>登录</el-avatar>
                 </template>
@@ -32,7 +32,7 @@
             <div :underline="false" class="flex-center" :onclick="handleUserBar">
                 <User class="search-button" />
             </div>
-            <div :underline="false" class="flex-center" :onclick="handleSearchRedirect">
+            <div :underline="false" class="flex-center" :onclick="handleSearchRedirect"  v-if="route.path!=='/search'">
                 <Search class="search-button" />
             </div>
             <div class="menu-toggle-container">
@@ -43,7 +43,6 @@
     <el-row class="hidden-md-and-up"><!--sm及以下时的菜单，vertical，折叠的-->
         <el-col :span="24">
             <el-collapse-transition>
-
                 <div v-show="sm_menu_expand">
                     <el-menu :default-active="menu_option[0].index" class="el-menu-demo sm-menu-detail" mode="vertical"
                         router>
@@ -54,7 +53,6 @@
                     </el-menu>
                 </div>
             </el-collapse-transition>
-
         </el-col>
     </el-row>
     <el-row class="hidden-md-and-up"><!--sm及以下时的用户信息栏，vertical，折叠的-->
@@ -62,23 +60,50 @@
             <el-collapse-transition>
                 <div v-show="user_bar_expand">
                     <UserSimpInfoCard />
-                    <el-menu class="el-menu-demo sm-user-menu-detail" mode="vertical" router>
-                        <el-menu-item index="login" class="sm-menu-items">点击登录！</el-menu-item>
-                        <el-menu-item index="register" class="sm-menu-items">点击注册！</el-menu-item>
-                    </el-menu>
                 </div>
             </el-collapse-transition>
         </el-col>
     </el-row>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { Search, Upload, User } from '@element-plus/icons-vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import SearchBar from './SearchBar.vue';
 import UserSimpInfoCard from './user/UserSimpInfoCard.vue';
 
 const router = useRouter();
+const route = useRoute();
+
+// 学生：我要投稿，老师：代投文章，志愿者：待审阅稿件，专家：待推荐稿件，猎头：推荐稿件
+const identityDepedOption = reactive([
+    {
+        index: '5',
+        title: '我要投稿',
+        route: '/'
+    },
+    {
+        index: '6',
+        title: '代投文章',
+        route: '/'
+    },
+    {
+        index: '7',
+        title: '待审阅稿件',
+        route: '/'
+    },
+    {
+        index: '8',
+        title: '待推荐稿件',
+        route: '/'
+    },
+    {
+        index: '9',
+        title: '推荐稿件',
+        route: '/'
+    }
+])
+
 const menu_option = reactive([
     {
         index: '1',
@@ -94,13 +119,29 @@ const menu_option = reactive([
         index: '3',
         title: '优秀作品',
         route: '/'
-    },
-    {
-        index: '4',
-        title: '待推荐稿件', // 学生：我要投稿，老师：代投文章，志愿者：待审阅稿件，专家：待推荐稿件，猎头：推荐稿件
-        route: '/'
     }
 ])
+
+function setIdentityDepedOption(identity) {
+    switch (identity) {
+        case 'CONTRIBUTER':
+            menu_option.push(identityDepedOption[0]);
+            break;
+        case 'TEACHER':
+            menu_option.push(identityDepedOption[1]);
+            break;
+        case 'VOLUNTEER':
+            menu_option.push(identityDepedOption[2]);
+            break;
+        case 'PROFESSOR':
+            menu_option.push(identityDepedOption[3]);
+            break;
+        case 'HUNTER':
+            menu_option.push(identityDepedOption[4]);
+            break;
+    }
+}
+setIdentityDepedOption('CONTRIBUTER');
 
 const sm_menu_expand = ref(false);
 const user_bar_expand = ref(false);
@@ -108,10 +149,12 @@ const user_bar_expand = ref(false);
 function handleSmMenu() {
     if (sm_menu_expand.value) {
         sm_menu_expand.value = false;
+        user_bar_expand.value = false;
         //改变为非展开状态
         $(".menu-toggle").toggleClass("menu-toggle-active", false);
     } else {
         sm_menu_expand.value = true;
+        user_bar_expand.value = false;
         //改变为展开状态
         $(".menu-toggle").toggleClass("menu-toggle-active", true);
 
@@ -121,8 +164,14 @@ function handleSmMenu() {
 function handleUserBar() {
     if (user_bar_expand.value) {
         user_bar_expand.value = false;
+        sm_menu_expand.value = false;
+        //改变为非展开状态
+        $(".menu-toggle").toggleClass("menu-toggle-active", false);
     } else {
         user_bar_expand.value = true;
+        sm_menu_expand.value = false;
+        //改变为非展开状态
+        $(".menu-toggle").toggleClass("menu-toggle-active", false);
     }
 }
 
@@ -295,4 +344,5 @@ function handleSearchRedirect() {
     background-color: #409eff;
     box-shadow: 0 0 #409eff;
 }
+
 </style>

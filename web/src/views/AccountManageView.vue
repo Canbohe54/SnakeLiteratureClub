@@ -38,7 +38,7 @@
 </style>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import NavBar from '@/components/NavBarOld.vue'
+import NavBar from "@/components/NavBarResponsive.vue";
 import AccManageBar from '@/components/accountManage/AccManageBar.vue'
 @Options({
     components: {
