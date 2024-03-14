@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleStatus;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
+import com.snach.literatureclub.common.exception.NullFileException;
 import com.snach.literatureclub.dao.ArticleDao;
 import com.snach.literatureclub.utils.IdTools;
 import com.snach.literatureclub.utils.QiniuKodoUtil;
@@ -128,13 +129,12 @@ class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Map<String, Object> addArticle(String token, List<MultipartFile> imageList, Article article) {
-        Map<String, Object> res = new HashMap<String, Object>();
         // 检测token是否合法
         if (!tokenVerify(token)) {
-            res.put("statusMsg", "Invalid token.");
             throw new InvalidTokenException();
-
         }
+        Map<String, Object> res = new HashMap<String, Object>();
+
         // 获取作者id
         String contributor_id = getPayload(token, "id");
 
@@ -326,7 +326,9 @@ class ArticleServiceImpl implements ArticleService {
         if (!tokenVerify(token)) {
             throw new InvalidTokenException();
         }
-
+        if(mulArticle == null){
+            throw new NullFileException("发布操作文件不能为空。");
+        }
         // 获取作者id
         article.setTextBy(getPayload(token, "id"));
         // 原始文件
