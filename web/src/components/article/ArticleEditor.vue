@@ -2,51 +2,61 @@
   <el-row>
     <el-col :span="18" :offset="3">
       <el-input
-          class="editor-header"
-          v-model="articleDetail.title"
-          maxlength="50"
-          show-word-limit
-          :autosize="{ minRows: 1, maxRows: 3}"
-          type="textarea"
-          placeholder="请输入标题（建议30字以内）"
+        class="editor-header"
+        v-model="articleDetail.title"
+        maxlength="50"
+        show-word-limit
+        :autosize="{ minRows: 1, maxRows: 3}"
+        type="textarea"
+        placeholder="请输入标题（建议30字以内）"
       />
-      <el-upload
+      <el-card class="upload-file-card">
+
+          <div class="upload-head"><span>上传文章</span></div>
+<!--        </el-tooltip>-->
+        <el-tooltip
+          class="box-item"
+          effect="light"
+          content="限制1个.docx或.txt文件，上传新内容将覆盖旧内容"
+          placement="bottom"
+        >
+          <div>
+        <el-upload
           ref="upload"
-          class="upload-demo"
-          accept=".txt;;*.docx;;*.pdf"
+          class="upload-doc"
+          drag
+          accept=".txt;;*.docx"
           action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
           :limit="1"
           :on-change="changeInputBox"
-          :auto-upload="false"
+          :auto-upload=false
+          :show-file-list=true
+          list-type="text"
+          v-model:file-list="fileList"
+        :on-remove="handleFileRemove">
+          <el-icon class="el-icon--upload">
+            <upload-filled/>
+          </el-icon>
+          <div class="el-upload__text">
+            将文件拖拽至此区域或<em>点击上传</em>
+          </div>
+          <!--        <template #trigger>-->
+          <!--            <el-button class="upload-file" type="primary">上传文章</el-button>-->
+          <!--        </template>-->
+        </el-upload>
+          </div>
+        </el-tooltip>
+      </el-card>
+      <!--                <div id="docContainer" style="width: fit-content;height: fit-content;"></div>-->
 
-      >
-        <template #trigger>
-          <el-tooltip
-              class="box-item"
-              effect="light"
-              content="限制1个.docx或.txt文件，上传新内容将覆盖旧内容"
-              placement="top"
-          >
-            <el-button class="upload-file" type="primary">上传文章</el-button>
-          </el-tooltip>
-        </template>
-        <el-button class="preview_file" v-show="Object.keys(articleDetail.raw).length != 0"
-                   @click="handleDocumentPreView(articleDetail.raw)">预览文章
-        </el-button>
-
-        <el-dialog id="docContainer" v-model="docDialogVisible" style="width: fit-content;height: fit-content;">
-        </el-dialog>
-      </el-upload>
-<!--                <div id="docContainer" style="width: fit-content;height: fit-content;"></div>-->
-
-      <el-input
-          v-model="articleDetail.text"
-          class="editor-text"
-          :autosize="{ minRows: 10, maxRows: 20}"
-          type="textarea"
-          placeholder="请输入正文"
-      />
-      <el-dialog v-model="dialogVisible">
+      <!--      <el-input-->
+      <!--          v-model="articleDetail.text"-->
+      <!--          class="editor-text"-->
+      <!--          :autosize="{ minRows: 10, maxRows: 20}"-->
+      <!--          type="textarea"-->
+      <!--          placeholder="请输入正文"-->
+      <!--      />-->
+      <el-dialog v-model="dialogManager.dialogVisible">
         <img :src="dialogImageUrl" alt="Preview Image">
       </el-dialog>
       <el-card class="more-option-card">
@@ -54,26 +64,27 @@
           <el-collapse-item class="more-option" title="更多设置" name="1">
             <div class="more-option-head"><span>文章描述</span></div>
             <el-input
-                class="editor-description"
-                v-model="articleDetail.description"
-                maxlength="150"
-                show-word-limit
-                :autosize="{ minRows: 4, maxRows: 10}"
-                type="textarea"
-                placeholder="请输入描述（建议100字以内）"
+              class="editor-description"
+              v-model="articleDetail.description"
+              maxlength="150"
+              show-word-limit
+              :autosize="{ minRows: 4, maxRows: 10}"
+              type="textarea"
+              placeholder="请输入描述（建议100字以内）"
             />
             <div class="more-option-head"><span>参考插图</span></div>
             <el-upload
-                v-model:file-list="imageFileList"
-                action="''"
-                list-type="picture-card"
-                :on-preview="handlePictureCardPreview"
-                :auto-upload="false"
-                :on-remove="imgRemove"
-                :on-success="imgSuccess"
-                :on-error="imgError"
-                accept="image/jpg,image/jpeg,image/png"
-                multiple
+              class="upload-file-entry"
+              v-model:file-list="imageFileList"
+              action="''"
+              list-type="picture-card"
+              :on-preview="handlePictureCardPreview"
+              :auto-upload="false"
+              :on-remove="imgRemove"
+              :on-success="imgSuccess"
+              :on-error="imgError"
+              accept="image/jpg,image/jpeg,image/png"
+              multiple
             >
               <el-icon>
                 <Plus/>
@@ -87,19 +98,30 @@
           </el-collapse-item>
         </el-collapse>
       </el-card>
-
-
-      <el-button class="3" :type="saveBtnType" @click="save" :disabled="saveBtnText === '已保存'">{{
-          saveBtnText
-        }}
-      </el-button>
-      <el-button class="3" type="success" @click="release">发布</el-button>
-      <el-button type="danger" @click="delArticleDialogVisible=true">删除文章</el-button>
+      <div class="button-container">
+        <el-button class="preview_file" :type="previewType" :disabled="Object.keys(articleDetail.raw).length == 0"
+                   @click="handleDocumentPreView(articleDetail.raw)">预览文章
+        </el-button>
+        <el-dialog id="docxContainer" v-model="dialogManager.docxDialogVisible"
+                   style="width: fit-content;height: fit-content;">
+        </el-dialog>
+        <el-dialog id="txtContainer" v-model="dialogManager.txtContainerVisible" close-on-press-escape
+                   :show-close="false">
+          <!--          <div class="txtPreview" style="white-space: pre-wrap;">{{ dialogManager.txtContainerText }}</div>-->
+          <el-text class="txtPreview" size="large">{{ dialogManager.txtContainerText }}</el-text>
+        </el-dialog>
+        <el-button class="3" :type="saveBtnType" @click="save" :disabled="saveBtnText === '已保存'">{{
+            saveBtnText
+          }}
+        </el-button>
+        <el-button class="3" type="success" @click="release">发布</el-button>
+      </div>
+      <!--      <el-button type="danger" @click="delArticleDialogVisible=true">删除文章</el-button>-->
       <el-dialog
-          draggable
-          v-model="delArticleDialogVisible"
-          title="删除文章"
-          width="30%"
+        draggable
+        v-model="delArticleDialogVisible"
+        title="删除文章"
+        width="30%"
       >
         <span>确定删除文章？</span>
         <template #footer>
@@ -126,11 +148,12 @@ import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 import router from '@/router'
 import mammoth from 'mammoth'
-import {Plus} from '@element-plus/icons-vue'
+import {Plus, UploadFilled} from '@element-plus/icons-vue'
 import {base64ToFile, generateImageName} from '@/scripts/ImageUtil'
 import '@vue-office/docx/lib/index.css'
-import { fileToBlob } from '@/scripts/DocumentUtil'
+import {fileToBlob} from '@/scripts/DocumentUtil'
 import {renderAsync} from 'docx-preview'
+import {errorCallback} from "@/scripts/ErrorCallBack";
 
 const upload = ref<UploadInstance>()
 const store = useStore()
@@ -139,9 +162,17 @@ const SearchFilterRef = ref()
 const saveBtnType = ref('success')
 const saveBtnText = ref('保存')
 const delArticleDialogVisible = ref(false)
-const docDialogVisible = ref(false)
 const docBlob = ref<Blob>()
-
+let imageFileList = ref<UploadFile[]>([])
+const dialogImageUrl = ref('')
+const fileList = reactive<Array<Object>>([])
+const previewType = ref("info")
+const dialogManager = reactive({
+  txtContainerVisible: false,
+  docxDialogVisible: false,
+  dialogVisible: false,
+  txtContainerText: ''
+})
 const articleDetail: AttributeAddableObject = reactive({
   id: null,
   text: '',
@@ -153,9 +184,7 @@ const articleDetail: AttributeAddableObject = reactive({
   attr: '{}',
   raw: {}
 })
-let imageFileList = ref<UploadFile[]>([])
-const dialogImageUrl = ref('')
-const dialogVisible = ref(false)
+
 watch(articleDetail, () => {
   saveBtnType.value = 'success'
   saveBtnText.value = '保存'
@@ -164,22 +193,6 @@ const searchFilterChange = () => {
   articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
 }
 
-function errorCallback(response: any) {
-  console.log(response)
-  if (response.status === 200) {
-    ElMessage({
-      showClose: true,
-      message: response.data.statusMsg,
-      type: 'error'
-    })
-  } else {
-    ElMessage({
-      showClose: true,
-      message: 'Network Error!',
-      type: 'error'
-    })
-  }
-}
 
 // 有article_id时初始化ArticleDetail
 (async () => {
@@ -241,38 +254,38 @@ const analyzeDOCX = (file: any) => {
   fileReader.onload = async (event) => {
     const arrayBuffer = event.target?.result as ArrayBuffer
     mammoth.convertToHtml({arrayBuffer: arrayBuffer})
-        .then(async function (result) {
-          let html = result.value; // The generated HTML
-          let match = html.match(/<img(.|\n)*?\/>/mg)
+      .then(async function (result) {
+        let html = result.value; // The generated HTML
+        let match = html.match(/<img(.|\n)*?\/>/mg)
 
-          //提取src="后的base64图片
-          const base64List = (match?.map((item: any) => {
-            return item.toString().match(/src=".*"/mg)[0].toString().slice(5, -1)
-          })) as Array<string>
+        //提取src="后的base64图片
+        const base64List = (match?.map((item: any) => {
+          return item.toString().match(/src=".*"/mg)[0].toString().slice(5, -1)
+        })) as Array<string>
 
-          imageFileList.value = base64List.map((item: any, index: any) => {
-            let file: File = base64ToFile(item, index)
-            const newImageName = generateImageName(file.name)
+        imageFileList.value = base64List.map((item: any, index: any) => {
+          let file: File = base64ToFile(item, index)
+          const newImageName = generateImageName(file.name)
 
-            let upLoadFile: UploadFile = {
-              name: newImageName,
-              uid: file.uid,
-              status: 'ready',
-              size: file.size,
-              url: URL.createObjectURL(file),
-              percentage: 0,
-              raw: file
-            }
-            return upLoadFile
-          })
-
-          let content = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
-          articleDetail.text = content.replace(/(\n\n)/gm, '\n')
-          let messages = result.messages; // Any messages, such as warnings during conversion
+          let upLoadFile: UploadFile = {
+            name: newImageName,
+            uid: file.uid,
+            status: 'ready',
+            size: file.size,
+            url: URL.createObjectURL(file),
+            percentage: 0,
+            raw: file
+          }
+          return upLoadFile
         })
-        .catch(function (error) {
-          console.error(error);
-        });
+
+        let content = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
+        articleDetail.text = content.replace(/(\n\n)/gm, '\n')
+        let messages = result.messages; // Any messages, such as warnings during conversion
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
   }
   fileReader.readAsArrayBuffer(file.raw);
 }
@@ -286,7 +299,15 @@ const changeInputBox = (file: any) => {
   } else if (subFileNames[subFileNames.length - 1] == 'docx') {
     analyzeDOCX(file)
   }
-
+  fileList.push({
+    name: file.name,
+    url: URL.createObjectURL(file.raw)
+  })
+  if(Object.keys(articleDetail.raw).length == 0){
+    previewType.value = 'info'
+  }else {
+    previewType.value = 'primary'
+  }
   saveBtnType.value = 'success'
   saveBtnText.value = '保存'
 }
@@ -315,18 +336,18 @@ const release = async () => {
   param.append("imageURL", '{}')
 
   await SYNC_POST('/contributor/save', param, async (response) => {
-        if (response.status === 200 && response.data.statusMsg === 'Success.') {
-          console.log('Release successfully!')
-          ElMessage({
-            showClose: true,
-            message: '已成功发布文章!',
-            type: 'success'
-          })
-          location.href = '/#/user/' + store.getters.getUserInfo.id
-        } else {
-          errorCallback(response)
-        }
+      if (response.status === 200 && response.data.statusMsg === 'Success.') {
+        console.log('Release successfully!')
+        ElMessage({
+          showClose: true,
+          message: '已成功发布文章!',
+          type: 'success'
+        })
+        location.href = '/#/user/' + store.getters.getUserInfo.id
+      } else {
+        errorCallback(response)
       }
+    }
   )
 }
 
@@ -364,47 +385,67 @@ function imgRemove(file: any, fileList: any) {
 
 const handlePictureCardPreview = (file: any) => {
   dialogImageUrl.value = file.url
-  dialogVisible.value = true
+  dialogManager.dialogVisible = true
 }
-
-const handleDocumentPreView = async (file: any) => {
+const handleTXTPreview = (file: any) => {
+  const fileReader = new FileReader()
+  fileReader.onload = async (e) => {
+    dialogManager.txtContainerText = e.target?.result as string
+    dialogManager.txtContainerVisible = true
+  }
+  fileReader.readAsText(file)
+}
+const handleDOCXPreview = (file: any) => {
   fileToBlob(file).then((result) => {
     docBlob.value = result as Blob
 
-    let docContainer = document.getElementById("docContainer");
+    let docContainer = document.getElementById("docxContainer");
     renderAsync(
-        result,
-        docContainer, // HTMLElement 渲染文档内容的元素,
-        null, // HTMLElement, 用于呈现文档样式、数字、字体的元素。如果为 null，则将使用 reportContainer。
+      result,
+      docContainer, // HTMLElement 渲染文档内容的元素,
+      null, // HTMLElement, 用于呈现文档样式、数字、字体的元素。如果为 null，则将使用 reportContainer。
     ).then(res => {
-      // console.log("res---->", res)
+      // dialogManager.docxDialogVisible = true 不能放在这
     })
   })
+  dialogManager.docxDialogVisible = true
+}
 
-  docDialogVisible.value = true
+const handleDocumentPreView = async (file: any) => {
+  //文件为空对象则返回
+  if (Object.keys(articleDetail.raw).length == 0) {
+    return
+  }
+  let subFileNames = file.name.split('.')
+  // 获取文件类型
+  if (subFileNames[subFileNames.length - 1] == 'txt') {
+    handleTXTPreview(file)
+  } else if (subFileNames[subFileNames.length - 1] == 'docx') {
+    handleDOCXPreview(file)
+  }
 }
-const renderedHandler = async () => {
-  console.log("渲染完成")
+
+const handleFileRemove = (uploadFile: UploadFile) => {
+  fileList.pop()
+  articleDetail.raw = {}
+  previewType.value = "info"
 }
-const errorHandler = async () => {
-  console.log("渲染失败")
-}
+
 </script>
 
 <style scoped>
 .upload-demo {
-  display: flex;
-  margin: 0 20px 10px 0;
+  /*display: flex;*/
+  margin: 0 0 10px 0;
 }
 
 .preview_file {
-  display: flex;
   margin: 0 10px 0 0;
 }
 
 .editor-header {
   font-size: 25px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   box-shadow: var(--el-box-shadow-light);
   border-radius: 10px;
 }
@@ -457,7 +498,9 @@ const errorHandler = async () => {
 .more-option-card:deep(.el-card__body) {
   padding: 5px 20px;
 }
-
+.more-option-card {
+  margin-bottom: 15px;
+}
 :deep(.docx-wrapper) {
   background-color: transparent; /* 去除黑边 */
   padding: 0;
@@ -474,8 +517,54 @@ const errorHandler = async () => {
   padding: 10px 0;
 }
 
-#docContainer {
+#docxContainer {
   background-color: transparent;
   box-shadow: none;
+}
+
+#txtContainer {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.txtPreview {
+  display: flex;
+  white-space: pre-wrap;
+  margin: 20px 20px;
+}
+
+.upload-doc {
+  box-shadow: var(--el-box-shadow-light);
+  border-radius: 10px;
+  /*/height: 200px;*/
+}
+
+.button-container {
+
+}
+
+.upload-tip {
+
+}
+
+.upload-head {
+  padding-left: 5px;
+  font-size: 18px;
+  text-align: start;
+  padding-bottom: 10px;
+}
+
+.upload-file-card:deep(.el-card__body) {
+  box-shadow: var(--el-box-shadow-light);
+  border-radius: 10px;
+}
+
+.upload-file-card {
+  margin-bottom: 15px;
+}
+
+.upload-file-entry {
+  margin-top: 0;
 }
 </style>
