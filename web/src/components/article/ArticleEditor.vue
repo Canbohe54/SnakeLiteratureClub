@@ -12,40 +12,44 @@
       />
       <el-card class="upload-file-card">
 
-          <div class="upload-head"><span>上传文章</span></div>
-<!--        </el-tooltip>-->
+        <div class="upload-head"><span>上传文章</span></div>
+        <!--        </el-tooltip>-->
         <el-tooltip
           class="box-item"
           effect="light"
           content="限制1个.docx或.txt文件，上传新内容将覆盖旧内容"
-          placement="bottom"
+          placement="top"
         >
           <div>
-        <el-upload
-          ref="upload"
-          class="upload-doc"
-          drag
-          accept=".txt;;*.docx"
-          action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-          :limit="1"
-          :on-change="changeInputBox"
-          :auto-upload=false
-          :show-file-list=true
-          list-type="text"
-          v-model:file-list="fileList"
-        :on-remove="handleFileRemove">
-          <el-icon class="el-icon--upload">
-            <upload-filled/>
-          </el-icon>
-          <div class="el-upload__text">
-            将文件拖拽至此区域或<em>点击上传</em>
-          </div>
-          <!--        <template #trigger>-->
-          <!--            <el-button class="upload-file" type="primary">上传文章</el-button>-->
-          <!--        </template>-->
-        </el-upload>
+            <el-upload
+              ref="upload"
+              class="upload-doc"
+              drag
+              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+              :limit="1"
+              :on-change="changeInputBox"
+              :auto-upload=false
+              :show-file-list="false"
+              list-type="text"
+            >
+              <el-icon class="el-icon--upload">
+                <upload-filled/>
+              </el-icon>
+              <div class="el-upload__text">
+                将文件拖拽至此区域或<em>点击上传</em>
+              </div>
+              <!--        <template #trigger>-->
+              <!--            <el-button class="upload-file" type="primary">上传文章</el-button>-->
+              <!--        </template>-->
+            </el-upload>
           </div>
         </el-tooltip>
+        <div class="upload-file-name-list">
+          <el-tag class="upload-file-name" v-if="Object.keys(articleDetail.raw).length != 0" closable effect="light" @close="handleFileRemove">
+            {{ articleDetail.raw.name }}
+          </el-tag>
+        </div>
+
       </el-card>
       <!--                <div id="docContainer" style="width: fit-content;height: fit-content;"></div>-->
 
@@ -153,7 +157,8 @@ import {base64ToFile, generateImageName} from '@/scripts/ImageUtil'
 import '@vue-office/docx/lib/index.css'
 import {fileToBlob} from '@/scripts/DocumentUtil'
 import {renderAsync} from 'docx-preview'
-import {errorCallback} from "@/scripts/ErrorCallBack";
+import {errorCallback, errorMessage} from "@/scripts/ErrorCallBack";
+import {acceptFileType} from "@/scripts/common/AcceptFileType";
 
 const upload = ref<UploadInstance>()
 const store = useStore()
@@ -291,21 +296,27 @@ const analyzeDOCX = (file: any) => {
 }
 // 上传文件后显示到inputBox
 const changeInputBox = (file: any) => {
+  let subFileNames = file.name.split('.')
+  if(!acceptFileType.has(subFileNames[subFileNames.length - 1])){
+    errorMessage('仅能支持.docx和.txt结尾的文件喔')
+    return
+  }
   upload.value!.clearFiles()
   articleDetail.raw = file.raw
-  let subFileNames = file.name.split('.')
-  if (subFileNames[subFileNames.length - 1] == 'txt') {
-    analyzeTXT(file)
-  } else if (subFileNames[subFileNames.length - 1] == 'docx') {
-    analyzeDOCX(file)
-  }
-  fileList.push({
-    name: file.name,
-    url: URL.createObjectURL(file.raw)
-  })
-  if(Object.keys(articleDetail.raw).length == 0){
+
+  // if (subFileNames[subFileNames.length - 1] == 'txt') {
+  //   analyzeTXT(file)
+  // } else if (subFileNames[subFileNames.length - 1] == 'docx') {
+  //   analyzeDOCX(file)
+  // }
+
+  // fileList.push({
+  //   name: file.name,
+  //   url: URL.createObjectURL(file.raw)
+  // })
+  if (Object.keys(articleDetail.raw).length == 0) {
     previewType.value = 'info'
-  }else {
+  } else {
     previewType.value = 'primary'
   }
   saveBtnType.value = 'success'
@@ -425,8 +436,7 @@ const handleDocumentPreView = async (file: any) => {
   }
 }
 
-const handleFileRemove = (uploadFile: UploadFile) => {
-  fileList.pop()
+const handleFileRemove = () => {
   articleDetail.raw = {}
   previewType.value = "info"
 }
@@ -498,9 +508,11 @@ const handleFileRemove = (uploadFile: UploadFile) => {
 .more-option-card:deep(.el-card__body) {
   padding: 5px 20px;
 }
+
 .more-option-card {
   margin-bottom: 15px;
 }
+
 :deep(.docx-wrapper) {
   background-color: transparent; /* 去除黑边 */
   padding: 0;
@@ -566,5 +578,14 @@ const handleFileRemove = (uploadFile: UploadFile) => {
 
 .upload-file-entry {
   margin-top: 0;
+}
+
+.upload-file-name-list {
+  display: flex;
+
+}
+
+.upload-file-name {
+  margin-top: 10px;
 }
 </style>

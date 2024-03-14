@@ -16,3 +16,10 @@ export function errorCallback(response: any) {
     })
   }
 }
+export function errorMessage(msg: string) {
+  ElMessage({
+    showClose: true,
+    message: msg,
+    type: 'error'
+  })
+}
