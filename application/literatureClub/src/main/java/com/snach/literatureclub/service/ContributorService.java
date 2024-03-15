@@ -1,0 +1,72 @@
+package com.snach.literatureclub.service;
+
+import com.snach.literatureclub.bean.Article;
+import com.snach.literatureclub.common.ArticleStatus;
+import com.snach.literatureclub.common.exception.InvalidTokenException;
+import com.snach.literatureclub.common.exception.NullFileException;
+import com.snach.literatureclub.dao.ArticleDao;
+import com.snach.literatureclub.utils.IdTools;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Date;
+
+import static com.snach.literatureclub.utils.IdTools.generateId;
+import static com.snach.literatureclub.utils.TokenTools.getPayload;
+import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
+
+public interface ContributorService {
+    /**
+     * 投稿保存或发布
+     * 返回稿件基本信息（标题、描述、时间和id）
+     * @param token 用于验证是否过期以及获取作者id
+     * @param article 投稿基本信息，必须有text_by
+     * @param mulArticle 用户上传的文件
+     * @return
+     */
+    Article contribute(String token, Article article, MultipartFile mulArticle);
+
+}
+
+@Service
+@Mapper
+class ContributorServiceImpl implements ContributorService {
+    @Autowired
+    private ArticleDao articleDao;
+    @Override
+    public Article contribute(String token, Article article, MultipartFile mulArticle) {
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            throw new InvalidTokenException();
+        }
+        if(article.getStatus() != ArticleStatus.ROUGH && mulArticle == null){
+            throw new NullFileException("发布操作文件不能为空。");
+        }
+        // 获取作者id
+        article.setTextBy(getPayload(token, "id"));
+        // 原始文件
+        try {
+            article.setRaw(mulArticle.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 稿件id
+        if (article.getId() == null || article.getId().equals("null")) {
+            //没有稿件id，时间戳生成id
+            article.setId(generateId(IdTools.Type.ARTICLE));
+        } else {
+            //若已有稿件id，则进行更新
+//            return updateArticle(token, imageList, article);
+        }
+        //修改时间
+        Date date = new Date(System.currentTimeMillis());
+        article.setTime(date);
+
+        articleDao.insertArticle(article);
+        return article;
+    }
+}

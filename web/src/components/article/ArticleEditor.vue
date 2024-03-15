@@ -220,7 +220,7 @@ const searchFilterChange = () => {
 // 保存草稿
 const save = async () => {
   let param = new FormData()
-  param.append("raw_file", articleDetail.raw, generateImageName(articleDetail.raw.name))
+  param.append("raw_file", articleDetail.raw)
   param.append("token", 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjExNDUxNCJ9.AzE55n2_JDJolF-UQ94Qgun_szDCqsu_KYDDD6Tcebw')
   // param.append("token", store.getters.getToken)
   param.append("id", articleDetail.id)
@@ -246,6 +246,37 @@ const save = async () => {
       errorCallback(response)
     }
   })
+}
+// 发布文章
+const release = async () => {
+  let param = new FormData();
+
+  param.append("raw_file", articleDetail.raw)
+  param.append("token", 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjExNDUxNCJ9.AzE55n2_JDJolF-UQ94Qgun_szDCqsu_KYDDD6Tcebw')
+  // param.append("token", store.getters.getToken)
+  param.append("id", articleDetail.id)
+  param.append("text", articleDetail.text)
+  param.append("textBy", '')
+  param.append("title", articleDetail.title)
+  param.append("description", articleDetail.description)
+  param.append("status", 'PUBLISHED')
+  param.append("attr", `{"tags":${articleDetail.attr}}`)
+  param.append("imageURL", '{}')
+
+  await SYNC_POST('/contributor/contribute', param, async (response) => {
+      if (response.status === 200 && response.data.message === 'Success.') {
+        console.log('Release successfully!')
+        ElMessage({
+          showClose: true,
+          message: '已成功发布文章!',
+          type: 'success'
+        })
+        location.href = '/#/user/' + store.getters.getUserInfo.id
+      } else {
+        errorCallback(response)
+      }
+    }
+  )
 }
 const analyzeTXT = (file: any) => {
   const fileReader = new FileReader()
@@ -310,10 +341,6 @@ const changeInputBox = (file: any) => {
   //   analyzeDOCX(file)
   // }
 
-  // fileList.push({
-  //   name: file.name,
-  //   url: URL.createObjectURL(file.raw)
-  // })
   if (Object.keys(articleDetail.raw).length == 0) {
     previewType.value = 'info'
   } else {
@@ -321,45 +348,6 @@ const changeInputBox = (file: any) => {
   }
   saveBtnType.value = 'success'
   saveBtnText.value = '保存'
-}
-
-// 发布文章
-const release = async () => {
-  let param = new FormData();
-
-  if (imageFileList.value.length > 0) {
-    imageFileList.value.forEach((val: any, index: any) => {
-      const newImageName = generateImageName(val.raw.name)
-      console.log(val.raw)
-      param.append("image_list", val.raw as Blob, newImageName)
-    })
-  } else {
-    param.append("image_list", "")
-  }
-  param.append("token", store.getters.getToken)
-  param.append("id", articleDetail.id)
-  param.append("text", articleDetail.text)
-  param.append("textBy", '')
-  param.append("title", articleDetail.title)
-  param.append("description", articleDetail.description)
-  param.append("status", '3')
-  param.append("attr", `{"tags":${articleDetail.attr}}`)
-  param.append("imageURL", '{}')
-
-  await SYNC_POST('/contributor/save', param, async (response) => {
-      if (response.status === 200 && response.data.statusMsg === 'Success.') {
-        console.log('Release successfully!')
-        ElMessage({
-          showClose: true,
-          message: '已成功发布文章!',
-          type: 'success'
-        })
-        location.href = '/#/user/' + store.getters.getUserInfo.id
-      } else {
-        errorCallback(response)
-      }
-    }
-  )
 }
 
 const handleDelArticleClicked = async () => {

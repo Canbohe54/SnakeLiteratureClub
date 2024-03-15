@@ -3,6 +3,7 @@ package com.snach.literatureclub.controller;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
+import com.snach.literatureclub.service.ContributorService;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +18,11 @@ import java.util.Map;
 public class ContributorController {
     @Autowired
     private final ArticleService articleService;
-
-    public ContributorController(ArticleService articleService) {
+    @Autowired
+    private final ContributorService contributorService;
+    public ContributorController(ArticleService articleService, ContributorService contributorService) {
         this.articleService = articleService;
+        this.contributorService = contributorService;
     }
 
     /**
@@ -33,14 +36,14 @@ public class ContributorController {
      * @return 稿件基本信息（标题、描述、时间和id）,保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
      * @see Article
      */
-    @RequestMapping(value = "save", method = RequestMethod.POST)
-    @ResponseNotIntercept
-    public Map<String, Object> save(@RequestParam("token") String token, @RequestParam("image_list") @Nullable List<MultipartFile> imageList, Article article) {
-        return articleService.addArticle(token, imageList, article);
-    }
+//    @RequestMapping(value = "save", method = RequestMethod.POST)
+//    @ResponseNotIntercept
+//    public Map<String, Object> save(@RequestParam("token") String token, @RequestParam("image_list") @Nullable List<MultipartFile> imageList, Article article) {
+//        return articleService.addArticle(token, imageList, article);
+//    }
     @RequestMapping(value = "contribute",method = RequestMethod.POST)
-    public Map<String, Object> contribute(String token, Article article, @RequestParam("raw_file") MultipartFile raw){
-        return articleService.contribute(token, article, raw).getBasicInfo();
+    public Map<String, Object> contribute(String token, Article article, @RequestParam("raw_file") @Nullable MultipartFile raw){
+        return contributorService.contribute(token, article, raw).getBasicInfo();
     }
 
     /**

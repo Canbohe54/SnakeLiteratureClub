@@ -30,11 +30,11 @@ public class CommonExceptionHandler {
     /**
      * 捕获 自定 异常
      */
-//    @ExceptionHandler({BusinessException.class})
-//    public Result<?> handleBusinessException(BusinessException ex) {
-//        log.error(ex.getMessage(), ex);
-//        return Result.failed(ex.getCode(),ex.getMessage());
-//    }
+    @ExceptionHandler({NullFileException.class})
+    public Result<?> handleNullFileException(NullFileException ex) {
+        log.error(ex.getMessage(), ex);
+        return Result.failed(ex.getMessage());
+    }
     @ExceptionHandler({InsufficientPermissionException.class})
     public Result<?> handleInsufficientPermissionException(InsufficientPermissionException ex) {
         log.error(ex.getMessage(),ex);
