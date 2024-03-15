@@ -4,7 +4,7 @@
             <header>注册</header>
             <el-form :model="regForm" label-width="auto" ref="regFormRef" :rules="regRules" class="regForm">
                 <el-form-item label="头像">
-                    <el-avatar></el-avatar>
+                    <el-avatar :size="64" @click="showAvatarSelection" class="regAvatar"><img :src="regForm.avatar"/></el-avatar>
                 </el-form-item>
                 <el-form-item label="姓名" prop="username">
                     <el-input v-model="regForm.username" placeholder="请输入姓名"></el-input>
@@ -49,6 +49,7 @@
                 </el-col>
             </el-row>
         </section>
+        <AvatarSelection :visible="avatarSelectionVisible" @close="handleAvatarSelectionClose" @selection="handleAvatarSelection" />
     </div>
 </template>
 
@@ -57,6 +58,7 @@ import { ElMessage, FormInstance, FormRules } from 'element-plus';
 import { ref, reactive } from 'vue';
 import { POST } from '@/scripts/Axios';
 import { useRouter } from 'vue-router';
+import AvatarSelection from './AvatarSelection.vue';
 
 const router = useRouter()
 
@@ -75,7 +77,7 @@ interface RegForm {
 const regFormRef = ref<FormInstance>()
 const regForm = reactive<RegForm>({
     username: '',
-    avatar: '',
+    avatar: 'avatars/group1/1.png',
     identity: 'CONTRIBUTOR',
     organization: '',
     attribute: '',
@@ -86,6 +88,21 @@ const regForm = reactive<RegForm>({
 });
 
 const pageAttr = ref('年级');
+
+const avatarSelectionVisible = ref(false)
+
+function showAvatarSelection() {
+    avatarSelectionVisible.value = true
+}
+
+const handleAvatarSelectionClose = () => {
+    avatarSelectionVisible.value = false
+}
+
+const handleAvatarSelection = (selection: any) => {
+    console.log(selection)
+    regForm.avatar = 'avatars/group1/'+selection.value+'.png'
+}
 
 function handleIndentityChange(val: string) {
     switch (val) {
@@ -231,6 +248,14 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
 .regContainer .regForm {
     margin-top: 30px;
     margin-right: 10px;
+}
+
+.regAvatar {
+    cursor: pointer;
+}
+
+.regAvatar:hover {
+    border: 2px solid #409eff;
 }
 
 .switchContainer {

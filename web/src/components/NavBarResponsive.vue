@@ -122,7 +122,7 @@ const menu_option = reactive([
     }
 ])
 
-function setIdentityDepedOption(identity) {
+function setIdentityDepedOption(identity: string) {
     switch (identity) {
         case 'CONTRIBUTER':
             menu_option.push(identityDepedOption[0]);
