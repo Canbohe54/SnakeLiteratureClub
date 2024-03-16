@@ -1,54 +1,72 @@
 <template>
   <el-row>
     <el-col :span="18" :offset="3">
-  <div>
-    <el-container>
-      <el-main>
-        <el-card>
-          <el-row class="article-box-card"><el-text class="article-detail-title">{{articleDetail.title}}</el-text></el-row>
-          <el-row class="article-box-card"><el-text class="article-detail-author">（<el-button link :onclick="handleAuthorClicked">{{articleDetail.text_by}}</el-button>） {{articleDetail.time}}</el-text></el-row>
-          <div style="display: flex; justify-content:center;align-items: flex-end;">
-            <el-button type="primary" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id" @click="handleUpdateArticleClicked">修改文章</el-button>
-            <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id" @click="delArticleDialogVisible=true">删除文章</el-button>
-            <el-button type="warning" link :onclick="handleFavorite">{{ isFavorited?'取消收藏':'收藏' }}</el-button>
-            <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小</el-button>
-            <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中</el-button>
-            <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大</el-button>
-          </div>
+      <div>
+        <el-container>
+          <el-main>
+            <el-card>
+              <el-row class="article-box-card">
+                <el-text class="article-detail-title">{{ articleDetail.title }}</el-text>
+              </el-row>
+              <el-row class="article-box-card">
+                <el-text class="article-detail-author">（
+                  <el-button link :onclick="handleAuthorClicked">{{ articleDetail.text_by }}</el-button>
+                  ） {{ articleDetail.time }}
+                </el-text>
+              </el-row>
+              <div style="display: flex; justify-content:center;align-items: flex-end;">
+                <el-button type="primary" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
+                           @click="handleUpdateArticleClicked">修改文章
+                </el-button>
+                <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
+                           @click="delArticleDialogVisible=true">删除文章
+                </el-button>
+                <el-button type="warning" link :onclick="handleFavorite">{{
+                    isFavorited ? '取消收藏' : '收藏'
+                  }}
+                </el-button>
+                <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小
+                </el-button>
+                <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中
+                </el-button>
+                <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大
+                </el-button>
+              </div>
 
-          <el-divider />
-          <el-text class="article-text" :size="displaySize" >{{articleDetail.text}}</el-text>
-        </el-card>
-      </el-main>
-      <el-card class="gradePanel">
-        <GradeDisplay class="graDis"/>
-      <div class="gradeEdit" v-if="store.getters.getUserInfo.identity=='专家'">
-        <GradeEditor class="graedit"/>
+              <el-divider/>
+              <ArticlePreview :articleRaw="articleDetail.raw"/>
+              <el-text class="article-text" :size="displaySize">{{ articleDetail.text }}</el-text>
+            </el-card>
+          </el-main>
+          <el-card class="gradePanel">
+            <GradeDisplay class="graDis"/>
+            <div class="gradeEdit" v-if="store.getters.getUserInfo.identity=='专家'">
+              <GradeEditor class="graedit"/>
+            </div>
+          </el-card>
+          <el-footer>
+            <suspense>
+              <CommentDisplay :articleId="route.query.id"/>
+            </suspense>
+          </el-footer>
+        </el-container>
       </div>
-      </el-card>
-      <el-footer>
-        <suspense>
-          <CommentDisplay :articleId="route.query.id" />
-        </suspense>
-      </el-footer>
-    </el-container>
-  </div>
-  <el-dialog
-    draggable
-    v-model="delArticleDialogVisible"
-    title="删除文章"
-    width="30%"
-  >
-    <span>确定删除文章？</span>
-    <template #footer>
+      <el-dialog
+        draggable
+        v-model="delArticleDialogVisible"
+        title="删除文章"
+        width="30%"
+      >
+        <span>确定删除文章？</span>
+        <template #footer>
       <span class="dialog-footer">
         <el-button @click="delArticleDialogVisible = false">取消</el-button>
         <el-button type="danger" @click="handleDelArticleClicked">
           删除
         </el-button>
       </span>
-    </template>
-  </el-dialog>
+        </template>
+      </el-dialog>
     </el-col>
   </el-row>
 </template>
@@ -64,13 +82,16 @@ import GradeEditor from "@/components/grade/GradeEditor.vue";
 import GradeDisplay from "@/components/grade/GradeDisplay.vue";
 import {useStore} from "vuex";
 import CommentDisplay from "@/components/article/CommentDisplay.vue";
-import { toUserPage } from "@/scripts/userInfo";
+import {toUserPage} from "@/scripts/userInfo";
+import {errorCallback} from "@/scripts/ErrorCallBack";
+import ArticlePreview from '@/components/article/ArticlePreview.vue'
+import axios from "axios";
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
 
-const articleDetail: AttributeAddableObject = reactive({
+const articleDetail = reactive<AttributeAddableObject>({
   id: null,
   text: '',
   time: '',
@@ -79,7 +100,9 @@ const articleDetail: AttributeAddableObject = reactive({
   title: '',
   description: '',
   status: '',
-  attr: ''
+  attr: '',
+  raw: {},
+  file_type: ''
 })
 
 const displaySize = ref("default")
@@ -87,33 +110,57 @@ const displaySize = ref("default")
 const isFavorited = ref(false)
 
 const delArticleDialogVisible = ref(false)
-function errorCallback(response: any) {
-  console.log(response)
-  if (response.status === 200) {
-    ElMessage({
-      showClose: true,
-      message: response.data.statusMsg,
-      type: 'error'
-    })
-  } else {
-    ElMessage({
-      showClose: true,
-      message: 'Network Error!',
-      type: 'error'
-    })
-  }
+
+async function getTextBy() {
+  articleDetail.text_by_id = articleDetail.text_by
+  await SYNC_GET('/usr/getUserBasicInfo', {
+    user_id: articleDetail.text_by
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      articleDetail.text_by = response.data.user_info.name
+    } else {
+      console.log(response)
+    }
+  })
 }
+
 // 有article_id时初始化ArticleDetail
 (async () => {
+  let articleRaw: ArrayBuffer
   if (route.query.id === '' || route.query.id === undefined) return
   await SYNC_GET('/article/articleDetail', {
     article_id: route.query.id
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      // console.log(response)
       for (const dataKey in response.data.article) {
+        if (dataKey == 'raw') {
+
+          // articleRaw = response.data.article[dataKey]
+          // new Blob([],{type:"text/plain"})
+          // const fileReader = new FileReader()
+          // fileReader.onload = async (e) => {
+          //   articleDetail[dataKey] = e.target?.result
+          // }
+          // fileReader.readAsArrayBuffer(articleBlob)
+          // console.log("ab:" + new window.File([articleBlob],"1.txt"))
+          // articleDetail[dataKey] = new window.File([articleBlob],"1.txt")
+          continue
+        }
         articleDetail[dataKey] = response.data.article[dataKey]
       }
+
       await getTextBy()
+      // const bytes = new Uint8Array(articleRaw)
+      //
+      // console.log(articleRaw.slice(0).byteLength)
+      // let articleBlob = new Blob([bytes], {type: articleDetail.file_type})
+      // console.log(articleBlob.size)
+      // articleDetail.raw = new File([articleBlob], articleDetail.title, {type: articleDetail.file_type})
+      // console.log(articleDetail.raw)
+
+      await getRaw(articleDetail.id)
+
       if (store.getters.getToken !== '') {
         await getIsFavorited()
       }
@@ -122,17 +169,40 @@ function errorCallback(response: any) {
     }
   })
 })()
-async function getTextBy () {
-      articleDetail.text_by_id = articleDetail.text_by
-      await SYNC_GET('/usr/getUserBasicInfo', {
-        user_id: articleDetail.text_by
-      }, async (response) => {
-        if (response.status === 200 && response.data.statusMsg === 'Success.') {
-          articleDetail.text_by = response.data.user_info.name
-        } else {
-          console.log(response)
-        }
-      })
+async function getRaw(articleId: String) {
+  axios({
+    url: '/article/getArticleFileById',
+    method:'GET',
+    headers: { 'Content-Type': 'multipart/form-data' },
+    params: { article_id: articleId },
+    responseType:'arraybuffer'
+
+  }).then(response => {
+    console.log(response)
+    const blob = new Blob([response.data],{type:'text/plain'})
+    articleDetail.raw = new File([blob], articleDetail.title, {type:articleDetail.file_type})
+    console.log(articleDetail.raw)
+    console.log("rawl："+ Object.keys(articleDetail.raw as File).length)
+    console.log(JSON.stringify(articleDetail.raw) == "{}")
+
+  }).catch(error => {
+    console.error(error);
+  });
+  // await SYNC_GET('/article/getArticleFileById',{
+  //   article_id: articleId
+  // },async (response) => {
+  //   console.log(response)
+  //   if (response.status === 200 ) {
+  //     const bytes = new Uint8Array(response.data)
+  //     // console.log(articleRaw.slice(0).byteLength)
+  //     let articleBlob = new Blob([bytes], {type: articleDetail.file_type})
+  //     console.log(await articleBlob.text())
+  //     articleDetail.raw = new File([articleBlob], articleDetail.title)
+  //     console.log(articleDetail.raw)
+  //   } else {
+  //     errorCallback(response)
+  //   }
+  // })
 }
 
 async function getIsFavorited() {
@@ -153,7 +223,7 @@ async function getIsFavorited() {
 }
 
 async function handleFavorite() {
-  if(store.getters.getToken === ''){
+  if (store.getters.getToken === '') {
     router.push('/login')
     return
   }
@@ -200,7 +270,7 @@ const handleAuthorClicked = () => {
     router.push({path: '/userNotFound'})
   }
 }
-const handleDelArticleClicked =async () => {
+const handleDelArticleClicked = async () => {
   await SYNC_POST('/contributor/delArticle', {
     token: store.getters.getToken,
     article_id: articleDetail.id
@@ -220,14 +290,14 @@ const handleDelArticleClicked =async () => {
 }
 const handleUpdateArticleClicked = () => {
   if (articleDetail.id !== '' && articleDetail.id !== undefined) {
-    router.push({ path: '/articleEditor', query: { id: articleDetail.id } })
+    router.push({path: '/articleEditor', query: {id: articleDetail.id}})
   } else {
-    router.push({ path: '/articleNotFound' })
+    router.push({path: '/articleNotFound'})
   }
 }
 </script>
 <style scoped>
-.article-box-card{
+.article-box-card {
   display: flex;
   justify-content: center;
 }
@@ -241,13 +311,13 @@ const handleUpdateArticleClicked = () => {
   font-size: 14px;
 }
 
-.e{
+.e {
   border-right: 1px solid var(--el-border-color);
   margin-right: 10px;
   margin-left: 10px;
 }
 
-.blank{
+.blank {
   margin-right: 10px;
 }
 
@@ -255,12 +325,13 @@ const handleUpdateArticleClicked = () => {
   margin: 20px 20px;
 }
 
-.gradeDis{
-  text-align:center;
+.gradeDis {
+  text-align: center;
 }
+
 .article-text {
   display: flex;
-  white-space:pre-wrap;
+  white-space: pre-wrap;
   text-align: start !important;
 }
 </style>

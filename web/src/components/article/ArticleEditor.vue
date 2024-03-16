@@ -2,35 +2,35 @@
   <el-row>
     <el-col :span="18" :offset="3">
       <el-input
-        class="editor-header"
-        v-model="articleDetail.title"
-        maxlength="50"
-        show-word-limit
-        :autosize="{ minRows: 1, maxRows: 3}"
-        type="textarea"
-        placeholder="请输入标题（建议30字以内）"
+          class="editor-header"
+          v-model="articleDetail.title"
+          maxlength="50"
+          show-word-limit
+          :autosize="{ minRows: 1, maxRows: 3}"
+          type="textarea"
+          placeholder="请输入标题（建议30字以内）"
       />
       <el-card class="upload-file-card">
 
         <div class="upload-head"><span>上传文章</span></div>
         <!--        </el-tooltip>-->
         <el-tooltip
-          class="box-item"
-          effect="light"
-          content="限制1个.docx或.txt文件，上传新内容将覆盖旧内容"
-          placement="top"
+            class="box-item"
+            effect="light"
+            content="限制1个.docx或.txt文件，上传新内容将覆盖旧内容"
+            placement="top"
         >
           <div>
             <el-upload
-              ref="upload"
-              class="upload-doc"
-              drag
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-              :limit="1"
-              :on-change="changeInputBox"
-              :auto-upload=false
-              :show-file-list="false"
-              list-type="text"
+                ref="upload"
+                class="upload-doc"
+                drag
+                action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                :limit="1"
+                :on-change="changeInputBox"
+                :auto-upload=false
+                :show-file-list="false"
+                list-type="text"
             >
               <el-icon class="el-icon--upload">
                 <upload-filled/>
@@ -45,7 +45,8 @@
           </div>
         </el-tooltip>
         <div class="upload-file-name-list">
-          <el-tag class="upload-file-name" v-if="Object.keys(articleDetail.raw).length != 0" closable effect="light" @close="handleFileRemove">
+          <el-tag class="upload-file-name" v-if="Object.keys(articleDetail.raw).length != 0" closable effect="light"
+                  @close="handleFileRemove">
             {{ articleDetail.raw.name }}
           </el-tag>
         </div>
@@ -68,27 +69,27 @@
           <el-collapse-item class="more-option" title="更多设置" name="1">
             <div class="more-option-head"><span>文章描述</span></div>
             <el-input
-              class="editor-description"
-              v-model="articleDetail.description"
-              maxlength="150"
-              show-word-limit
-              :autosize="{ minRows: 4, maxRows: 10}"
-              type="textarea"
-              placeholder="请输入描述（建议100字以内）"
+                class="editor-description"
+                v-model="articleDetail.description"
+                maxlength="150"
+                show-word-limit
+                :autosize="{ minRows: 4, maxRows: 10}"
+                type="textarea"
+                placeholder="请输入描述（建议100字以内）"
             />
             <div class="more-option-head"><span>参考插图</span></div>
             <el-upload
-              class="upload-file-entry"
-              v-model:file-list="imageFileList"
-              action="''"
-              list-type="picture-card"
-              :on-preview="handlePictureCardPreview"
-              :auto-upload="false"
-              :on-remove="imgRemove"
-              :on-success="imgSuccess"
-              :on-error="imgError"
-              accept="image/jpg,image/jpeg,image/png"
-              multiple
+                class="upload-file-entry"
+                v-model:file-list="imageFileList"
+                action="''"
+                list-type="picture-card"
+                :on-preview="handlePictureCardPreview"
+                :auto-upload="false"
+                :on-remove="imgRemove"
+                :on-success="imgSuccess"
+                :on-error="imgError"
+                accept="image/jpg,image/jpeg,image/png"
+                multiple
             >
               <el-icon>
                 <Plus/>
@@ -103,17 +104,8 @@
         </el-collapse>
       </el-card>
       <div class="button-container">
-        <el-button class="preview_file" :type="previewType" :disabled="Object.keys(articleDetail.raw).length == 0"
-                   @click="handleDocumentPreView(articleDetail.raw)">预览文章
-        </el-button>
-        <el-dialog id="docxContainer" v-model="dialogManager.docxDialogVisible"
-                   style="width: fit-content;height: fit-content;">
-        </el-dialog>
-        <el-dialog id="txtContainer" v-model="dialogManager.txtContainerVisible" close-on-press-escape
-                   :show-close="false">
-          <!--          <div class="txtPreview" style="white-space: pre-wrap;">{{ dialogManager.txtContainerText }}</div>-->
-          <el-text class="txtPreview" size="large">{{ dialogManager.txtContainerText }}</el-text>
-        </el-dialog>
+        <ArticlePreview class="preview_file" :articleRaw="articleDetail.raw"
+                        :previewType="previewType"/>
         <el-button class="3" :type="saveBtnType" @click="save" :disabled="saveBtnText === '已保存'">{{
             saveBtnText
           }}
@@ -122,10 +114,10 @@
       </div>
       <!--      <el-button type="danger" @click="delArticleDialogVisible=true">删除文章</el-button>-->
       <el-dialog
-        draggable
-        v-model="delArticleDialogVisible"
-        title="删除文章"
-        width="30%"
+          draggable
+          v-model="delArticleDialogVisible"
+          title="删除文章"
+          width="30%"
       >
         <span>确定删除文章？</span>
         <template #footer>
@@ -159,6 +151,7 @@ import {fileToBlob} from '@/scripts/DocumentUtil'
 import {renderAsync} from 'docx-preview'
 import {errorCallback, errorMessage} from "@/scripts/ErrorCallBack";
 import {acceptFileType} from "@/scripts/common/AcceptFileType";
+import ArticlePreview from '@/components/article/ArticlePreview.vue'
 
 const upload = ref<UploadInstance>()
 const store = useStore()
@@ -167,10 +160,9 @@ const SearchFilterRef = ref()
 const saveBtnType = ref('success')
 const saveBtnText = ref('保存')
 const delArticleDialogVisible = ref(false)
-const docBlob = ref<Blob>()
+// const docBlob = ref<Blob>()
 let imageFileList = ref<UploadFile[]>([])
 const dialogImageUrl = ref('')
-const fileList = reactive<Array<Object>>([])
 const previewType = ref("info")
 const dialogManager = reactive({
   txtContainerVisible: false,
@@ -187,7 +179,8 @@ const articleDetail: AttributeAddableObject = reactive({
   description: '',
   status: 'ROUGH',
   attr: '{}',
-  raw: {}
+  raw: {},
+  file_type:''
 })
 
 watch(articleDetail, () => {
@@ -230,7 +223,7 @@ const save = async () => {
   param.append("description", articleDetail.description)
   param.append("status", 'ROUGH')
   param.append("attr", `{"tags":${articleDetail.attr}}`)
-  param.append("imageURL", '{}')
+  param.append("fileType", articleDetail.file_type)
 
   await SYNC_POST('/contributor/contribute', param, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
@@ -261,21 +254,22 @@ const release = async () => {
   param.append("description", articleDetail.description)
   param.append("status", 'PUBLISHED')
   param.append("attr", `{"tags":${articleDetail.attr}}`)
-  param.append("imageURL", '{}')
+  console.log(articleDetail.file_type)
+  param.append("fileType", articleDetail.file_type)
 
   await SYNC_POST('/contributor/contribute', param, async (response) => {
-      if (response.status === 200 && response.data.message === 'Success.') {
-        console.log('Release successfully!')
-        ElMessage({
-          showClose: true,
-          message: '已成功发布文章!',
-          type: 'success'
-        })
-        location.href = '/#/user/' + store.getters.getUserInfo.id
-      } else {
-        errorCallback(response)
+        if (response.status === 200 && response.data.message === 'Success.') {
+          console.log('Release successfully!')
+          ElMessage({
+            showClose: true,
+            message: '已成功发布文章!',
+            type: 'success'
+          })
+          location.href = '/#/user/' + store.getters.getUserInfo.id
+        } else {
+          errorCallback(response)
+        }
       }
-    }
   )
 }
 const analyzeTXT = (file: any) => {
@@ -290,56 +284,52 @@ const analyzeDOCX = (file: any) => {
   fileReader.onload = async (event) => {
     const arrayBuffer = event.target?.result as ArrayBuffer
     mammoth.convertToHtml({arrayBuffer: arrayBuffer})
-      .then(async function (result) {
-        let html = result.value; // The generated HTML
-        let match = html.match(/<img(.|\n)*?\/>/mg)
+        .then(async function (result) {
+          let html = result.value; // The generated HTML
+          let match = html.match(/<img(.|\n)*?\/>/mg)
 
-        //提取src="后的base64图片
-        const base64List = (match?.map((item: any) => {
-          return item.toString().match(/src=".*"/mg)[0].toString().slice(5, -1)
-        })) as Array<string>
+          //提取src="后的base64图片
+          const base64List = (match?.map((item: any) => {
+            return item.toString().match(/src=".*"/mg)[0].toString().slice(5, -1)
+          })) as Array<string>
 
-        imageFileList.value = base64List.map((item: any, index: any) => {
-          let file: File = base64ToFile(item, index)
-          const newImageName = generateImageName(file.name)
+          imageFileList.value = base64List.map((item: any, index: any) => {
+            let file: File = base64ToFile(item, index)
+            const newImageName = generateImageName(file.name)
 
-          let upLoadFile: UploadFile = {
-            name: newImageName,
-            uid: file.uid,
-            status: 'ready',
-            size: file.size,
-            url: URL.createObjectURL(file),
-            percentage: 0,
-            raw: file
-          }
-          return upLoadFile
+            let upLoadFile: UploadFile = {
+              name: newImageName,
+              uid: file.uid,
+              status: 'ready',
+              size: file.size,
+              url: URL.createObjectURL(file),
+              percentage: 0,
+              raw: file
+            }
+            return upLoadFile
+          })
+
+          let content = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
+          articleDetail.text = content.replace(/(\n\n)/gm, '\n')
+          let messages = result.messages; // Any messages, such as warnings during conversion
         })
-
-        let content = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
-        articleDetail.text = content.replace(/(\n\n)/gm, '\n')
-        let messages = result.messages; // Any messages, such as warnings during conversion
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+        .catch(function (error) {
+          console.error(error);
+        });
   }
   fileReader.readAsArrayBuffer(file.raw);
 }
 // 上传文件后显示到inputBox
 const changeInputBox = (file: any) => {
   let subFileNames = file.name.split('.')
-  if(!acceptFileType.has(subFileNames[subFileNames.length - 1])){
+  const suffix = subFileNames[subFileNames.length - 1]
+  if (!acceptFileType.has(suffix)) {
     errorMessage('仅能支持.docx和.txt结尾的文件喔')
     return
   }
+  articleDetail.file_type = acceptFileType.get(suffix)
   upload.value!.clearFiles()
   articleDetail.raw = file.raw
-
-  // if (subFileNames[subFileNames.length - 1] == 'txt') {
-  //   analyzeTXT(file)
-  // } else if (subFileNames[subFileNames.length - 1] == 'docx') {
-  //   analyzeDOCX(file)
-  // }
 
   if (Object.keys(articleDetail.raw).length == 0) {
     previewType.value = 'info'
@@ -396,13 +386,12 @@ const handleTXTPreview = (file: any) => {
 }
 const handleDOCXPreview = (file: any) => {
   fileToBlob(file).then((result) => {
-    docBlob.value = result as Blob
 
     let docContainer = document.getElementById("docxContainer");
     renderAsync(
-      result,
-      docContainer, // HTMLElement 渲染文档内容的元素,
-      null, // HTMLElement, 用于呈现文档样式、数字、字体的元素。如果为 null，则将使用 reportContainer。
+        result,
+        docContainer, // HTMLElement 渲染文档内容的元素,
+        null, // HTMLElement, 用于呈现文档样式、数字、字体的元素。如果为 null，则将使用 reportContainer。
     ).then(res => {
       // dialogManager.docxDialogVisible = true 不能放在这
     })
@@ -438,7 +427,7 @@ const handleFileRemove = () => {
 }
 
 .preview_file {
-  margin: 0 10px 0 0;
+  margin: 0 10px 0 0 !important;
 }
 
 .editor-header {
