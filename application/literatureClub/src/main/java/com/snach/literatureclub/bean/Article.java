@@ -1,5 +1,6 @@
 package com.snach.literatureclub.bean;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.snach.literatureclub.common.ArticleStatus;
 import jakarta.annotation.Nullable;
 import lombok.*;
@@ -30,8 +31,10 @@ public class Article extends Text {
     byte[] raw;
     @Nullable
     String mentor;
+    @JsonProperty("file_type")
+    String fileType;
 
-    public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr, byte[] rawFile, String mentor) {
+    public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr, byte[] rawFile, String mentor, String fileType) {
         super(id, time, text, textBy);
         this.status = status;
         this.title = title;
@@ -39,6 +42,7 @@ public class Article extends Text {
         this.attr = attr;
         this.raw = rawFile;
         this.mentor = mentor;
+        this.fileType = fileType;
     }
 
     public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr) {

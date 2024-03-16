@@ -1,1 +1,2 @@
-export const acceptFileType = new Set(["txt","docx"])
+export const acceptFileType = new Map([
+  ['txt','text

@@ -11,6 +11,7 @@ import com.snach.literatureclub.utils.IdTools;
 import com.snach.literatureclub.utils.QiniuKodoUtil;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -117,6 +118,8 @@ public interface ArticleService {
      *
      */
     Article contribute(String token, Article article, MultipartFile mulArticle);
+
+    Article getArticleFileById(String articleId);
 }
 
 @Service
@@ -352,5 +355,10 @@ class ArticleServiceImpl implements ArticleService {
 
         articleDao.insertArticle(article);
         return article;
+    }
+
+    @Override
+    public Article getArticleFileById(String articleId) {
+        return articleDao.getArticleFileById(articleId);
     }
 }

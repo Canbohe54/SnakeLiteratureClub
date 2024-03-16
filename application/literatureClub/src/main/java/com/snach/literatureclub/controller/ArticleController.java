@@ -5,9 +5,13 @@ import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleStatus;
 import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
+import com.snach.literatureclub.utils.MediaTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,5 +64,18 @@ public class ArticleController {
                                              @RequestParam(name = "page_size")int pageSize,
                                              @RequestParam(name = "status_list")List<ArticleStatus> statusList) {
         return articleService.searchArticle(keyword, tag,pageNum,pageSize,statusList);
+    }
+
+    @ResponseNotIntercept
+//    @GetMapping("/getArticleFileById")
+    @RequestMapping(value = "getArticleFileById", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> getArticleFileById(@RequestParam(name = "article_id") String articleId){
+        Article article = articleService.getArticleFileById(articleId);
+        byte[] fileContent = article.getRaw();
+        String type = article.getFileType();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaTypeConverter.getMediaType(type));
+
+        return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
     }
 }

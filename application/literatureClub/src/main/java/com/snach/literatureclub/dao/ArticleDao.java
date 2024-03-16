@@ -15,8 +15,8 @@ public interface ArticleDao {
      *
      * @param article 封装有稿件信息的Article对象
      */
-    @Insert("INSERT INTO article(id, title,description,text,`time`,status,attr,text_by, raw, mentor) " +
-            "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.attr},#{article.textBy},#{article.raw},#{article.mentor})")
+    @Insert("INSERT INTO article(id, title,description,text,`time`,status,attr,text_by, raw, mentor, file_type) " +
+            "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.attr},#{article.textBy},#{article.raw},#{article.mentor},#{article.fileType})")
     void insertArticle(@Param("article") Article article);
 
     /**
@@ -99,7 +99,7 @@ public interface ArticleDao {
      * @param id 稿件id
      * @return id对应的稿件信息的Article对象
      */
-    @Select("SELECT id, text, time, text_by as textBy, title, description, status, attr FROM article WHERE id = #{id}")
+    @Select("SELECT id, text, time, text_by as textBy, title, description, status, attr, raw, `file_type` as fileType FROM article WHERE id = #{id}")
     Article getArticleById(@Param("id") String id);
 
     /**
@@ -173,4 +173,7 @@ public interface ArticleDao {
      */
     @Select("Select COUNT(*) FROM contributor_article_list WHERE contributor_id = #{contributor_id} AND article_id = #{article_id}")
     int belong(@Param("contributor_id") String contributor_id, @Param("article_id") String article_id);
+
+    @Select("SELECT raw FROM article WHERE id=#{article_id}")
+    Article getArticleFileById(@Param("article_id") String articleId);
 }
