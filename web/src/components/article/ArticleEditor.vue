@@ -105,7 +105,7 @@
       </el-card>
       <div class="button-container">
         <ArticlePreview class="preview_file" :articleRaw="articleDetail.raw"
-                        :previewType="previewType"/>
+                        :previewType="previewType" :disabled="articleDetail.raw.size == 0"/>
         <el-button class="3" :type="saveBtnType" @click="save" :disabled="saveBtnText === '已保存'">{{
             saveBtnText
           }}
@@ -526,7 +526,7 @@ const handleFileRemove = () => {
 .upload-doc {
   box-shadow: var(--el-box-shadow-light);
   border-radius: 10px;
-  /*/height: 200px;*/
+  /* height: 200px;*/
 }
 
 .button-container {

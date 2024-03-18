@@ -34,7 +34,7 @@
               </div>
 
               <el-divider/>
-              <ArticlePreview :articleRaw="articleDetail.raw"/>
+              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0"/>
               <el-text class="article-text" :size="displaySize">{{ articleDetail.text }}</el-text>
             </el-card>
           </el-main>
