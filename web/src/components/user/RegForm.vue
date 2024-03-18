@@ -11,7 +11,7 @@
                 </el-form-item>
 
                 <el-form-item label="身份" prop="identity">
-                    <el-radio-group v-model="regForm.identity" :change="handleIndentityChange(regForm.identity)">
+                    <el-radio-group v-model="regForm.identity" :change="handleIdentityChange(regForm.identity)">
                         <el-radio label="CONTRIBUTOR" value="CONTRIBUTOR">学生作者</el-radio>
                         <el-radio label="TEACHER" value="TEACHER">教师</el-radio>
                         <el-radio label="PROFESSOR" value="PROFESSOR">专家</el-radio>
@@ -104,7 +104,7 @@ const handleAvatarSelection = (selection: any) => {
     regForm.avatar = 'avatars/group1/'+selection.value+'.png'
 }
 
-function handleIndentityChange(val: string) {
+function handleIdentityChange(val: string) {
     switch (val) {
         case 'CONTRIBUTER':
             pageAttr.value = '年级';
@@ -171,7 +171,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
       regButton.buttonText = '正在注册...'
       let isPosted = false
       // TODO 加入额外选项
-      POST('/usr/reg', { 
+      POST('/usr/reg', {
         username: regForm.username,
         identity: regForm.identity,
         organization: regForm.organization,

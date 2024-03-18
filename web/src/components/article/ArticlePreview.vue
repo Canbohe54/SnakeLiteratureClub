@@ -1,7 +1,7 @@
 <template>
   <span class="preview_file">
 <!--    :disabled="Object.keys(props.articleRaw).length == 0"-->
-  <el-button  :type="props.previewType" :disabled="props.disabled"
+  <el-button :type="props.previewType" :disabled="props.disabled"
              @click="handleDocumentPreView(props.articleRaw)">预览文章
   </el-button>
   <el-dialog id="docxContainer" v-model="dialogManager.docxDialogVisible"
@@ -15,7 +15,7 @@
   </span>
 </template>
 <script lang="ts" setup>
-import { reactive,toRef } from 'vue';
+import {reactive, toRef} from 'vue';
 import {fileToBlob} from '@/scripts/DocumentUtil'
 import {renderAsync} from 'docx-preview'
 
@@ -28,12 +28,22 @@ const props = defineProps({ // File类型
     type: String,
     required: false
   },
-  disabled: { // 是否禁用
+  disabled: { // 是否禁用, 默认否
     type: Boolean,
+    required: false,
+    default: false
+  },
+  lockBeforePreview: { // 预览前是否上锁处理
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  articleId: { //若要上锁，需要传入articleId
+    type: String,
     required: false
   }
 })
-
+// const emit = defineEmits(['lockBeforePreview'])
 let articleRaw = toRef(props, 'articleRaw')
 
 const dialogManager = reactive({
@@ -41,14 +51,17 @@ const dialogManager = reactive({
   docxDialogVisible: false,
   txtContainerText: ''
 })
+const lockBeforePreview = () => {
+  if (props.articleId === '' || props.articleId == undefined) {
+    return
+  }
+  console.log(props.articleId)
+}
 const handleTXTPreview = (file: any) => {
   const fileReader = new FileReader()
   fileReader.onload = async (e) => {
     let text = e.target?.result as string
-    dialogManager.txtContainerText  = text
-    console.log(text)
-    // dialogManager.txtContainerText  = text.replace(/\n/g, '<br/>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
-
+    dialogManager.txtContainerText = text
     dialogManager.txtContainerVisible = true
   }
   fileReader.readAsText(file)
@@ -69,6 +82,9 @@ const handleDOCXPreview = (file: any) => {
 }
 
 const handleDocumentPreView = async (file: any) => {
+  if(props.lockBeforePreview){
+    lockBeforePreview()
+  }
   //文件为空对象则返回
   // if (Object.keys(props.articleRaw).length == 0) {
   //   return
@@ -85,11 +101,11 @@ const handleDocumentPreView = async (file: any) => {
 </script>
 
 
-
 <style>
 .preview_file {
   margin-right: 15px;
 }
+
 .txtPreview {
   display: flex;
   white-space: pre-wrap;

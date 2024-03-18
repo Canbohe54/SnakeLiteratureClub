@@ -34,7 +34,7 @@
               </div>
 
               <el-divider/>
-              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0"/>
+                <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0" :lock-before-preview="true" :article-id="articleDetail.id">关门预览</ArticlePreview>
               <el-text class="article-text" :size="displaySize">{{ articleDetail.text }}</el-text>
             </el-card>
           </el-main>
@@ -178,12 +178,11 @@ async function getRaw(articleId: String) {
     responseType:'arraybuffer'
 
   }).then(response => {
-    console.log(response)
     const blob = new Blob([response.data],{type:'text/plain'})
     articleDetail.raw = new File([blob], articleDetail.title, {type:articleDetail.file_type})
-    console.log(articleDetail.raw)
-    console.log("rawl："+ Object.keys(articleDetail.raw as File).length)
-    console.log(JSON.stringify(articleDetail.raw) == "{}")
+    // console.log(articleDetail.raw)
+    // console.log("rawl："+ Object.keys(articleDetail.raw as File).length)
+    // console.log(JSON.stringify(articleDetail.raw) == "{}")
 
   }).catch(error => {
     console.error(error);
