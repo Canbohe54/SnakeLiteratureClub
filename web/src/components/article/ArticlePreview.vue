@@ -2,7 +2,7 @@
   <span class="preview_file">
 <!--    :disabled="Object.keys(props.articleRaw).length == 0"-->
   <el-button :type="props.previewType" :disabled="props.disabled"
-             @click="handleDocumentPreView(props.articleRaw)">预览文章
+             @click="handleDocumentPreView(props.articleRaw)">{{ props.text }}
   </el-button>
   <el-dialog id="docxContainer" v-model="dialogManager.docxDialogVisible"
              style="width: fit-content;height: fit-content;">
@@ -19,8 +19,12 @@ import {reactive, toRef} from 'vue';
 import {fileToBlob} from '@/scripts/DocumentUtil'
 import {renderAsync} from 'docx-preview'
 
-const props = defineProps({ // File类型
-  articleRaw: {
+const props = defineProps({
+  text: { // 按钮名称
+    type: String,
+    default: '预览文章'
+  },
+  articleRaw: { // File类型
     type: Object,
     required: true
   },
