@@ -10,6 +10,7 @@ import com.snach.literatureclub.bean.User;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class TokenTools {
     // 加密时的`盐`，后续可使用yaml文件配置
@@ -36,6 +37,22 @@ public class TokenTools {
         return JWT.create()
                 .withHeader(HEADERS)
                 .withClaim("id", user.getId())
+                .withExpiresAt(expires.getTime())
+                .sign(Algorithm.HMAC256(SECRET));
+    }
+
+    /**
+     * 生成用户JWT
+     *
+     * @param id 用户id
+     * @return JWT字符串
+     */
+    public static String tokenGen(String id) {
+        Calendar expires = Calendar.getInstance();
+        expires.add(Calendar.MINUTE, 60);
+        return JWT.create()
+                .withHeader(HEADERS)
+                .withClaim("id", id)
                 .withExpiresAt(expires.getTime())
                 .sign(Algorithm.HMAC256(SECRET));
     }
@@ -70,6 +87,23 @@ public class TokenTools {
             return false;
         }
         return true;
+    }
+
+    /**
+     * 验证JWT是否有效并判断该token是否属于该user
+     *
+     * @param token JWT字符串
+     * @param user  用户
+     * @return 若有效，返回true
+     */
+    public static boolean tokenVerify(String token, User user) {
+        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
+        try {
+            jwtVerifier.verify(token);
+        } catch (JWTVerificationException e) {
+            return false;
+        }
+        return Objects.equals(getPayload(token, "id"), user.getId());
     }
 
     public static boolean hardTokenVerify(String token) {

@@ -120,7 +120,7 @@ public class CommonExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public Result<?> handle(Exception ex) {
         log.error(ex.getMessage(), ex);
-        return Result.failed(ResultEnum.COMMON_FAILED);
+        return Result.failed(ex.getMessage());
     }
 
     /**

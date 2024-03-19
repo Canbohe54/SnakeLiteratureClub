@@ -8,6 +8,7 @@ import com.snach.literatureclub.common.ArticleStatus;
 import com.snach.literatureclub.common.Identity;
 import com.snach.literatureclub.dao.ArticleDao;
 
+import com.snach.literatureclub.dao.NewArticleDao;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,16 +38,15 @@ public interface AuditorService {
 @Mapper
 class AuditorServiceImpl implements AuditorService {
     @Autowired
-    ArticleDao articleDao;
+    NewArticleDao articleDao;
 
     @Override
     public Article getUnauditedArticle(User auditor) throws InsufficientPermissionException, NoUnauditedArticleException {
-        if (!auditor.checkIdentity(Identity.AUDITOR)) {
+        if (!auditor.checkIdentity(Identity.审核员)) {
             throw new InsufficientPermissionException();
         }
-        // TODO: articleDao获取未审核的文章
-        Article article = null;
-        if (article == null || article.getStatus() == ArticleStatus.SUBMITTED) {
+        Article article = articleDao.getArticleByStatus(ArticleStatus.SUBMITTED);
+        if (article == null) {
             throw new NoUnauditedArticleException();
         }
         return article;
@@ -54,7 +54,7 @@ class AuditorServiceImpl implements AuditorService {
 
     @Override
     public boolean audit(User auditor, String articleId, boolean auditResult, String reason) throws InsufficientPermissionException {
-        if (!auditor.checkIdentity(Identity.AUDITOR)) {
+        if (!auditor.checkIdentity(Identity.审核员)) {
             throw new InsufficientPermissionException();
         }
         return true;

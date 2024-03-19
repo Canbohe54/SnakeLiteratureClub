@@ -7,7 +7,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@AttributeType(Identity.CONTRIBUTOR)
+@AttributeType(Identity.学生)
 public class ContributorAttribute extends UserAttribute {
     private String grade;
 }
