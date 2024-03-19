@@ -81,6 +81,7 @@ public class Article extends Text {
                 }
             }
         }
+        articleBasicInfo.put("id",this.getId());
         return articleBasicInfo;
     }
 }

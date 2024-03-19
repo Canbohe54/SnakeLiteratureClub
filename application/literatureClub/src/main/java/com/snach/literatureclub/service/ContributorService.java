@@ -53,20 +53,21 @@ class ContributorServiceImpl implements ContributorService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        //修改时间
+        Date date = new Date(System.currentTimeMillis());
+        article.setTime(date);
         // 稿件id
         if (article.getId() == null || article.getId().equals("null")) {
             //没有稿件id，时间戳生成id
             article.setId(generateId(IdTools.Type.ARTICLE));
+            articleDao.insertArticle(article);
         } else {
             //若已有稿件id，则进行更新
+            articleDao.updateArticleDetail(article);
 //            return updateArticle(token, imageList, article);
         }
-        //修改时间
-        Date date = new Date(System.currentTimeMillis());
-        article.setTime(date);
 
-        articleDao.insertArticle(article);
+
         return article;
     }
 }
