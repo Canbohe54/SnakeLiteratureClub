@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 @Mapper
 public interface ArticleDao {
+    @Select("SELECT * FROM article WHERE status=#{status} LIMIT 1")
+    Article getArticleByStatus(ArticleStatus status);
     /**
      * 插入方法
      *
@@ -29,9 +31,12 @@ public interface ArticleDao {
                 "title = #{article.title}, " +
                 "description = #{article.description}, " +
                 "text = #{article.text}, " +
-                "time = #{article.time}, " +
+                "`time` = #{article.time}, " +
                 "status = #{article.status}, " +
                 "attr = #{article.attr}, " +
+                "raw = #{article.raw}, " +
+                "mentor = #{article.mentor}, " +
+                "file_type = #{article.fileType} " +
             "WHERE id = #{article.id}")
     int updateArticleDetail(@Param("article") Article article);
 

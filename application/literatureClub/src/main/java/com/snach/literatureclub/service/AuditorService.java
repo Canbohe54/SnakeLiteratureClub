@@ -8,7 +8,6 @@ import com.snach.literatureclub.common.ArticleStatus;
 import com.snach.literatureclub.common.Identity;
 import com.snach.literatureclub.dao.ArticleDao;
 
-import com.snach.literatureclub.dao.NewArticleDao;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public interface AuditorService {
 @Mapper
 class AuditorServiceImpl implements AuditorService {
     @Autowired
-    NewArticleDao articleDao;
+    ArticleDao articleDao;
 
     @Override
     public Article getUnauditedArticle(User auditor) throws InsufficientPermissionException, NoUnauditedArticleException {

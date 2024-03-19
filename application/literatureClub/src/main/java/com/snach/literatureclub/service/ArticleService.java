@@ -120,6 +120,9 @@ public interface ArticleService {
     Article contribute(String token, Article article, MultipartFile mulArticle);
 
     Article getArticleFileById(String articleId);
+
+    void lockArticleById(String articleId, String lockedBy);
+    void getPermissions(String articleId, String requester);
 }
 
 @Service
@@ -360,5 +363,15 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public Article getArticleFileById(String articleId) {
         return articleDao.getArticleFileById(articleId);
+    }
+
+    @Override
+    public void lockArticleById(String articleId, String lockedBy) {
+
+    }
+
+    @Override
+    public void getPermissions(String articleId, String requester) {
+
     }
 }

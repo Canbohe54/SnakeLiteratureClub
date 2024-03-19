@@ -227,6 +227,7 @@ const save = async () => {
 
   await SYNC_POST('/contributor/contribute', param, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
+      articleDetail.id = response.data.data.id
       console.log('Save successfully!')
       ElMessage({
         showClose: true,
