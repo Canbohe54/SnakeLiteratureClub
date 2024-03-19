@@ -1,5 +1,6 @@
 package com.snach.literatureclub.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.snach.literatureclub.bean.attribute.UserAttribute;
 import com.snach.literatureclub.bean.attribute.UserAttributeFactory;
 import com.snach.literatureclub.common.Identity;
@@ -28,8 +29,8 @@ public class User implements Serializable {
     // Login Info
     String id;
     String phone;
-    String password;
-    Identity group;
+    @JsonIgnore String password;
+    Identity identity;
 
     // Personal Info
     String name;
@@ -38,26 +39,29 @@ public class User implements Serializable {
     String pictureUrl;
 
     // Extra Info
-    UserAttribute attrs;
+    @JsonIgnore String attrs;
+    UserAttribute transformedAttrs;
 
-    public User(String id, String phone, String password, String group, String name, String introduction, String organization, String pictureUrl, String attrs) {
+    public User(String id, String phone, String password, String identity, String name, String introduction, String organization, String pictureUrl, String attrs) {
         this.id = id;
         this.phone = phone;
         this.password = password;
-        this.group = Identity.conv(group);
         this.name = name;
         this.introduction = introduction;
         this.organization = organization;
         this.pictureUrl = pictureUrl;
-        this.attrs = UserAttributeFactory.load(this.group, attrs);
+        this.attrs = attrs;
     }
 
-    public void setGroup(String group) {
-        this.group = Identity.conv(group);
+    public UserAttribute getTransformedAttrs() {
+        if (this.transformedAttrs == null) {
+            this.transformedAttrs = UserAttributeFactory.load(this.identity, this.attrs);
+        }
+        return this.transformedAttrs;
     }
 
     public boolean checkIdentity(Identity identity) {
-        return this.group == identity;
+        return this.identity == identity;
     }
 
     public Map<String, Object> safeGetUserInfo() {
