@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -125,6 +126,7 @@ public interface ArticleService {
     void getPermissions(String articleId, String requester);
 }
 
+@Transactional(rollbackFor = Exception.class)
 @Service
 @Mapper
 class ArticleServiceImpl implements ArticleService {
