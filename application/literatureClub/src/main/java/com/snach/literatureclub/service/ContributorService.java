@@ -67,7 +67,6 @@ class ContributorServiceImpl implements ContributorService {
 //            return updateArticle(token, imageList, article);
         }
 
-
         return article;
     }
 }
