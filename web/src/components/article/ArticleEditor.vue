@@ -146,7 +146,6 @@ import router from '@/router'
 import mammoth from 'mammoth'
 import {Plus, UploadFilled} from '@element-plus/icons-vue'
 import {base64ToFile, generateImageName} from '@/scripts/ImageUtil'
-import '@vue-office/docx/lib/index.css'
 import {fileToBlob} from '@/scripts/DocumentUtil'
 import {renderAsync} from 'docx-preview'
 import {errorCallback, errorMessage} from "@/scripts/ErrorCallBack";

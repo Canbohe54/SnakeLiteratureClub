@@ -104,4 +104,14 @@ public class ArticleController {
 
     }
 
+    /**
+     * 通过id对文章进行敏感词审核
+     * @param articleId
+     * @return 审核结果
+     */
+    @ResponseNotIntercept
+    @RequestMapping(value = "SensitiveWordReview", method = RequestMethod.GET)
+    public Map<String, Object> SensitiveWordReview(@RequestParam("token") String token,@RequestParam(name = "article_id") String articleId){
+        return articleService.SensitiveWordReview(token,articleId);
+    }
 }
