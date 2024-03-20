@@ -9,6 +9,7 @@ import com.snach.literatureclub.common.exception.NullFileException;
 import com.snach.literatureclub.dao.ArticleDao;
 import com.snach.literatureclub.utils.IdTools;
 import com.snach.literatureclub.utils.QiniuKodoUtil;
+import com.snach.literatureclub.utils.SensitiveWordsTools;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -123,6 +125,14 @@ public interface ArticleService {
 
     void lockArticleById(String articleId, String lockedBy);
     void getPermissions(String articleId, String requester);
+
+    /**
+     * 返回文章的敏感词审核结果
+     * @param token
+     * @param id
+     * @return 返回文章的敏感词审核结果
+     */
+    Map<String, Object> SensitiveWordReview(String token, String id);
 }
 
 @Service
@@ -133,6 +143,8 @@ class ArticleServiceImpl implements ArticleService {
     @Autowired
     private QiniuKodoUtil qiniuKodoUtil;
 
+    @Autowired
+    private SensitiveWordsTools sensitiveWordsTools;
     @Override
     public Map<String, Object> addArticle(String token, List<MultipartFile> imageList, Article article) {
         // 检测token是否合法
@@ -374,4 +386,41 @@ class ArticleServiceImpl implements ArticleService {
     public void getPermissions(String articleId, String requester) {
 
     }
+
+    /**
+     * 对文章内容进行敏感词审核。
+     * @param token 用户的令牌，用于验证用户身份和权限。
+     * @param id 文章的唯一标识符，用于从数据库中获取文章内容。
+     * @return 返回一个包含审核结果的Map，其中键为审核相关的指标或错误信息，值为对应的结果或异常对象。返回的结果包括状态消息、敏感词数量和敏感词列表。
+     * @throws InvalidTokenException 如果提供的token验证失败，则抛出此异常。
+     */
+    @Override
+    public Map<String, Object> SensitiveWordReview(String token, String id) {
+        // 验证用户令牌的合法性
+        if (!tokenVerify(token)) {
+            throw new InvalidTokenException();
+        }
+        // 通过文章ID从数据库获取文章对象
+        Article article = articleDao.getArticleFileById(id);
+        // 获取文章原始内容的二进制数据
+        byte[] fileContent = article.getRaw();
+        // 将二进制内容转换为字符串形式
+        String txt = new String(fileContent, StandardCharsets.UTF_8);
+        // 使用敏感词检测工具判断文章中是否包含敏感词
+        Boolean flag = sensitiveWordsTools.judgeSensitivityWord(txt);
+        Map<String, Object> res = new HashMap<>();
+        // 根据敏感词检测结果填充返回结果
+        if(flag){
+            // 文章包含敏感词
+            res.put("statusMsg", "Success.");
+            res.put("num", sensitiveWordsTools.FindAllWords(txt).size());
+            res.put("sensitiveWords", sensitiveWordsTools.FindAllWords(txt));
+        }
+        else{
+            // 文章不包含敏感词
+            res.put("statusMsg", "Success.");
+            res.put("num", 0);
+        }
+        return res;
+   }
 }
