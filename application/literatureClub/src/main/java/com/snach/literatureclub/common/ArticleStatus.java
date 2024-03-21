@@ -12,6 +12,7 @@ public enum ArticleStatus {
     SUBMITTED("submitted"),
     // 审核不通过
     FAIL_AUDITED("failAudited"),
+    BEING_AUDITED("beingAuditing"),
     // 审核通过，发布
     PUBLISHED("published"),
     LOCKED("locked");

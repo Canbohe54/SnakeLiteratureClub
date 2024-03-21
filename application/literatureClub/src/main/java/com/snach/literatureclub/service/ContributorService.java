@@ -9,6 +9,7 @@ import com.snach.literatureclub.utils.IdTools;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public interface ContributorService {
     Article contribute(String token, Article article, MultipartFile mulArticle);
 
 }
-
+@Transactional(rollbackFor = Exception.class)
 @Service
 @Mapper
 class ContributorServiceImpl implements ContributorService {

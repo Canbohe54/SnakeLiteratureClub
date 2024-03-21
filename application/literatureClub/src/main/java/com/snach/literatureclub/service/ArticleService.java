@@ -14,6 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -123,6 +124,8 @@ public interface ArticleService {
 
     Article getArticleFileById(String articleId);
 
+    String getLatestApprovalArticleById(String articleId);
+
     void lockArticleById(String articleId, String lockedBy);
     void getPermissions(String articleId, String requester);
 
@@ -135,6 +138,7 @@ public interface ArticleService {
     Map<String, Object> SensitiveWordReview(String token, String id);
 }
 
+@Transactional(rollbackFor = Exception.class)
 @Service
 @Mapper
 class ArticleServiceImpl implements ArticleService {
@@ -375,6 +379,13 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public Article getArticleFileById(String articleId) {
         return articleDao.getArticleFileById(articleId);
+    }
+
+    @Override
+    public String getLatestApprovalArticleById(String articleId) {
+        String latestApprovalArticleUrl = articleDao.getLatestApprovalArticleUrlById(articleId);
+
+        return latestApprovalArticleUrl;
     }
 
     @Override

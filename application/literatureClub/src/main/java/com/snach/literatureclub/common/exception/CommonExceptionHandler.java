@@ -17,6 +17,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 //import javax.servlet.ServletException;
 //import javax.validation.ConstraintViolationException;
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 /**
@@ -112,7 +113,11 @@ public class CommonExceptionHandler {
 //        log.error(ex.getMessage(), ex);
 //        return Result.failed(ResultEnum.FORBIDDEN);
 //    }
-
+    @ExceptionHandler(value = IOException.class)
+    public Result<?> handleIOException(IOException ex) {
+        log.error(ex.getMessage(), ex);
+        return Result.failed(ex.getMessage());
+    }
 
     /**
      * 顶级异常捕获并统一处理，当其他异常无法处理时候选择使用

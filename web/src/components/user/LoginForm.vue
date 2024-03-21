@@ -38,6 +38,13 @@ const loginForm = reactive({
     password: ''
 })
 
+async function onSubmit() {
+    if (loginForm.userid === '' || loginForm.password === '') {
+        ElMessage.error('账号或密码不能为空')
+        return
+    }
+}
+
 </script>
 <style lang="scss">
 .regPage {

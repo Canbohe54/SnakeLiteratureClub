@@ -3,6 +3,7 @@ package com.snach.literatureclub.dao;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleStatus;
 import org.apache.ibatis.annotations.*;
+import org.springframework.data.relational.repository.Lock;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 @Repository
 @Mapper
 public interface ArticleDao {
-    @Select("SELECT * FROM article WHERE status=#{status} LIMIT 1")
+    @Select("SELECT * FROM article WHERE status=#{status} LIMIT 1 FOR UPDATE")
     Article getArticleByStatus(ArticleStatus status);
     /**
      * 插入方法
@@ -167,7 +168,7 @@ public interface ArticleDao {
      * @return
      */
     @Update("UPDATE article SET status = #{status} WHERE id = #{id}")
-    int updateStatus(@Param("status") int status, @Param("id") String id);
+    int updateStatus(@Param("status") ArticleStatus status, @Param("id") String id);
 
     /**
      * 判断稿件是否属于该作者
@@ -181,4 +182,10 @@ public interface ArticleDao {
 
     @Select("SELECT raw FROM article WHERE id=#{article_id}")
     Article getArticleFileById(@Param("article_id") String articleId);
+
+    @Select("SELECT latest_approval_article_url FROM article WHERE id=#{article_id}")
+    String getLatestApprovalArticleUrlById(@Param("article_id") String articleId);
+
+    @Update("UPDATE article SET latest_approval_article_url = #{latest_approval_article_url} WHERE id = #{article_id}")
+    int updateLatestApprovalArticleUrl(@Param("article_id") String articleId, @Param("latest_approval_article_url") String latestApprovalArticleUrl);
 }
