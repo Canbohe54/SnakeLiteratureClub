@@ -26,7 +26,7 @@ public class Text implements Serializable {
     Date time;
     @JsonProperty("text_by")
     String textBy;
-    String text;
+    String text; //正文
 
     public Text(String textBy, String text) {
         this.id = generateId(IdTools.Type.ARTICLE);

@@ -14,8 +14,9 @@
                     <el-radio-group v-model="regForm.identity" :change="handleIdentityChange(regForm.identity)">
                         <el-radio label="CONTRIBUTOR" value="CONTRIBUTOR">学生作者</el-radio>
                         <el-radio label="TEACHER" value="TEACHER">教师</el-radio>
-                        <el-radio label="PROFESSOR" value="PROFESSOR">专家</el-radio>
-                        <el-radio label="HUNTER" value="HUNTER">猎头</el-radio>
+                        <el-radio label="ADMINISTRATOR" value="ADMINISTRATOR">学校管理员</el-radio>
+                        <el-radio label="EXPERT" value="EXPERT">专家</el-radio>
+                        <el-radio label="HUNTER" value="HUNTER">报刊专员</el-radio>
                         <el-radio label="VOLUNTEER" value="VOLUNTEER">审稿志愿者</el-radio>
                     </el-radio-group>
                 </el-form-item>
@@ -107,13 +108,16 @@ const handleAvatarSelection = (selection: any) => {
 
 function handleIdentityChange(val: string) {
     switch (val) {
-        case 'CONTRIBUTER':
+        case 'CONTRIBUTOR':
             pageAttr.value = '年级';
             break;
         case 'TEACHER':
             pageAttr.value = '职称';
             break;
-        case 'PROFESSOR':
+        case 'ADMINISTRATOR':
+            pageAttr.value = '职务';
+            break;
+        case 'EXPERT':
             pageAttr.value = '职称';
             break;
         case 'HUNTER':

@@ -26,14 +26,14 @@ public class Article extends Text {
     String title;
     String description;
     ArticleStatus status;
-    String attr;
+    String attr; // 标签
     byte[] raw;
     @Nullable
     String mentor;
     @JsonProperty("file_type")
     String fileType;
     @JsonProperty("latest_approval_article_url")
-    String latestApprovalArticleUrl;
+    String latestApprovalArticleUrl; //最终审核的文件url
 
     public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr, byte[] rawFile, String mentor, String fileType, String latestApprovalArticleUrl) {
         super(id, time, text, textBy);
