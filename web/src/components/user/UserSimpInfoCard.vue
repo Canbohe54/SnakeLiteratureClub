@@ -1,5 +1,5 @@
 <template>
-    <div class="user-simp-info">
+    <div class="user-simp-info" v-if="getToken() != ''">
         <el-avatar :size="64"></el-avatar>
         <div class="user-simp-info-disp">
             <div>用户名
@@ -11,10 +11,10 @@
             <router-link class="user-simp-item" to="/user/info">用户设置</router-link>
         </div>
         <div class="user-simp-option logout-option">
-            <router-link class="user-simp-item"  to="/user/info">退出登录</router-link>
+            <a class="user-simp-item" @click="handleLogout">退出登录</a>
         </div>
     </div>
-    <div class="user-simp-info">
+    <div class="user-simp-info" v-else>
         <div class="user-simp-option">
             <router-link class="user-simp-item"  to="/login">点击登录</router-link>
             <router-link class="user-simp-item"  to="/register">点击注册</router-link>
@@ -23,7 +23,15 @@
 </template>
 <script lang="ts" setup>
 import router from '@/router';
+import { clearCookie, removeCookie } from '@/scripts/cookie';
+import { getToken } from '@/scripts/token';
 
+console.log(getToken())
+
+function handleLogout(){
+    clearCookie()
+    router.push('/login')
+}
 
 </script>
 <style scoped>
@@ -56,6 +64,7 @@ import router from '@/router';
 }
 
 .user-simp-item:hover {
+    cursor: pointer;
     background-color: #f5f5f5;
 }
 

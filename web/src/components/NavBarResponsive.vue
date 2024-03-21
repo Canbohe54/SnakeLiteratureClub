@@ -22,7 +22,7 @@
         <el-col :span="4" class="hidden-sm-and-down flex-center"><!--用户信息，仅在大于md上显示-->
             <el-popover placement="bottom" :width="200" trigger="hover" popper-style="border-radius: 8px;">
                 <template #reference>
-                    <el-avatar>登录</el-avatar>
+                    <el-avatar class="loginAvatar" @click="router.push('/login') ">登录</el-avatar>
                 </template>
                 <UserSimpInfoCard />
             </el-popover>
@@ -268,6 +268,10 @@ function handleSearchRedirect() {
 
 .search-button:hover {
     color: #409eff;
+}
+
+.loginAvatar {
+    cursor: pointer;
 }
 
 .menu-toggle-container {

@@ -4,7 +4,7 @@
             <header>注册</header>
             <el-form :model="regForm" label-width="auto" ref="regFormRef" :rules="regRules" class="regForm">
                 <el-form-item label="头像">
-                    <el-avatar :size="64" @click="showAvatarSelection" class="regAvatar"><img :src="regForm.avatar"/></el-avatar>
+                    <el-avatar :size="64" @click="showAvatarSelection" class="regAvatar"><img :src="'avatars/'+regForm.avatar.avatar+'.png'"/></el-avatar>
                 </el-form-item>
                 <el-form-item label="姓名" prop="username">
                     <el-input v-model="regForm.username" placeholder="请输入姓名"></el-input>
@@ -64,7 +64,7 @@ const router = useRouter()
 
 interface RegForm {
     username: string;
-    avatar: string;
+    avatar: {avatar: string, color: string};
     identity: string;
     organization: string;
     attribute: string;
@@ -77,7 +77,7 @@ interface RegForm {
 const regFormRef = ref<FormInstance>()
 const regForm = reactive<RegForm>({
     username: '',
-    avatar: 'avatars/group1/1.png',
+    avatar: {avatar:'1', color:'#e9f3e2'},
     identity: 'CONTRIBUTOR',
     organization: '',
     attribute: '',
@@ -100,8 +100,9 @@ const handleAvatarSelectionClose = () => {
 }
 
 const handleAvatarSelection = (selection: any) => {
-    console.log(selection)
-    regForm.avatar = 'avatars/group1/'+selection.value+'.png'
+    console.log(selection.avatar)
+    regForm.avatar = selection
+    $('.regAvatar').css('background-color', selection.color)
 }
 
 function handleIdentityChange(val: string) {
@@ -252,6 +253,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
 
 .regAvatar {
     cursor: pointer;
+    background-color: #e9f3e2;
 }
 
 .regAvatar:hover {
