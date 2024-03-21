@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.common.exception.*;
 import com.snach.literatureclub.dao.UserDao;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.snach.literatureclub.utils.TokenTools.*;
 
@@ -22,7 +23,7 @@ public interface UserService {
     User getUserBasicInfo(String id);
     void updateUserBasicInfo(String token, User user);
 }
-
+@Transactional(rollbackFor = Exception.class)
 @Mapper
 @Service
 class UserServiceImpl implements UserService {

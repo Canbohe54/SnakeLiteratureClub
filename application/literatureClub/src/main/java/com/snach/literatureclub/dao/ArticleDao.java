@@ -183,6 +183,9 @@ public interface ArticleDao {
     @Select("SELECT raw FROM article WHERE id=#{article_id}")
     Article getArticleFileById(@Param("article_id") String articleId);
 
+    @Select("SELECT latest_approval_article_url FROM article WHERE id=#{article_id}")
+    String getLatestApprovalArticleUrlById(@Param("article_id") String articleId);
+
     @Update("UPDATE article SET latest_approval_article_url = #{latest_approval_article_url} WHERE id = #{article_id}")
     int updateLatestApprovalArticleUrl(@Param("article_id") String articleId, @Param("latest_approval_article_url") String latestApprovalArticleUrl);
 }

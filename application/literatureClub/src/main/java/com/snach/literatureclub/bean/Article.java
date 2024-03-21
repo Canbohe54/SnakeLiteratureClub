@@ -33,8 +33,10 @@ public class Article extends Text {
     String mentor;
     @JsonProperty("file_type")
     String fileType;
+    @JsonProperty("latest_approval_article_url")
+    String latestApprovalArticleUrl;
 
-    public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr, byte[] rawFile, String mentor, String fileType) {
+    public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr, byte[] rawFile, String mentor, String fileType, String latestApprovalArticleUrl) {
         super(id, time, text, textBy);
         this.status = status;
         this.title = title;
@@ -43,6 +45,7 @@ public class Article extends Text {
         this.raw = rawFile;
         this.mentor = mentor;
         this.fileType = fileType;
+        this.latestApprovalArticleUrl = latestApprovalArticleUrl;
     }
 
     public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr) {

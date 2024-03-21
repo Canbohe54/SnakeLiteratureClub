@@ -7,6 +7,7 @@ import com.snach.literatureclub.dao.GradeDao;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -113,7 +114,7 @@ public interface GradeService {
      */
     Map<String, Object> getSortByGradeAll(String expert_id);
 }
-
+@Transactional(rollbackFor = Exception.class)
 @Service
 @Mapper
 class GradeServiceImpl implements GradeService {
