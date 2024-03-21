@@ -7,11 +7,13 @@ import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.utils.MediaTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,14 +86,46 @@ public class ArticleController {
     }
 
     /**
+     * 锁定文章，将锁定者加入该文章可访问列表
+     * redis设置锁的过期时间
+     * @param articleId 文章id
+     * @param lockedBy 锁定者的id
+     */
+    @RequestMapping(value = "lockArticleById",method = RequestMethod.POST)
+    public void lockArticleById(@RequestParam("article_id") String articleId, @RequestParam(name= "locked_by")String lockedBy){
+
+    }
+
+    /**
+     * 获取文章的访问权限
+     * @param articleId 文章id
+     * @param requester 请求者id
+     */
+    @RequestMapping(value = "getPermissions", method = RequestMethod.GET)
+    public void getPermissions(@RequestParam("article_id") String articleId, @RequestParam(name= "requester")String requester){
+
+    }
+
+    /**
      * 通过id对文章进行敏感词审核
      * @param articleId
      * @return 审核结果
      */
     @ResponseNotIntercept
     @RequestMapping(value = "SensitiveWordReview", method = RequestMethod.GET)
-    public Map<String, Object> SensitiveWordReview(@RequestParam("token") String token,@RequestParam(name = "article_id") String articleId){
+    public Map<String, Object> SensitiveWordReview(@RequestParam("token") String token,@RequestParam(name = "article_id") String articleId) throws IOException {
         return articleService.SensitiveWordReview(token,articleId);
+    }
+
+    /**
+     * 通过id对文章进行更严格的敏感词审核
+     * @param articleId
+     * @return 审核结果
+     */
+    @ResponseNotIntercept
+    @RequestMapping(value = "SensitiveWordReview2", method = RequestMethod.GET)
+    public Map<String, Object> SensitiveWordReview2(@RequestParam("token") String token,@RequestParam(name = "article_id") String articleId) throws IOException {
+        return articleService.SensitiveWordReview2(token,articleId);
     }
 
     @RequestMapping(value = "getLatestApprovalArticleUrl",method = RequestMethod.GET)

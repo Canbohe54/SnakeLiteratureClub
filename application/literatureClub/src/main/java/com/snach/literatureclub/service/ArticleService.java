@@ -10,15 +10,20 @@ import com.snach.literatureclub.dao.ArticleDao;
 import com.snach.literatureclub.utils.IdTools;
 import com.snach.literatureclub.utils.QiniuKodoUtil;
 import com.snach.literatureclub.utils.SensitiveWordsTools;
+import com.snach.literatureclub.utils.TextExtractionTools;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -117,9 +122,17 @@ public interface ArticleService {
      */
     Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleStatus> statusList);
 
+    /**
+     *
+     */
+    Article contribute(String token, Article article, MultipartFile mulArticle);
+
     Article getArticleFileById(String articleId);
 
     String getLatestApprovalArticleById(String articleId);
+
+    void lockArticleById(String articleId, String lockedBy);
+    void getPermissions(String articleId, String requester);
 
     /**
      * 返回文章的敏感词审核结果
@@ -127,7 +140,8 @@ public interface ArticleService {
      * @param id
      * @return 返回文章的敏感词审核结果
      */
-    Map<String, Object> SensitiveWordReview(String token, String id);
+    Map<String, Object> SensitiveWordReview(String token, String id) throws IOException;
+    Map<String, Object> SensitiveWordReview2(String token, String id) throws IOException;
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -141,6 +155,9 @@ class ArticleServiceImpl implements ArticleService {
 
     @Autowired
     private SensitiveWordsTools sensitiveWordsTools;
+
+    @Autowired
+    private TextExtractionTools textExtractionTools;
     @Override
     public Map<String, Object> addArticle(String token, List<MultipartFile> imageList, Article article) {
         // 检测token是否合法
@@ -334,6 +351,39 @@ class ArticleServiceImpl implements ArticleService {
         return res;
     }
 
+    @Override
+    public Article contribute(String token, Article article, MultipartFile mulArticle) {
+        // 检测token是否合法
+        if (!tokenVerify(token)) {
+            throw new InvalidTokenException();
+        }
+        if(mulArticle == null){
+            throw new NullFileException("发布操作文件不能为空。");
+        }
+        // 获取作者id
+        article.setTextBy(getPayload(token, "id"));
+        // 原始文件
+        try {
+            article.setRaw(mulArticle.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 稿件id
+        if (article.getId() == null || article.getId().equals("null")) {
+            //没有稿件id，时间戳生成id
+            article.setId(generateId(IdTools.Type.ARTICLE));
+        } else {
+            //若已有稿件id，则进行更新
+//            return updateArticle(token, imageList, article);
+        }
+        //修改时间
+        Date date = new Date(System.currentTimeMillis());
+        article.setTime(date);
+
+        articleDao.insertArticle(article);
+        return article;
+    }
 
     @Override
     public Article getArticleFileById(String articleId) {
@@ -347,6 +397,15 @@ class ArticleServiceImpl implements ArticleService {
         return latestApprovalArticleUrl;
     }
 
+    @Override
+    public void lockArticleById(String articleId, String lockedBy) {
+
+    }
+
+    @Override
+    public void getPermissions(String articleId, String requester) {
+
+    }
 
     /**
      * 对文章内容进行敏感词审核。
@@ -356,17 +415,36 @@ class ArticleServiceImpl implements ArticleService {
      * @throws InvalidTokenException 如果提供的token验证失败，则抛出此异常。
      */
     @Override
-    public Map<String, Object> SensitiveWordReview(String token, String id) {
+    public Map<String, Object> SensitiveWordReview(String token, String id) throws IOException {
         // 验证用户令牌的合法性
         if (!tokenVerify(token)) {
             throw new InvalidTokenException();
         }
         // 通过文章ID从数据库获取文章对象
-        Article article = articleDao.getArticleFileById(id);
+        Article article = articleDao.getArticleById(id);
         // 获取文章原始内容的二进制数据
         byte[] fileContent = article.getRaw();
-        // 将二进制内容转换为字符串形式
-        String txt = new String(fileContent, StandardCharsets.UTF_8);
+        // 获取文章原始文件的格式
+        String format = article.getFileType();
+//        System.out.println(article.getFileType());
+        String txt = null;
+        if(format.equals("text")){
+            // 将二进制数据转为字符串
+            txt = new String(fileContent, StandardCharsets.UTF_8);
+        }
+        else {
+            // 将fileContent写入临时文件
+            File tempFile = File.createTempFile("tempFile", ".docx");
+            try {
+                Files.write(tempFile.toPath(), fileContent);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            // 提取文件中的文本内容
+            txt = TextExtractionTools.extractTextFromDocx(tempFile.getCanonicalPath());
+            // 删除临时文件
+            tempFile.delete();
+        }
         // 使用敏感词检测工具判断文章中是否包含敏感词
         Boolean flag = sensitiveWordsTools.judgeSensitivityWord(txt);
         Map<String, Object> res = new HashMap<>();
@@ -384,4 +462,52 @@ class ArticleServiceImpl implements ArticleService {
         }
         return res;
    }
+
+    public Map<String, Object> SensitiveWordReview2(String token, String id) throws IOException {
+        // 验证用户令牌的合法性
+        if (!tokenVerify(token)) {
+            throw new InvalidTokenException();
+        }
+        // 通过文章ID从数据库获取文章对象
+        Article article = articleDao.getArticleById(id);
+        // 获取文章原始内容的二进制数据
+        byte[] fileContent = article.getRaw();
+        // 获取文章原始文件的格式
+        String format = article.getFileType();
+//        System.out.println(article.getFileType());
+        String txt = null;
+        if(format.equals("text")){
+            // 将二进制数据转为字符串
+            txt = new String(fileContent, StandardCharsets.UTF_8);
+        }
+        else {
+            // 将fileContent写入临时文件
+            File tempFile = File.createTempFile("tempFile", ".docx");
+            try {
+                Files.write(tempFile.toPath(), fileContent);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            // 提取文件中的文本内容
+            txt = TextExtractionTools.extractTextFromDocx(tempFile.getCanonicalPath());
+            // 删除临时文件
+            tempFile.delete();
+        }
+        // 使用敏感词检测工具判断文章中是否包含敏感词
+        Boolean flag = sensitiveWordsTools.judgeSensitivityWord(txt);
+        Map<String, Object> res = new HashMap<>();
+        // 根据敏感词检测结果填充返回结果
+        if(flag){
+            // 文章包含敏感词
+            res.put("statusMsg", "Success.");
+            res.put("num", sensitiveWordsTools.FindAllWords2(txt).size());
+            res.put("sensitiveWords", sensitiveWordsTools.FindAllWords2(txt));
+        }
+        else{
+            // 文章不包含敏感词
+            res.put("statusMsg", "Success.");
+            res.put("num", 0);
+        }
+        return res;
+    }
 }

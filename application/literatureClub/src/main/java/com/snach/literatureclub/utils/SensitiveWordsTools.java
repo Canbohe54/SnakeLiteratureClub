@@ -1,8 +1,8 @@
 package com.snach.literatureclub.utils;
 
-import org.apache.ibatis.annotations.Param;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import toolgood.words.IllegalWordsSearch;
+import toolgood.words.IllegalWordsSearchResult;
 import toolgood.words.StringSearch;
 
 import java.io.BufferedReader;
@@ -56,6 +56,14 @@ public class SensitiveWordsTools {
         String path = Thread.currentThread().getContextClassLoader().getResource("sensi_words.txt").getPath();
         List<String> list = readTxt(path);
         StringSearch iwords = new StringSearch ();
+        iwords.SetKeywords(list);
+        return iwords.FindAll(txt);
+    }
+
+    public static List<IllegalWordsSearchResult> FindAllWords2(String txt) {
+        String path = Thread.currentThread().getContextClassLoader().getResource("sensi_words.txt").getPath();
+        List<String> list = readTxt(path);
+        IllegalWordsSearch iwords = new IllegalWordsSearch();
         iwords.SetKeywords(list);
         return iwords.FindAll(txt);
     }
