@@ -8,44 +8,38 @@ import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-
 @Configuration
 public class JedisConfig {
+    private final Logger logger = LoggerFactory.getLogger(JedisConfig.class);
 
-    private Logger logger = LoggerFactory.getLogger(JedisConfig.class);
-
-    @Value("${spring.data.redis.host}")
+    @Value("${snach.datasource.redis.host}")
     private String host;
 
-    @Value("${spring.data.redis.port}")
+    @Value("${snach.datasource.redis.port}")
     private int port;
 
-//    @Value("${spring.data.redis.password}")
-//    private String password;
-    @Value("${spring.data.redis.jedis.timeout}")
+    @Value("${snach.datasource.redis.timeout}")
     private int timeout;
 
-    @Value("${spring.data.redis.jedis.pool.max-active}")
+    @Value("${snach.datasource.redis.pool.max-active}")
     private int maxActive;
 
-    @Value("${spring.data.redis.jedis.pool.max-idle}")
+    @Value("${snach.datasource.redis.pool.max-idle}")
     private int maxIdle;
 
-    @Value("${spring.data.redis.jedis.pool.min-idle}")
+    @Value("${snach.datasource.redis.pool.min-idle}")
     private int minIdle;
 
     @Bean
-    public JedisPool  jedisPool(){
-        JedisPoolConfig jedisPoolConfig=new JedisPoolConfig();
+    public JedisPool jedisPool() {
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxIdle(maxIdle);
         jedisPoolConfig.setMinIdle(minIdle);
         jedisPoolConfig.setMaxTotal(maxActive);
         jedisPoolConfig.setJmxEnabled(false);
-        JedisPool jedisPool=new JedisPool(jedisPoolConfig,host,port,timeout);
-//        JedisPool jedisPool=new JedisPool(jedisPoolConfig,host,port,timeout,password);
+        JedisPool jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout);
 
-        logger.info("JedisPool连接成功:"+host+"\t"+port);
-
+        logger.info("JedisPool(" + host + ":" + port + ") connect successfully");
         return jedisPool;
     }
 }
