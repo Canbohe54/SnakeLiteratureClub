@@ -1,7 +1,6 @@
 package com.snach.literatureclub.utils;
 
 import com.snach.literatureclub.common.DatabaseServiceType;
-import com.snach.literatureclub.common.DatabaseServiceType;
 import redis.clients.jedis.Jedis;
 
 public class ArticleLocker {

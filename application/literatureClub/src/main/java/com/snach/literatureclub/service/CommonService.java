@@ -1,7 +1,7 @@
 package com.snach.literatureclub.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.snach.literatureclub.common.DatabaseService;
+import com.snach.literatureclub.common.DatabaseServiceType;
 import com.snach.literatureclub.utils.RedisConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public interface CommonService {
 
 @Service
 class CommonServiceImpl implements CommonService {
-    private static final DatabaseService serviceType = DatabaseService.COMMON;
+    private static final DatabaseServiceType serviceType = DatabaseServiceType.COMMON;
 
     @Value("${snach.common.redisKeyNameOfArticleTags}")
     private String redisKeyNameOfArticleTags;
