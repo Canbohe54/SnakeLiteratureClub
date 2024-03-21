@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.snach.literatureclub.common.ArticleStatus;
 import jakarta.annotation.Nullable;
 import lombok.*;
-import org.apache.ibatis.javassist.tools.reflect.Reflection;
 
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -54,22 +53,6 @@ public class Article extends Text {
         this.title = title;
         this.description = description;
         this.attr = attr;
-    }
-
-    public void setStatus(int status) {
-        this.status = ArticleStatus.conv(status);
-    }
-
-    public void setStatus(ArticleStatus status) {
-        this.status = status;
-    }
-
-    public void setStatus(String status) {
-        this.status = ArticleStatus.conv(status);
-    }
-
-    public boolean checkStatusExpired() {
-        return this.status.checkExpire(this.time);
     }
 
     public Map<String,Object> getBasicInfo(){

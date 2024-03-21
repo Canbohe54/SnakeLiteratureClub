@@ -63,30 +63,34 @@ class AuditorServiceImpl implements AuditorService {
         if (article == null) {
             throw new NoUnauditedArticleException();
         }
-        articleDao.updateStatus(ArticleStatus.BEING_AUDITED,article.getId());
+        articleDao.updateStatus(ArticleStatus.BEING_AUDITED, article.getId());
         return article;
     }
 
     @Override
-    public boolean audit(User auditor, String articleId, boolean auditResult, String reason) throws InsufficientPermissionException {
+    public boolean audit(User auditor, String articleId, boolean auditResult, String reason) {
         if (!auditor.checkIdentity(Identity.AUDITOR)) {
             throw new InsufficientPermissionException();
         }
         return true;
     }
+
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public void saveApprovalArticle(String articleId, MultipartFile approvalArticle) {
 
         try {
-            File f = new File(approvalArticle.getOriginalFilename());
-            BufferedOutputStream out = new BufferedOutputStream(
-                    new FileOutputStream(f));
+            String filename = approvalArticle.getOriginalFilename();
+            if (filename == null) {
+                filename = String.valueOf(System.currentTimeMillis());
+            }
+            File f = new File(filename);
+            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
             out.write(approvalArticle.getBytes());
             out.flush();
             out.close();
 
-            String prefix = "articles/" + articleId+"/";
+            String prefix = "articles/" + articleId + "/";
             String suffix = ".pdf";
             String fileName = generateFileNameByTimesStamp(prefix, suffix);
             // 保存审批文件
@@ -95,13 +99,11 @@ class AuditorServiceImpl implements AuditorService {
             String fileUrl = qiniuKodoUtil.getFileUrl(fileName);
             articleDao.updateLatestApprovalArticleUrl(articleId, fileUrl);
             File tem = new File(f.toURI());
-            if (!f.delete())
+            if (!f.delete()) {
                 System.out.println("删除失败");
-
-        } catch (IOException e){
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        if(Objects.equals(articleId, "test"))
-            throw new InvalidTokenException() ;
     }
 }

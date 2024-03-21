@@ -7,48 +7,13 @@ import java.util.Date;
 @Getter
 public enum ArticleStatus {
     // 草稿状态，未提交
-    ROUGH("rough"),
+    ROUGH,
     // 已提交，未审核
-    SUBMITTED("submitted"),
+    SUBMITTED,
     // 审核不通过
-    FAIL_AUDITED("failAudited"),
-    BEING_AUDITED("beingAuditing"),
+    FAIL_AUDITED,
+    // 正在审核
+    BEING_AUDITED,
     // 审核通过，发布
-    PUBLISHED("published"),
-    LOCKED("locked");
-
-    private String status;
-    private int expire = -1;
-
-    ArticleStatus(String status) {
-        this.status = status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setExpire(int expire) {
-        this.expire = expire;
-    }
-
-    public boolean checkExpire(Date time) {
-        if (expire == -1) {
-            return false;
-        }
-        time.setMinutes(time.getMinutes() + expire);
-        return new Date().after(time);
-    }
-
-    public static int value(ArticleStatus status) {
-        return status.ordinal();
-    }
-
-    public static ArticleStatus conv(int status) {
-        return ArticleStatus.values()[status];
-    }
-
-    public static ArticleStatus conv(String status) {
-        return ArticleStatus.values()[Integer.getInteger(status)];
-    }
+    PUBLISHED
 }
