@@ -124,6 +124,8 @@ public interface ArticleService {
 
     Article getArticleFileById(String articleId);
 
+    String getLatestApprovalArticleById(String articleId);
+
     void lockArticleById(String articleId, String lockedBy);
     void getPermissions(String articleId, String requester);
 
@@ -377,6 +379,13 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public Article getArticleFileById(String articleId) {
         return articleDao.getArticleFileById(articleId);
+    }
+
+    @Override
+    public String getLatestApprovalArticleById(String articleId) {
+        String latestApprovalArticleUrl = articleDao.getLatestApprovalArticleUrlById(articleId);
+
+        return latestApprovalArticleUrl;
     }
 
     @Override

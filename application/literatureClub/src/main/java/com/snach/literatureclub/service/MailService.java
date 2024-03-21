@@ -7,6 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 
 import java.io.*;
@@ -30,7 +31,7 @@ public interface MailService {
      */
     void sendVerifyingCode(String to, String code) throws Exception;
 }
-
+@Transactional(rollbackFor = Exception.class)
 @Service
 @Mapper
 class MailServiceImpl implements MailService {

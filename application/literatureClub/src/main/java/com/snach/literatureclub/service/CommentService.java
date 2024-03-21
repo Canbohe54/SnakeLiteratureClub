@@ -5,6 +5,7 @@ import com.snach.literatureclub.dao.CommentDao;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -42,7 +43,7 @@ public interface CommentService {
      */
     Map<String, Object> deleteComment(String token, String commentId);
 }
-
+@Transactional(rollbackFor = Exception.class)
 @Service
 @Mapper
 class CommentServiceImpl implements CommentService {

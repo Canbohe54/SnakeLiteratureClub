@@ -45,7 +45,7 @@ public interface AuditorService {
     void saveApprovalArticle(String articleId, MultipartFile approvalArticle);
 }
 
-
+@Transactional(rollbackFor = Exception.class)
 @Service
 @Mapper
 class AuditorServiceImpl implements AuditorService {

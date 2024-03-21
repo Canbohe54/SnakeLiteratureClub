@@ -114,4 +114,11 @@ public class ArticleController {
     public Map<String, Object> SensitiveWordReview(@RequestParam("token") String token,@RequestParam(name = "article_id") String articleId){
         return articleService.SensitiveWordReview(token,articleId);
     }
+
+    @RequestMapping(value = "getLatestApprovalArticleUrl",method = RequestMethod.GET)
+    public Map<String, Object> getLatestApprovalArticleUrl(@RequestParam("article_id") String articleId){
+        Map<String, Object> response = new HashMap<>();
+        response.put("latest_approval_article_url", articleService.getLatestApprovalArticleById(articleId));
+        return response;
+    }
 }
