@@ -56,7 +56,7 @@ class AuditorServiceImpl implements AuditorService {
 
     @Override
     public Article getUnauditedArticle(User auditor) throws InsufficientPermissionException, NoUnauditedArticleException {
-        if (!auditor.checkIdentity(Identity.审核员)) {
+        if (!auditor.checkIdentity(Identity.AUDITOR)) {
             throw new InsufficientPermissionException();
         }
         Article article = articleDao.getArticleByStatus(ArticleStatus.SUBMITTED);
@@ -69,7 +69,7 @@ class AuditorServiceImpl implements AuditorService {
 
     @Override
     public boolean audit(User auditor, String articleId, boolean auditResult, String reason) throws InsufficientPermissionException {
-        if (!auditor.checkIdentity(Identity.审核员)) {
+        if (!auditor.checkIdentity(Identity.AUDITOR)) {
             throw new InsufficientPermissionException();
         }
         return true;
