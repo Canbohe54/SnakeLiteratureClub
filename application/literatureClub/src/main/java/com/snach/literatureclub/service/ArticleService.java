@@ -117,17 +117,9 @@ public interface ArticleService {
      */
     Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleStatus> statusList);
 
-    /**
-     *
-     */
-    Article contribute(String token, Article article, MultipartFile mulArticle);
-
     Article getArticleFileById(String articleId);
 
     String getLatestApprovalArticleById(String articleId);
-
-    void lockArticleById(String articleId, String lockedBy);
-    void getPermissions(String articleId, String requester);
 
     /**
      * 返回文章的敏感词审核结果
@@ -342,39 +334,6 @@ class ArticleServiceImpl implements ArticleService {
         return res;
     }
 
-    @Override
-    public Article contribute(String token, Article article, MultipartFile mulArticle) {
-        // 检测token是否合法
-        if (!tokenVerify(token)) {
-            throw new InvalidTokenException();
-        }
-        if(mulArticle == null){
-            throw new NullFileException("发布操作文件不能为空。");
-        }
-        // 获取作者id
-        article.setTextBy(getPayload(token, "id"));
-        // 原始文件
-        try {
-            article.setRaw(mulArticle.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        // 稿件id
-        if (article.getId() == null || article.getId().equals("null")) {
-            //没有稿件id，时间戳生成id
-            article.setId(generateId(IdTools.Type.ARTICLE));
-        } else {
-            //若已有稿件id，则进行更新
-//            return updateArticle(token, imageList, article);
-        }
-        //修改时间
-        Date date = new Date(System.currentTimeMillis());
-        article.setTime(date);
-
-        articleDao.insertArticle(article);
-        return article;
-    }
 
     @Override
     public Article getArticleFileById(String articleId) {
@@ -388,15 +347,6 @@ class ArticleServiceImpl implements ArticleService {
         return latestApprovalArticleUrl;
     }
 
-    @Override
-    public void lockArticleById(String articleId, String lockedBy) {
-
-    }
-
-    @Override
-    public void getPermissions(String articleId, String requester) {
-
-    }
 
     /**
      * 对文章内容进行敏感词审核。

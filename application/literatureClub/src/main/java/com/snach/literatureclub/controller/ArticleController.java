@@ -84,27 +84,6 @@ public class ArticleController {
     }
 
     /**
-     * 锁定文章，将锁定者加入该文章可访问列表
-     * redis设置锁的过期时间
-     * @param articleId 文章id
-     * @param lockedBy 锁定者的id
-     */
-    @RequestMapping(value = "lockArticleById",method = RequestMethod.POST)
-    public void lockArticleById(@RequestParam("article_id") String articleId, @RequestParam(name= "locked_by")String lockedBy){
-
-    }
-
-    /**
-     * 获取文章的访问权限
-     * @param articleId 文章id
-     * @param requester 请求者id
-     */
-    @RequestMapping(value = "getPermissions", method = RequestMethod.GET)
-    public void getPermissions(@RequestParam("article_id") String articleId, @RequestParam(name= "requester")String requester){
-
-    }
-
-    /**
      * 通过id对文章进行敏感词审核
      * @param articleId
      * @return 审核结果

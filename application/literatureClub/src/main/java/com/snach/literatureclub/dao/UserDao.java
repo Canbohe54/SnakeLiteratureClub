@@ -4,6 +4,8 @@ import com.snach.literatureclub.bean.User;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @Mapper
 public interface UserDao {
@@ -21,6 +23,12 @@ public interface UserDao {
     // User Info
     @Select("SELECT * FROM user WHERE id = #{id}")
     User getUserById(String id);
+
+    @Select("SELECT * FROM user WHERE name LIKE '%${name}%'")
+    List<User> getUserByName(String name);
+
+    @Select("SELECT * FROM user WHERE identity = #{identity} AND name LIKE '%${name}%'")
+    List<User> getUserByNameAndIdentity(String name, String identity);
 
     @Insert("UPDATE user SET name = #{user.name}, phone = #{user.phone}, introduction = #{user.introduction}, organization = #{user.organization}, attrs = #{user.attrs} WHERE id = #{user.id}")
     void updateUserInfo(@Param("user") User user);

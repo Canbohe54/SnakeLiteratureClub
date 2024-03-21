@@ -16,6 +16,7 @@ import java.util.Map;
  * status       稿件状态 1：保存成功 2：待审核 3.已发布 4.未通过 0：保存失败
  * attr         稿件其他多值属性，如标签
  * mentor       指导老师id
+ *
  * @see Text
  */
 @Data
@@ -34,8 +35,11 @@ public class Article extends Text {
     String fileType;
     @JsonProperty("latest_approval_article_url")
     String latestApprovalArticleUrl;
+    @JsonProperty("latest_approval_article_url")
+    @Nullable
+    String receivedBy;
 
-    public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr, byte[] rawFile, String mentor, String fileType, String latestApprovalArticleUrl) {
+    public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr, byte[] rawFile, String mentor, String fileType, String latestApprovalArticleUrl, String receivedBy) {
         super(id, time, text, textBy);
         this.status = status;
         this.title = title;
@@ -45,6 +49,7 @@ public class Article extends Text {
         this.mentor = mentor;
         this.fileType = fileType;
         this.latestApprovalArticleUrl = latestApprovalArticleUrl;
+        this.receivedBy = receivedBy;
     }
 
     public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr) {
@@ -55,9 +60,9 @@ public class Article extends Text {
         this.attr = attr;
     }
 
-    public Map<String,Object> getBasicInfo(){
-        Map<String,Object> articleBasicInfo = new HashMap<>();
-        for(Field field : Article.class.getDeclaredFields()){
+    public Map<String, Object> getBasicInfo() {
+        Map<String, Object> articleBasicInfo = new HashMap<>();
+        for (Field field : Article.class.getDeclaredFields()) {
             if (!field.getName().equalsIgnoreCase("raw")) {
                 try {
                     field.setAccessible(true);
@@ -67,7 +72,7 @@ public class Article extends Text {
                 }
             }
         }
-        articleBasicInfo.put("id",this.getId());
+        articleBasicInfo.put("id", this.getId());
         return articleBasicInfo;
     }
 }
