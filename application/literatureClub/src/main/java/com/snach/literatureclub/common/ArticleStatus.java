@@ -15,5 +15,7 @@ public enum ArticleStatus {
     // 正在审核
     BEING_AUDITED,
     // 审核通过，发布
-    PUBLISHED
+    PUBLISHED,
+    // 被杂志社录用
+    RECEIVED
 }

@@ -11,8 +11,18 @@ import java.util.List;
 @Repository
 @Mapper
 public interface ArticleDao {
-    @Select("SELECT * FROM article WHERE status=#{status} LIMIT 1 FOR UPDATE")
-    Article getArticleByStatus(ArticleStatus status);
+
+    // ======================================INSERT==========================================
+
+    /**
+     * 插入作者与稿件关系
+     *
+     * @param contributor_id 作者id
+     * @param article_id     稿件id
+     */
+    @Insert("INSERT INTO contributor_article_list(contributor_id,article_id) VALUES(#{c_id},#{a_id})")
+    void insertRelation(@Param("c_id") String contributor_id, @Param("a_id") String article_id);
+
     /**
      * 插入方法
      *
@@ -22,42 +32,10 @@ public interface ArticleDao {
             "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.attr},#{article.textBy},#{article.raw},#{article.mentor},#{article.fileType})")
     void insertArticle(@Param("article") Article article);
 
-    /**
-     * 更新稿件详细信息,包括包括标题、描述和内容
-     *
-     * @param article 封装有稿件信息的Article对象
-     * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
-     */
-    @Update("UPDATE article SET " +
-                "title = #{article.title}, " +
-                "description = #{article.description}, " +
-                "text = #{article.text}, " +
-                "`time` = #{article.time}, " +
-                "status = #{article.status}, " +
-                "attr = #{article.attr}, " +
-                "raw = #{article.raw}, " +
-                "mentor = #{article.mentor}, " +
-                "file_type = #{article.fileType} " +
-            "WHERE id = #{article.id}")
-    int updateArticleDetail(@Param("article") Article article);
+    // ======================================SELECT==========================================
 
-    /**
-     * 更新稿件基础信息,包括包括标题和描述
-     *
-     * @param article 封装有稿件信息的Article对象
-     * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
-     */
-    @Update("UPDATE article SET title = #{article.title}, description = #{article.description}, time = #{article.time},status = #{article.status}, attr = #{article.attr} " +
-            "WHERE id = #{article.id}")
-    int updateArticleInfo(@Param("article") Article article);
-
-    /**
-     * 根据稿件id进行删除
-     *
-     * @param id 稿件id
-     */
-    @Delete("DELETE FROM article WHERE id = #{id}")
-    void deleteArticleById(@Param("id") String id);
+    @Select("SELECT * FROM article WHERE status=#{status} LIMIT 1 FOR UPDATE")
+    Article getArticleByStatus(ArticleStatus status);
 
     /**
      * 根据作者id查找其稿件，返回稿件id、标题、描述和时间
@@ -65,9 +43,6 @@ public interface ArticleDao {
      * @param contributor_id 作者id
      * @return
      */
-//    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr " +
-//            "FROM article a left join contributor_article_list c on a.id = c.article_id " +
-//            "WHERE c.contributor_id = #{contributor_id}")
     @Select({"<script>",
             "SELECT ",
             "a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr ",
@@ -151,24 +126,6 @@ public interface ArticleDao {
     })
     List<Article> getArticlesByKeyword(String keyword, @Param("items") List<ArticleStatus> statusList);
 
-    /**
-     * 插入作者与稿件关系
-     *
-     * @param contributor_id 作者id
-     * @param article_id     稿件id
-     */
-    @Insert("INSERT INTO contributor_article_list(contributor_id,article_id) VALUES(#{c_id},#{a_id})")
-    void insertRelation(@Param("c_id") String contributor_id, @Param("a_id") String article_id);
-
-    /**
-     * 更新稿件保存状态
-     *
-     * @param status 稿件状态 （1：保存成功 2：待审核 3.已发布 4.未通过 0：保存失败）
-     * @param id     文章id
-     * @return
-     */
-    @Update("UPDATE article SET status = #{status} WHERE id = #{id}")
-    int updateStatus(@Param("status") ArticleStatus status, @Param("id") String id);
 
     /**
      * 判断稿件是否属于该作者
@@ -186,6 +143,60 @@ public interface ArticleDao {
     @Select("SELECT latest_approval_article_url FROM article WHERE id=#{article_id}")
     String getLatestApprovalArticleUrlById(@Param("article_id") String articleId);
 
+    // ======================================UPDATE==========================================
+
     @Update("UPDATE article SET latest_approval_article_url = #{latest_approval_article_url} WHERE id = #{article_id}")
     int updateLatestApprovalArticleUrl(@Param("article_id") String articleId, @Param("latest_approval_article_url") String latestApprovalArticleUrl);
+
+    /**
+     * 更新稿件保存状态
+     *
+     * @param status 稿件状态 （1：保存成功 2：待审核 3.已发布 4.未通过 0：保存失败）
+     * @param id     文章id
+     * @return
+     */
+    @Update("UPDATE article SET status = #{status} WHERE id = #{id}")
+    int updateStatus(@Param("status") ArticleStatus status, @Param("id") String id);
+
+    /**
+     * 更新稿件基础信息,包括包括标题和描述
+     *
+     * @param article 封装有稿件信息的Article对象
+     * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
+     */
+    @Update("UPDATE article SET title = #{article.title}, description = #{article.description}, time = #{article.time},status = #{article.status}, attr = #{article.attr} " +
+            "WHERE id = #{article.id}")
+    int updateArticleInfo(@Param("article") Article article);
+
+
+    @Update("UPDATE article SET received_by = #{receivedBy} WHERE id = #{articleId}")
+    int updateReceivedBy(String articleId, String receivedBy);
+
+    /**
+     * 更新稿件详细信息,包括包括标题、描述和内容
+     *
+     * @param article 封装有稿件信息的Article对象
+     * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
+     */
+    @Update("UPDATE article SET " +
+            "title = #{article.title}, " +
+            "description = #{article.description}, " +
+            "text = #{article.text}, " +
+            "`time` = #{article.time}, " +
+            "status = #{article.status}, " +
+            "attr = #{article.attr}, " +
+            "raw = #{article.raw}, " +
+            "mentor = #{article.mentor}, " +
+            "file_type = #{article.fileType} " +
+            "WHERE id = #{article.id}")
+    int updateArticleDetail(@Param("article") Article article);
+
+    // ======================================DELETE==========================================
+    /**
+     * 根据稿件id进行删除
+     *
+     * @param id 稿件id
+     */
+    @Delete("DELETE FROM article WHERE id = #{id}")
+    void deleteArticleById(@Param("id") String id);
 }

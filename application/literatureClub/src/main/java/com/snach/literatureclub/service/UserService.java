@@ -1,5 +1,7 @@
 package com.snach.literatureclub.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.utils.IdManager;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ public interface UserService {
 
     // User Info
     User getUserBasicInfo(String id);
+    PageInfo getUserBasicInfoByName(String name, String identity, int pageNum, int pageSize);
     void updateUserBasicInfo(String token, User user);
 }
 @Transactional(rollbackFor = Exception.class)
@@ -57,6 +60,15 @@ class UserServiceImpl implements UserService {
         }
         user.setPassword("<SECRET>");
         return user;
+    }
+
+    @Override
+    public PageInfo getUserBasicInfoByName(String name, String identity, int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        if(identity != null){
+            return new PageInfo<>(userDao.getUserByNameAndIdentity(name,identity));
+        }
+        return new PageInfo<>(userDao.getUserByName(name));
     }
 
     public void updateUserBasicInfo(String token, User user) {

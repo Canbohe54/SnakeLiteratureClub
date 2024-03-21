@@ -33,9 +33,12 @@ public class Article extends Text {
     @JsonProperty("file_type")
     String fileType;
     @JsonProperty("latest_approval_article_url")
-    String latestApprovalArticleUrl; //最终审核的文件url
+    String latestApprovalArticleUrl;
+    @JsonProperty("latest_approval_article_url")
+    @Nullable
+    String receivedBy;
 
-    public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr, byte[] rawFile, String mentor, String fileType, String latestApprovalArticleUrl) {
+    public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr, byte[] rawFile, String mentor, String fileType, String latestApprovalArticleUrl, String receivedBy) {
         super(id, time, text, textBy);
         this.status = status;
         this.title = title;
@@ -45,6 +48,7 @@ public class Article extends Text {
         this.mentor = mentor;
         this.fileType = fileType;
         this.latestApprovalArticleUrl = latestApprovalArticleUrl;
+        this.receivedBy = receivedBy;
     }
 
     public Article(String id, String text, Date time, String textBy, String title, String description, ArticleStatus status, String attr) {
@@ -55,9 +59,9 @@ public class Article extends Text {
         this.attr = attr;
     }
 
-    public Map<String,Object> getBasicInfo(){
-        Map<String,Object> articleBasicInfo = new HashMap<>();
-        for(Field field : Article.class.getDeclaredFields()){
+    public Map<String, Object> getBasicInfo() {
+        Map<String, Object> articleBasicInfo = new HashMap<>();
+        for (Field field : Article.class.getDeclaredFields()) {
             if (!field.getName().equalsIgnoreCase("raw")) {
                 try {
                     field.setAccessible(true);
@@ -67,7 +71,7 @@ public class Article extends Text {
                 }
             }
         }
-        articleBasicInfo.put("id",this.getId());
+        articleBasicInfo.put("id", this.getId());
         return articleBasicInfo;
     }
 }

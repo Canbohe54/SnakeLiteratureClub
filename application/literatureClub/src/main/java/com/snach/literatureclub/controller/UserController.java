@@ -1,11 +1,14 @@
 package com.snach.literatureclub.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.service.UserService;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -49,6 +52,10 @@ public class UserController {
         return response;
     }
 
+    @RequestMapping(value = "getUserBasicInfoByName", method = RequestMethod.GET)
+    public PageInfo getUserBasicInfoByName(String name, @Nullable String identity, @RequestParam("page_num") int pageNum, @RequestParam("page_size") int pageSize){
+        return userService.getUserBasicInfoByName(name, identity, pageNum, pageSize);
+    }
     @RequestMapping(value = "updateUserInfo", method = RequestMethod.POST)
     public Map<String, Object> updateUserInfo(String token, User user) {
         userService.updateUserBasicInfo(token, user);
