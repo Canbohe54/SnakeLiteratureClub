@@ -55,10 +55,11 @@ public class ArticleController {
      * @param article_id 稿件id
      * @return 稿件详细信息, 执行状态
      */
-    @ResponseNotIntercept
     @RequestMapping(value = "articleDetail", method = RequestMethod.GET)
-    public Map<String, Object> articleDetail(@RequestParam("article_id") String article_id) {
-        return articleService.getArticleById(article_id);
+    public Map<String, Object> articleDetail(String token, String article_id) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("article", articleService.getArticleById(token, article_id));
+        return response;
     }
 
     @ResponseNotIntercept
@@ -92,22 +93,24 @@ public class ArticleController {
     /**
      * 锁定文章，将锁定者加入该文章可访问列表
      * redis设置锁的过期时间
+     *
      * @param articleId 文章id
-     * @param lockedBy 锁定者的id
+     * @param lockedBy  锁定者的id
      */
     @RequestMapping(value = "lockArticleById",method = RequestMethod.POST)
-    public void lockArticleById(@RequestParam("article_id") String articleId, @RequestParam(name= "locked_by")String lockedBy){
-
+    public void lockArticleById(@RequestParam("article_id") String articleId, long expire, @RequestParam(name= "locked_by")String lockedBy){
+        articleService.lockArticleById(articleId, expire, lockedBy);
     }
 
     /**
      * 获取文章的访问权限
+     *
      * @param articleId 文章id
      * @param requester 请求者id
      */
     @RequestMapping(value = "getPermissions", method = RequestMethod.GET)
-    public void getPermissions(@RequestParam("article_id") String articleId, @RequestParam(name= "requester")String requester){
-
+    public void getPermissions(@RequestParam("article_id") String articleId, @RequestParam(name = "requester") String requester) {
+        articleService.getPermissions(articleId, requester);
     }
 
     /**
@@ -118,8 +121,8 @@ public class ArticleController {
      */
     @ResponseNotIntercept
     @RequestMapping(value = "SensitiveWordReview", method = RequestMethod.GET)
-    public Map<String, Object> SensitiveWordReview(@RequestParam("token") String token,@RequestParam(name = "article_id") String articleId) throws IOException {
-        return articleService.SensitiveWordReview(token,articleId);
+    public Map<String, Object> SensitiveWordReview(@RequestParam("token") String token, @RequestParam(name = "article_id") String articleId) throws IOException {
+        return articleService.SensitiveWordReview(token, articleId);
     }
 
     /**

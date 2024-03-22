@@ -1,10 +1,5 @@
 package com.snach.literatureclub.common;
 
-import lombok.Getter;
-
-import java.util.Date;
-
-@Getter
 public enum ArticleStatus {
     // 草稿状态，未提交
     ROUGH,

@@ -18,12 +18,21 @@ public class RedisConnectionFactory {
 
     private static volatile RedisConnectionFactory connectionFactory;
 
-    @Resource
-    private JedisPool jedisPool;
+    private static JedisPool jedisPool;
 
     private static Map<DatabaseServiceType, Integer> redisDatabaseNumberMap;
 
     private RedisConnectionFactory() {}
+
+    @Resource
+    private void loadJedisPool(JedisPool pool) {
+        if (pool == null) {
+            logger.warn("jedisPool at RedisConnectionFactory is null.");
+        } else {
+            logger.info("jedisPool initialized successfully at RedisConnectionFactory.");
+        }
+        RedisConnectionFactory.jedisPool = pool;
+    }
 
     public static RedisConnectionFactory getConnectionFactory() {
         if (connectionFactory == null) {

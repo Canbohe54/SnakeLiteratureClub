@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleStatus;
+import com.snach.literatureclub.common.exception.InsufficientPermissionException;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.common.exception.NullFileException;
 import com.snach.literatureclub.dao.ArticleDao;
@@ -11,6 +12,8 @@ import com.snach.literatureclub.utils.IdTools;
 import com.snach.literatureclub.utils.QiniuKodoUtil;
 import com.snach.literatureclub.utils.SensitiveWordsTools;
 import com.snach.literatureclub.utils.TextExtractionTools;
+import com.snach.literatureclub.utils.*;
+import jakarta.annotation.Resource;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
 
 import static com.snach.literatureclub.utils.TokenTools.getPayload;
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
@@ -35,20 +39,6 @@ import static com.snach.literatureclub.utils.IdTools.generateId;
 
 @Service
 public interface ArticleService {
-    /**
-     * 用户新增稿件，id由时间戳生成，将稿件根据action进行保存
-     * 若action为草稿保存则无需审核，为发布则需要审核
-     * 返回稿件基本信息（标题、描述、时间和id）和各事件执行状态
-     * 返回格式{article_id: #{String}, title: #{String}, description: #{String}, time:#{Date}, fileStatue: #{INTEGER}, statusMsg: #{STRING} }
-     *
-     * @param token     用于验证是否过期以及获取作者id
-     * @param article   稿件信息 id初次创建为null
-     * @param imageList 文献对应的参考插图列表
-     * @return 稿件基本信息（标题、描述、时间和id）,保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
-     * @see Article
-     */
-    Map<String, Object> addArticle(String token, List<MultipartFile> imageList, Article article);
-
     /**
      * 用户更改稿件基础信息，包括标题和描述，根据id进行更新，同时更新修改时间
      * 返回格式{article_id: #{String}, title: #{String}, description: #{String}, time:#{Date}, fileStatue: #{INTEGER}, statusMsg: #{STRING} }
@@ -98,10 +88,10 @@ public interface ArticleService {
     /**
      * 根据稿件id查找稿件详细信息，包括标题、描述、修改时间和内容，用于编辑界面显示
      *
-     * @param id 稿件id
+     * @param articleId 稿件id
      * @return 稿件详细信息, 执行状态 返回格式{ article: #{ARTICLE}, statusMsg: #{STRING}}
      */
-    Map<String, Object> getArticleById(String id);
+    Article getArticleById(String token, String articleId);
 
     /**
      * 返回所有稿件的基础信息
@@ -131,7 +121,7 @@ public interface ArticleService {
 
     String getLatestApprovalArticleById(String articleId);
 
-    void lockArticleById(String articleId, String lockedBy);
+    void lockArticleById(String articleId, long expire ,String lockedBy);
     void getPermissions(String articleId, String requester);
 
     PageInfo getReceivedArticleById(String auditorId, int pageNum, int pageSize);
@@ -160,72 +150,9 @@ class ArticleServiceImpl implements ArticleService {
 
     @Autowired
     private TextExtractionTools textExtractionTools;
-    @Override
-    public Map<String, Object> addArticle(String token, List<MultipartFile> imageList, Article article) {
-        // 检测token是否合法
-        if (!tokenVerify(token)) {
-            throw new InvalidTokenException();
-        }
-        Map<String, Object> res = new HashMap<String, Object>();
 
-        // 获取作者id
-        String contributor_id = getPayload(token, "id");
-
-        if (article.getId() == null || article.getId().equals("null")) {
-            //没有稿件id，时间戳生成id
-            article.setId(generateId(IdTools.Type.ARTICLE));
-        } else {
-            //若已有稿件id，则进行更新
-            return updateArticle(token, imageList, article);
-        }
-        article.setTextBy(contributor_id);
-        //修改时间
-        Date date = new Date(System.currentTimeMillis());
-        article.setTime(date);
-
-        if (imageList != null) {
-            //上传图片
-            StringBuilder allImageURL = new StringBuilder("[");
-            for (int i = 0; i < imageList.size(); i++) {
-                try {
-                    MultipartFile file = imageList.get(i);
-                    File f = new File(file.getOriginalFilename());
-                    BufferedOutputStream out = new BufferedOutputStream(
-                            new FileOutputStream(f));
-                    out.write(file.getBytes());
-                    out.flush();
-                    out.close();
-
-                    String imageName = article.getId() + "/" + f.getName();
-                    qiniuKodoUtil.upload(f, "articles/" + imageName);
-                    allImageURL.append("\"").append(qiniuKodoUtil.getFileUrl(article.getId())).append("\"");
-                    if (i != imageList.size() - 1) {
-                        allImageURL.append(",");
-                    }
-                    File tem = new File(f.toURI());
-                    if (!f.delete())
-                        System.out.println("删除失败");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            allImageURL.append("]");
-        }
-
-        //插入article表
-        articleDao.insertArticle(article);
-        // 稿件投稿者关系更新
-        articleDao.insertRelation(contributor_id, article.getId());
-
-
-        res.put("article_id", article.getId());
-        res.put("title", article.getTitle());
-        res.put("description", article.getDescription());
-        res.put("time", article.getTime());
-        res.put("fileStatue", 3);
-        res.put("statusMsg", "Success.");
-        return res;
-    }
+    @Resource
+    private ArticleLocker articleLocker;
 
     @Override
     public Map<String, Object> updateArticle(String token, String id, String title, String description, int status, String attr) {
@@ -327,11 +254,8 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Map<String, Object> getArticleById(String id) {
-        Map<String, Object> res = new HashMap<String, Object>();
-        res.put("article", articleDao.getArticleById(id));
-        res.put("statusMsg", "Success.");
-        return res;
+    public Article getArticleById(String token, String articleId) {
+        return articleDao.getArticleById(articleId);
     }
 
     @Override
@@ -406,13 +330,20 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void lockArticleById(String articleId, String lockedBy) {
-
+    public void lockArticleById(String articleId, long expire, String lockedBy) {
+        if (articleLocker.checkLock(articleId) && !articleLocker.checkLockPermission(articleId, lockedBy)) {
+            throw new InsufficientPermissionException();
+        } else {
+            String authorId = articleDao.getArticleById(articleId).getTextBy();
+            articleLocker.lock(articleId, expire, authorId, TokenTools.getPayload(lockedBy, "id"));
+        }
     }
 
     @Override
     public void getPermissions(String articleId, String requester) {
-
+        if (!articleLocker.checkLockPermission(articleId, requester)) {
+            throw new InsufficientPermissionException();
+        }
     }
 
     /**
@@ -471,7 +402,7 @@ class ArticleServiceImpl implements ArticleService {
         return res;
    }
 
-    public Map<String, Object> SensitiveWordReview2(String token, String id) throws IOException {
+    public Map<String, Object> SensitiveWordReview2(String token, String id) {
         // 验证用户令牌的合法性
         if (!tokenVerify(token)) {
             throw new InvalidTokenException();
@@ -490,14 +421,15 @@ class ArticleServiceImpl implements ArticleService {
         }
         else {
             // 将fileContent写入临时文件
-            File tempFile = File.createTempFile("tempFile", ".docx");
+            File tempFile;
             try {
+                tempFile = File.createTempFile("tempFile", ".docx");
                 Files.write(tempFile.toPath(), fileContent);
+                // 提取文件中的文本内容
+                txt = TextExtractionTools.extractTextFromDocx(tempFile.getCanonicalPath());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new NullFileException();
             }
-            // 提取文件中的文本内容
-            txt = TextExtractionTools.extractTextFromDocx(tempFile.getCanonicalPath());
             // 删除临时文件
             tempFile.delete();
         }
