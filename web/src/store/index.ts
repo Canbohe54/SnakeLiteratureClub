@@ -7,12 +7,12 @@ export default createStore({
     userInfo: {
       id: '',
       name: '',
+      phone: '',
       identity: '未登录',
-      unit: '',
+      organization: '',
       introduction: '',
-      email: '',
-      avatar: '',
-      stuGrade: ''
+      pictureUrl: '',
+      attrs:''
     }
   },
   getters: {
@@ -37,12 +37,12 @@ export default createStore({
       const parsedUserInfo = {
         id: userInfo.id,
         name: userInfo.name,
-        identity: userInfo.group,
-        unit: userInfo.organization,
+        phone: userInfo.phone,
+        identity: userInfo.identity,
+        organization: userInfo.organization,
         introduction: userInfo.introduction,
-        email: userInfo.email,
-        avatar: userInfo.pictureUrl,
-        stuGrade: userInfo.transformedAttrs === undefined ? '' : userInfo.transformedAttrs['年级']
+        pictureUrl: userInfo.pictureUrl,
+        attrs: userInfo.attrs
       }
       setCookie('userInfo', JSON.stringify(parsedUserInfo))
     },

@@ -11,11 +11,11 @@
             <div class="user-info-detail">
                 <p class="user-info-detail-p">
                     <el-text>单位：</el-text>
-                <el-text>{{ userInfo.unit }}</el-text>
+                <el-text>{{ userInfo.organization }}</el-text>
                 </p>
                 <p class="user-info-detail-p">
-                    <el-text>邮箱：</el-text>
-                <el-text>{{ userInfo.email }}</el-text>
+                    <el-text>电话：</el-text>
+                <el-text>{{ userInfo.phone }}</el-text>
                 </p>
                 <p class="user-info-detail-p">
                     <el-text>个人简介：</el-text>
@@ -43,20 +43,22 @@ const route = useRoute()
 interface UserInfo extends AttributeAddableObject{
   id: string,
   name: string,
+  phone: string,
   identity: string,
-  unit: string,
+  organization: string,
   introduction: string,
-  email: string,
-  avatar: string
+  pictureUrl: string,
+  attrs: string
 }
 const userInfo = ref<UserInfo>({
   id: '',
   name: '',
-  identity: '',
-  unit: '',
+  phone: '',
+  identity: '未登录',
+  organization: '',
   introduction: '',
-  email: '',
-  avatar: ''
+  pictureUrl: '',
+  attrs:''
 })
 
 const isUserMyFollowed = ref('false');
@@ -69,16 +71,19 @@ const isUserMyFollowed = ref('false');
   await SYNC_GET('/usr/getUserBasicInfo', {
     user_id: route.params.id
   }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      console.log(response)
-      let detail = response.data['user_info']
-      userInfo.value.avatar = detail.pictureUrl
+    console.log(response)
+    if (response.status === 200 && response.data.code === 2001) {
+      // console.log(response)
+      let detail = response.data.data['user_info']
+      console.log(detail)
       userInfo.value.id = detail.id
-      userInfo.value.email = detail.email
       userInfo.value.name = detail.name
-      userInfo.value.unit = detail.organization
+      userInfo.value.phone = detail.phone
+      userInfo.value.organization = detail.organization
       userInfo.value.identity = detail.group
       userInfo.value.introduction = detail.introduction
+      userInfo.value.pictureUrl = detail.pictureUrl
+      userInfo.value.attrs = detail.attrs
       userTagType.value = identityTagType(userInfo.value.identity)
     } else {
       console.log('response error')
