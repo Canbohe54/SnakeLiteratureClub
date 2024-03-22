@@ -1,18 +1,37 @@
 package com.snach.literatureclub.utils;
 
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import toolgood.words.IllegalWordsSearch;
 import toolgood.words.IllegalWordsSearchResult;
 import toolgood.words.StringSearch;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@Component
 public class SensitiveWordsTools {
+    private static final Logger logger = LoggerFactory.getLogger(SensitiveWordsTools.class);
 
+    private static final String sensitiveWordsFilePath;
+
+    private static final List<String> sensitiveWordsList;
+
+    private static final StringSearch searcher = new StringSearch();
+
+    private static final IllegalWordsSearch harderSearcher = new IllegalWordsSearch();
+
+    static {
+        // read the sensitive words list
+        sensitiveWordsFilePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("sensi_words.txt")).getPath();
+        sensitiveWordsList = readTxt(sensitiveWordsFilePath);
+        // set the keywords of searchers
+        searcher.SetKeywords(sensitiveWordsList);
+        harderSearcher.SetKeywords(sensitiveWordsList);
+    }
 
     /**
      * 根据文件路径获取到list集合
@@ -20,19 +39,18 @@ public class SensitiveWordsTools {
      * @return
      */
     public static List<String> readTxt(String filePath) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(filePath));
-            String line = null;
+            String line;
             while ((line = br.readLine()) != null) {
                 list.add(line);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            logger.error("IOException(" + filePath + ") occurred. " + e.getMessage());
         }
         return list;
     }
-
 
     /**
      * 判断是否存在敏感词
@@ -40,11 +58,7 @@ public class SensitiveWordsTools {
      * @return
      */
     public static Boolean judgeSensitivityWord(String txt) {
-        String path = Thread.currentThread().getContextClassLoader().getResource("sensi_words.txt").getPath();
-        List<String> list = readTxt(path);
-        StringSearch iwords = new StringSearch ();
-        iwords.SetKeywords(list);
-        return iwords.ContainsAny(txt);
+        return searcher.ContainsAny(txt);
     }
 
     /**
@@ -52,20 +66,16 @@ public class SensitiveWordsTools {
      * @param txt
      * @return 违禁词列表
      */
-    public static List<String> FindAllWords(String txt) {
-        String path = Thread.currentThread().getContextClassLoader().getResource("sensi_words.txt").getPath();
-        List<String> list = readTxt(path);
-        StringSearch iwords = new StringSearch ();
-        iwords.SetKeywords(list);
-        return iwords.FindAll(txt);
+    private static List<String> findAllWords(String txt) {
+        return searcher.FindAll(txt);
     }
 
-    public static List<IllegalWordsSearchResult> FindAllWords2(String txt) {
-        String path = Thread.currentThread().getContextClassLoader().getResource("sensi_words.txt").getPath();
-        List<String> list = readTxt(path);
-        IllegalWordsSearch iwords = new IllegalWordsSearch();
-        iwords.SetKeywords(list);
-        return iwords.FindAll(txt);
+    private static List<IllegalWordsSearchResult> strictFindAllWords(String txt) {
+        return harderSearcher.FindAll(txt);
+    }
+
+    public static List<?> findAllSensitiveWords(String txt, boolean useStrict) {
+        return useStrict ? strictFindAllWords(txt) : findAllWords(txt);
     }
 
     /**
@@ -75,10 +85,6 @@ public class SensitiveWordsTools {
      * @return
      */
     public static String filterSensitivityWord(String txt,char replace){
-        String path = Thread.currentThread().getContextClassLoader().getResource("sensi_words.txt").getPath();
-        List<String> list = readTxt(path);
-        StringSearch iwords = new StringSearch ();
-        iwords.SetKeywords(list);
-        return iwords.Replace(txt,replace);
+        return searcher.Replace(txt,replace);
     }
 }
