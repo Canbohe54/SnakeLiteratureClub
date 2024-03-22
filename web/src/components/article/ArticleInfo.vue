@@ -40,7 +40,7 @@ const props = defineProps({
         organization: String, //单位
         grade: String, //年级
         mentor: String, //导师
-        descrption: String, //描述
+        description: String, //描述
         status: String, //状态
         time: String, //时间
         mark: Number, //分数
@@ -60,7 +60,7 @@ const testInfo = reactive({
     organization: '下北泽中学',
     grade: '五年级',
     mentor: '野兽先辈',
-    descrption: '这是一篇关于沼气动力学的研究论文，主要研究了沼气的产生、利用和储存等方面的问题。这世间有关沼气动力学的资料少之又少，为了填补这方面的空缺，作者田所浩二潜心研究，不断付出实践，终于完成了这一篇大作。在这篇论文中，作者详细介绍了沼气的产生原理、利用方法和储存技术，为沼气动力学的研究提供了新的思路和方法。',
+    description: '这是一篇关于沼气动力学的研究论文，主要研究了沼气的产生、利用和储存等方面的问题。这世间有关沼气动力学的资料少之又少，为了填补这方面的空缺，作者田所浩二潜心研究，不断付出实践，终于完成了这一篇大作。在这篇论文中，作者详细介绍了沼气的产生原理、利用方法和储存技术，为沼气动力学的研究提供了新的思路和方法。',
     status: 'PUBLISHED',
     time: '1919年8月10日',
     journal: '下北泽日报'
