@@ -80,7 +80,7 @@ const identityDepedOption = reactive([
     {
         index: '5',
         title: '我要投稿',
-        route: '/'
+        route: '/articleEditor'
     },
     {
         index: '6',

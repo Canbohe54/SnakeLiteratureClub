@@ -121,8 +121,10 @@ public interface ArticleService {
 
     String getLatestApprovalArticleById(String articleId);
 
-    void lockArticleById(String articleId, long expire ,String lockedBy);
-    void getPermissions(String articleId, String requester);
+    boolean lockArticleById(String articleId, long expire ,String lockedBy);
+
+    boolean unLockArticleById(String articleId);
+    boolean getPermissions(String articleId, String requester);
 
     PageInfo getReceivedArticleById(String auditorId, int pageNum, int pageSize);
 
@@ -330,20 +332,28 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void lockArticleById(String articleId, long expire, String lockedBy) {
+    public boolean lockArticleById(String articleId, long expire, String lockedBy) {
         if (articleLocker.checkLock(articleId) && !articleLocker.checkLockPermission(articleId, lockedBy)) {
             throw new InsufficientPermissionException();
         } else {
             String authorId = articleDao.getArticleById(articleId).getTextBy();
             articleLocker.lock(articleId, expire, authorId, TokenTools.getPayload(lockedBy, "id"));
         }
+        return true;
     }
 
     @Override
-    public void getPermissions(String articleId, String requester) {
+    public boolean unLockArticleById(String articleId) {
+        articleLocker.unlock(articleId);
+        return true;
+    }
+
+    @Override
+    public boolean getPermissions(String articleId, String requester) {
         if (!articleLocker.checkLockPermission(articleId, requester)) {
             throw new InsufficientPermissionException();
         }
+        return true;
     }
 
     /**
