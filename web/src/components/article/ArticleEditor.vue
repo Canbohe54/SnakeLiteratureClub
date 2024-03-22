@@ -45,7 +45,7 @@
           </div>
         </el-tooltip>
         <div class="upload-file-name-list">
-          <el-tag class="upload-file-name" v-if="Object.keys(articleDetail.raw).length != 0" closable effect="light"
+          <el-tag class="upload-file-name" v-if="articleDetail.raw.size !== 0" closable effect="light"
                   @close="handleFileRemove">
             {{ articleDetail.raw.name }}
           </el-tag>
@@ -77,25 +77,25 @@
                 type="textarea"
                 placeholder="请输入描述（建议100字以内）"
             />
-<!--            <div class="more-option-head"><span>参考插图</span></div>-->
-<!--            <el-upload-->
-<!--                class="upload-file-entry"-->
-<!--                v-model:file-list="imageFileList"-->
-<!--                action="''"-->
-<!--                list-type="picture-card"-->
-<!--                :on-preview="handlePictureCardPreview"-->
-<!--                :auto-upload="false"-->
-<!--                :on-remove="imgRemove"-->
-<!--                :on-success="imgSuccess"-->
-<!--                :on-error="imgError"-->
-<!--                accept="image/jpg,image/jpeg,image/png"-->
-<!--                multiple-->
-<!--            >-->
-<!--              <el-icon>-->
-<!--                <Plus/>-->
+            <div class="more-option-head"><span>参考插图</span></div>
+            <el-upload
+                class="upload-file-entry"
+                v-model:file-list="imageFileList"
+                action="''"
+                list-type="picture-card"
+                :on-preview="handlePictureCardPreview"
+                :auto-upload="false"
+                :on-remove="imgRemove"
+                :on-success="imgSuccess"
+                :on-error="imgError"
+                accept="image/jpg,image/jpeg,image/png"
+                multiple
+            >
+              <el-icon>
+                <Plus/>
 
-<!--              </el-icon>-->
-<!--            </el-upload>-->
+              </el-icon>
+            </el-upload>
 
             <div class="more-option-head"><span>文章标签</span></div>
             <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
@@ -269,6 +269,7 @@ const save = async () => {
 // 发布文章
 const release = async () => {
   let param = new FormData();
+  let param2 = new FormData();
 
   param.append("raw_file", articleDetail.raw)
   param.append("token", 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjExNDUxNCJ9.AzE55n2_JDJolF-UQ94Qgun_szDCqsu_KYDDD6Tcebw')
@@ -282,6 +283,7 @@ const release = async () => {
   param.append("attr", `{"tags":${articleDetail.attr}}`)
   console.log(articleDetail.file_type)
   param.append("fileType", articleDetail.file_type)
+
 
   await SYNC_POST('/contributor/contribute', param, async (response) => {
         if (response.status === 200 && response.data.message === 'Success.') {

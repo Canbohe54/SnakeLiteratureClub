@@ -60,6 +60,7 @@ import { ref, reactive } from 'vue';
 import { POST } from '@/scripts/Axios';
 import { useRouter } from 'vue-router';
 import AvatarSelection from './AvatarSelection.vue';
+import {ChineseLanguageMap} from "@/scripts/common/ChineseLanguageMap";
 
 const router = useRouter()
 
@@ -177,24 +178,36 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
       let isPosted = false
       // TODO 加入额外选项
       POST('/usr/reg', {
-        username: regForm.username,
-        identity: regForm.identity,
-        organization: regForm.organization,
-        attribute: regForm.attribute,
-        information: regForm.information,
-        password: regForm.password,
+        name: regForm.username,
         phone: regForm.phone,
-    }, (response) => {
-        if (response.status === 200 && response.data.statusMsg === 'Success.') {
+        password: regForm.password,
+        identity: regForm.identity,
+        introduction: regForm.information,
+        organization: regForm.organization,
+        pictureUrl: `{ "avatar": "${regForm.avatar.avatar}", "color": "${regForm.avatar.color}" }`,
+        attrs: `{ "${ChineseLanguageMap.get(pageAttr.value)}": "${regForm.attribute}" }`
+      }, (response) => {
+        if (response.status === 200 && response.data.code === 2001) {
           ElMessage({
             message: '注册成功',
             type: 'success',
             duration: 2000
           })
           router.push('/login')
-        } else if (response.status === 200 && response.data.statusMsg === 'Email already exists.') { // 邮箱已存在
+        } else if (response.status === 200 && response.data.message === 'Email already exists.') { //
+      }
+        attrs: `{ "${pageAttr.value}": "${regForm.attribute}" }`
+    }, (response) => {
+        if (response.status === 200 && response.data.code === 2001) {
+          ElMessage({
+            message: '注册成功',
+            type: 'success',
+            duration: 2000
+          })
+          router.push('/login')
+        } else if (response.status === 200 && response.data.message === 'Email already exists.') { // 邮箱已存在
           ElMessage.error('邮箱已存在')
-        } else if (response.status === 200 && response.data.statusMsg === 'Wrong Verifying Code.') { // 验证码错误
+        } else if (response.status === 200 && response.data.message === 'Wrong Verifying Code.') { // 验证码错误
           ElMessage.error('验证码错误')
         } else {
           ElMessage.error('注册失败，请检查网络连接')

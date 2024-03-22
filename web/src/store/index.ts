@@ -42,7 +42,7 @@ export default createStore({
         introduction: userInfo.introduction,
         email: userInfo.email,
         avatar: userInfo.pictureUrl,
-        stuGrade: userInfo.attr === '' ? '' : JSON.parse(userInfo.attr)['grade']
+        stuGrade: userInfo.transformedAttrs === undefined ? '' : userInfo.transformedAttrs['年级']
       }
       setCookie('userInfo', JSON.stringify(parsedUserInfo))
     },

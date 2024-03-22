@@ -28,11 +28,13 @@ public class UserController {
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public Map<String, Object> login(@RequestParam("id") String id, @RequestParam("password") String password) {
         String token = userService.login(id, password);
+//        System.out.println("token: " + token);
         User user = userService.getUserBasicInfo(id);
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
         response.put("userInfo", user);
+//        System.out.println("测试");
         return response;
     }
 

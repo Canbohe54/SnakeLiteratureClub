@@ -15,7 +15,7 @@
                     <!--忘记密码，以后再做-->
                 </el-col>
                 <el-col :sm="8" :xs="24" style="text-align: center;">
-                    <el-button type="primary" >立即登录</el-button>
+                    <el-button type="primary" @click="onSubmit" >立即登录</el-button>
                 </el-col>
                 <el-col :sm="8" :xs="24" class="switchContainer">
                     <router-link to="/register" class="switchLogin">还没有账户？点击注册</router-link>
@@ -30,6 +30,7 @@ import { ElMessage } from 'element-plus';
 import { ref, reactive } from 'vue';
 import { POST } from '@/scripts/Axios';
 import { useRouter } from 'vue-router';
+import store from "@/store";
 
 const router = useRouter()
 
@@ -43,6 +44,29 @@ async function onSubmit() {
         ElMessage.error('账号或密码不能为空')
         return
     }
+  POST('/usr/login', { id: loginForm.userid, password: loginForm.password }, async (response) => {
+    // console.log(response)
+    // console.log('id:' + loginForm.userid)
+    if (response.status === 200 && response.data.message === 'Success.') {
+      console.log(response.data)
+      store.commit('setToken', response.data.data.token)
+      store.commit('setUserInfo', response.data.data.userInfo)
+      ElMessage.success('登录成功')
+      console.log(document.cookie)
+      console.log('push')
+      await router.push('/')
+      location.reload()
+    } else {
+      if (response.data.statusMsg === 'Nonexistent') {
+        ElMessage.error('用户不存在')
+      } else if (response.data.statusMsg === 'Password error.') {
+        ElMessage.error('用户名或密码错误')
+      } else {
+        ElMessage.error(response.data.statusMsg)
+        console.log(response.data.statusMsg)
+      }
+    }
+  })
 }
 
 </script>

@@ -16,8 +16,8 @@ public interface UserDao {
     @Select("SELECT id FROM user WHERE phone = #{phone} AND password = #{password}")
     String loginByPhone(String phone, String password);
 
-    @Insert("INSERT INTO user(id, name, phone, password, `group`, introduction, organization, pictureUrl, attrs) " +
-            "VALUES (#{user.id}, #{user.name}, #{user.phone}, #{user.password}, #{user.group}, #{user.introduction}, #{user.organization}, #{user.pictureUrl}, #{user.attrs})")
+    @Insert("INSERT INTO user(id, name, phone, password, identity, introduction, organization, pictureUrl, attrs) " +
+            "VALUES (#{user.id}, #{user.name}, #{user.phone}, #{user.password}, #{user.identity},  #{user.introduction}, #{user.organization}, #{user.pictureUrl}, #{user.attrs})")
     void insertUser(@Param("user") User user);
 
     // User Info
