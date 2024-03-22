@@ -178,7 +178,7 @@ async function getRaw(articleId: String) {
     responseType:'arraybuffer'
 
   }).then(response => {
-    const blob = new Blob([response.data],{type:'text/plain'})
+    const blob = new Blob([response.data],{type:articleDetail.file_type})
     articleDetail.raw = new File([blob], articleDetail.title, {type:articleDetail.file_type})
     // console.log(articleDetail.raw)
     // console.log("rawl："+ Object.keys(articleDetail.raw as File).length)

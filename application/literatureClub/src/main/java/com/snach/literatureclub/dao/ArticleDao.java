@@ -126,6 +126,9 @@ public interface ArticleDao {
     })
     List<Article> getArticlesByKeyword(String keyword, @Param("items") List<ArticleStatus> statusList);
 
+    @Select("SELECT id, time, text_by as textBy, title, description, status, attr" +
+            " FROM article WHERE received_by = #{userId}")
+    List<Article> getArticleByReceivedBy(String userId);
 
     /**
      * 判断稿件是否属于该作者

@@ -1,6 +1,7 @@
 package com.snach.literatureclub.controller;
 
 
+import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleStatus;
 import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
@@ -32,18 +33,19 @@ public class ArticleController {
     /**
      * 分页查询返回所有稿件的基础信息
      * 返回格式 { articles: total: #{NUMBER}, list: [#{ARTICLE},...], statusMsg: #{STRING}}
-     * @param token 非必要参数
-     * @param pageNum 当前页数
+     *
+     * @param token    非必要参数
+     * @param pageNum  当前页数
      * @param pageSize 页面显示条数
      * @return 所有的稿件信息的Article对象List
      */
     @ResponseNotIntercept
     @RequestMapping(value = "allArticles", method = RequestMethod.GET)
     public Map<String, Object> allArticles(@RequestParam(name = "token", required = false) String token,
-                                           @RequestParam(name = "page_num")int pageNum,
-                                           @RequestParam(name = "page_size")int pageSize) {
+                                           @RequestParam(name = "page_num") int pageNum,
+                                           @RequestParam(name = "page_size") int pageSize) {
 
-        return articleService.getAllArticles(pageNum,pageSize);
+        return articleService.getAllArticles(pageNum, pageSize);
     }
 
     /**
@@ -58,24 +60,26 @@ public class ArticleController {
     public Map<String, Object> articleDetail(@RequestParam("article_id") String article_id) {
         return articleService.getArticleById(article_id);
     }
+
     @ResponseNotIntercept
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public Map<String, Object> articleSearch(@RequestParam(value = "keyword") String keyword,
                                              @RequestParam(value = "tag", required = false) String tag,
-                                             @RequestParam(name = "page_num")int pageNum,
-                                             @RequestParam(name = "page_size")int pageSize,
-                                             @RequestParam(name = "status_list")List<ArticleStatus> statusList) {
-        return articleService.searchArticle(keyword, tag,pageNum,pageSize,statusList);
+                                             @RequestParam(name = "page_num") int pageNum,
+                                             @RequestParam(name = "page_size") int pageSize,
+                                             @RequestParam(name = "status_list") List<ArticleStatus> statusList) {
+        return articleService.searchArticle(keyword, tag, pageNum, pageSize, statusList);
     }
 
     /**
      * 通过id获取文章原始文件
+     *
      * @param articleId
      * @return 原始文件二进制流
      */
     @ResponseNotIntercept
     @RequestMapping(value = "getArticleFileById", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getArticleFileById(@RequestParam(name = "article_id") String articleId){
+    public ResponseEntity<byte[]> getArticleFileById(@RequestParam(name = "article_id") String articleId) {
         Article article = articleService.getArticleFileById(articleId);
         byte[] fileContent = article.getRaw();
         String type = article.getFileType();
@@ -108,6 +112,7 @@ public class ArticleController {
 
     /**
      * 通过id对文章进行敏感词审核
+     *
      * @param articleId
      * @return 审核结果
      */
@@ -133,5 +138,10 @@ public class ArticleController {
         Map<String, Object> response = new HashMap<>();
         response.put("latest_approval_article_url", articleService.getLatestApprovalArticleById(articleId));
         return response;
+    }
+
+    @RequestMapping(value = "getReceivedArticleById", method = RequestMethod.GET)
+    public PageInfo getReceivedArticleById(@RequestParam("auditor_id") String auditorId, @RequestParam("page_num") int pageNum, @RequestParam("page_size") int pageSize) {
+        return articleService.getReceivedArticleById(auditorId, pageNum, pageSize);
     }
 }

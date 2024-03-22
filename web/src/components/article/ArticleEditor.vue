@@ -45,7 +45,7 @@
           </div>
         </el-tooltip>
         <div class="upload-file-name-list">
-          <el-tag class="upload-file-name" v-if="Object.keys(articleDetail.raw).length != 0" closable effect="light"
+          <el-tag class="upload-file-name" v-if="articleDetail.raw.size !== 0" closable effect="light"
                   @close="handleFileRemove">
             {{ articleDetail.raw.name }}
           </el-tag>
@@ -151,6 +151,7 @@ import {renderAsync} from 'docx-preview'
 import {errorCallback, errorMessage} from "@/scripts/ErrorCallBack";
 import {acceptFileType} from "@/scripts/common/AcceptFileType";
 import ArticlePreview from '@/components/article/ArticlePreview.vue'
+import axios from "axios";
 
 const upload = ref<UploadInstance>()
 const store = useStore()
@@ -179,7 +180,7 @@ const articleDetail: AttributeAddableObject = reactive({
   status: 'ROUGH',
   attr: '{}',
   raw: {},
-  file_type:''
+  file_type: ''
 })
 
 watch(articleDetail, () => {
@@ -199,15 +200,40 @@ const searchFilterChange = () => {
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       for (const dataKey in response.data.article) {
+        if (dataKey == 'raw') {
+          continue
+        }
         articleDetail[dataKey] = response.data.article[dataKey]
       }
       SearchFilterRef.value.loadSelection(JSON.parse(articleDetail.attr))
       articleDetail.attr = JSON.parse(articleDetail.attr).tags
+      await getRaw(articleDetail.id)
     } else {
       errorCallback(response)
     }
   })
 })()
+
+async function getRaw(articleId: String) {
+  axios({
+    url: '/article/getArticleFileById',
+    method: 'GET',
+    headers: {'Content-Type': 'multipart/form-data'},
+    params: {article_id: articleId},
+    responseType: 'arraybuffer'
+
+  }).then(response => {
+    const blob = new Blob([response.data], {type: articleDetail.file_type})
+    articleDetail.raw = new File([blob], articleDetail.title, {type: articleDetail.file_type})
+    if (articleDetail.raw.size == 0) {
+      previewType.value = 'info'
+    } else {
+      previewType.value = 'primary'
+    }
+  }).catch(error => {
+    console.error(error);
+  });
+}
 
 // 保存草稿
 const save = async () => {
@@ -331,7 +357,7 @@ const changeInputBox = (file: any) => {
   upload.value!.clearFiles()
   articleDetail.raw = file.raw
 
-  if (Object.keys(articleDetail.raw).length == 0) {
+  if (articleDetail.raw.size == 0) {
     previewType.value = 'info'
   } else {
     previewType.value = 'primary'

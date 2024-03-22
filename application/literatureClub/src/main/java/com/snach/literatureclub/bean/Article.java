@@ -34,7 +34,7 @@ public class Article extends Text {
     String fileType;
     @JsonProperty("latest_approval_article_url")
     String latestApprovalArticleUrl;
-    @JsonProperty("latest_approval_article_url")
+    @JsonProperty("received_by")
     @Nullable
     String receivedBy;
 

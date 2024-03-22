@@ -134,6 +134,8 @@ public interface ArticleService {
     void lockArticleById(String articleId, String lockedBy);
     void getPermissions(String articleId, String requester);
 
+    PageInfo getReceivedArticleById(String auditorId, int pageNum, int pageSize);
+
     /**
      * 返回文章的敏感词审核结果
      * @param token
@@ -255,6 +257,12 @@ class ArticleServiceImpl implements ArticleService {
         res.put("fileStatue", 2);
         res.put("statusMsg", "Success.");
         return res;
+    }
+
+    @Override
+    public PageInfo getReceivedArticleById(String auditorId, int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        return new PageInfo<>(articleDao.getArticleByReceivedBy(auditorId));
     }
 
 

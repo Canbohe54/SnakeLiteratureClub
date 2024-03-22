@@ -153,11 +153,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'articleEditor',
     component: () => import('../views/ArticleEditView.vue')
   },
-  // {
-  //   path: '/test',
-  //   name: 'articleEditor',
-  //   component: () => import('../views/ArticleEditView.vue')
-  // },
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import('../views/TestView.vue')
+  },
   {
     path: '/articleDetail',
     name: 'articleDetail',
