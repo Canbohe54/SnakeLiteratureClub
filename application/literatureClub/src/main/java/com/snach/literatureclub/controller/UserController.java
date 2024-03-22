@@ -3,7 +3,9 @@ package com.snach.literatureclub.controller;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.service.UserService;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,11 +46,11 @@ public class UserController {
 
     // User Info
     @RequestMapping(value = "getUserBasicInfo", method = RequestMethod.GET)
-    public Map<String, Object> getUserBasicInfo(String id) {
+    public Map<String, Object> getUserBasicInfo(@RequestParam("user_id") @Nonnull String id) {
         User user = userService.getUserBasicInfo(id);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("userInfo", user);
+        response.put("user_info", user);
         return response;
     }
 

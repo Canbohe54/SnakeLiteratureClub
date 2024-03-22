@@ -116,8 +116,8 @@ async function getTextBy() {
   await SYNC_GET('/usr/getUserBasicInfo', {
     user_id: articleDetail.text_by
   }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      articleDetail.text_by = response.data.user_info.name
+    if (response.status === 200 && response.data.code === 2001) {
+      articleDetail.text_by = response.data.data.user_info.name
     } else {
       console.log(response)
     }
@@ -135,30 +135,12 @@ async function getTextBy() {
       // console.log(response)
       for (const dataKey in response.data.article) {
         if (dataKey == 'raw') {
-
-          // articleRaw = response.data.article[dataKey]
-          // new Blob([],{type:"text/plain"})
-          // const fileReader = new FileReader()
-          // fileReader.onload = async (e) => {
-          //   articleDetail[dataKey] = e.target?.result
-          // }
-          // fileReader.readAsArrayBuffer(articleBlob)
-          // console.log("ab:" + new window.File([articleBlob],"1.txt"))
-          // articleDetail[dataKey] = new window.File([articleBlob],"1.txt")
           continue
         }
         articleDetail[dataKey] = response.data.article[dataKey]
       }
 
       await getTextBy()
-      // const bytes = new Uint8Array(articleRaw)
-      //
-      // console.log(articleRaw.slice(0).byteLength)
-      // let articleBlob = new Blob([bytes], {type: articleDetail.file_type})
-      // console.log(articleBlob.size)
-      // articleDetail.raw = new File([articleBlob], articleDetail.title, {type: articleDetail.file_type})
-      // console.log(articleDetail.raw)
-
       await getRaw(articleDetail.id)
 
       if (store.getters.getToken !== '') {
@@ -180,28 +162,10 @@ async function getRaw(articleId: String) {
   }).then(response => {
     const blob = new Blob([response.data],{type:articleDetail.file_type})
     articleDetail.raw = new File([blob], articleDetail.title, {type:articleDetail.file_type})
-    // console.log(articleDetail.raw)
-    // console.log("rawl："+ Object.keys(articleDetail.raw as File).length)
-    // console.log(JSON.stringify(articleDetail.raw) == "{}")
 
   }).catch(error => {
     console.error(error);
   });
-  // await SYNC_GET('/article/getArticleFileById',{
-  //   article_id: articleId
-  // },async (response) => {
-  //   console.log(response)
-  //   if (response.status === 200 ) {
-  //     const bytes = new Uint8Array(response.data)
-  //     // console.log(articleRaw.slice(0).byteLength)
-  //     let articleBlob = new Blob([bytes], {type: articleDetail.file_type})
-  //     console.log(await articleBlob.text())
-  //     articleDetail.raw = new File([articleBlob], articleDetail.title)
-  //     console.log(articleDetail.raw)
-  //   } else {
-  //     errorCallback(response)
-  //   }
-  // })
 }
 
 async function getIsFavorited() {
