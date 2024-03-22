@@ -1,6 +1,11 @@
 package com.snach.literatureclub.utils;
 
+import com.snach.literatureclub.common.exception.NullFileException;
+import com.snach.literatureclub.common.exception.UnsupportedFileTypeException;
+
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 public class FileUtil {
     public static byte[] getBytesByFile(File f) {
@@ -21,6 +26,35 @@ public class FileUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static String getDocxRawTextByBytes(byte[] byteFile) {
+        File tempFile = null;
+        String rawText;
+        try {
+            tempFile = File.createTempFile("tempFile", ".docx");
+            Files.write(tempFile.toPath(), byteFile);
+            rawText = TextExtractionTools.extractTextFromDocx(tempFile.getCanonicalPath());
+        } catch (IOException e) {
+            throw new NullFileException();
+        } finally {
+            if (tempFile != null) {
+                tempFile.delete();
+            }
+        }
+        return rawText;
+    }
+
+    private static String getTxtRawTextByBytes(byte[] byteFile) {
+        return new String(byteFile, StandardCharsets.UTF_8);
+    }
+
+    public static String getFileRawTextByBytes(byte[] byteFile, String fileType) {
+        return switch (fileType) {
+            case "docx" -> getDocxRawTextByBytes(byteFile);
+            case "text" -> getTxtRawTextByBytes(byteFile);
+            default -> throw new UnsupportedFileTypeException("*.docx/*.txt");
+        };
     }
 
     public static String generateFileNameByTimesStamp(String prefix, String suffix){
