@@ -65,7 +65,7 @@ public class File2PdfTools {
      */
     public static byte[] File2Pdf(InputStream wordInput) throws IOException {
         if (!getLicense()) {
-            System.out.println("非法");
+            System.out.println("非法的许可证");
             return null;
         }
 
@@ -73,9 +73,9 @@ public class File2PdfTools {
         long old = System.currentTimeMillis();
         // 创建临时pdf文件
         File tempFile = File.createTempFile("tempFile", ".pdf");//创建临时文件
-//        File tempFile = new File("D:\\develop\\idea\\PeojectDevelopment\\SnakeLiteratureClub\\application\\literatureClub\\src\\main\\resources\\test.pdf");
         String tempPath = tempFile.getCanonicalPath();
         FileOutputStream os = new FileOutputStream(tempFile);
+        FileInputStream is = new FileInputStream(tempFile);
 
         //Address是将要被转化的word文档
         Document docx = null;
@@ -91,9 +91,8 @@ public class File2PdfTools {
             e.printStackTrace();
         }
         // 返回pdf文件的字节数组
-        byte[] pdfBytes = new byte[(int) tempFile.length()];
-        // 返回tempPath文件的pdf数组
-//        byte[] pdfBytes = Files.readAllBytes(Paths.get(tempPath));
+        byte[] pdfBytes = is.readAllBytes();
+        is.close();
         os.close();
         tempFile.delete();
         long now = System.currentTimeMillis();
