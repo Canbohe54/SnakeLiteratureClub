@@ -8,7 +8,7 @@ export default createStore({
       id: '',
       name: '',
       phone: '',
-      identity: '',
+      identity: '未登录',
       organization: '',
       introduction: '',
       pictureUrl: '',
@@ -22,9 +22,9 @@ export default createStore({
     },
     getUserInfo: state => {
       const s = getCookie('userInfo')
-      // if (s === '') {
-      //   return JSON.parse('{"identity":"未登录"}')
-      // }
+      if (s === '') {
+        return JSON.parse('{"identity":"未登录"}')
+      }
       return JSON.parse(s)
       // return state.userInfo
     }
