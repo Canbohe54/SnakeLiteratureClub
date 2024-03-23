@@ -1,5 +1,5 @@
 <template>
-  <div class="received_table ">
+  <div>
     <el-table class="received_table" :data="receivedTableData" stripe header-align="center" style="width: 100%">
       <el-table-column prop="title" label="文章标题" width="180"/>
       <el-table-column prop="description" label="文章描述" width="180"/>
@@ -123,6 +123,8 @@ getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
 
 <style scoped>
 .received_table {
+  display: flex;
+  justify-content: center;
   margin-top: 20px;
 }
 
@@ -131,10 +133,12 @@ getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
   display: flex;
   justify-content: center;
 }
+
 :deep( .el-table .cell) {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
 }
+
 
 </style>

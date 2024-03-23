@@ -78,7 +78,7 @@ async function getUserInfo (userId: string) {
   await SYNC_GET('/usr/getUserBasicInfo', {
     user_id: userId
   }, (response) => {
-    if (response.data.statusMsg === 'Success.') {
+    if (response.data.data === 'Success.') {
       userInfo = {
         name: response.data['user_info']['name'],
         avatar: response.data['user_info']['pictureUrl']
@@ -96,7 +96,8 @@ async function loadCommentList () {
     startAt: commentDisplayConf.value.nowDisplayRowsNum,
     limit: commentDisplayConf.value.eachLoadLimit
   }, async (response) => {
-    if (response.data.statusMsg === 'Success.') {
+    console.log(response)
+    if (response.data.statusMsg === "Success.") {
       for (const commentRes of response.data.res[0]) {
         const commenter = await getUserInfo(commentRes['text_by'])
         if (commenter === null) {

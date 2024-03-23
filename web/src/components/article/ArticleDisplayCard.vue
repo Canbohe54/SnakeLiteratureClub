@@ -104,4 +104,7 @@ handleDocumentPreView(props.articleRaw)
 
   /*background-color: gray;*/
 }
+#docxContainer .docx-wrapper {
+  background: #ecf9ef
+}
 </style>
