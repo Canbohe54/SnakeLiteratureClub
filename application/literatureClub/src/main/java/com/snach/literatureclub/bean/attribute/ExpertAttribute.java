@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AttributeType(Identity.EXPERT)
 public class ExpertAttribute extends UserAttribute{
-    private String professional_title;
+    private String professionalTitle;
 }

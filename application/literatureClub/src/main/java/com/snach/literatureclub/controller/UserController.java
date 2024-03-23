@@ -2,6 +2,7 @@ package com.snach.literatureclub.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.User;
+import com.snach.literatureclub.service.CommonService;
 import com.snach.literatureclub.service.UserService;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -17,11 +18,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("usr")
 public class UserController {
-    @Autowired
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final CommonService commonService;
+
+    @Autowired
+    public UserController(UserService userService, CommonService commonService) {
         this.userService = userService;
+        this.commonService = commonService;
     }
 
     // Account (Login, Register)
@@ -39,11 +43,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "reg", method = RequestMethod.POST)
-    public Map<String, Object> register(User user) {
+    public void register(User user) {
         userService.register(user);
-
-        Map<String, Object> response = new HashMap<>();
-        return response;
     }
 
     // User Info

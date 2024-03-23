@@ -28,7 +28,6 @@ public class ContributorController {
      * 用户对稿件进行保存（1）或上传（2）
      * 初次保存或上传传入id为null,
      * 返回稿件基本信息（标题、描述、时间和id）和各事件执行状态
-     * 返回格式{article_id: #{String}, title: #{String}, description: #{String}, time:#{Date}, fileStatue: #{INTEGER}, statusMsg: #{STRING} }
      *
      * @param token   用于验证是否过期以及获取作者id
      * @param article 稿件信息，id初次创建为null
@@ -45,24 +44,10 @@ public class ContributorController {
         return contributorService.contribute(token, article, raw).packBasicInfo();
     }
 
-    /**
-     * 用户更改稿件基础信息，包括标题和描述，根据id进行更新，同时更新修改时间
-     * 返回格式{article_id: #{String}, title: #{String}, description: #{String}, time:#{Date}, fileStatue: #{INTEGER}, statusMsg: #{STRING} }
-     *
-     * @param token       用于验证是否过期以及获取作者id
-     * @param id          稿件id
-     * @param title       稿件标题
-     * @param description 稿件描述
-     * @param attr        稿件多值属性，如标签
-     * @return 保存状态（1：保存成功 2：待审核 0：保存失败）,执行状态
-     */
+    @Deprecated
     @RequestMapping(value = "changeBasicInfo", method = RequestMethod.POST)
-    public Map<String, Object> changeBasicInfo(@RequestParam("token") String token,
-                                               @RequestParam("article_id") String id,
-                                               @RequestParam("title") String title,
-                                               @RequestParam("description") String description,
-                                               @RequestParam("attr") String attr) {
-        return articleService.updateArticle(token, id, title, description, 3, attr);
+    public String changeBasicInfo() {
+        return "This router has been deprecated.";
     }
 
     /**
@@ -75,7 +60,7 @@ public class ContributorController {
      */
     @RequestMapping(value = "delArticle")
     public Map<String, Object> deleteArticle(@RequestParam("token") String token, @RequestParam("article_id") String id) {
-        return articleService.deleteArticle(token, id);
+        return articleService.deleteArticleById(token, id);
     }
 
     /**

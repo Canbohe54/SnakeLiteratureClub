@@ -140,7 +140,7 @@ public interface ArticleDao {
     @Select("Select COUNT(*) FROM contributor_article_list WHERE contributor_id = #{contributor_id} AND article_id = #{article_id}")
     int belong(@Param("contributor_id") String contributor_id, @Param("article_id") String article_id);
 
-    @Select("SELECT raw FROM article WHERE id=#{article_id}")
+    @Select("SELECT raw, `file_type` AS fileType FROM article WHERE id=#{article_id}")
     Article getArticleFileById(@Param("article_id") String articleId);
 
     @Select("SELECT latest_approval_article_url FROM article WHERE id=#{article_id}")

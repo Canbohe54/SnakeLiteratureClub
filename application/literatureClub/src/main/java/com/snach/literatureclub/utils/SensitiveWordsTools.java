@@ -40,8 +40,7 @@ public class SensitiveWordsTools {
      */
     public static List<String> readTxt(String filePath) {
         List<String> list = new ArrayList<>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(filePath));
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))){
             String line;
             while ((line = br.readLine()) != null) {
                 list.add(line);

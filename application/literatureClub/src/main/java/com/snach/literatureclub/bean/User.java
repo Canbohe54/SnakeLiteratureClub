@@ -1,6 +1,7 @@
 package com.snach.literatureclub.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.snach.literatureclub.bean.attribute.UserAttribute;
 import com.snach.literatureclub.bean.attribute.UserAttributeFactory;
 import com.snach.literatureclub.common.Identity;
@@ -40,24 +41,13 @@ public class User implements Serializable {
 
     // Extra Info
     @JsonIgnore String attrs;
-    UserAttribute transformedAttrs;
+    @JsonProperty("attrs") UserAttribute userAttribute;
 
-    public User(String id, String phone, String password, String identity, String name, String introduction, String organization, String pictureUrl, String attrs) {
-        this.id = id;
-        this.phone = phone;
-        this.password = password;
-        this.name = name;
-        this.introduction = introduction;
-        this.organization = organization;
-        this.pictureUrl = pictureUrl;
-        this.attrs = attrs;
-    }
-
-    public UserAttribute getTransformedAttrs() {
-        if (this.transformedAttrs == null) {
-            this.transformedAttrs = UserAttributeFactory.load(this.identity, this.attrs);
+    public UserAttribute getUserAttribute() {
+        if (this.userAttribute == null) {
+            this.userAttribute = UserAttributeFactory.load(this.identity, this.attrs);
         }
-        return this.transformedAttrs;
+        return this.userAttribute;
     }
 
     public boolean checkIdentity(Identity identity) {

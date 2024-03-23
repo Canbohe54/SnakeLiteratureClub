@@ -55,9 +55,9 @@ public class ArticleController {
      * @return 稿件详细信息, 执行状态
      */
     @RequestMapping(value = "articleDetail", method = RequestMethod.GET)
-    public Map<String, Object> articleDetail(String token, String article_id) {
+    public Map<String, Object> articleDetail(String article_id) {
         Map<String, Object> response = new HashMap<>();
-        response.put("article", articleService.getArticleById(token, article_id));
+        response.put("article", articleService.getArticleById(article_id));
         return response;
     }
 
@@ -147,12 +147,16 @@ public class ArticleController {
      * @param articleId
      * @return 审核结果
      */
-    @ResponseNotIntercept
     @RequestMapping(value = "SensitiveWordReview", method = RequestMethod.GET)
-    public Map<String, Object> SensitiveWordReview(String token,
+    public Map<String, Object> sensitiveWordsJudge(String token,
                                                    @RequestParam(name = "article_id") String articleId,
-                                                   @RequestParam(defaultValue = "false") boolean useStrict) {
-        return articleService.SensitiveWordReview(token, articleId, useStrict);
+                                                   @RequestParam(defaultValue = "true") boolean useStrict) {
+        List<?> sensitiveWordsList = articleService.sensitiveWordsJudge(token, articleId, useStrict);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("sensitiveWords", sensitiveWordsList);
+        response.put("num", sensitiveWordsList.size());
+        return response;
     }
 
     @RequestMapping(value = "getLatestApprovalArticleUrl", method = RequestMethod.GET)

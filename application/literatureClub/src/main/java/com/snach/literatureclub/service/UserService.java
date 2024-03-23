@@ -2,17 +2,19 @@ package com.snach.literatureclub.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.snach.literatureclub.bean.User;
+import com.snach.literatureclub.common.exception.InvalidTokenException;
+import com.snach.literatureclub.common.exception.NonexistentUserException;
+import com.snach.literatureclub.common.exception.WrongIdOrPasswordException;
+import com.snach.literatureclub.dao.UserDao;
 import com.snach.literatureclub.utils.IdManager;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.snach.literatureclub.bean.User;
-import com.snach.literatureclub.common.exception.*;
-import com.snach.literatureclub.dao.UserDao;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.snach.literatureclub.utils.TokenTools.*;
+import static com.snach.literatureclub.utils.TokenTools.tokenGen;
+import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
 
 
 @Service
@@ -33,6 +35,8 @@ class UserServiceImpl implements UserService {
     @Autowired
     private UserDao userDao;
 
+    private final IdManager idManager = IdManager.getManager();
+
     // Account
     public String login(String id, String password) {
         String verifiedId;
@@ -48,7 +52,7 @@ class UserServiceImpl implements UserService {
     }
 
     public void register(User user) {
-        user.setId(IdManager.generateUserId());
+        user.setId(idManager.generateUserId());
         userDao.insertUser(user);
     }
 
