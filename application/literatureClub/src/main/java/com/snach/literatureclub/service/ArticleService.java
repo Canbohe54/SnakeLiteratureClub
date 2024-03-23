@@ -127,6 +127,8 @@ public interface ArticleService {
      * @return 返回文章的敏感词审核结果
      */
     Map<String, Object> SensitiveWordReview(String token, String id, boolean useStrict);
+
+    byte[] word2pdf(String id) throws IOException;
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -387,5 +389,21 @@ class ArticleServiceImpl implements ArticleService {
             res.put("num", 0);
         }
         return res;
+    }
+
+    @Override
+    public byte[] word2pdf(String id) throws IOException {
+        // 通过文章ID从数据库获取文章对象
+        Article article = articleDao.getArticleById(id);
+        // 获取文章原始内容的二进制数据
+        byte[] fileContent = article.getRaw();
+        // 获取文章原始文件的格式
+        String format = article.getFileType();
+        if(format.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")){
+            return Word2PdfTool.word2pdf(new ByteArrayInputStream(fileContent));
+        }
+        else{
+            return null;
+        }
     }
 }
