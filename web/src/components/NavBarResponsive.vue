@@ -22,7 +22,11 @@
         <el-col :span="4" class="hidden-sm-and-down flex-center"><!--用户信息，仅在大于md上显示-->
             <el-popover placement="bottom" :width="200" trigger="hover" popper-style="border-radius: 8px;">
                 <template #reference>
-                    <el-avatar class="loginAvatar" @click="router.push('/login') ">登录</el-avatar>
+                    <el-avatar class="loginAvatar">
+                        <img class="loginAvatar-img" v-if="getToken() != ''" />
+                        <span v-else>登录</span>
+                    </el-avatar>
+                    <!-- @click="router.push('/login') " -->
                 </template>
                 <UserSimpInfoCard />
             </el-popover>
@@ -66,14 +70,27 @@
     </el-row>
 </template>
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { Search, Upload, User } from '@element-plus/icons-vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 import SearchBar from './SearchBar.vue';
 import UserSimpInfoCard from './user/UserSimpInfoCard.vue';
+import { getToken } from '@/scripts/token';
 
 const router = useRouter();
 const route = useRoute();
+const store = useStore();
+
+const userInfo = reactive(store.getters.getUserInfo)
+
+onMounted(() => {
+    if (userInfo.pictureUrl) {
+        let avatar = JSON.parse(userInfo.pictureUrl)
+        $(".loginAvatar").css("background-color", `${avatar.color}`)
+        $(".loginAvatar-img").attr("src", 'avatars/' + `${avatar.avatar}` + '.png')
+    }
+})
 
 // 学生：我要投稿，老师：代投文章，志愿者：待审阅稿件，专家：待推荐稿件，猎头：推荐稿件
 const identityDepedOption = reactive([
@@ -268,10 +285,6 @@ function handleSearchRedirect() {
 
 .search-button:hover {
     color: #409eff;
-}
-
-.loginAvatar {
-    cursor: pointer;
 }
 
 .menu-toggle-container {

@@ -1,6 +1,6 @@
 <template>
     <div class="user-simp-info" v-if="getToken() != ''">
-        <el-avatar :size="64"></el-avatar>
+        <el-avatar :size="64" id="avatar"><img id="avatar-img"/></el-avatar>
         <div class="user-simp-info-disp">
             <div class="user-simp-name">{{ userInfo.name }}</div>
             <div><el-tag>{{ getIdentityChinese(userInfo.identity) }}</el-tag></div>
@@ -25,13 +25,24 @@ import router from '@/router';
 import { clearCookie, removeCookie } from '@/scripts/cookie';
 import { getToken } from '@/scripts/token';
 import { useStore } from 'vuex';
-import { reactive } from 'vue';
+import { onMounted, onUpdated, reactive, ref } from 'vue';
 import { getIdentityChinese } from '@/scripts/common/userIdentityMatch';
 
 // console.log(getToken())
 const store = useStore()
 const userInfo = reactive(store.getters.getUserInfo)
 
+function init(){
+    if (userInfo.pictureUrl){
+        let avatar = JSON.parse(userInfo.pictureUrl)
+        $("#avatar").css("background-color", `${avatar.color}`)
+        $("#avatar-img").attr("src", 'avatars/'+`${avatar.avatar}`+'.png')
+    }
+}
+init()
+onMounted(() => {
+    init()
+})
 
 function handleLogout(){
     clearCookie()

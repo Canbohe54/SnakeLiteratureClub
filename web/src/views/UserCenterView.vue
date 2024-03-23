@@ -39,7 +39,7 @@
 </style>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import NavBar from '@/components/NavBarOld.vue'
+import NavBar from '@/components/NavBarResponsive.vue'
 import InfoDetailDisplay from '@/components/userCenter/InfoDetailDisplay.vue'
 import UserCenterBar from '@/components/userCenter/UserCenterBar.vue'
 
