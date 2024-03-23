@@ -34,7 +34,9 @@
               </div>
 
               <el-divider/>
-              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0" :lock-before-preview="true" :article-id="articleDetail.id">关门预览</ArticlePreview>
+              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0"
+                              :lock-before-preview="true" :article-id="articleDetail.id">关门预览
+              </ArticlePreview>
               <el-text class="article-text" :size="displaySize">{{ articleDetail.text }}</el-text>
             </el-card>
           </el-main>
@@ -128,8 +130,9 @@ async function getTextBy() {
 (async () => {
   let articleRaw: ArrayBuffer
   if (route.query.id === '' || route.query.id === undefined) return
-  await SYNC_GET('/article/getPermissions',{
-    article_id: route.query.id
+  await SYNC_GET('/article/getPermissions', {
+    article_id: route.query.id,
+    requester: store.getters.getUserInfo.id
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
       await SYNC_GET('/article/articleDetail', {
@@ -160,17 +163,18 @@ async function getTextBy() {
   })
 
 })()
+
 async function getRaw(articleId: String) {
   axios({
     url: '/article/getArticleFileById',
-    method:'GET',
-    headers: { 'Content-Type': 'multipart/form-data' },
-    params: { article_id: articleId },
-    responseType:'arraybuffer'
+    method: 'GET',
+    headers: {'Content-Type': 'multipart/form-data'},
+    params: {article_id: articleId},
+    responseType: 'arraybuffer'
 
   }).then(response => {
-    const blob = new Blob([response.data],{type:articleDetail.file_type})
-    articleDetail.raw = new File([blob], articleDetail.title, {type:articleDetail.file_type})
+    const blob = new Blob([response.data], {type: articleDetail.file_type})
+    articleDetail.raw = new File([blob], articleDetail.title, {type: articleDetail.file_type})
 
   }).catch(error => {
     console.error(error);

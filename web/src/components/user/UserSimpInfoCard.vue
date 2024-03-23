@@ -26,7 +26,7 @@ import router from '@/router';
 import { clearCookie, removeCookie } from '@/scripts/cookie';
 import { getToken } from '@/scripts/token';
 
-console.log(getToken())
+// console.log(getToken())
 
 function handleLogout(){
     clearCookie()
