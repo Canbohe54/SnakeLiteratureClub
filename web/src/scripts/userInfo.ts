@@ -11,11 +11,11 @@ export async function toUserPage (id: string) {
     await SYNC_GET('/usr/getUserBasicInfo', {
         user_id: id
       }, response => {
-        if(response.status === 200 && response.data.statusMsg === 'Success.'){
+        if(response.status === 200 && response.data.code === 2001){
             router.push(`/user/${id}/article`)
-            return
+        }else {
+            ElMessage.error('用户不存在')
         }
       })
-      ElMessage.error('用户不存在')
       return
   }

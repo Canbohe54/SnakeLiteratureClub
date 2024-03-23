@@ -1,8 +1,9 @@
 <template>
-  <div class="received_table">
-    <el-table :data="receivedTableData" stripe align="center" style="width: 100%">
+  <div class="received_table ">
+    <el-table class="received_table" :data="receivedTableData" stripe header-align="center" style="width: 100%">
       <el-table-column prop="title" label="文章标题" width="180"/>
-      <el-table-column prop="id" label="作者" width="180"/>
+      <el-table-column prop="description" label="文章描述" width="180"/>
+      <el-table-column prop="text_by" label="作者" width="180"/>
       <el-table-column prop="mentor" label="指导老师" width="180"/>
       <el-table-column fixed="right" label="操作" width="120">
         <template #default="scope">
@@ -38,6 +39,11 @@ const pageInfo = reactive({
   pageSize: 10,
   total: 0
 })
+const overflowToolTipOptions = {
+  effect: 'light',
+  visible: 'false'
+
+}
 
 // 监听 page size 改变的事件
 function handleSizeChange(newSize: any) {
@@ -50,7 +56,36 @@ function handleCurrentChange(newPage: any) {
   pageInfo.currentPage = newPage
   getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
 }
-
+async function getUserName(userId: string) {
+  return new Promise(function (resolve, reject) {
+    SYNC_GET('/usr/getUserBasicInfo', {
+      user_id: userId
+    }, async (response) => {
+      if (response.status === 200 && response.data.code === 2001) {
+        resolve(response.data.data.user_info.name)
+      } else {
+        console.log(response)
+      }
+    })
+  })
+}
+const processReceivedArticle = (receivedArticle: AttributeAddableObject) => {
+  receivedArticle.text_by_id = receivedArticle.text_by
+  getUserName(receivedArticle.text_by_id).then((result) => {
+    receivedArticle.text_by = result
+  })
+  if (receivedArticle.mentor !== '') {
+    getUserName(receivedArticle.mentor).then((result) => {
+      receivedArticle.mentor = result
+    })
+  }
+  for(const k of Object.keys(receivedArticle)){
+    if(receivedArticle[k] === ''){
+      receivedArticle[k] = '--.--'
+    }
+  }
+  return receivedArticle
+}
 const getReceivedArticle = async (pageNum: Number, pageSize: Number) => {
   let param = {
     auditor_id: store.getters.getUserInfo.id,
@@ -59,7 +94,8 @@ const getReceivedArticle = async (pageNum: Number, pageSize: Number) => {
   }
   await SYNC_GET('/article/getReceivedArticleById', param, async (response: any) => {
     if (response.status === 200 && response.data.code === 2001) {
-      for (const receivedArticle of response.data.data.list) {
+      for (let receivedArticle of response.data.data.list) {
+        processReceivedArticle(receivedArticle)
         receivedTableData.push(receivedArticle)
       }
       pageInfo.total = response.data.data.total
@@ -85,9 +121,9 @@ getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
 </script>
 
 
-<style>
+<style scoped>
 .received_table {
-  text-align: center;
+  margin-top: 20px;
 }
 
 .received_pagination {
@@ -95,4 +131,10 @@ getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
   display: flex;
   justify-content: center;
 }
+:deep( .el-table .cell) {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
 </style>

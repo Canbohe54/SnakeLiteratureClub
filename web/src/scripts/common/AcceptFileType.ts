@@ -1,4 +1,4 @@
 export const acceptFileType = new Map([
-  ['txt','text'],
+  ['txt','text/plain'],
   ['docx','application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 ])

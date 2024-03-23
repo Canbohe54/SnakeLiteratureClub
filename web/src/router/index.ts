@@ -169,8 +169,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/ReceivedArticleDetailView.vue')
     },
     {
-        path: '/receving',
-        name: 'receving',
+        path: '/receiving',
+        name: 'receiving',
         component: () => import('../views/ReceivingView.vue')
     },
     {
