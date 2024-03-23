@@ -34,9 +34,10 @@
               </div>
 
               <el-divider/>
-              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0"
-                              :lock-before-preview="true" :article-id="articleDetail.id">关门预览
-              </ArticlePreview>
+<!--              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0"-->
+<!--                              :lock-before-preview="true" :article-id="articleDetail.id">-->
+<!--              </ArticlePreview>-->
+              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="true" :article-id="articleDetail.id"></ArticleDisplayCard>
               <el-text class="article-text" :size="displaySize">{{ articleDetail.text }}</el-text>
             </el-card>
           </el-main>
@@ -88,6 +89,8 @@ import {toUserPage} from "@/scripts/userInfo";
 import {errorCallback} from "@/scripts/ErrorCallBack";
 import ArticlePreview from '@/components/article/ArticlePreview.vue'
 import axios from "axios";
+import ArticlePDF from "@/components/article/ArticlePDF.vue";
+import ArticleDisplayCard from "@/components/article/ArticleDisplayCard.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -149,7 +152,6 @@ async function getTextBy() {
 
           await getTextBy()
           await getRaw(articleDetail.id)
-
           if (store.getters.getToken !== '') {
             await getIsFavorited()
           }
@@ -163,7 +165,25 @@ async function getTextBy() {
   })
 
 })()
+const articlePDF = reactive({
+  raw: {}
+})
+async function getPDF(articleId: String) {
+  axios({
+    url: '/article/word2pdf',
+    method: 'GET',
+    headers: {'Content-Type': 'multipart/form-data'},
+    params: {article_id: articleId},
+    responseType: 'arraybuffer'
 
+  }).then(response => {
+    const blob = new Blob([response.data], {type: articleDetail.file_type})
+    articlePDF.raw = new File([blob], articleDetail.title, {type: articleDetail.file_type})
+
+  }).catch(error => {
+    console.error(error);
+  });
+}
 async function getRaw(articleId: String) {
   axios({
     url: '/article/getArticleFileById',
