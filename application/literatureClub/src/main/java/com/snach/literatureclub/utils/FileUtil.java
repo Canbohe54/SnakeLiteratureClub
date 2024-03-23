@@ -51,7 +51,7 @@ public class FileUtil {
 
     public static String getFileRawTextByBytes(byte[] byteFile, String fileType) {
         return switch (fileType) {
-            case "docx" -> getDocxRawTextByBytes(byteFile);
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> getDocxRawTextByBytes(byteFile);
             case "text" -> getTxtRawTextByBytes(byteFile);
             default -> throw new UnsupportedFileTypeException("*.docx/*.txt");
         };

@@ -128,7 +128,7 @@ public interface ArticleService {
      */
     Map<String, Object> SensitiveWordReview(String token, String id, boolean useStrict);
 
-    byte[] word2pdf(String id) throws IOException;
+    byte[] File2Pdf(String id) throws IOException;
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -392,15 +392,15 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public byte[] word2pdf(String id) throws IOException {
+    public byte[] File2Pdf(String id) throws IOException {
         // 通过文章ID从数据库获取文章对象
         Article article = articleDao.getArticleById(id);
         // 获取文章原始内容的二进制数据
         byte[] fileContent = article.getRaw();
         // 获取文章原始文件的格式
-        String format = article.getFileType();
-        if(format.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")){
-            return Word2PdfTool.word2pdf(new ByteArrayInputStream(fileContent));
+        String fileType = article.getFileType();
+        if(fileType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document") || fileType.equals("text")) {
+            return File2PdfTools.File2Pdf(new ByteArrayInputStream(fileContent));
         }
         else{
             return null;

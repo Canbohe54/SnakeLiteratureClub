@@ -5,14 +5,12 @@ import com.aspose.words.License;
 import com.aspose.words.SaveFormat;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * @author yvioo。
  */
 
-public class Word2PdfTool {
+public class File2PdfTools {
 
     /**
      * 验证License 若不验证则转化出的pdf文档会有水印产生
@@ -21,7 +19,7 @@ public class Word2PdfTool {
     public static boolean getLicense() {
         boolean result = false;
         try {
-            InputStream is =Word2PdfTool.class.getClassLoader().getResourceAsStream("license.xml");
+            InputStream is = File2PdfTools.class.getClassLoader().getResourceAsStream("license.xml");
             License aposeLic = new License();
             aposeLic.setLicense(is);
             result = true;
@@ -65,7 +63,7 @@ public class Word2PdfTool {
      * word转pdf
      * @param wordInput word输入流
      */
-    public static byte[] word2pdf(InputStream wordInput) throws IOException {
+    public static byte[] File2Pdf(InputStream wordInput) throws IOException {
         if (!getLicense()) {
             System.out.println("非法");
             return null;

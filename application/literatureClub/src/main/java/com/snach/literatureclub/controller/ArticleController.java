@@ -7,14 +7,11 @@ import com.snach.literatureclub.common.ArticleStatus;
 import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.utils.MediaTypeConverter;
-import com.snach.literatureclub.utils.Word2PdfTool;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -92,16 +89,28 @@ public class ArticleController {
         return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
     }
 
-    // word转pdf
+    /**
+     * 将文章转换为PDF格式。
+     *
+     * @param articleId 文章的唯一标识符，用于查找对应的word文档。
+     * @return 返回转换后的PDF文件内容作为HTTP响应的一部分。
+     * @throws IOException 如果在文件读写过程中发生错误。
+     */
     @ResponseNotIntercept
-    @RequestMapping(value = "word2pdf", method = RequestMethod.GET)
+    @RequestMapping(value = "File2Pdf", method = RequestMethod.GET)
     public ResponseEntity<byte[]> word2pdf(@RequestParam(name = "article_id") String articleId) throws IOException {
-        byte[] fileContent = articleService.word2pdf(articleId);
+        // 调用articleService将指定文章ID的文档转换为PDF格式，返回PDF内容。
+        byte[] fileContent = articleService.File2Pdf(articleId);
         String type = "application/pdf";
+
+        // 设置HTTP响应头，指定返回的内容类型为PDF。
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaTypeConverter.getMediaType(type));
+
+        // 构建并返回包含PDF文件内容的HTTP响应实体。
         return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
     }
+
 
     /**
      * 锁定文章，将锁定者加入该文章可访问列表
