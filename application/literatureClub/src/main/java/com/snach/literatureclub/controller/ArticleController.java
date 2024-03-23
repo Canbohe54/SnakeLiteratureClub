@@ -7,12 +7,16 @@ import com.snach.literatureclub.common.ArticleStatus;
 import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.utils.MediaTypeConverter;
+import com.snach.literatureclub.utils.Word2PdfTool;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +92,17 @@ public class ArticleController {
         return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
     }
 
+    // word转pdf
+    @ResponseNotIntercept
+    @RequestMapping(value = "word2pdf", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> word2pdf(@RequestParam(name = "article_id") String articleId) throws IOException {
+        byte[] fileContent = articleService.word2pdf(articleId);
+        String type = "application/pdf";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaTypeConverter.getMediaType(type));
+        return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+    }
+
     /**
      * 锁定文章，将锁定者加入该文章可访问列表
      * redis设置锁的过期时间
@@ -142,4 +157,6 @@ public class ArticleController {
     public PageInfo getReceivedArticleById(@RequestParam("auditor_id") String auditorId, @RequestParam("page_num") int pageNum, @RequestParam("page_size") int pageSize) {
         return articleService.getReceivedArticleById(auditorId, pageNum, pageSize);
     }
+
+
 }

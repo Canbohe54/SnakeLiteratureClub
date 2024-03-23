@@ -18,7 +18,7 @@
                         <span class="article-info-mentor">{{ testInfo.mentor === '' ? '' : '指导老师：' }}{{ testInfo.mentor
                             }}</span>
                     </div>
-                    <div class="article-info-descrption">{{ testInfo.descrption }}</div>
+                    <div class="article-info-descrption">{{ testInfo.description }}</div>
                     <div class="article-info-time">{{ testInfo.time }}</div>
                 </div>
             </div>
@@ -35,6 +35,7 @@ import { reactive, toRefs, ref } from 'vue';
 
 const props = defineProps({
     articleInfo: {
+        articleId: String, //文章ID
         title: String, //标题
         contributor: String, //作者
         organization: String, //单位
