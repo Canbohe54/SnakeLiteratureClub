@@ -5,7 +5,7 @@ export function errorCallback(response: any) {
   if (response.status === 200) {
     ElMessage({
       showClose: true,
-      message: response.data.statusMsg,
+      message: response.data.message,
       type: 'error'
     })
   } else {

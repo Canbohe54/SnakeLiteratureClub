@@ -34,7 +34,7 @@
               </div>
 
               <el-divider/>
-                <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0" :lock-before-preview="true" :article-id="articleDetail.id">关门预览</ArticlePreview>
+              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0" :lock-before-preview="true" :article-id="articleDetail.id">关门预览</ArticlePreview>
               <el-text class="article-text" :size="displaySize">{{ articleDetail.text }}</el-text>
             </el-card>
           </el-main>
@@ -52,10 +52,10 @@
         </el-container>
       </div>
       <el-dialog
-        draggable
-        v-model="delArticleDialogVisible"
-        title="删除文章"
-        width="30%"
+          draggable
+          v-model="delArticleDialogVisible"
+          title="删除文章"
+          width="30%"
       >
         <span>确定删除文章？</span>
         <template #footer>
@@ -128,28 +128,37 @@ async function getTextBy() {
 (async () => {
   let articleRaw: ArrayBuffer
   if (route.query.id === '' || route.query.id === undefined) return
-  await SYNC_GET('/article/articleDetail', {
+  await SYNC_GET('/article/getPermissions',{
     article_id: route.query.id
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
-      console.log(response.data)
-      for (const dataKey in response.data.data.article) {
-        if (dataKey == 'raw') {
-          continue
+      await SYNC_GET('/article/articleDetail', {
+        article_id: route.query.id
+      }, async (response) => {
+        if (response.status === 200 && response.data.code === 2001) {
+          // console.log(response)
+          for (const dataKey in response.data.data.article) {
+            if (dataKey == 'raw') {
+              continue
+            }
+            articleDetail[dataKey] = response.data.data.article[dataKey]
+          }
+
+          await getTextBy()
+          await getRaw(articleDetail.id)
+
+          if (store.getters.getToken !== '') {
+            await getIsFavorited()
+          }
+        } else {
+          errorCallback(response)
         }
-        articleDetail[dataKey] = response.data.data.article[dataKey]
-      }
-
-      await getTextBy()
-      await getRaw(articleDetail.id)
-
-      if (store.getters.getToken !== '') {
-        await getIsFavorited()
-      }
+      })
     } else {
       errorCallback(response)
     }
   })
+
 })()
 async function getRaw(articleId: String) {
   axios({
@@ -173,7 +182,7 @@ async function getIsFavorited() {
     token: store.getters.getToken,
     article_id: articleDetail.id
   }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+    if (response.status === 200 && response.data.code === 2001) {
       if (response.data.isFavor === "True") {
         isFavorited.value = true
       } else {

@@ -1,7 +1,6 @@
 package com.snach.literatureclub.controller;
 
 import com.snach.literatureclub.bean.Article;
-import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.service.ContributorService;
 import jakarta.annotation.Nullable;
@@ -43,7 +42,7 @@ public class ContributorController {
 //    }
     @RequestMapping(value = "contribute",method = RequestMethod.POST)
     public Map<String, Object> contribute(String token, Article article, @RequestParam("raw_file") @Nullable MultipartFile raw){
-        return contributorService.contribute(token, article, raw).getBasicInfo();
+        return contributorService.contribute(token, article, raw).packBasicInfo();
     }
 
     /**

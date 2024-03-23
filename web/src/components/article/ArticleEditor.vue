@@ -45,7 +45,7 @@
           </div>
         </el-tooltip>
         <div class="upload-file-name-list">
-          <el-tag class="upload-file-name" v-if="articleDetail.raw.size !== 0" closable effect="light"
+          <el-tag class="upload-file-name" v-if="Object.keys(articleDetail.raw).length != 0" closable effect="light"
                   @close="handleFileRemove">
             {{ articleDetail.raw.name }}
           </el-tag>
@@ -198,12 +198,12 @@ const searchFilterChange = () => {
   await SYNC_GET('/article/articleDetail', {
     article_id: route.query.id
   }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      for (const dataKey in response.data.article) {
+    if (response.status === 200 && response.data.code === 2001) {
+      for (const dataKey in response.data.data.article) {
         if (dataKey == 'raw') {
           continue
         }
-        articleDetail[dataKey] = response.data.article[dataKey]
+        articleDetail[dataKey] = response.data.data.article[dataKey]
       }
       SearchFilterRef.value.loadSelection(JSON.parse(articleDetail.attr))
       articleDetail.attr = JSON.parse(articleDetail.attr).tags

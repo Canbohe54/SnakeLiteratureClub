@@ -59,7 +59,7 @@ public class Article extends Text {
         this.attr = attr;
     }
 
-    public Map<String, Object> getBasicInfo() {
+    public Map<String, Object> packBasicInfo() {
         Map<String, Object> articleBasicInfo = new HashMap<>();
         for (Field field : Article.class.getDeclaredFields()) {
             if (!field.getName().equalsIgnoreCase("raw")) {

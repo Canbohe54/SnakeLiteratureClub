@@ -115,7 +115,7 @@ public interface ArticleService {
 
     boolean lockArticleById(String articleId, long expire ,String lockedBy);
 
-    boolean unLockArticleById(String articleId);
+    boolean unLockArticleById(String articleId, String unlockedBy);
     boolean getPermissions(String articleId, String requester);
 
     PageInfo getReceivedArticleById(String auditorId, int pageNum, int pageSize);
@@ -332,14 +332,18 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public boolean unLockArticleById(String articleId) {
+    public boolean unLockArticleById(String articleId, String unlockedBy) {
+        if(!getPermissions(articleId,TokenTools.getPayload(unlockedBy, "id"))){
+            throw new InsufficientPermissionException();
+        }
+
         articleLocker.unlock(articleId);
         return true;
     }
 
     @Override
     public boolean getPermissions(String articleId, String requester) {
-        if (!articleLocker.checkLockPermission(articleId, requester)) {
+        if (articleLocker.checkLock(articleId) && !articleLocker.checkLockPermission(articleId, requester)) {
             throw new InsufficientPermissionException();
         }
         return true;

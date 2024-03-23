@@ -50,7 +50,7 @@ const getReceivedArticle = async (pageNum: Number, pageSize: Number) => {
 }
 function gotoDetail(articleId: any) {
   if (articleId !== '' && articleId !== undefined) {
-    router.push({ path: '/articleDetail', query: { id: articleId } })
+    router.push({ path: '/receivedArticleDetail', query: { id: articleId } })
   } else {
     router.push({ path: '/articleNotFound' })
   }
