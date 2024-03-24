@@ -1,5 +1,6 @@
 package com.snach.literatureclub.bean.attribute;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.snach.literatureclub.common.Identity;
 import com.snach.literatureclub.common.annotation.AttributeType;
 import lombok.Data;
@@ -11,5 +12,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AttributeType(Identity.EXPERT)
 public class ExpertAttribute extends UserAttribute{
-    private String professionalTitle;
+    @JsonProperty("professional_title") private String professionalTitle;
 }
