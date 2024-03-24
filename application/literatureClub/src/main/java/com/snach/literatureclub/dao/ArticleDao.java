@@ -34,7 +34,8 @@ public interface ArticleDao {
 
     // ======================================SELECT==========================================
 
-    @Select("SELECT * FROM article WHERE status=#{status} LIMIT 1 FOR UPDATE")
+    @Select("SELECT id, title,description,text,`time`,status,attr,text_by as textBy, mentor, file_type as fileType" +
+            " FROM article WHERE status=#{status} LIMIT 1 FOR UPDATE")
     Article getArticleByStatus(ArticleStatus status);
 
     /**

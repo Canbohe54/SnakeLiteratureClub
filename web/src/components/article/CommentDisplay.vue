@@ -84,6 +84,7 @@ async function getUserInfo (userId: string) {
         avatar: response.data['user_info']['pictureUrl']
       }
     } else {
+      console.log(response)
       userInfo = null
     }
   })

@@ -56,20 +56,21 @@ class AuditorServiceImpl implements AuditorService {
 
     @Override
     public Article getUnauditedArticle(User auditor) throws InsufficientPermissionException, NoUnauditedArticleException {
-        if (!auditor.checkIdentity(Identity.AUDITOR)) {
+        if (!auditor.checkIdentity(Identity.AUDITOR) && !auditor.checkIdentity(Identity.ADMINISTRATOR)) {
             throw new InsufficientPermissionException();
         }
         Article article = articleDao.getArticleByStatus(ArticleStatus.SUBMITTED);
         if (article == null) {
+//            article.setId("null");
             throw new NoUnauditedArticleException();
         }
-        articleDao.updateStatus(ArticleStatus.BEING_AUDITED, article.getId());
+//        articleDao.updateStatus(ArticleStatus.BEING_AUDITED, article.getId());
         return article;
     }
 
     @Override
     public boolean audit(User auditor, String articleId, boolean auditResult, String reason) {
-        if (!auditor.checkIdentity(Identity.AUDITOR)) {
+        if (!auditor.checkIdentity(Identity.AUDITOR) && !auditor.checkIdentity(Identity.ADMINISTRATOR)) {
             throw new InsufficientPermissionException();
         }
         return true;

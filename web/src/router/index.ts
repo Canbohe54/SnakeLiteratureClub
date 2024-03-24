@@ -174,6 +174,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/ReceivingView.vue')
     },
     {
+        path: '/articleAuditor',
+        name: 'articleAuditor',
+        component: () => import('../views/ArticleAuditorView.vue')
+    },
+    {
         path: '/grade',
         name: 'grade',
         component: () => import('../views/GradeEditView.vue')

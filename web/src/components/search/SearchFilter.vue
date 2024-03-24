@@ -6,7 +6,7 @@
       </el-col>
       <el-col :span="21">
         <el-checkbox-group class="checkboxGroup" tag="span" v-model="filterSelection[groupKey]" :label="groupKey">
-          <el-checkbox-button class="checkboxButton" v-for="key in group" :label="key">{{ key }}</el-checkbox-button>
+          <el-checkbox-button class="checkboxButton" v-for="key in group" :label="key" :disabled="props.disabled">{{ key }}</el-checkbox-button>
         </el-checkbox-group>
       </el-col>
     </el-row>
@@ -16,7 +16,13 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { AttributeAddableObject } from '@/scripts/ArticleTagFilter'
-
+const props = defineProps({
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false
+  }
+})
 const filterTagGroups = { '体裁': ['记叙文', '诗歌', '议论文', '散文', '小说', '说明文'], '题材': ['玄幻', '奇幻','仙侠','武侠','都市','灵异','军事','历史','游戏','竞技','科幻'] }
 
 const filterSelection = ref<AttributeAddableObject>({});

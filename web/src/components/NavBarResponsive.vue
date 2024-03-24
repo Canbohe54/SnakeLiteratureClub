@@ -107,7 +107,7 @@ const identityDepedOption = reactive([
     { // 2
         index: '7',
         title: '待审阅稿件',
-        route: '/'
+        route: '/articleAuditor'
     },
     { // 3
         index: '8',

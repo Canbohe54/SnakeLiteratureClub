@@ -1,10 +1,10 @@
 <template>
   <el-row>
     <el-col :span="18" :offset="3">
-      <div>
+      <div class="article-container">
         <el-container>
           <el-main>
-            <el-card>
+            <el-card class="article-first-card">
               <el-row class="article-box-card">
                 <el-text class="article-detail-title">{{ articleDetail.title }}</el-text>
               </el-row>
@@ -34,28 +34,19 @@
               </div>
 
               <el-divider/>
-              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false" :article-id="articleDetail.id"></ArticleDisplayCard>
               <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+
+              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false" :article-id="articleDetail.id"></ArticleDisplayCard>
             </el-card>
+            <SearchFilter ref="SearchFilterRef" @change="searchFilterChange" :disabled="true"/>
           </el-main>
-          <el-card class="gradePanel">
-            <GradeDisplay class="graDis"/>
-            <div class="gradeEdit" v-if="store.getters.getUserInfo.identity=='专家'">
-              <GradeEditor class="graedit"/>
-            </div>
-          </el-card>
-          <el-footer>
-            <suspense>
-              <CommentDisplay :articleId="route.query.id"/>
-            </suspense>
-          </el-footer>
         </el-container>
       </div>
       <el-dialog
-        draggable
-        v-model="delArticleDialogVisible"
-        title="删除文章"
-        width="30%"
+          draggable
+          v-model="delArticleDialogVisible"
+          title="删除文章"
+          width="30%"
       >
         <span>确定删除文章？</span>
         <template #footer>
@@ -72,21 +63,19 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref} from "vue";
-import {AttributeAddableObject} from "@/scripts/ArticleTagFilter";
+import {reactive, ref} from 'vue'
+import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import {useRoute, useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
-import {SYNC_GET, SYNC_POST} from "@/scripts/Axios";
-import {Star} from "@element-plus/icons-vue";
-import GradeEditor from "@/components/grade/GradeEditor.vue";
-import GradeDisplay from "@/components/grade/GradeDisplay.vue";
-import {useStore} from "vuex";
-import CommentDisplay from "@/components/article/CommentDisplay.vue";
-import {toUserPage} from "@/scripts/userInfo";
-import {errorCallback} from "@/scripts/ErrorCallBack";
-import ArticlePreview from '@/components/article/ArticlePreview.vue'
-import axios from "axios";
-import ArticleDisplayCard from "@/components/article/ArticleDisplayCard.vue";
+import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
+
+import {useStore} from 'vuex'
+
+import {toUserPage} from '@/scripts/userInfo'
+import {errorCallback} from '@/scripts/ErrorCallBack'
+import axios from 'axios'
+import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
+import SearchFilter from "@/components/search/SearchFilter.vue";
 
 // 该页面没有锁
 const router = useRouter()
@@ -108,7 +97,7 @@ const articleDetail = reactive<AttributeAddableObject>({
 })
 
 const displaySize = ref("default")
-
+const SearchFilterRef = ref()
 const isFavorited = ref(false)
 
 const delArticleDialogVisible = ref(false)
@@ -128,26 +117,24 @@ async function getTextBy() {
 
 // 有article_id时初始化ArticleDetail
 (async () => {
+  const userInfo = store.getters.getUserInfo
+  let param = {
+    id: userInfo.id,
+    identity: userInfo.identity
+  }
   let articleRaw: ArrayBuffer
-  if (route.query.id === '' || route.query.id === undefined) return
-  await SYNC_GET('/article/articleDetail', {
-    article_id: route.query.id
-  }, async (response) => {
+
+  await SYNC_GET('/auditor/getUnauditedArticle', param, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
-      console.log(response.data)
-      for (const dataKey in response.data.data.article) {
+      for (const dataKey in response.data.data) {
         if (dataKey == 'raw') {
           continue
         }
-        articleDetail[dataKey] = response.data.data.article[dataKey]
+        articleDetail[dataKey] = response.data.data[dataKey]
       }
 
       await getTextBy()
       await getRaw(articleDetail.id)
-
-      if (store.getters.getToken !== '') {
-        await getIsFavorited()
-      }
     } else {
       errorCallback(response)
     }
@@ -260,8 +247,17 @@ const handleUpdateArticleClicked = () => {
     router.push({path: '/articleNotFound'})
   }
 }
+const searchFilterChange = () => {
+  articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
+}
 </script>
 <style scoped>
+.article-container {
+  margin-bottom: 20px;
+}
+.article-first-card {
+  margin-bottom: 20px;
+}
 .article-box-card {
   display: flex;
   justify-content: center;
@@ -298,5 +294,8 @@ const handleUpdateArticleClicked = () => {
   display: flex;
   white-space: pre-wrap;
   text-align: start !important;
+  margin-bottom: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 </style>

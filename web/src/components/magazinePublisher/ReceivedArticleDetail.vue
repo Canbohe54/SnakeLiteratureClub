@@ -38,7 +38,7 @@
 <!--                              :lock-before-preview="true" :article-id="articleDetail.id">-->
 <!--              </ArticlePreview>-->
               <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="true" :article-id="articleDetail.id"></ArticleDisplayCard>
-              <el-text class="article-text" :size="displaySize">{{ articleDetail.text }}</el-text>
+              <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
             </el-card>
           </el-main>
           <el-card class="gradePanel">
@@ -325,7 +325,7 @@ const handleUpdateArticleClicked = () => {
   text-align: center;
 }
 
-.article-text {
+.article-description {
   display: flex;
   white-space: pre-wrap;
   text-align: start !important;
