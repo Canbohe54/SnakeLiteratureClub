@@ -1,11 +1,15 @@
 <template>
   <div>
-    <el-table class="received_table" :data="receivedTableData" stripe header-align="center" style="width: 100%">
-      <el-table-column prop="title" label="文章标题" width="180"/>
-      <el-table-column prop="description" label="文章描述" width="180"/>
-      <el-table-column prop="text_by" label="作者" width="180"/>
-      <el-table-column prop="mentor" label="指导老师" width="180"/>
-      <el-table-column fixed="right" label="操作" width="120">
+    <div class="received_block">
+    <el-table class="received_table" :data="receivedTableData" :header-cell-style="{'text-align': 'center'}" stripe header-align="center" style="width: 100%">
+      <template #empty>
+        <el-empty description="暂时没有收到稿件哦" />
+      </template>
+      <el-table-column prop="title" label="文章标题" width="180" align="center"/>
+      <el-table-column prop="description" label="文章描述" width="180" align="center"/>
+      <el-table-column prop="text_by" label="作者" width="180" align="center"/>
+      <el-table-column prop="mentor" label="指导老师" width="180" align="center"/>
+      <el-table-column fixed="right" label="操作" width="120" align="center">
         <template #default="scope">
           <el-button
               type="primary"
@@ -17,6 +21,7 @@
         </template>
       </el-table-column>
     </el-table>
+    </div>
     <el-pagination class="received_pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange"
                    :current-page="pageInfo.currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="pageInfo.pageSize"
                    layout="total, sizes, prev, pager, next, jumper" :total="pageInfo.total">
@@ -122,6 +127,11 @@ getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
 
 
 <style scoped>
+.received_block :deep( .el-table__header-wrapper) {
+  display: flex;
+  justify-content: center;
+}
+
 .received_table {
   display: flex;
   justify-content: center;
