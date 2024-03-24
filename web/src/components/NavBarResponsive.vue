@@ -94,30 +94,35 @@ onMounted(() => {
 
 // 学生：我要投稿，老师：代投文章，志愿者：待审阅稿件，专家：待推荐稿件，猎头：推荐稿件
 const identityDepedOption = reactive([
-    {
+    { // 0
         index: '5',
         title: '我要投稿',
         route: '/articleEditor'
     },
-    {
+    { // 1
         index: '6',
         title: '代投文章',
         route: '/'
     },
-    {
+    { // 2
         index: '7',
         title: '待审阅稿件',
         route: '/'
     },
-    {
+    { // 3
         index: '8',
         title: '待推荐稿件',
         route: '/'
     },
-    {
+    { // 4
         index: '9',
         title: '推荐稿件',
         route: '/'
+    },
+    { // 5
+        index: '10',
+        title: '收到稿件',
+        route: '/receiving'
     }
 ])
 
@@ -155,6 +160,7 @@ function setIdentityDepedOption(identity: string) {
             break;
         case 'HUNTER':
             menu_option.push(identityDepedOption[4]);
+            menu_option.push(identityDepedOption[5]);
             break;
         case 'ADMINISTRATOR':
             menu_option.push(identityDepedOption[0]);
@@ -162,6 +168,7 @@ function setIdentityDepedOption(identity: string) {
             menu_option.push(identityDepedOption[2]);
             menu_option.push(identityDepedOption[3]);
             menu_option.push(identityDepedOption[4]);
+            menu_option.push(identityDepedOption[5]);
     }
 }
 (() => {
