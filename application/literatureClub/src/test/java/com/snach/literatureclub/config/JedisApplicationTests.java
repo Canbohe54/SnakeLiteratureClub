@@ -2,6 +2,7 @@ package com.snach.literatureclub.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Jedis;
@@ -19,7 +20,5 @@ public class JedisApplicationTests {
         jedis.set("haha", "你好");
         jedis.set("name", "snach");
         //关闭当前连接
-        jedis.close();
-
     }
 }

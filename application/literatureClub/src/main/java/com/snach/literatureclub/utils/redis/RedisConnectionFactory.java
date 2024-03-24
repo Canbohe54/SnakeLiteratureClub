@@ -1,11 +1,12 @@
-package com.snach.literatureclub.utils;
+package com.snach.literatureclub.utils.redis;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -24,13 +25,8 @@ public class RedisConnectionFactory {
 
     private RedisConnectionFactory() {}
 
-    @Resource
+    @Autowired
     private void loadJedisPool(JedisPool pool) {
-        if (pool == null) {
-            logger.warn("jedisPool at RedisConnectionFactory is null.");
-        } else {
-            logger.info("jedisPool initialized successfully at RedisConnectionFactory.");
-        }
         RedisConnectionFactory.jedisPool = pool;
     }
 
@@ -59,7 +55,7 @@ public class RedisConnectionFactory {
         return jedis;
     }
 
-    private void loadRedisDatabaseNumberMap() {
+    private static void loadRedisDatabaseNumberMap() {
         redisDatabaseNumberMap = new HashMap<>();
         for (DatabaseServiceType DatabaseServiceType : DatabaseServiceType.values()) {
             redisDatabaseNumberMap.put(DatabaseServiceType, DatabaseServiceType.ordinal());
@@ -68,7 +64,7 @@ public class RedisConnectionFactory {
         logger.info("Load default redisDatabaseNumberMap.");
     }
 
-    public void loadRedisDatabaseNumberMap(Map<DatabaseServiceType, Integer> databaseNumberMap) {
+    public static void loadRedisDatabaseNumberMap(Map<DatabaseServiceType, Integer> databaseNumberMap) {
         redisDatabaseNumberMap = databaseNumberMap;
         Integer defaultDatabaseNumber = databaseNumberMap.get(DatabaseServiceType.DEFAULT);
         if (defaultDatabaseNumber == null) {
