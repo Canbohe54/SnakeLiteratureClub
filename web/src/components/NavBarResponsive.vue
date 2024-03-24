@@ -141,7 +141,7 @@ const menu_option = reactive([
 
 function setIdentityDepedOption(identity: string) {
     switch (identity) {
-        case 'CONTRIBUTER':
+        case 'CONTRIBUTOR':
             menu_option.push(identityDepedOption[0]);
             break;
         case 'TEACHER':
@@ -156,9 +156,22 @@ function setIdentityDepedOption(identity: string) {
         case 'HUNTER':
             menu_option.push(identityDepedOption[4]);
             break;
+        case 'ADMINISTRATOR':
+            menu_option.push(identityDepedOption[0]);
+            menu_option.push(identityDepedOption[1]);
+            menu_option.push(identityDepedOption[2]);
+            menu_option.push(identityDepedOption[3]);
+            menu_option.push(identityDepedOption[4]);
     }
 }
-setIdentityDepedOption('CONTRIBUTER');
+(() => {
+  if(store.getters.getUserInfo.identity != '未登录'){
+    setIdentityDepedOption(store.getters.getUserInfo.identity)
+  } else {
+    setIdentityDepedOption('CONTRIBUTOR');
+  }
+})()
+
 
 const sm_menu_expand = ref(false);
 const user_bar_expand = ref(false);

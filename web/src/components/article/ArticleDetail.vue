@@ -34,7 +34,7 @@
               </div>
 
               <el-divider/>
-                <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0" :lock-before-preview="true" :article-id="articleDetail.id">关门预览</ArticlePreview>
+              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false" :article-id="articleDetail.id"></ArticleDisplayCard>
               <el-text class="article-text" :size="displaySize">{{ articleDetail.text }}</el-text>
             </el-card>
           </el-main>
@@ -86,7 +86,9 @@ import {toUserPage} from "@/scripts/userInfo";
 import {errorCallback} from "@/scripts/ErrorCallBack";
 import ArticlePreview from '@/components/article/ArticlePreview.vue'
 import axios from "axios";
+import ArticleDisplayCard from "@/components/article/ArticleDisplayCard.vue";
 
+// 该页面没有锁
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
