@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { reactive, toRefs, ref } from 'vue';
+import { reactive, toRefs, ref, onUpdated, onMounted } from 'vue';
 
 const props = defineProps({
     articleInfo: {
@@ -95,9 +95,12 @@ function handleStatusColor() {
     }
     console.log(testInfo.status)
 }
-window.onload = function () {
+// window.onload = function () {
+//     handleStatusColor()
+// }
+onMounted(() => { // setup语法糖下渲染时周期函数
     handleStatusColor()
-}
+})
 
 function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师，直接进入阅读界面
     if (testInfo.status === '公开稿件') {
