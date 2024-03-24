@@ -3,7 +3,6 @@ package com.snach.literatureclub.dao;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleStatus;
 import org.apache.ibatis.annotations.*;
-import org.springframework.data.relational.repository.Lock;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

@@ -2,8 +2,6 @@ package com.snach.literatureclub.utils.redis;
 
 import com.snach.literatureclub.common.ArticleStatisticalDataType;
 import com.snach.literatureclub.common.DatabaseServiceType;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 
 public class ArticleDataStatistician {

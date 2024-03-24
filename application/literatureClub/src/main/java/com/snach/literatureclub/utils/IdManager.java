@@ -11,7 +11,7 @@ public class IdManager {
     @Value("${snach.common.redisKeyOfCurrentUserId:CURRENT_USER_ID}")
     private String redisKeyNameOfCurrentUserId;
 
-    private static Jedis jedis;
+    private static RedisConnectionFactory connectionFactory;
 
     private static volatile IdManager manager;
 
@@ -22,8 +22,7 @@ public class IdManager {
             synchronized (IdManager.class) {
                 if (manager == null) {
                     manager = new IdManager();
-                    RedisConnectionFactory connectionFactory = RedisConnectionFactory.getConnectionFactory();
-                    jedis = connectionFactory.getJedis(serviceType);
+                    connectionFactory = RedisConnectionFactory.getConnectionFactory();
                 }
             }
         }
@@ -31,6 +30,7 @@ public class IdManager {
     }
 
     public synchronized String generateUserId() {
+        Jedis jedis = connectionFactory.getJedis(serviceType);
         long newId = jedis.incr(redisKeyNameOfCurrentUserId);
         if (1e11 <= newId && newId < 2e11) {
             newId = (long) 2e11;

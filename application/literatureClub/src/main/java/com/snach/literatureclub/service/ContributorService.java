@@ -5,7 +5,7 @@ import com.snach.literatureclub.common.ArticleStatus;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.common.exception.NullFileException;
 import com.snach.literatureclub.dao.ArticleDao;
-import com.snach.literatureclub.utils.IdTools;
+import com.snach.literatureclub.utils.IdManager;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Date;
 
-import static com.snach.literatureclub.utils.IdTools.generateId;
 import static com.snach.literatureclub.utils.TokenTools.getPayload;
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
 
@@ -35,8 +34,15 @@ public interface ContributorService {
 @Service
 @Mapper
 class ContributorServiceImpl implements ContributorService {
+    private final ArticleDao articleDao;
+
+    private final IdManager idManager;
+
     @Autowired
-    private ArticleDao articleDao;
+    public ContributorServiceImpl(ArticleDao articleDao) {
+        this.articleDao = articleDao;
+        idManager = IdManager.getManager();
+    }
     @Override
     public Article contribute(String token, Article article, MultipartFile mulArticle) {
         // 检测token是否合法
@@ -60,7 +66,7 @@ class ContributorServiceImpl implements ContributorService {
         // 稿件id
         if (article.getId() == null || article.getId().equals("null")) {
             //没有稿件id，时间戳生成id
-            article.setId(generateId(IdTools.Type.ARTICLE));
+            article.setId(idManager.generateArticleId());
             articleDao.insertArticle(article);
         } else {
             //若已有稿件id，则进行更新

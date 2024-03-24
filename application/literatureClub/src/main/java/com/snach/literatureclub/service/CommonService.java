@@ -3,9 +3,6 @@ package com.snach.literatureclub.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snach.literatureclub.common.DatabaseServiceType;
 import com.snach.literatureclub.utils.redis.RedisConnectionFactory;
-import jakarta.annotation.PostConstruct;
-import org.apache.ibatis.annotations.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
@@ -27,20 +24,10 @@ class CommonServiceImpl implements CommonService {
     @Value("${snach.common.redisKeyOfCurrentUserId:CURRENT_USER_ID}")
     private String redisKeyNameOfCurrentUserId;
 
-    private RedisConnectionFactory connectionFactory;
+    private final RedisConnectionFactory connectionFactory;
 
-    @Autowired
-    private void loadRedisConnectionFactory(RedisConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
-    }
-
-    @PostConstruct
-    private void redisStorageInitialize() {
-        connectionFactory = RedisConnectionFactory.getConnectionFactory();
-        try (Jedis jedis = connectionFactory.getJedis(serviceType)) {
-            jedis.setnx(redisKeyNameOfArticleTags, "{}");
-            jedis.setnx(redisKeyNameOfCurrentUserId, "10001");
-        }
+    public CommonServiceImpl() {
+        this.connectionFactory = RedisConnectionFactory.getConnectionFactory();
     }
 
     public Map<String, Object> loadArticleTags() {

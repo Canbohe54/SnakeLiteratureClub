@@ -1,17 +1,15 @@
 package com.snach.literatureclub.utils.redis;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.snach.literatureclub.common.DatabaseServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import com.snach.literatureclub.common.DatabaseServiceType;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class RedisConnectionFactory {
@@ -26,8 +24,8 @@ public class RedisConnectionFactory {
     private RedisConnectionFactory() {}
 
     @Autowired
-    private void loadJedisPool(JedisPool pool) {
-        RedisConnectionFactory.jedisPool = pool;
+    public RedisConnectionFactory(JedisPool jedisPool) {
+        RedisConnectionFactory.jedisPool = jedisPool;
     }
 
     public static RedisConnectionFactory getConnectionFactory() {

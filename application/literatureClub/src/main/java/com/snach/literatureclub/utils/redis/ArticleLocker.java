@@ -1,9 +1,6 @@
 package com.snach.literatureclub.utils.redis;
 
 import com.snach.literatureclub.common.DatabaseServiceType;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;
