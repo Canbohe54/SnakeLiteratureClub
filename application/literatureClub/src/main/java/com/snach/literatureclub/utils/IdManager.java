@@ -8,8 +8,8 @@ import redis.clients.jedis.Jedis;
 public class IdManager {
     private static final DatabaseServiceType serviceType = DatabaseServiceType.COMMON;
 
-    @Value("${snach.common.redisKeyOfCurrentUserId}")
-    private String redisKeyNameOfCurrentUserId = "CURRENT_USER_ID";
+    @Value("${snach.common.redisKeyOfCurrentUserId:CURRENT_USER_ID}")
+    private String redisKeyNameOfCurrentUserId;
 
     private static Jedis jedis;
 
@@ -39,11 +39,15 @@ public class IdManager {
         return String.valueOf(newId);
     }
 
+    @SuppressWarnings("deprecation")
     public synchronized String generateArticleId() {
-        return String.valueOf(System.currentTimeMillis());
+        return IdTools.generateId(IdTools.Type.ARTICLE);
+//        return String.valueOf(System.currentTimeMillis());
     }
 
+    @SuppressWarnings("deprecation")
     public synchronized String generateCommentId() {
-        return String.valueOf(System.currentTimeMillis());
+        return IdTools.generateId(IdTools.Type.COMMENT);
+//        return String.valueOf(System.currentTimeMillis());
     }
 }

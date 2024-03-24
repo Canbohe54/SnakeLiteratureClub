@@ -65,7 +65,6 @@ class ContributorServiceImpl implements ContributorService {
         } else {
             //若已有稿件id，则进行更新
             articleDao.updateArticleDetail(article);
-//            return updateArticle(token, imageList, article);
         }
 
         return article;

@@ -26,10 +26,9 @@ public class TokenTools {
     }
 
     /**
-     * 生成用户JWT
-     *
-     * @param user 用户
-     * @return JWT字符串
+     * Generate user JWT-token by a User object
+     * @param user a User object
+     * @return JWT-token
      */
     public static String tokenGen(User user) {
         Calendar expires = Calendar.getInstance();
@@ -42,10 +41,9 @@ public class TokenTools {
     }
 
     /**
-     * 生成用户JWT
-     *
-     * @param id 用户id
-     * @return JWT字符串
+     * Generate user JWT-token by a User id
+     * @param id user id
+     * @return JWT-token
      */
     public static String tokenGen(String id) {
         Calendar expires = Calendar.getInstance();
@@ -74,10 +72,9 @@ public class TokenTools {
     }
 
     /**
-     * 验证JWT是否有效
-     *
-     * @param token JWT字符串
-     * @return 若有效，返回true
+     * Verify is the token valid
+     * @param token JWT-token
+     * @return true if valid
      */
     public static boolean tokenVerify(String token) {
         JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
@@ -90,11 +87,10 @@ public class TokenTools {
     }
 
     /**
-     * 验证JWT是否有效并判断该token是否属于该user
-     *
-     * @param token JWT字符串
-     * @param user  用户
-     * @return 若有效，返回true
+     * Verify if the token is valid and belongs to the user
+     * @param token JWT-token
+     * @param user a user object
+     * @return true if valid
      */
     public static boolean tokenVerify(String token, User user) {
         JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
@@ -117,11 +113,10 @@ public class TokenTools {
     }
 
     /**
-     * 获取JWT内payload内某一字段的值
-     *
-     * @param token JWT字符串
-     * @param key 字段名称
-     * @return 字段值
+     * Get the value of a payload-field of a verified JWT-token
+     * @param token JWT-token
+     * @param key the key of payload
+     * @return the value of the key
      */
     public static String getPayload(String token, String key) {
         JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SECRET)).build();

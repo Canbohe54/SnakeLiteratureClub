@@ -11,9 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping(value = "auditor", method = RequestMethod.POST)
 public class AuditorController {
-    @Autowired
     AuditorService auditorService;
 
+    @Autowired
     public AuditorController(AuditorService auditorService) {
         this.auditorService = auditorService;
     }

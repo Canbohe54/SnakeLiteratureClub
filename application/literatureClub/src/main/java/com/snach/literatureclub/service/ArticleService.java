@@ -4,25 +4,23 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleStatus;
-import com.snach.literatureclub.common.exception.*;
+import com.snach.literatureclub.common.exception.InsufficientPermissionException;
+import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.dao.ArticleDao;
-import com.snach.literatureclub.utils.QiniuKodoUtil;
+import com.snach.literatureclub.utils.File2PdfTools;
+import com.snach.literatureclub.utils.FileUtil;
 import com.snach.literatureclub.utils.SensitiveWordsTools;
-import com.snach.literatureclub.utils.TextExtractionTools;
-import com.snach.literatureclub.utils.*;
+import com.snach.literatureclub.utils.TokenTools;
 import com.snach.literatureclub.utils.redis.ArticleLocker;
-import jakarta.annotation.Resource;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.snach.literatureclub.utils.TokenTools.getPayload;
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
@@ -32,56 +30,53 @@ public interface ArticleService {
     Article getArticleById(String articleId);
 
     /**
-     * 根据作者id查找其稿件基础信息，包括标题、修改时间和描述，用于创作者界面显示
-     *
-     * @param contributorId 作者id
-     * @param pageNum
-     * @param pageSize
-     * @param statusList
-     * @return 作者稿件列表, 执行状态
+     * Get article list by author id
+     * @param contributorId author id
+     * @param pageNum page number for query
+     * @param pageSize page size for query
+     * @param statusList the status of the article
+     * @return PageInfo object containing article list
      */
-    // TODO: return type (need: List<Article>); parameter statusList type (need: List<ArticleStatus>);
-    Map<String, Object> getContributorArticles(String contributorId, int pageNum, int pageSize, List<Integer> statusList);
+    PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleStatus> statusList);
 
     Article getArticleFileById(String articleId);
 
     String getLatestApprovalArticleById(String articleId);
 
-    PageInfo getReceivedArticleById(String auditorId, int pageNum, int pageSize);
+    PageInfo<Article> getReceivedArticleById(String auditorId, int pageNum, int pageSize);
 
     /**
-     * 返回所有稿件的基础信息
-     *
-     * @return 所有的稿件信息的Article对象List
+     * Get article list by page
+     * @param pageNum page number for query
+     * @param pageSize page size for query
+     * @return PageInfo object containing article list
      */
-    Map<String, Object> getAllArticles(int pageNum, int pageSize);
+    PageInfo<Article> getAllArticles(int pageNum, int pageSize);
 
     /**
-     * 根据关键词搜索稿件
-     *
-     * @param keyword    关键词
-     * @param pageNum
-     * @param pageSize
-     * @param statusList
-     * @return 搜索到的所有稿件信息
+     * Search article list by keyword
+     * @param keyword keyword
+     * @param tag tag filter
+     * @param pageNum page number for query
+     * @param pageSize page size for query
+     * @param statusList the status of the article
+     * @return PageInfo object containing article list
      */
-    // TODO: return type (need: List<Article>);
-    Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleStatus> statusList);
+    PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleStatus> statusList);
 
     /**
-     * 根据id删除稿件
-     *
-     * @param token     用于验证是否过期以及获取作者id
-     * @param articleId 稿件id
-     * @return 执行状态
+     * Delete article by article id
+     * @param token verify and check is the author of the article
+     * @param articleId the article id
+     * @return true if successfully deleted
      */
-    Map<String, Object> deleteArticleById(String token, String articleId);
+    boolean deleteArticleById(String token, String articleId);
 
     /**
-     * 返回文章的敏感词审核结果
-     *
-     * @param token
-     * @param articleId
+     * Audit an article by sensitive words (sensitive words check)
+     * @param token user token
+     * @param articleId the article id
+     * @param useStrict true if you use the strict mode
      * @return 返回文章的敏感词审核结果
      */
     List<?> sensitiveWordsJudge(String token, String articleId, boolean useStrict);
@@ -104,9 +99,9 @@ class ArticleServiceImpl implements ArticleService {
     private final ArticleLocker articleLocker;
 
     @Autowired
-    ArticleServiceImpl(ArticleDao articleDao, ArticleLocker articleLocker) {
+    ArticleServiceImpl(ArticleDao articleDao) {
         this.articleDao = articleDao;
-        this.articleLocker = articleLocker;
+        this.articleLocker = ArticleLocker.getLocker();
     }
 
     @Override
@@ -115,12 +110,9 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Map<String, Object> getContributorArticles(String contributorId, int pageNum, int pageSize, List<Integer> statusList) {
-        Map<String, Object> res = new HashMap<>();
+    public PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleStatus> statusList) {
         PageHelper.startPage(pageNum, pageSize);
-        res.put("articles", new PageInfo<>(articleDao.getArticleByContributorId(contributorId, statusList)));
-        res.put("statusMsg", "Success.");
-        return res;
+        return new PageInfo<>(articleDao.getArticleByContributorId(contributorId, statusList));
     }
 
     @Override
@@ -134,53 +126,40 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public PageInfo getReceivedArticleById(String auditorId, int pageNum, int pageSize) {
+    public PageInfo<Article> getReceivedArticleById(String auditorId, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         return new PageInfo<>(articleDao.getArticleByReceivedBy(auditorId));
     }
 
     @Override
-    public Map<String, Object> getAllArticles(int pageNum, int pageSize) {
-        Map<String, Object> res = new HashMap<>();
-
+    public PageInfo<Article> getAllArticles(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        PageInfo<Article> pageInfo = new PageInfo<>(articleDao.getAllArticles());
-
-        res.put("articles", pageInfo);
-        res.put("statusMsg", "Success.");
-        return res;
+        return new PageInfo<>(articleDao.getAllArticles());
     }
 
     @Override
-    public Map<String, Object> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleStatus> statusList) {
-        Map<String, Object> res = new HashMap<>();
+    public PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleStatus> statusList) {
         PageHelper.startPage(pageNum, pageSize);
         if (tag == null) {
-            res.put("articles", new PageInfo<>(articleDao.getArticlesByKeyword(keyword, statusList)));
+            return new PageInfo<>(articleDao.getArticlesByKeyword(keyword, statusList));
         } else {
-            res.put("articles", new PageInfo<>(articleDao.getArticlesByKeywordAndTag(keyword, tag)));
+            return new PageInfo<>(articleDao.getArticlesByKeywordAndTag(keyword, tag));
         }
-        res.put("statusMsg", "Success.");
-        return res;
     }
 
     @Override
-    public Map<String, Object> deleteArticleById(String token, String articleId) {
-        Map<String, Object> res = new HashMap<>();
-        // 检测token是否合法
+    public boolean deleteArticleById(String token, String articleId) {
         if (!tokenVerify(token)) {
-            res.put("statusMsg", "Invalid token.");
-            return res;
+            throw new InvalidTokenException();
         }
-        // 获取作者id
-        String contributor_id = getPayload(token, "id");
-        if (articleDao.belong(contributor_id, articleId) == 0) {
-            res.put("statusMsg", "Access denied");
-            return res;
+        // get user id from token
+        String contributorId = getPayload(token, "id");
+        // check if the article belongs to the user
+        if (articleDao.belong(contributorId, articleId) == 0) {
+            throw new InsufficientPermissionException();
         }
         articleDao.deleteArticleById(articleId);
-        res.put("statusMsg", "Success.");
-        return res;
+        return true;
     }
 
     /**
@@ -190,7 +169,6 @@ class ArticleServiceImpl implements ArticleService {
      * @param id    文章的唯一标识符，用于从数据库中获取文章内容。
      * @return 返回一个包含审核结果的Map，其中键为审核相关的指标或错误信息，值为对应的结果或异常对象。返回的结果包括状态消息、敏感词数量和敏感词列表。
      * @throws InvalidTokenException        如果提供的token验证失败，则抛出此异常。
-     * @throws UnsupportedFileTypeException throws if the article raw file format is not supported.
      */
     public List<?> sensitiveWordsJudge(String token, String id, boolean useStrict) {
         if (!tokenVerify(token)) {

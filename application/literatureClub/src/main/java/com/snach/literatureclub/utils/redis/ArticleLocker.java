@@ -8,7 +8,6 @@ import redis.clients.jedis.Jedis;
 
 import java.util.List;
 
-@Component
 public class ArticleLocker {
     private static final DatabaseServiceType serviceType = DatabaseServiceType.ARTICLE_LOCK;
 
@@ -18,7 +17,6 @@ public class ArticleLocker {
 
     private ArticleLocker() {}
 
-    @Bean
     public static ArticleLocker getLocker() {
         if (locker == null) {
             synchronized (RedisConnectionFactory.class) {

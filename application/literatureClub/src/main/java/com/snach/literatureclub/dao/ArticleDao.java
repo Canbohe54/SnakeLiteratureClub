@@ -54,7 +54,7 @@ public interface ArticleDao {
             "</foreach>",
             "</script>"
     })
-    List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id, @Param("items") List<Integer> statusList);
+    List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id, @Param("items") List<ArticleStatus> statusList);
     /**
     * 获取用户文章数量
     * */

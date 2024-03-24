@@ -2,6 +2,7 @@ package com.snach.literatureclub.utils;
 
 import java.util.Random;
 
+@Deprecated
 public class IdTools {
     private static final String code62 = "WLJwjm8F6iySOH2aXvK4RnZ1Nkbel93cQoYgzGE0rChVIMdDTPs5UAfqt7uBxp";
     private static final String code10 = "0123456789";
@@ -49,7 +50,6 @@ public class IdTools {
             timeStamp = timeStamp / code62.length();
         }
         stamp.append(code62.charAt((int) (timeStamp % code62.length())));
-        stamp.reverse();
         stamp.append(randomStringGen62(4));
         return stamp.toString();
     }

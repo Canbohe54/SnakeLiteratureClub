@@ -1,7 +1,9 @@
 package com.snach.literatureclub.service;
 
 import com.snach.literatureclub.bean.Comment;
+import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.dao.CommentDao;
+import com.snach.literatureclub.utils.IdManager;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static com.snach.literatureclub.utils.IdTools.*;
 import static com.snach.literatureclub.utils.TokenTools.*;
 
 @Service
@@ -23,44 +24,45 @@ public interface CommentService {
      * 关于`根评论`及`子评论`:
      * @see Comment
      */
-    Map<String, Object> loadComment(String articleId, Boolean recursive, int startAt, int limit);
+    List<?> loadComment(String articleId, Boolean recursive, int startAt, int limit);
 
     /**
      * 添加评论
      *
      * @param token 用户token
-     * @param text 评论文本
+     * @param text  评论文本
      * <p>--------------</p>
      * param `textOn` and `reply`:
      * @see Comment
      */
-    Map<String, Object> addComment(String token, String text, String textOn, String reply);
+    boolean addComment(String token, String text, String textOn, String reply);
 
     /**
      * 删除评论
      *
      * @param commentId 评论id
      */
-    Map<String, Object> deleteComment(String token, String commentId);
+    boolean deleteComment(String token, String commentId);
 }
+
 @Transactional(rollbackFor = Exception.class)
 @Service
 @Mapper
 class CommentServiceImpl implements CommentService {
+    private final CommentDao commentDao;
+
+    private final IdManager idManager;
+
     @Autowired
-    private CommentDao commentDao;
+    public CommentServiceImpl(CommentDao commentDao) {
+        this.commentDao = commentDao;
+        idManager = IdManager.getManager();
+    }
 
     @Override
-    public Map<String, Object> loadComment(String articleId, Boolean recursive, int startAt, int limit) {
-        Map<String, Object> response = new HashMap<>();
-        if (idType(articleId) != Type.ARTICLE) {
-            response.put("statusMsg", "Invalid id.");
-            response.put("res", "{}");
-            return response;
-        }
+    public List<?> loadComment(String articleId, Boolean recursive, int startAt, int limit) {
         List<Object> resultList = new ArrayList<>();
         List<Comment> onArticle = commentDao.loadRootCommentLimit(articleId, startAt, limit);
-        int rootCommentCount = commentDao.getRootCommentCount(articleId);
         resultList.add(onArticle);
         if (recursive) {
             List<List<Comment>> onComment = new ArrayList<>();
@@ -69,37 +71,28 @@ class CommentServiceImpl implements CommentService {
             }
             resultList.add(onComment);
         }
-        response.put("rowsNum", rootCommentCount);
-        response.put("statusMsg", "Success.");
-        response.put("res", resultList);
-        return response;
+        return resultList;
     }
 
     @Override
-    public Map<String, Object> addComment(String token, String text, String textOn, String reply) {
-        Map<String, Object> response = new HashMap<>();
+    public boolean addComment(String token, String text, String textOn, String reply) {
         if (!tokenVerify(token)) {
-            response.put("statusMsg", "Invalid token.");
-            return response;
+            throw new InvalidTokenException();
         }
         if (reply == null) {
             reply = "";
         }
         Calendar calendar = Calendar.getInstance();
-        commentDao.insertComment(generateId(Type.COMMENT), text, calendar.getTime(), getPayload(token, "id"), textOn, reply);
-        response.put("statusMsg", "Success.");
-        return response;
+        commentDao.insertComment(idManager.generateCommentId(), text, calendar.getTime(), getPayload(token, "id"), textOn, reply);
+        return true;
     }
 
     @Override
-    public Map<String, Object> deleteComment(String token, String commentId) {
-        Map<String, Object> response = new HashMap<>();
+    public boolean deleteComment(String token, String commentId) {
         if (!tokenVerify(token)) {
-            response.put("statusMsg", "Invalid token.");
-            return response;
+            throw new InvalidTokenException();
         }
         commentDao.deleteComment(commentId);
-        response.put("statusMsg", "Success.");
-        return response;
+        return true;
     }
 }

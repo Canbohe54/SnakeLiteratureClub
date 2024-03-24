@@ -4,7 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
-import com.snach.literatureclub.common.exception.NonexistentUserException;
+import com.snach.literatureclub.common.exception.NonexistentException;
 import com.snach.literatureclub.common.exception.WrongIdOrPasswordException;
 import com.snach.literatureclub.dao.UserDao;
 import com.snach.literatureclub.utils.IdManager;
@@ -21,23 +21,29 @@ import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
 public interface UserService {
     // Account
     String login(String id, String password);
-    void register(User user);
+    boolean register(User user);
 
     // User Info
     User getUserBasicInfo(String id);
-    PageInfo getUserBasicInfoByName(String name, String identity, int pageNum, int pageSize);
-    void updateUserBasicInfo(String token, User user);
+    PageInfo<User> getUserBasicInfoByName(String name, String identity, int pageNum, int pageSize);
+    boolean updateUserBasicInfo(String token, User user);
 }
 @Transactional(rollbackFor = Exception.class)
 @Mapper
 @Service
 class UserServiceImpl implements UserService {
-    @Autowired
-    private UserDao userDao;
+    private final UserDao userDao;
 
-    private final IdManager idManager = IdManager.getManager();
+    private final IdManager idManager;
+
+    @Autowired
+    public UserServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+        idManager = IdManager.getManager();
+    }
 
     // Account
+    @Override
     public String login(String id, String password) {
         String verifiedId;
         if (id.length() == 11 && id.charAt(0) == '1') {
@@ -51,23 +57,26 @@ class UserServiceImpl implements UserService {
         return tokenGen(verifiedId);
     }
 
-    public void register(User user) {
+    @Override
+    public boolean register(User user) {
         user.setId(idManager.generateUserId());
         userDao.insertUser(user);
+        return true;
     }
 
     // User Info
+    @Override
     public User getUserBasicInfo(String id) {
         User user = userDao.getUserById(id);
         if (user == null) {
-            throw new NonexistentUserException();
+            throw new NonexistentException(User.class);
         }
         user.setPassword("<SECRET>");
         return user;
     }
 
     @Override
-    public PageInfo getUserBasicInfoByName(String name, String identity, int pageNum, int pageSize) {
+    public PageInfo<User> getUserBasicInfoByName(String name, String identity, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         if(identity != null){
             return new PageInfo<>(userDao.getUserByNameAndIdentity(name,identity));
@@ -75,10 +84,12 @@ class UserServiceImpl implements UserService {
         return new PageInfo<>(userDao.getUserByName(name));
     }
 
-    public void updateUserBasicInfo(String token, User user) {
+    @Override
+    public boolean updateUserBasicInfo(String token, User user) {
         if (!tokenVerify(token, user)) {
             throw new InvalidTokenException();
         }
         userDao.updateUserInfo(user);
+        return true;
     }
 }

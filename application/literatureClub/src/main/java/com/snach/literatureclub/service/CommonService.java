@@ -22,8 +22,10 @@ class CommonServiceImpl implements CommonService {
     private static final DatabaseServiceType serviceType = DatabaseServiceType.COMMON;
 
     // the key of common data in redis
-    private String redisKeyNameOfArticleTags = "ARTICLE_TAGS";
-    private String redisKeyNameOfCurrentUserId = "CURRENT_USER_ID";
+    @Value("${snach.common.redisKeyOfArticleTags:ARTICLE_TAGS}")
+    private String redisKeyNameOfArticleTags;
+    @Value("${snach.common.redisKeyOfCurrentUserId:CURRENT_USER_ID}")
+    private String redisKeyNameOfCurrentUserId;
 
     private RedisConnectionFactory connectionFactory;
 

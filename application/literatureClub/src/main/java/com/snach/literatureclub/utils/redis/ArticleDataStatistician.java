@@ -27,20 +27,44 @@ public class ArticleDataStatistician {
         return statistician;
     }
 
+    /**
+     * Get the statistical data of the article
+     * @param articleId the article id
+     * @param statisticalDataType the statistical data type
+     * @return the statistical data
+     */
     public synchronized long getStatisticalData(String articleId, ArticleStatisticalDataType statisticalDataType) {
         Jedis jedis = connectionFactory.getJedis(serviceType);
         String statisticalData = jedis.hget(articleId, statisticalDataType.name());
         return Long.parseLong(statisticalData);
     }
+
+    /**
+     * Add value to the statistical data
+     * @param articleId the article id
+     * @param statisticalDataType the statistical data type
+     * @param value the value added on the statistical data
+     */
     public synchronized void addStatisticalData(String articleId, ArticleStatisticalDataType statisticalDataType, long value) {
         Jedis jedis = connectionFactory.getJedis(serviceType);
         jedis.hincrBy(articleId, statisticalDataType.name(), value);
     }
 
+    /**
+     * Add 1 to the statistical data
+     * @param articleId the article id
+     * @param statisticalDataType the statistical data type
+     */
     public synchronized void addStatisticalData(String articleId, ArticleStatisticalDataType statisticalDataType) {
         addStatisticalData(articleId, statisticalDataType, 1);
     }
 
+    /**
+     * Set value to the statistical data
+     * @param articleId the article id
+     * @param statisticalDataType the statistical data type
+     * @param value the new value of the statistical data
+     */
     public void setStatisticalData(String articleId, ArticleStatisticalDataType statisticalDataType, long value) {
         Jedis jedis = connectionFactory.getJedis(serviceType);
         jedis.hset(articleId, statisticalDataType.name(), String.valueOf(value));
