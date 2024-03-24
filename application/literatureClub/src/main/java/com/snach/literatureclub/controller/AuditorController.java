@@ -33,4 +33,8 @@ public class AuditorController {
         return auditorService.audit(auditor, articleId, auditResult, reason);
     }
 
+    @RequestMapping("cancelAudit")
+    public boolean cancelAudit(User auditor, String articleId) {
+        return auditorService.cancelAudit(auditor, articleId);
+    }
 }

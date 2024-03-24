@@ -1,7 +1,7 @@
 <template>
   <el-row>
     <el-col :span="18" :offset="3">
-      <div class="article-container">
+      <div class="article-container" v-if="articleDetail.id !== 'null'">
         <el-container>
           <el-main>
             <el-card class="article-first-card">
@@ -36,11 +36,20 @@
               <el-divider/>
               <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
 
+              <!-- 待弃用 -->
               <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false" :article-id="articleDetail.id"></ArticleDisplayCard>
+
             </el-card>
             <SearchFilter ref="SearchFilterRef" @change="searchFilterChange" :disabled="true"/>
+
           </el-main>
         </el-container>
+      </div>
+      <div v-else> <el-empty description="暂时没有需要审核的文章，感谢您的付出！" /></div>
+      <div class="button-container">
+        <el-button v-if="articleDetail.id !== 'null'" class="3" type="success" @click="handleAuditClicked(true)">审核通过！</el-button>
+        <el-button v-if="articleDetail.id !== 'null'" class="3" type="danger" @click="handleAuditClicked(false)">审核不通过</el-button>
+        <el-button class="3" @click="handleExit">退出审核</el-button>
       </div>
       <el-dialog
           draggable
@@ -83,7 +92,7 @@ const route = useRoute()
 const store = useStore()
 
 const articleDetail = reactive<AttributeAddableObject>({
-  id: null,
+  id: 'null',
   text: '',
   time: '',
   text_by: '',
@@ -116,16 +125,17 @@ async function getTextBy() {
 }
 
 // 有article_id时初始化ArticleDetail
-(async () => {
+const getAuditedArticle = async () => {
   const userInfo = store.getters.getUserInfo
   let param = {
     id: userInfo.id,
     identity: userInfo.identity
   }
-  let articleRaw: ArrayBuffer
 
   await SYNC_GET('/auditor/getUnauditedArticle', param, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
+      console.log(response)
+      if(response.data.data.id == 'null') return
       for (const dataKey in response.data.data) {
         if (dataKey == 'raw') {
           continue
@@ -139,7 +149,8 @@ async function getTextBy() {
       errorCallback(response)
     }
   })
-})()
+}
+getAuditedArticle()
 async function getRaw(articleId: String) {
   axios({
     url: '/article/getArticleFileById',
@@ -157,22 +168,6 @@ async function getRaw(articleId: String) {
   });
 }
 
-async function getIsFavorited() {
-  await SYNC_GET('/usr/isArticleFavor', {
-    token: store.getters.getToken,
-    article_id: articleDetail.id
-  }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      if (response.data.isFavor === "True") {
-        isFavorited.value = true
-      } else {
-        isFavorited.value = false
-      }
-    } else {
-      errorCallback(response)
-    }
-  })
-}
 
 async function handleFavorite() {
   if (store.getters.getToken === '') {
@@ -227,7 +222,7 @@ const handleDelArticleClicked = async () => {
     token: store.getters.getToken,
     article_id: articleDetail.id
   }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+    if (response.status === 200 && response.data.code === 2001) {
       ElMessage({
         showClose: true,
         message: '删除文章成功',
@@ -249,6 +244,46 @@ const handleUpdateArticleClicked = () => {
 }
 const searchFilterChange = () => {
   articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
+}
+
+const handleAuditClicked = async (pass: boolean) => {
+  await SYNC_POST('/auditor/audit', {
+    id: store.getters.getUserInfo.id,
+    identity: store.getters.getUserInfo.identity,
+    article_id: articleDetail.id,
+    audit_result: pass,
+    reason: ''
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      ElMessage({
+        showClose: true,
+        message: '感谢您的建议！',
+        type: 'success'
+      })
+      router.push('/articleAuditor')
+    } else {
+      errorCallback(response)
+    }
+  })
+}
+
+const handleExit = async () => {
+  await SYNC_POST('/auditor/cancelAudit', {
+    id: store.getters.getUserInfo.id,
+    identity: store.getters.getUserInfo.identity,
+    article_id: articleDetail.id,
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      ElMessage({
+        showClose: true,
+        message: '感谢您的贡献！',
+        type: 'success'
+      })
+      getAuditedArticle()
+    } else {
+      errorCallback(response)
+    }
+  })
 }
 </script>
 <style scoped>

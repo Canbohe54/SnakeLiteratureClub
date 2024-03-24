@@ -80,7 +80,7 @@ public interface ArticleDao {
      * @param id 稿件id
      * @return id对应的稿件信息的Article对象
      */
-    @Select("SELECT id, text, time, text_by as textBy, title, description, status, attr, raw, `file_type` as fileType FROM article WHERE id = #{id}")
+    @Select("SELECT id, text, time, text_by as textBy, title, description, status, attr, `file_type` as fileType FROM article WHERE id = #{id}")
     Article getArticleById(@Param("id") String id);
 
     /**

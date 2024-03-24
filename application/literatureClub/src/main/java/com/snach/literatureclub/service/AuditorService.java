@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedOutputStream;
@@ -42,6 +43,20 @@ public interface AuditorService {
      */
     boolean audit(User auditor, String articleId, boolean auditResult, String reason);
 
+    /**
+     * 退出审核
+     *
+     * @param auditor User object of an auditor
+     * @param articleId 审核的文章id
+     * @return true if cancel audit succeed
+     */
+    boolean cancelAudit(User auditor, String articleId);
+    /**
+     * 保存文章的批改建议文件
+     *
+     * @param articleId      文章id
+     * @param approvalArticle 文章的批改建议文件
+     */
     void saveApprovalArticle(String articleId, MultipartFile approvalArticle);
 }
 
@@ -66,18 +81,32 @@ class AuditorServiceImpl implements AuditorService {
         }
         Article article = articleDao.getArticleByStatus(ArticleStatus.SUBMITTED);
         if (article == null) {
-//            article.setId("null");
-            throw new NoUnauditedArticleException();
+            article = new Article();
+            article.setId("null");
         }
-//        articleDao.updateStatus(ArticleStatus.BEING_AUDITED, article.getId());
+        articleDao.updateStatus(ArticleStatus.BEING_AUDITED, article.getId());
         return article;
     }
 
     @Override
-    public boolean audit(User auditor, String articleId, boolean auditResult, String reason) {
+    public boolean audit(User auditor, String articleId, @RequestParam("audit_result") boolean auditResult, String reason) {
         if (!auditor.checkIdentity(Identity.AUDITOR) && !auditor.checkIdentity(Identity.ADMINISTRATOR)) {
             throw new InsufficientPermissionException();
         }
+        if (auditResult) {
+            articleDao.updateStatus(ArticleStatus.PUBLISHED, articleId);
+        }else {
+            articleDao.updateStatus(ArticleStatus.FAIL_AUDITED, articleId);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean cancelAudit(User auditor, String articleId) {
+        if (!auditor.checkIdentity(Identity.AUDITOR) && !auditor.checkIdentity(Identity.ADMINISTRATOR)) {
+            throw new InsufficientPermissionException();
+        }
+        articleDao.updateStatus(ArticleStatus.SUBMITTED, articleId);
         return true;
     }
 

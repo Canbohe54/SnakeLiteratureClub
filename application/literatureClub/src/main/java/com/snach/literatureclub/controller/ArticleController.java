@@ -4,6 +4,7 @@ package com.snach.literatureclub.controller;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleStatus;
+import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.utils.MediaTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,7 @@ public class ArticleController {
      * @param articleId article id
      * @return 原始文件二进制流
      */
+    @ResponseNotIntercept
     @RequestMapping(value = "getArticleFileById", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getArticleFileById(@RequestParam(name = "article_id") String articleId) {
         Article article = articleService.getArticleFileById(articleId);
@@ -89,6 +91,7 @@ public class ArticleController {
      * @return 返回转换后的PDF文件内容作为HTTP响应的一部分。
      * @throws IOException 如果在文件读写过程中发生错误。
      */
+    @ResponseNotIntercept
     @RequestMapping(value = "File2Pdf", method = RequestMethod.GET)
     public ResponseEntity<byte[]> word2pdf(@RequestParam(name = "article_id") String articleId) throws IOException {
         // 调用articleService将指定文章ID的文档转换为PDF格式，返回PDF内容。
