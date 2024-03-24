@@ -31,6 +31,7 @@ import { ref, reactive } from 'vue';
 import { POST } from '@/scripts/Axios';
 import { useRouter } from 'vue-router';
 import store from "@/store";
+import {errorCallback} from "@/scripts/ErrorCallBack";
 
 const router = useRouter()
 
@@ -57,13 +58,12 @@ async function onSubmit() {
       await router.push('/')
       location.reload()
     } else {
-      if (response.data.statusMsg === 'Nonexistent') {
+      if (response.data.message === 'Nonexistent User.') {
         ElMessage.error('用户不存在')
-      } else if (response.data.statusMsg === 'Password error.') {
+      } else if (response.data.message === 'Wrong Id Or Password.') {
         ElMessage.error('用户名或密码错误')
       } else {
-        ElMessage.error(response.data.statusMsg)
-        console.log(response.data.statusMsg)
+        errorCallback(response)
       }
     }
   })

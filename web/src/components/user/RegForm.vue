@@ -194,26 +194,16 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
             duration: 2000
           })
           router.push('/login')
+          isPosted = true
         } else if (response.status === 200 && response.data.message === 'Email already exists.') { //
-      }
-        attrs: `{ "${pageAttr.value}": "${regForm.attribute}" }`
-    }, (response) => {
-        if (response.status === 200 && response.data.code === 2001) {
-          ElMessage({
-            message: '注册成功',
-            type: 'success',
-            duration: 2000
-          })
-          router.push('/login')
-        } else if (response.status === 200 && response.data.message === 'Email already exists.') { // 邮箱已存在
           ElMessage.error('邮箱已存在')
         } else if (response.status === 200 && response.data.message === 'Wrong Verifying Code.') { // 验证码错误
           ElMessage.error('验证码错误')
         } else {
           ElMessage.error('注册失败，请检查网络连接')
         }
-        isPosted = true
-      })
+        attrs: `{ "${pageAttr.value}": "${regForm.attribute}" }`
+    })
       regButton.timer && clearInterval(regButton.timer)
       regButton.timer = setInterval(() => {
         if (regButton.duration === 0) {
