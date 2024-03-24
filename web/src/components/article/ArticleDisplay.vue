@@ -108,10 +108,10 @@ async function getArticleList() {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
     status_list: articleStatus,
-    keyword: k
+    keyword: k,
   }
   await (SYNC_GET('/article/search', params, async (response) => {
-    if (response.status === 200 && response.data.code === 2001) {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
       await getAvgGrade(response.data.articles.list)
       pageInfo.total = response.data.articles.total
       await getTextBy(response.data.articles.list)
