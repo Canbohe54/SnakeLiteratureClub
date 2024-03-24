@@ -53,12 +53,13 @@ const pageInfo = {
   pageSize: 10,
   total: 0
 }
-const articleList = reactive({
-  artList: [{ 'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学', 'attr': '{"tags": {}}' },
-  { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}' }],
-  originalArticleList: [{ 'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学', 'attr': '{"tags": {}}' },
-  { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}' }]
-})
+// const articleList = reactive({
+//   artList: [{ 'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学沼气动力学', 'attr': '{"tags": {}}' },
+//   { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}' }],
+//   originalArticleList: [{ 'id': 'a1', 'text_by': 'Mizuiro', 'time': '1145-1-4-19:19', 'title': '关于沼气动力学的若干研究', 'description': '沼气动力学', 'attr': '{"tags": {}}' },
+//   { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}' }]
+// })
+const articleList = reactive({artList: [], originalArticleList: []})
 const articleStatus = ['PUBLISHED']
 getArticleList()
 
@@ -89,7 +90,7 @@ async function getTextBy(artList: any) {
         if (response.status === 200 && (response.data.statusMsg === 'Success.' || response.data.statusMsg === 'Nonexistent')) {
           item.text_by = response.data.user_info.name
         } else {
-          console.log(response)
+          // console.log(response)
         }
       })
     })

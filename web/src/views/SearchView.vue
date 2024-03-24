@@ -14,7 +14,7 @@
           <SearchFilter ref="SearchFilterRef" @change="() => articleFiltrate()" />
         </el-col>
       </el-row>
-      <ArticleDisplay ref="ArticleDisplayRef" :key="filtratedArticleList" />
+      <ArticleDisplay ref="ArticleDisplayRef"/>
     </div>
   </el-scrollbar>
 </template>
