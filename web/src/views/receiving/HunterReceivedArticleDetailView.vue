@@ -10,7 +10,7 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import NavBar from '@/components/NavBarResponsive.vue'
-import ReceivedArticleDetail from '@/components/magazinePublisher/ReceivedArticleDetail.vue'
+import ReceivedArticleDetail from '@/components/hunter/ReceivedArticleDetail.vue'
 
 @Options({
   components: {
@@ -18,7 +18,7 @@ import ReceivedArticleDetail from '@/components/magazinePublisher/ReceivedArticl
     NavBar,
   }
 })
-export default class ReceivedArticleDetailView extends Vue { }
+export default class HunterReceivedArticleDetailView extends Vue { }
 </script>
 <style>
 .navbar {

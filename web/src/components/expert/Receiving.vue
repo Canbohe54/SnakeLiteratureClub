@@ -1,26 +1,26 @@
 <template>
   <div>
     <div class="received_block">
-    <el-table class="received_table" :data="receivedTableData" :header-cell-style="{'text-align': 'center'}" stripe header-align="center" style="width: 100%">
-      <template #empty>
-        <el-empty description="暂时没有收到稿件哦" />
-      </template>
-      <el-table-column prop="title" label="文章标题" width="180" align="center"/>
-      <el-table-column prop="description" label="文章描述" width="180" align="center"/>
-      <el-table-column prop="text_by" label="作者" width="180" align="center"/>
-      <el-table-column prop="mentor" label="指导老师" width="180" align="center"/>
-      <el-table-column fixed="right" label="操作" width="120" align="center">
-        <template #default="scope">
-          <el-button
-              type="primary"
-              size="small"
-              @click.prevent="auditArticle(scope.$index, scope.row)"
-          >
-            进入审阅
-          </el-button>
+      <el-table class="received_table" :data="receivedTableData" :header-cell-style="{'text-align': 'center'}" stripe header-align="center" style="width: 100%">
+        <template #empty>
+          <el-empty description="暂时没有收到稿件哦" />
         </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column prop="title" label="文章标题" width="180" align="center"/>
+        <el-table-column prop="description" label="文章描述" width="180" align="center"/>
+        <el-table-column prop="text_by" label="作者" width="180" align="center"/>
+        <el-table-column prop="mentor" label="指导老师" width="180" align="center"/>
+        <el-table-column fixed="right" label="操作" width="120" align="center">
+          <template #default="scope">
+            <el-button
+                type="primary"
+                size="small"
+                @click.prevent="auditArticle(scope.$index, scope.row)"
+            >
+              进入审阅
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
     <el-pagination class="received_pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange"
                    :current-page="pageInfo.currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="pageInfo.pageSize"
@@ -35,7 +35,7 @@ import {SYNC_GET} from '@/scripts/Axios'
 import {useStore} from 'vuex'
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import {errorCallback} from '@/scripts/ErrorCallBack'
-import router from "@/router";
+import router from "@/router"
 
 const store = useStore();
 const receivedTableData = reactive<AttributeAddableObject>([])
@@ -112,7 +112,7 @@ const getReceivedArticle = async (pageNum: Number, pageSize: Number) => {
 
 function gotoDetail(articleId: any) {
   if (articleId !== '' && articleId !== undefined) {
-    router.push({path: '/receivedArticleDetail', query: {id: articleId}})
+    router.push({path: '/expertReceivedArticleDetail', query: {id: articleId}})
   } else {
     router.push({path: '/articleNotFound'})
   }
