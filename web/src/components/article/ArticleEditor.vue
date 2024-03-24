@@ -54,13 +54,7 @@
       </el-card>
       <!--                <div id="docContainer" style="width: fit-content;height: fit-content;"></div>-->
 
-      <!--      <el-input-->
-      <!--          v-model="articleDetail.text"-->
-      <!--          class="editor-text"-->
-      <!--          :autosize="{ minRows: 10, maxRows: 20}"-->
-      <!--          type="textarea"-->
-      <!--          placeholder="请输入正文"-->
-      <!--      />-->
+
       <el-dialog v-model="dialogManager.dialogVisible">
         <img :src="dialogImageUrl" alt="Preview Image">
       </el-dialog>
@@ -77,25 +71,33 @@
                 type="textarea"
                 placeholder="请输入描述（建议100字以内）"
             />
-            <div class="more-option-head"><span>参考插图</span></div>
-            <el-upload
-                class="upload-file-entry"
-                v-model:file-list="imageFileList"
-                action="''"
-                list-type="picture-card"
-                :on-preview="handlePictureCardPreview"
-                :auto-upload="false"
-                :on-remove="imgRemove"
-                :on-success="imgSuccess"
-                :on-error="imgError"
-                accept="image/jpg,image/jpeg,image/png"
-                multiple
-            >
-              <el-icon>
-                <Plus/>
+            <div class="more-option-head" v-if="store.getters.getUserInfo.identity == 'CONTRIBUTOR'"><span>指导老师</span></div>
+            <el-input
+                v-if="store.getters.getUserInfo.identity == 'CONTRIBUTOR'"
+                v-model="articleDetail.mentor"
+                class="editor-mentor"
+                :autosize="{ minRows: 1, maxRows: 3}"
+                type="textarea"
+                placeholder="指导老师名称"
+            />
+<!--            <el-upload-->
+<!--                class="upload-file-entry"-->
+<!--                v-model:file-list="imageFileList"-->
+<!--                action="''"-->
+<!--                list-type="picture-card"-->
+<!--                :on-preview="handlePictureCardPreview"-->
+<!--                :auto-upload="false"-->
+<!--                :on-remove="imgRemove"-->
+<!--                :on-success="imgSuccess"-->
+<!--                :on-error="imgError"-->
+<!--                accept="image/jpg,image/jpeg,image/png"-->
+<!--                multiple-->
+<!--            >-->
+<!--              <el-icon>-->
+<!--                <Plus/>-->
 
-              </el-icon>
-            </el-upload>
+<!--              </el-icon>-->
+<!--            </el-upload>-->
 
             <div class="more-option-head"><span>文章标签</span></div>
             <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
@@ -470,7 +472,7 @@ const handleFileRemove = () => {
   border-radius: 10px;
 }
 
-.editor-text {
+.editor-mentor {
   font-size: 18px;
   margin-bottom: 20px;
   box-shadow: var(--el-box-shadow-light);
