@@ -87,10 +87,10 @@ async function getTextBy(artList: any) {
       await SYNC_GET('/usr/getUserBasicInfo', {
         user_id: item.text_by
       }, response => {
-        if (response.status === 200 && (response.data.statusMsg === 'Success.' || response.data.statusMsg === 'Nonexistent')) {
-          item.text_by = response.data.user_info.name
+        if (response.status === 200 && (response.data.message=== 'Success.' || response.data.message === 'Nonexistent')) {
+          item.text_by = response.data.data.user_info.name
         } else {
-          // console.log(response)
+          console.log(response)
         }
       })
     })
