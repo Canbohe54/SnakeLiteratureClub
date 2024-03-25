@@ -73,7 +73,6 @@ public class File2PdfTools {
         long old = System.currentTimeMillis();
         // 创建临时pdf文件
         File tempFile = File.createTempFile("tempFile", ".pdf");//创建临时文件
-        String tempPath = tempFile.getCanonicalPath();
         FileOutputStream os = new FileOutputStream(tempFile);
         FileInputStream is = new FileInputStream(tempFile);
 
