@@ -193,7 +193,7 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public byte[] File2Pdf(String id) throws IOException {
         // 通过文章ID从数据库获取文章对象
-        Article article = articleDao.getArticleById(id);
+        Article article = articleDao.getArticleFileById(id);
         // 获取文章原始内容的二进制数据
         byte[] fileContent = article.getRaw();
         // 获取文章原始文件的格式
