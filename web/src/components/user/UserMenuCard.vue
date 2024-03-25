@@ -3,7 +3,7 @@
         <el-avatar :size="64" id="avatar"><img id="avatar-img"/></el-avatar>
         <div class="user-simp-info-disp">
             <div class="user-simp-name">{{ userInfo.name }}</div>
-            <div><el-tag>{{ getIdentityChinese(userInfo.identity) }}</el-tag></div>
+            <div><IdentityTag :identity="userInfo.identity"></IdentityTag></div>
         </div>
         <div class="user-simp-option">
             <router-link class="user-simp-item" to="/user">个人中心</router-link>
@@ -20,13 +20,13 @@
         </div>
     </div>
 </template>
-<script lang="ts" setup>
+<script setup>
 import router from '@/router';
 import { clearCookie, removeCookie } from '@/scripts/cookie';
 import { getToken } from '@/scripts/token';
 import { useStore } from 'vuex';
 import { onMounted, onUpdated, reactive, ref } from 'vue';
-import { getIdentityChinese } from '@/scripts/common/userIdentityMatch';
+import IdentityTag from '@/components/common/IdentityTag.vue';
 
 // console.log(getToken())
 const store = useStore()
@@ -45,7 +45,7 @@ onMounted(() => {
 })
 
 function handleLogout(){
-    clearCookie()
+    store.commit('clear')
     router.push('/login')
 }
 

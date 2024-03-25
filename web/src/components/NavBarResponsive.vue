@@ -28,7 +28,7 @@
                     </el-avatar>
                     <!-- @click="router.push('/login') " -->
                 </template>
-                <UserSimpInfoCard />
+                <UserMenuCard />
             </el-popover>
         </el-col>
         <el-col :span="4" class="hidden-md-and-up flex-center"
@@ -63,7 +63,7 @@
         <el-col :span="24">
             <el-collapse-transition>
                 <div v-show="user_bar_expand">
-                    <UserSimpInfoCard />
+                    <UserMenuCard />
                 </div>
             </el-collapse-transition>
         </el-col>
@@ -75,7 +75,7 @@ import { Search, Upload, User } from '@element-plus/icons-vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import SearchBar from './SearchBar.vue';
-import UserSimpInfoCard from './user/UserSimpInfoCard.vue';
+import UserMenuCard from './user/UserMenuCard.vue';
 import { getToken } from '@/scripts/token';
 
 const router = useRouter();
@@ -163,7 +163,6 @@ function setIdentityDepedOption(identity: string) {
             menu_option.push(identityDepedOption[5]);
             break;
         case 'ADMINISTRATOR':
-            menu_option.push(identityDepedOption[0]);
             menu_option.push(identityDepedOption[1]);
             menu_option.push(identityDepedOption[2]);
             menu_option.push(identityDepedOption[3]);

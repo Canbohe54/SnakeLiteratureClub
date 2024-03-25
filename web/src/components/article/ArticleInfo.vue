@@ -4,27 +4,29 @@
             <div>
                 <div class="article-status-container" v-if="statusVisible">
                     <el-tooltip :content="handleStatusTag()" placement="bottom" effect="light">
-                        <div class="article-status-div"></div>
+                        <div class="article-status-div" :id="articleInfo.articleId"></div>
                     </el-tooltip>
                 </div>
                 <div class="article-info-card">
-                    <div class="article-info-title"><span class="article-title-span" @click="handleCardClicked">{{ testInfo.title }}</span></div>
+                    <div class="article-info-title"><span class="article-title-span" @click="handleCardClicked">{{
+                    articleInfo.title }}</span></div>
                     <div class="article-author-info">
-                        <span>{{ testInfo.contributor }}</span>
-                        <span>（{{ testInfo.grade }}）</span>
-                        <span>{{ testInfo.organization }}</span>
+                        <span>{{ articleInfo.contributor }}</span>
+                        <span>（{{ articleInfo.grade }}）</span>
+                        <span>{{ articleInfo.organization }}</span>
                     </div>
                     <div class="article-author-info">
-                        <span class="article-info-mentor">{{ testInfo.mentor === '' ? '' : '指导老师：' }}{{ testInfo.mentor
-                            }}</span>
+                        <span class="article-info-mentor">{{ articleInfo.mentor === '' ? '' : '指导老师：' }}{{
+                    articleInfo.mentor
+                }}</span>
                     </div>
-                    <div class="article-info-descrption">{{ testInfo.description }}</div>
-                    <div class="article-info-time">{{ testInfo.time }}</div>
+                    <div class="article-info-descrption">{{ articleInfo.description }}</div>
+                    <div class="article-info-time">{{ articleInfo.time }}</div>
                 </div>
             </div>
-            <div class="article-menu" v-if="articleClicked" v-on:mouseleave="articleClicked=false;">
+            <div class="article-menu" v-if="isArticleMenuOpen" v-on:mouseleave="isArticleMenuOpen = false;">
                 <el-button @click="console.log('locked');">进入审阅（锁定稿件）</el-button>
-                <el-button  @click="articleClicked=false;">取消</el-button>
+                <el-button @click="isArticleMenuOpen=false;">取消</el-button>
             </div>
         </div>
     </el-card>
@@ -32,17 +34,26 @@
 
 <script setup>
 import { reactive, toRefs, ref, onUpdated, onMounted } from 'vue';
+import { useStore } from 'vuex';
+
+const store = useStore();
+
+const currentUser = reactive({
+    userId: store.getters.getUserInfo.id,
+    identity: store.getters.getUserInfo.identity,
+})
 
 const props = defineProps({
     articleInfo: {
         articleId: String, //文章ID
         title: String, //标题
+        userId: String, //用户ID
         contributor: String, //作者
         organization: String, //单位
         grade: String, //年级
         mentor: String, //导师
         description: String, //描述
-        status: String, //状态
+        status: String, //稿件
         time: String, //时间
         mark: Number, //分数
     },
@@ -54,61 +65,50 @@ const props = defineProps({
 
 const { articleInfo, statusVisible } = toRefs(props)
 
-const testInfo = reactive({
-    articleId: '',
-    title: '关于沼气动力学的研究',
-    contributor: '田所浩二',
-    organization: '下北泽中学',
-    grade: '五年级',
-    mentor: '野兽先辈',
-    description: '这是一篇关于沼气动力学的研究论文，主要研究了沼气的产生、利用和储存等方面的问题。这世间有关沼气动力学的资料少之又少，为了填补这方面的空缺，作者田所浩二潜心研究，不断付出实践，终于完成了这一篇大作。在这篇论文中，作者详细介绍了沼气的产生原理、利用方法和储存技术，为沼气动力学的研究提供了新的思路和方法。',
-    status: 'PUBLISHED',
-    time: '1919年8月10日',
-    journal: '下北泽日报'
-})
-
-const articleClicked = ref(false)
+const isArticleMenuOpen = ref(false)
 /*
 若status为空，此articleInfo为审核员、专家、报刊专员页面使用
 刊登稿件
 公开稿件
 */
 function handleStatusTag() {
-    if (testInfo.status === 'PUBLISHED') {
-        return '刊登作品：已刊登于 ' + testInfo.journal
-    } else if (testInfo.status === 'PUBLIC') {
-        return '公开作品'
+    if (articleInfo.value.received_by != '' && articleInfo.value.status === 'PUBLISHED') {
+        return '刊登作品：已刊登于 ' + articleInfo.value.received_by
     } else {
-        return ''
+        return '公开作品'
     }
 }
 
 function handleStatusColor() {
-    if (testInfo.status === 'PUBLISHED') {
-        $('.article-status-div').css('border-top-color', 'var(--status-published)')
-        $('.article-status-div').css('border-right-color', 'var(--status-published)')
-        $('.article-status-div').css('border-left-color', 'var(--status-published)')
-    } else if (testInfo.status === 'PUBLIC') {
-        $('.article-status-div').css('border-top-color', 'var(--status-public)')
-        $('.article-status-div').css('border-right-color', 'var(--status-public)')
-        $('.article-status-div').css('border-left-color', 'var(--status-public)')
+    if (articleInfo.value.status === 'PUBLISHED') {
+        if (articleInfo.value.received_by != '') {
+            $('#' + articleInfo.value.articleId).css('border-top-color', 'var(--status-published)')
+            $('#' + articleInfo.value.articleId).css('border-right-color', 'var(--status-published)')
+            $('#' + articleInfo.value.articleId).css('border-left-color', 'var(--status-published)')
+        } else {
+            $('#' + articleInfo.value.articleId).css('border-top-color', 'var(--status-public)')
+            $('#' + articleInfo.value.articleId).css('border-right-color', 'var(--status-public)')
+            $('#' + articleInfo.value.articleId).css('border-left-color', 'var(--status-public)')
+        }
     }
-    console.log(testInfo.status)
+
 }
 // window.onload = function () {
 //     handleStatusColor()
 // }
 onMounted(() => { // setup语法糖下渲染时周期函数
     handleStatusColor()
+    console.log(articleInfo.value)
+    console.log(statusVisible.value)
 })
 
 function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师，直接进入阅读界面
-    if (testInfo.status === '公开稿件') {
-        console.log('跳转到文章详情页')
+    if (articleInfo.value.status == '' && (currentUser.identity === 'EXPERT' || currentUser.identity === 'HUNTER')) {
+        isArticleMenuOpen.value = !isArticleMenuOpen.value
     } else {
-        console.log('跳转到文章编辑页')
+
+        //TODO: 跳转到文章详情页
     }
-    articleClicked.value = !articleClicked.value
 }
 </script>
 

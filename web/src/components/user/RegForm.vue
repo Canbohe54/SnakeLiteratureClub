@@ -187,6 +187,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
         pictureUrl: `{ "avatar": "${regForm.avatar.avatar}", "color": "${regForm.avatar.color}" }`,
         attrs: `{ "${ChineseLanguageMap.get(pageAttr.value)}": "${regForm.attribute}" }`
       }, (response) => {
+        console.log(response)
         if (response.status === 200 && response.data.code === 2001) {
           ElMessage({
             message: '注册成功',
