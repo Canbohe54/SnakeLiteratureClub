@@ -36,7 +36,7 @@ const filterSelection = ref<AttributeAddableObject>({});
   }
 })()
 
-function loadSelection (attr: AttributeAddableObject<string[]>) {
+const loadSelection = (attr: AttributeAddableObject<string[]>) => {
   const select = attr.tags
   for (const group in select) {
     for (const tag of select[group]) {

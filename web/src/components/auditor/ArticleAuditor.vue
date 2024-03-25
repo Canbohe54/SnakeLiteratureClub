@@ -1,9 +1,10 @@
 <template>
   <el-row>
     <el-col :span="18" :offset="3">
-      <div class="article-container" v-if="articleDetail.id !== 'null'">
+
         <el-container>
           <el-main>
+            <div class="article-container" v-show="showArticle">
             <el-card class="article-first-card">
               <el-row class="article-box-card">
                 <el-text class="article-detail-title">{{ articleDetail.title }}</el-text>
@@ -14,7 +15,7 @@
                   ） {{ articleDetail.time }}
                 </el-text>
               </el-row>
-              <div style="display: flex; justify-content:center;align-items: flex-end;">
+              <div style="display: flex; justify-content:center;align-items: flex-end;margin-bottom: 10px;">
                 <el-button type="primary" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
                            @click="handleUpdateArticleClicked">修改文章
                 </el-button>
@@ -32,31 +33,51 @@
                 <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大
                 </el-button>
               </div>
-              <el-collapse>
-                <el-divider/>
+              <!--              <el-divider/>-->
+              <el-collapse style="padding-top: 10px">
+
                 <div class="description-head"><span>文章描述</span></div>
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
                 <div class="contain-head"><span>文章内容</span></div>
                 <!-- 待弃用 -->
-                <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
+                <ArticleDisplayCard class="article-contain-card" :articleRaw="articleDetail.raw"
+                                    :lock-before-preview="false"
                                     :article-id="articleDetail.id"></ArticleDisplayCard>
                 <div class="filter-head"><span>文章标签</span></div>
-                <SearchFilter ref="SearchFilterRef" @change="searchFilterChange" :disabled="true"/>
+                <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
               </el-collapse>
             </el-card>
 
+            </div>
+            <div v-if="showArticle">
+                <el-card class="reason-card">
 
+                  <div class="reason-head"><span>审核建议</span></div>
+                  <el-input
+                      class="editor-header"
+                      v-model="reason"
+                      maxlength="300"
+                      show-word-limit
+                      :autosize="{ minRows: 2, maxRows: 5}"
+                      type="textarea"
+                      placeholder="批改意见参考："
+                  />
+
+                </el-card>
+            </div>
           </el-main>
         </el-container>
-      </div>
-      <div v-else>
+
+
+
+      <div v-if="showArticle == false">
         <el-empty description="暂时没有需要审核的文章，感谢您的付出！"/>
       </div>
       <div class="button-container">
-        <el-button v-if="articleDetail.id !== 'null'" class="3" type="success" @click="handleAuditClicked(true)">
+        <el-button v-if="showArticle" class="3" type="success" @click="handleAuditClicked(true)">
           审核通过！
         </el-button>
-        <el-button v-if="articleDetail.id !== 'null'" class="3" type="danger" @click="handleAuditClicked(false)">
+        <el-button v-if="showArticle" class="3" type="danger" @click="handleAuditClicked(false)">
           审核不通过
         </el-button>
         <el-button class="3" @click="handleExit">退出审核</el-button>
@@ -94,11 +115,10 @@ import {toUserPage} from '@/scripts/userInfo'
 import {errorCallback} from '@/scripts/ErrorCallBack'
 import axios from 'axios'
 import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
-import SearchFilter from "@/components/search/SearchFilter.vue";
+import SearchFilter from '@/components/search/SearchFilter.vue'
 
 // 该页面没有锁
 const router = useRouter()
-const route = useRoute()
 const store = useStore()
 
 const articleDetail = reactive<AttributeAddableObject>({
@@ -114,12 +134,17 @@ const articleDetail = reactive<AttributeAddableObject>({
   raw: {},
   file_type: ''
 })
-
+const reason = ref('')
 const displaySize = ref("default")
 const SearchFilterRef = ref()
 const isFavorited = ref(false)
-
+const showArticle = ref(false)
 const delArticleDialogVisible = ref(false)
+
+
+const searchFilterChange = () => {
+  articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
+}
 
 async function getTextBy() {
   articleDetail.text_by_id = articleDetail.text_by
@@ -145,14 +170,19 @@ const getAuditedArticle = async () => {
   await SYNC_GET('/auditor/getUnauditedArticle', param, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
       console.log(response)
-      if (response.data.data.id == 'null') return
+      if (response.data.data.id == 'null') {
+        showArticle.value = false
+        return
+      }
+      showArticle.value = true
       for (const dataKey in response.data.data) {
         if (dataKey == 'raw') {
           continue
         }
         articleDetail[dataKey] = response.data.data[dataKey]
       }
-
+      SearchFilterRef.value.loadSelection(JSON.parse(articleDetail.attr))
+      articleDetail.attr = JSON.parse(articleDetail.attr).tags
       await getTextBy()
       await getRaw(articleDetail.id)
     } else {
@@ -253,9 +283,7 @@ const handleUpdateArticleClicked = () => {
     router.push({path: '/articleNotFound'})
   }
 }
-const searchFilterChange = () => {
-  articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
-}
+
 
 const handleAuditClicked = async (pass: boolean) => {
   await SYNC_POST('/auditor/audit', {
@@ -263,7 +291,7 @@ const handleAuditClicked = async (pass: boolean) => {
     identity: store.getters.getUserInfo.identity,
     article_id: articleDetail.id,
     audit_result: pass,
-    reason: ''
+    reason: reason.value
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
       ElMessage({
@@ -271,7 +299,7 @@ const handleAuditClicked = async (pass: boolean) => {
         message: '感谢您的建议！',
         type: 'success'
       })
-      getAuditedArticle()
+      await getAuditedArticle()
     } else {
       errorCallback(response)
     }
@@ -330,14 +358,6 @@ const handleExit = async () => {
   margin-right: 10px;
 }
 
-.gradePanel {
-  margin: 20px 20px;
-}
-
-.gradeDis {
-  text-align: center;
-}
-
 .article-description {
   display: flex;
   white-space: pre-wrap;
@@ -346,6 +366,7 @@ const handleExit = async () => {
   margin-left: 10px;
   margin-right: 10px;
 }
+
 .description-head {
   display: flex;
   justify-content: space-between;
@@ -353,6 +374,7 @@ const handleExit = async () => {
   margin-bottom: 10px;
   font-size: 18px;
 }
+
 .contain-head {
   display: flex;
   justify-content: space-between;
@@ -360,11 +382,40 @@ const handleExit = async () => {
   margin-bottom: 10px;
   font-size: 18px;
 }
+
 .filter-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
   font-size: 18px;
+}
+
+.reason-card:deep(.el-card__body) {
+  padding: 5px 20px;
+}
+
+.reason-card {
+  margin-bottom: 15px;
+}
+
+.reason-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.article-contain-card {
+  margin-bottom: 10px;
+}
+.button-container {
+  margin-bottom: 50px;
+}
+.editor-header {
+  margin-bottom: 15px;
+  box-shadow: var(--el-box-shadow-light);
+  border-radius: 10px;
 }
 </style>

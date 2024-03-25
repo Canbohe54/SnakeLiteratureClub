@@ -563,10 +563,6 @@ const handleFileRemove = () => {
 
 }
 
-.upload-tip {
-
-}
-
 .upload-head {
   padding-left: 5px;
   font-size: 18px;

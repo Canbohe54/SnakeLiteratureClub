@@ -37,6 +37,7 @@
 <!--              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0"-->
 <!--                              :lock-before-preview="true" :article-id="articleDetail.id">-->
 <!--              </ArticlePreview>-->
+
               <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="true" :article-id="articleDetail.id"></ArticleDisplayCard>
               <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
             </el-card>

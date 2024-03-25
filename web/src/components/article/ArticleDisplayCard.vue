@@ -70,6 +70,9 @@ const handleDOCXPreview = (file: any) => {
 }
 
 const handleDocumentPreView = async (file: any) => {
+  dialogManager.txtContainerText = ''
+  dialogManager.docxDialogVisible = false
+  dialogManager.txtContainerVisible = false
   if(props.lockBeforePreview){
     lockBeforePreview()
   }

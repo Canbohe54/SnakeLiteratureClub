@@ -29,7 +29,7 @@ public class AuditorController {
     }
 
     @RequestMapping("audit")
-    public boolean audit(User auditor, String articleId, boolean auditResult, String reason) {
+    public boolean audit(User auditor,@RequestParam("article_id") String articleId,@RequestParam("audit_result") boolean auditResult, String reason) {
         return auditorService.audit(auditor, articleId, auditResult, reason);
     }
 
