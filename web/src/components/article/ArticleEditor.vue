@@ -38,9 +38,7 @@
               <div class="el-upload__text">
                 将文件拖拽至此区域或<em>点击上传</em>
               </div>
-              <!--        <template #trigger>-->
-              <!--            <el-button class="upload-file" type="primary">上传文章</el-button>-->
-              <!--        </template>-->
+
             </el-upload>
           </div>
         </el-tooltip>
@@ -52,8 +50,6 @@
         </div>
 
       </el-card>
-      <!--                <div id="docContainer" style="width: fit-content;height: fit-content;"></div>-->
-
 
       <el-dialog v-model="dialogManager.dialogVisible">
         <img :src="dialogImageUrl" alt="Preview Image">
@@ -61,17 +57,57 @@
       <el-card class="more-option-card">
         <el-collapse>
           <el-collapse-item class="more-option" title="更多设置" name="1">
+
+            <div class="more-option-head"><span>投稿方式</span></div>
+            <div class="contribute-way-container">
+              <el-radio-group v-model="contributeManager.contributeWay" class="contribute-way-radio"
+                              @change="handleContributeWayChange">
+                <el-radio label="PUBLIC" value="PUBLIC">公开投稿</el-radio>
+                <el-radio label="PUBLISHED" value="PUBLISHED">指定投稿</el-radio>
+              </el-radio-group>
+              <!--              <el-input v-if="contributeManager.contributeWay == 'PUBLISHED'" v-model="contributeManager.contributeTo" placeholder="请输入收稿方" />-->
+              <el-select
+                  class="contribute-to-selection"
+                  v-if="contributeManager.contributeWay == 'PUBLISHED'"
+                  v-model="contributeManager.contributeTo"
+                  filterable
+                  remote
+                  reserve-keyword
+                  placeholder="请输入或选择收稿方"
+                  no-data-text="暂无匹配的收稿方"
+                  no-match-text="暂无匹配的收稿方"
+                  default-first-option
+                  remote-show-suffix
+                  :remote-method="getUserByName"
+                  :loading="contributeManager.loading"
+                  style="width: 240px"
+              >
+                <el-option
+                    v-for="item in contributeManager.options"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                >
+                  <span style="float: left">{{ item.name }}</span>
+                  <span
+                      style="float: right;color: var(--el-text-color-secondary);font-size: 13px;"
+                  >{{ item.organization }}</span
+                  >
+                </el-option>
+              </el-select>
+            </div>
             <div class="more-option-head"><span>文章描述</span></div>
             <el-input
                 class="editor-description"
                 v-model="articleDetail.description"
-                maxlength="150"
+                maxlength="200"
                 show-word-limit
                 :autosize="{ minRows: 4, maxRows: 10}"
                 type="textarea"
                 placeholder="请输入描述（建议100字以内）"
             />
-            <div class="more-option-head" v-if="store.getters.getUserInfo.identity == 'CONTRIBUTOR'"><span>指导老师</span></div>
+            <div class="more-option-head" v-if="store.getters.getUserInfo.identity == 'CONTRIBUTOR'">
+              <span>指导老师</span></div>
             <el-input
                 v-if="store.getters.getUserInfo.identity == 'CONTRIBUTOR'"
                 v-model="articleDetail.mentor"
@@ -80,24 +116,6 @@
                 type="textarea"
                 placeholder="指导老师名称"
             />
-<!--            <el-upload-->
-<!--                class="upload-file-entry"-->
-<!--                v-model:file-list="imageFileList"-->
-<!--                action="''"-->
-<!--                list-type="picture-card"-->
-<!--                :on-preview="handlePictureCardPreview"-->
-<!--                :auto-upload="false"-->
-<!--                :on-remove="imgRemove"-->
-<!--                :on-success="imgSuccess"-->
-<!--                :on-error="imgError"-->
-<!--                accept="image/jpg,image/jpeg,image/png"-->
-<!--                multiple-->
-<!--            >-->
-<!--              <el-icon>-->
-<!--                <Plus/>-->
-
-<!--              </el-icon>-->
-<!--            </el-upload>-->
 
             <div class="more-option-head"><span>文章标签</span></div>
             <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
@@ -162,7 +180,6 @@ const SearchFilterRef = ref()
 const saveBtnType = ref('success')
 const saveBtnText = ref('保存')
 const delArticleDialogVisible = ref(false)
-// const docBlob = ref<Blob>()
 let imageFileList = ref<UploadFile[]>([])
 const dialogImageUrl = ref('')
 const previewType = ref("info")
@@ -171,6 +188,12 @@ const dialogManager = reactive({
   docxDialogVisible: false,
   dialogVisible: false,
   txtContainerText: ''
+})
+const contributeManager = reactive({
+  contributeWay: 'PUBLIC',
+  contributeTo: '',
+  loading: false,
+  options: []
 })
 const articleDetail: AttributeAddableObject = reactive({
   id: null,
@@ -182,7 +205,8 @@ const articleDetail: AttributeAddableObject = reactive({
   status: 'ROUGH',
   attr: '{}',
   raw: {},
-  file_type: ''
+  file_type: '',
+  received_by: ''
 })
 
 watch(articleDetail, () => {
@@ -192,10 +216,21 @@ watch(articleDetail, () => {
 const searchFilterChange = () => {
   articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
 }
+const handleContributeWayChange = () => {
 
+}
 
 // 有article_id时初始化ArticleDetail
 (async () => {
+  if (store.getters.getUserInfo.identity == '未登录') {
+    ElMessage({
+      showClose: true,
+      message: '上传稿件前请先登录哦',
+      type: 'info'
+    })
+    router.push({name: 'login'})
+    return
+  }
   if (route.query.id === '' || route.query.id === undefined) return
   await SYNC_GET('/article/articleDetail', {
     article_id: route.query.id
@@ -209,6 +244,10 @@ const searchFilterChange = () => {
       }
       SearchFilterRef.value.loadSelection(JSON.parse(articleDetail.attr))
       articleDetail.attr = JSON.parse(articleDetail.attr).tags
+      if (articleDetail.received_by !== '') {
+        contributeManager.contributeWay = 'PUBLISHED'
+        contributeManager.contributeTo = articleDetail.received_by
+      }
       await getRaw(articleDetail.id)
     } else {
       errorCallback(response)
@@ -241,8 +280,7 @@ async function getRaw(articleId: String) {
 const save = async () => {
   let param = new FormData()
   param.append("raw_file", articleDetail.raw)
-  param.append("token", 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjExNDUxNCJ9.AzE55n2_JDJolF-UQ94Qgun_szDCqsu_KYDDD6Tcebw')
-  // param.append("token", store.getters.getToken)
+  param.append("token", store.getters.getToken)
   param.append("id", articleDetail.id)
   param.append("text", articleDetail.text)
   param.append("textBy", '')
@@ -251,7 +289,10 @@ const save = async () => {
   param.append("status", 'ROUGH')
   param.append("attr", `{"tags":${articleDetail.attr}}`)
   param.append("fileType", articleDetail.file_type)
-
+  if (contributeManager.contributeWay == 'PUBLISHED') {
+    console.log(contributeManager.contributeTo)
+    param.append("receivedBy", contributeManager.contributeTo)
+  }
   await SYNC_POST('/contributor/contribute', param, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
       articleDetail.id = response.data.data.id
@@ -271,11 +312,9 @@ const save = async () => {
 // 发布文章
 const release = async () => {
   let param = new FormData();
-  let param2 = new FormData();
 
   param.append("raw_file", articleDetail.raw)
-  param.append("token", 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjExNDUxNCJ9.AzE55n2_JDJolF-UQ94Qgun_szDCqsu_KYDDD6Tcebw')
-  // param.append("token", store.getters.getToken)
+  param.append("token", store.getters.getToken)
   param.append("id", articleDetail.id)
   param.append("text", articleDetail.text)
   param.append("textBy", '')
@@ -283,8 +322,10 @@ const release = async () => {
   param.append("description", articleDetail.description)
   param.append("status", 'PUBLISHED')
   param.append("attr", `{"tags":${articleDetail.attr}}`)
-  console.log(articleDetail.file_type)
   param.append("fileType", articleDetail.file_type)
+  if (contributeManager.contributeWay == 'PUBLISHED') {
+    param.append("receivedBy", contributeManager.contributeTo)
+  }
 
 
   await SYNC_POST('/contributor/contribute', param, async (response) => {
@@ -375,7 +416,7 @@ const handleDelArticleClicked = async () => {
     token: store.getters.getToken,
     article_id: articleDetail.id
   }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+    if (response.status === 200 && response.data.code === 2001) {
       ElMessage({
         showClose: true,
         message: '删除文章成功',
@@ -389,59 +430,20 @@ const handleDelArticleClicked = async () => {
   delArticleDialogVisible.value = false
   router.back()
 }
-
-function imgSuccess(response: any, file: any, fileList: any) {
-  imageFileList = fileList
-}
-
-function imgError(response: any) {
-  errorCallback(response)
-}
-
-function imgRemove(file: any, fileList: any) {
-  imageFileList = fileList
-}
-
-const handlePictureCardPreview = (file: any) => {
-  dialogImageUrl.value = file.url
-  dialogManager.dialogVisible = true
-}
-const handleTXTPreview = (file: any) => {
-  const fileReader = new FileReader()
-  fileReader.onload = async (e) => {
-    dialogManager.txtContainerText = e.target?.result as string
-    dialogManager.txtContainerVisible = true
-  }
-  fileReader.readAsText(file)
-}
-const handleDOCXPreview = (file: any) => {
-  fileToBlob(file).then((result) => {
-
-    let docContainer = document.getElementById("docxContainer");
-    renderAsync(
-        result,
-        docContainer, // HTMLElement 渲染文档内容的元素,
-        null, // HTMLElement, 用于呈现文档样式、数字、字体的元素。如果为 null，则将使用 reportContainer。
-    ).then(res => {
-      // dialogManager.docxDialogVisible = true 不能放在这
-    })
+const getUserByName = (userName: string) => {
+  SYNC_GET('/usr/getUserBasicInfoByNameNoPagination', {
+    name: userName,
+    identity: ['EXPERT', 'HUNTER']
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      contributeManager.options = response.data.data
+    } else {
+      contributeManager.options = []
+      errorCallback(response)
+    }
   })
-  dialogManager.docxDialogVisible = true
 }
 
-const handleDocumentPreView = async (file: any) => {
-  //文件为空对象则返回
-  if (Object.keys(articleDetail.raw).length == 0) {
-    return
-  }
-  let subFileNames = file.name.split('.')
-  // 获取文件类型
-  if (subFileNames[subFileNames.length - 1] == 'txt') {
-    handleTXTPreview(file)
-  } else if (subFileNames[subFileNames.length - 1] == 'docx') {
-    handleDOCXPreview(file)
-  }
-}
 
 const handleFileRemove = () => {
   articleDetail.raw = {}
@@ -590,5 +592,17 @@ const handleFileRemove = () => {
 
 .upload-file-name {
   margin-top: 10px;
+}
+
+.contribute-way-radio {
+  display: flex;
+}
+
+.contribute-way-container {
+  margin-bottom: 20px;
+}
+
+.contribute-to-selection {
+  display: flex;
 }
 </style>

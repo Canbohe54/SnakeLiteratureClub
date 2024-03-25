@@ -27,8 +27,8 @@ public interface ArticleDao {
      *
      * @param article 封装有稿件信息的Article对象
      */
-    @Insert("INSERT INTO article(id, title,description,text,`time`,status,attr,text_by, raw, mentor, file_type) " +
-            "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.attr},#{article.textBy},#{article.raw},#{article.mentor},#{article.fileType})")
+    @Insert("INSERT INTO article(id, title,description,text,`time`,status,attr,text_by, raw, mentor, file_type, received_by) " +
+            "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.attr},#{article.textBy},#{article.raw},#{article.mentor},#{article.fileType},#{article.receivedBy})")
     void insertArticle(@Param("article") Article article);
 
     // ======================================SELECT==========================================
@@ -190,7 +190,8 @@ public interface ArticleDao {
             "attr = #{article.attr}, " +
             "raw = #{article.raw}, " +
             "mentor = #{article.mentor}, " +
-            "file_type = #{article.fileType} " +
+            "file_type = #{article.fileType}, " +
+            "received_by = #{article.receivedBy} " +
             "WHERE id = #{article.id}")
     int updateArticleDetail(@Param("article") Article article);
 

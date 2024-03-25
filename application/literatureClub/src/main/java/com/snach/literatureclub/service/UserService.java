@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.snach.literatureclub.utils.TokenTools.tokenGen;
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
 
@@ -25,7 +27,9 @@ public interface UserService {
 
     // User Info
     User getUserBasicInfo(String id);
-    PageInfo<User> getUserBasicInfoByName(String name, String identity, int pageNum, int pageSize);
+    PageInfo<User> getUserBasicInfoByName(String name, List<String> identity, int pageNum, int pageSize);
+
+    List<User> getUserBasicInfoByNameNoPagination(String name, List<String> identity);
     boolean updateUserBasicInfo(String token, User user);
 }
 @Transactional(rollbackFor = Exception.class)
@@ -76,12 +80,20 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageInfo<User> getUserBasicInfoByName(String name, String identity, int pageNum, int pageSize) {
+    public PageInfo<User> getUserBasicInfoByName(String name, List<String> identity, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        if(identity != null){
-            return new PageInfo<>(userDao.getUserByNameAndIdentity(name,identity));
+        if(identity != null && !identity.isEmpty()){
+            return new PageInfo<>(userDao.getUserByNameAndIdentity(name, identity));
         }
         return new PageInfo<>(userDao.getUserByName(name));
+    }
+
+    @Override
+    public List<User> getUserBasicInfoByNameNoPagination(String name, List<String> identity) {
+        if(identity != null && !identity.isEmpty()){
+            return userDao.getUserByNameAndIdentity(name, identity);
+        }
+        return userDao.getUserByName(name);
     }
 
     @Override

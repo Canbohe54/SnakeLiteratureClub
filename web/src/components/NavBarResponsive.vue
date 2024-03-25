@@ -116,11 +116,6 @@ const identityDepedOption = reactive([
     },
     { // 4
         index: '9',
-        title: '推荐稿件',
-        route: '/'
-    },
-    { // 5
-        index: '10',
         title: '收到稿件',
         route: '/hunterReceiving'
     }
@@ -160,14 +155,12 @@ function setIdentityDepedOption(identity: string) {
             break;
         case 'HUNTER':
             menu_option.push(identityDepedOption[4]);
-            menu_option.push(identityDepedOption[5]);
             break;
         case 'ADMINISTRATOR':
             menu_option.push(identityDepedOption[1]);
             menu_option.push(identityDepedOption[2]);
             menu_option.push(identityDepedOption[3]);
             menu_option.push(identityDepedOption[4]);
-            menu_option.push(identityDepedOption[5]);
     }
 }
 (() => {

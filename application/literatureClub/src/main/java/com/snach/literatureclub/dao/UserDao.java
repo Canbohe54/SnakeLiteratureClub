@@ -27,8 +27,17 @@ public interface UserDao {
     @Select("SELECT * FROM user WHERE name LIKE '%${name}%'")
     List<User> getUserByName(String name);
 
-    @Select("SELECT * FROM user WHERE identity = #{identity} AND name LIKE '%${name}%'")
-    List<User> getUserByNameAndIdentity(String name, String identity);
+//    @Select("SELECT * FROM user WHERE identity = #{identity} AND name LIKE '%${name}%'")
+    @Select({"<script>",
+            "SELECT ",
+            "* ",
+            "FROM user WHERE name LIKE '%${name}%' AND identity in",
+            "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
+            "#{item}",
+            "</foreach>",
+            "</script>"
+    })
+    List<User> getUserByNameAndIdentity(String name,@Param("items") List<String> identity);
 
     @Insert("UPDATE user SET name = #{user.name}, phone = #{user.phone}, introduction = #{user.introduction}, organization = #{user.organization}, attrs = #{user.attrs} WHERE id = #{user.id}")
     void updateUserInfo(@Param("user") User user);

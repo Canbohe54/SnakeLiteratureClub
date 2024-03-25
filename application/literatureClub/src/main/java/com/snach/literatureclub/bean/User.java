@@ -26,6 +26,7 @@ import java.util.Map;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class User implements Serializable {
     // Login Info
     String id;

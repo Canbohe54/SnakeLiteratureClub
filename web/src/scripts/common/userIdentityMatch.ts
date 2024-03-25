@@ -23,7 +23,7 @@ export function getIndentityTagType(userIdentity: string) {
             return 'warning'
         case 'HUNTER':
             return 'danger'
-        case 'VOLUTEER':
+        case 'VOLUNTEER':
             return 'warning'
         default:
             return 'info'

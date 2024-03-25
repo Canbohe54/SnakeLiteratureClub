@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -51,10 +52,15 @@ public class UserController {
 
     @RequestMapping(value = "getUserBasicInfoByName", method = RequestMethod.GET)
     public PageInfo<User> getUserBasicInfoByName(String name,
-                                                 @Nullable String identity,
+                                                 @Nullable @RequestParam(name = "identity", required = false) List<String> identity,
                                                  @RequestParam("page_num") int pageNum,
                                                  @RequestParam("page_size") int pageSize) {
         return userService.getUserBasicInfoByName(name, identity, pageNum, pageSize);
+    }
+
+    @RequestMapping(value = "getUserBasicInfoByNameNoPagination",method = RequestMethod.GET)
+    public List<User> getUserBasicInfoByNameNoPagination(String name, @Nullable @RequestParam(name = "identity", required = false) List<String> identity) {
+        return userService.getUserBasicInfoByNameNoPagination(name, identity);
     }
 
     @RequestMapping(value = "updateUserInfo", method = RequestMethod.POST)

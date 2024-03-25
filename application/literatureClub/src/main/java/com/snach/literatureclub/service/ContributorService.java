@@ -56,7 +56,9 @@ class ContributorServiceImpl implements ContributorService {
         article.setTextBy(getPayload(token, "id"));
         // 原始文件
         try {
-            article.setRaw(mulArticle.getBytes());
+            if(mulArticle != null) {
+                article.setRaw(mulArticle.getBytes());
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
