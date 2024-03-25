@@ -5,7 +5,8 @@
       <NavBarOld class="navbar" hidden/><!--导航栏-->
       <Carousel/>
       <!-- <LobbyArticle class="lobby_article"/> -->
-      <ArticleInfo></ArticleInfo>
+      <!-- <ArticleInfo></ArticleInfo> -->
+      <ArticleInfoList/>
     </div>
   </el-scrollbar>
 </template>
@@ -16,7 +17,7 @@ import { useStore } from 'vuex'
 import Carousel from "../components/Carousel.vue";
 import LobbyArticle from "@/components/LobbyArticle.vue";
 import NavBar from "@/components/NavBarResponsive.vue";
-import ArticleInfo from "@/components/article/ArticleInfo.vue";
+import ArticleInfoList from "@/components/ArticleInfoList.vue";
 
 
 @Options({
@@ -25,7 +26,7 @@ import ArticleInfo from "@/components/article/ArticleInfo.vue";
     Carousel,
     LobbyArticle,
     NavBar,
-    ArticleInfo
+    ArticleInfoList
   }
 })
 export default class LobbyView extends Vue {}
