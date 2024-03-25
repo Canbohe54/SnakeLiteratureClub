@@ -3,6 +3,7 @@ package com.snach.literatureclub.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snach.literatureclub.common.DatabaseServiceType;
 import com.snach.literatureclub.utils.redis.RedisConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
@@ -26,8 +27,9 @@ class CommonServiceImpl implements CommonService {
 
     private final RedisConnectionFactory connectionFactory;
 
-    public CommonServiceImpl() {
-        this.connectionFactory = RedisConnectionFactory.getConnectionFactory();
+    @Autowired
+    public CommonServiceImpl(RedisConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
     }
 
     public Map<String, Object> loadArticleTags() {

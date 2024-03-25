@@ -57,9 +57,9 @@ class CommentServiceImpl implements CommentService {
     private final IdManager idManager;
 
     @Autowired
-    public CommentServiceImpl(CommentDao commentDao) {
+    public CommentServiceImpl(CommentDao commentDao, IdManager manager) {
         this.commentDao = commentDao;
-        idManager = IdManager.getManager();
+        this.idManager = manager;
     }
 
     @Override

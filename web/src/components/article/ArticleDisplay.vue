@@ -112,10 +112,11 @@ async function getArticleList() {
     keyword: k,
   }
   await (SYNC_GET('/article/search', params, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      await getAvgGrade(response.data.articles.list)
-      pageInfo.total = response.data.articles.total
-      await getTextBy(response.data.articles.list)
+    if (response.status === 200 && response.data.message === 'Success.') {
+      console.log(response)
+      await getAvgGrade(response.data.data.list)
+      pageInfo.total = response.data.data.total
+      await getTextBy(response.data.data.list)
     } else {
       console.log(response)
     }

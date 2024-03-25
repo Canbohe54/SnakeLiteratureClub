@@ -9,14 +9,15 @@
             </div>
         </el-col>
         <el-col :lg="10" :md="10" class="hidden-sm-and-down"><!--md及以上时的菜单，horizontal，展开的-->
-            <el-menu :default-active="menu_option[0].index" class="el-menu-demo nav-menu" mode="horizontal" router>
-                <el-menu-item v-for="item in menu_option" :key="item.index" :index="item.index" :route="item.route"
+            <el-menu :default-active="activeIndex" class="el-menu-demo nav-menu" mode="horizontal" router>
+                <el-menu-item v-for="item in menu_option" :index="item.index"
                     class="nav-menu-option">
                     {{ item.title }}
                 </el-menu-item>
             </el-menu>
         </el-col>
-        <el-col :span="5" class="hidden-sm-and-down lg-search flex-center" v-if="route.path!=='/search'"><!--搜索框，仅在大于md上显示-->
+        <el-col :span="5" class="hidden-sm-and-down lg-search flex-center"
+            v-if="route.path !== '/search'"><!--搜索框，仅在大于md上显示-->
             <SearchBar />
         </el-col>
         <el-col :span="4" class="hidden-sm-and-down flex-center"><!--用户信息，仅在大于md上显示-->
@@ -36,7 +37,7 @@
             <div :underline="false" class="flex-center" :onclick="handleUserBar">
                 <User class="search-button" />
             </div>
-            <div :underline="false" class="flex-center" :onclick="handleSearchRedirect"  v-if="route.path!=='/search'">
+            <div :underline="false" class="flex-center" :onclick="handleSearchRedirect" v-if="route.path !== '/search'">
                 <Search class="search-button" />
             </div>
             <div class="menu-toggle-container">
@@ -48,10 +49,8 @@
         <el-col :span="24">
             <el-collapse-transition>
                 <div v-show="sm_menu_expand">
-                    <el-menu :default-active="menu_option[0].index" class="el-menu-demo sm-menu-detail" mode="vertical"
-                        router>
-                        <el-menu-item v-for="item in menu_option" :key="item.index" :index="item.index"
-                            :route="item.route" class="sm-menu-items">
+                    <el-menu :default-active="activeIndex" class="el-menu-demo sm-menu-detail" mode="vertical" router>
+                        <el-menu-item v-for="item in menu_option" :index="item.index" class="sm-menu-items">
                             {{ item.title }}
                         </el-menu-item>
                     </el-menu>
@@ -84,60 +83,46 @@ const store = useStore();
 
 const userInfo = reactive(store.getters.getUserInfo)
 
-onMounted(() => {
-    if (userInfo.pictureUrl) {
-        let avatar = JSON.parse(userInfo.pictureUrl)
-        $(".loginAvatar").css("background-color", `${avatar.color}`)
-        $(".loginAvatar-img").attr("src", 'avatars/' + `${avatar.avatar}` + '.png')
-    }
-})
-
 // 学生：我要投稿，老师：代投文章，志愿者：待审阅稿件，专家：待推荐稿件，猎头：推荐稿件
 const identityDepedOption = reactive([
     { // 0
-        index: '5',
+        index: 'articleEditor',
         title: '我要投稿',
-        route: '/articleEditor'
     },
     { // 1
-        index: '6',
+        index: 'articleEditor',
         title: '代投文章',
-        route: '/articleEditor'
     },
     { // 2
-        index: '7',
+        index: 'articleAuditor',
         title: '待审阅稿件',
-        route: '/articleAuditor'
     },
     { // 3
-        index: '8',
+        index: 'expertReceiving',
         title: '待推荐稿件',
-        route: '/expertReceiving'
     },
-    { // 4
-        index: '9',
+    { // 5
+        index: 'hunterReceiving',
         title: '收到稿件',
-        route: '/hunterReceiving'
     }
 ])
 
 const menu_option = reactive([
     {
-        index: '1',
+        index: 'lobby',
         title: '文学大厅',
-        route: '/'
     },
     {
-        index: '2',
+        index: 'public',
         title: '公开作品',
-        route: '/'
     },
     {
-        index: '3',
+        index: 'published',
         title: '优秀作品',
-        route: '/'
     }
 ])
+
+const activeIndex = ref(router.currentRoute.value.name);
 
 function setIdentityDepedOption(identity: string) {
     switch (identity) {
@@ -163,14 +148,17 @@ function setIdentityDepedOption(identity: string) {
             menu_option.push(identityDepedOption[4]);
     }
 }
-(() => {
-  if(store.getters.getUserInfo.identity != '未登录'){
-    setIdentityDepedOption(store.getters.getUserInfo.identity)
-  } else {
-    setIdentityDepedOption('CONTRIBUTOR');
-  }
-})()
 
+onMounted(() => {
+    if (userInfo.pictureUrl) {
+        let avatar = JSON.parse(userInfo.pictureUrl)
+        $(".loginAvatar").css("background-color", `${avatar.color}`)
+        $(".loginAvatar-img").attr("src", 'avatars/' + `${avatar.avatar}` + '.png')
+    }
+    if (store.getters.getUserInfo.identity != '未登录') {
+        setIdentityDepedOption(store.getters.getUserInfo.identity)
+    }
+})
 
 const sm_menu_expand = ref(false);
 const user_bar_expand = ref(false);
@@ -373,5 +361,4 @@ function handleSearchRedirect() {
     background-color: #409eff;
     box-shadow: 0 0 #409eff;
 }
-
 </style>

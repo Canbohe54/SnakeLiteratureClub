@@ -41,9 +41,9 @@ class UserServiceImpl implements UserService {
     private final IdManager idManager;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(UserDao userDao, IdManager manager) {
         this.userDao = userDao;
-        idManager = IdManager.getManager();
+        this.idManager = manager;
     }
 
     // Account

@@ -99,9 +99,9 @@ class ArticleServiceImpl implements ArticleService {
     private final ArticleLocker articleLocker;
 
     @Autowired
-    ArticleServiceImpl(ArticleDao articleDao) {
+    ArticleServiceImpl(ArticleDao articleDao, ArticleLocker locker) {
         this.articleDao = articleDao;
-        this.articleLocker = ArticleLocker.getLocker();
+        this.articleLocker = locker;
     }
 
     @Override
@@ -193,7 +193,7 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public byte[] File2Pdf(String id) throws IOException {
         // 通过文章ID从数据库获取文章对象
-        Article article = articleDao.getArticleById(id);
+        Article article = articleDao.getArticleFileById(id);
         // 获取文章原始内容的二进制数据
         byte[] fileContent = article.getRaw();
         // 获取文章原始文件的格式
@@ -211,7 +211,7 @@ class ArticleServiceImpl implements ArticleService {
             throw new InsufficientPermissionException();
         } else {
             String authorId = articleDao.getArticleById(articleId).getTextBy();
-            articleLocker.lock(articleId, expire, authorId, TokenTools.getPayload(lockedBy, "id"));
+            articleLocker.lock(articleId, expire, authorId, lockedBy);
         }
         return true;
     }

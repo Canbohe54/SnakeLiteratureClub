@@ -2,36 +2,23 @@ package com.snach.literatureclub.utils;
 
 import com.snach.literatureclub.common.DatabaseServiceType;
 import com.snach.literatureclub.utils.redis.RedisConnectionFactory;
-import org.apache.ibatis.annotations.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.Jedis;
 
-@Component
-@Mapper
+@Configuration
 public class IdManager {
     private static final DatabaseServiceType serviceType = DatabaseServiceType.COMMON;
 
     @Value("${snach.common.redisKeyOfCurrentUserId:CURRENT_USER_ID}")
-    private String redisKeyNameOfCurrentUserId = "CURRENT_USER_ID";
+    private String redisKeyNameOfCurrentUserId;
 
-    private static RedisConnectionFactory connectionFactory;
+    private final RedisConnectionFactory connectionFactory;
 
-    private static volatile IdManager manager;
-
-    private IdManager() {}
-
-    public static IdManager getManager() {
-        if (manager == null) {
-            synchronized (IdManager.class) {
-                if (manager == null) {
-                    // 这里new了 @VALUE就不生效了 要用默认值
-                    manager = new IdManager();
-                    connectionFactory = RedisConnectionFactory.getConnectionFactory();
-                }
-            }
-        }
-        return manager;
+    @Autowired
+    public IdManager(RedisConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
     }
 
     public synchronized String generateUserId() {

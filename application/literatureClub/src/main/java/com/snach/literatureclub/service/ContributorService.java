@@ -39,9 +39,9 @@ class ContributorServiceImpl implements ContributorService {
     private final IdManager idManager;
 
     @Autowired
-    public ContributorServiceImpl(ArticleDao articleDao) {
+    public ContributorServiceImpl(ArticleDao articleDao, IdManager manager) {
         this.articleDao = articleDao;
-        idManager = IdManager.getManager();
+        this.idManager = manager;
     }
     @Override
     public Article contribute(String token, Article article, MultipartFile mulArticle) {
