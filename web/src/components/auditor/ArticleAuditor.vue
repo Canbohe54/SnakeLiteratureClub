@@ -32,23 +32,33 @@
                 <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大
                 </el-button>
               </div>
-
-              <el-divider/>
-              <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
-
-              <!-- 待弃用 -->
-              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false" :article-id="articleDetail.id"></ArticleDisplayCard>
-
+              <el-collapse>
+                <el-divider/>
+                <div class="description-head"><span>文章描述</span></div>
+                <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+                <div class="contain-head"><span>文章内容</span></div>
+                <!-- 待弃用 -->
+                <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
+                                    :article-id="articleDetail.id"></ArticleDisplayCard>
+                <div class="filter-head"><span>文章标签</span></div>
+                <SearchFilter ref="SearchFilterRef" @change="searchFilterChange" :disabled="true"/>
+              </el-collapse>
             </el-card>
-            <SearchFilter ref="SearchFilterRef" @change="searchFilterChange" :disabled="true"/>
+
 
           </el-main>
         </el-container>
       </div>
-      <div v-else> <el-empty description="暂时没有需要审核的文章，感谢您的付出！" /></div>
+      <div v-else>
+        <el-empty description="暂时没有需要审核的文章，感谢您的付出！"/>
+      </div>
       <div class="button-container">
-        <el-button v-if="articleDetail.id !== 'null'" class="3" type="success" @click="handleAuditClicked(true)">审核通过！</el-button>
-        <el-button v-if="articleDetail.id !== 'null'" class="3" type="danger" @click="handleAuditClicked(false)">审核不通过</el-button>
+        <el-button v-if="articleDetail.id !== 'null'" class="3" type="success" @click="handleAuditClicked(true)">
+          审核通过！
+        </el-button>
+        <el-button v-if="articleDetail.id !== 'null'" class="3" type="danger" @click="handleAuditClicked(false)">
+          审核不通过
+        </el-button>
         <el-button class="3" @click="handleExit">退出审核</el-button>
       </div>
       <el-dialog
@@ -135,7 +145,7 @@ const getAuditedArticle = async () => {
   await SYNC_GET('/auditor/getUnauditedArticle', param, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
       console.log(response)
-      if(response.data.data.id == 'null') return
+      if (response.data.data.id == 'null') return
       for (const dataKey in response.data.data) {
         if (dataKey == 'raw') {
           continue
@@ -151,17 +161,18 @@ const getAuditedArticle = async () => {
   })
 }
 getAuditedArticle()
+
 async function getRaw(articleId: String) {
   axios({
     url: '/article/getArticleFileById',
-    method:'GET',
-    headers: { 'Content-Type': 'multipart/form-data' },
-    params: { article_id: articleId },
-    responseType:'arraybuffer'
+    method: 'GET',
+    headers: {'Content-Type': 'multipart/form-data'},
+    params: {article_id: articleId},
+    responseType: 'arraybuffer'
 
   }).then(response => {
-    const blob = new Blob([response.data],{type:articleDetail.file_type})
-    articleDetail.raw = new File([blob], articleDetail.title, {type:articleDetail.file_type})
+    const blob = new Blob([response.data], {type: articleDetail.file_type})
+    articleDetail.raw = new File([blob], articleDetail.title, {type: articleDetail.file_type})
 
   }).catch(error => {
     console.error(error);
@@ -260,7 +271,7 @@ const handleAuditClicked = async (pass: boolean) => {
         message: '感谢您的建议！',
         type: 'success'
       })
-      router.push('/articleAuditor')
+      getAuditedArticle()
     } else {
       errorCallback(response)
     }
@@ -279,7 +290,7 @@ const handleExit = async () => {
         message: '感谢您的贡献！',
         type: 'success'
       })
-      getAuditedArticle()
+      router.push('/')
     } else {
       errorCallback(response)
     }
@@ -290,9 +301,11 @@ const handleExit = async () => {
 .article-container {
   margin-bottom: 20px;
 }
+
 .article-first-card {
   margin-bottom: 20px;
 }
+
 .article-box-card {
   display: flex;
   justify-content: center;
@@ -332,5 +345,26 @@ const handleExit = async () => {
   margin-bottom: 20px;
   margin-left: 10px;
   margin-right: 10px;
+}
+.description-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+.contain-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+.filter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
 }
 </style>
