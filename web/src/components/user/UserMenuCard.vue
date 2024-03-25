@@ -65,6 +65,7 @@ function handleLogout(){
 }
 
 .user-simp-name {
+    text-align: center;
     font: bold 18px 'Microsoft YaHei';
 }
 
