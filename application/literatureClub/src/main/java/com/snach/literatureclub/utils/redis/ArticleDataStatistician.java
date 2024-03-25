@@ -2,27 +2,19 @@ package com.snach.literatureclub.utils.redis;
 
 import com.snach.literatureclub.common.ArticleStatisticalDataType;
 import com.snach.literatureclub.common.DatabaseServiceType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 
+@Component
 public class ArticleDataStatistician {
     private static final DatabaseServiceType serviceType = DatabaseServiceType.ARTICLE_STATISTICAL_DATA;
 
-    private static volatile ArticleDataStatistician statistician;
+    private final RedisConnectionFactory connectionFactory;
 
-    private static RedisConnectionFactory connectionFactory;
-
-    private ArticleDataStatistician() {}
-
-    public static ArticleDataStatistician getStatistician() {
-        if (statistician == null) {
-            synchronized (RedisConnectionFactory.class) {
-                if (statistician == null) {
-                    statistician = new ArticleDataStatistician();
-                    connectionFactory = RedisConnectionFactory.getConnectionFactory();
-                }
-            }
-        }
-        return statistician;
+    @Autowired
+    public ArticleDataStatistician(RedisConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
     }
 
     /**

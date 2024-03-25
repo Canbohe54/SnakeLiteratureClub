@@ -99,9 +99,9 @@ class ArticleServiceImpl implements ArticleService {
     private final ArticleLocker articleLocker;
 
     @Autowired
-    ArticleServiceImpl(ArticleDao articleDao) {
+    ArticleServiceImpl(ArticleDao articleDao, ArticleLocker locker) {
         this.articleDao = articleDao;
-        this.articleLocker = ArticleLocker.getLocker();
+        this.articleLocker = locker;
     }
 
     @Override
@@ -211,7 +211,7 @@ class ArticleServiceImpl implements ArticleService {
             throw new InsufficientPermissionException();
         } else {
             String authorId = articleDao.getArticleById(articleId).getTextBy();
-            articleLocker.lock(articleId, expire, authorId, TokenTools.getPayload(lockedBy, "id"));
+            articleLocker.lock(articleId, expire, authorId, lockedBy);
         }
         return true;
     }

@@ -1,29 +1,21 @@
 package com.snach.literatureclub.utils.redis;
 
 import com.snach.literatureclub.common.DatabaseServiceType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;
 
+@Configuration
 public class ArticleLocker {
     private static final DatabaseServiceType serviceType = DatabaseServiceType.ARTICLE_LOCK;
 
-    private static volatile ArticleLocker locker;
+    private final RedisConnectionFactory connectionFactory;
 
-    private static RedisConnectionFactory connectionFactory;
-
-    private ArticleLocker() {}
-
-    public static ArticleLocker getLocker() {
-        if (locker == null) {
-            synchronized (RedisConnectionFactory.class) {
-                if (locker == null) {
-                    locker = new ArticleLocker();
-                    connectionFactory = RedisConnectionFactory.getConnectionFactory();
-                }
-            }
-        }
-        return locker;
+    @Autowired
+    public ArticleLocker(RedisConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
     }
 
     public synchronized void lock(String articleId, long expire, List<String> su) {
