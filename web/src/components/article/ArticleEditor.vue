@@ -98,7 +98,7 @@
                   no-match-text="暂无匹配的收稿方"
                   default-first-option
                   remote-show-suffix
-                  :remote-method="getUserByName"
+                  :remote-method="getExpertAndHunterByName"
                   :loading="contributeManager.loading"
                   style="width: 240px"
               >
@@ -121,17 +121,21 @@
                 </template>
               </el-select>
             </div>
-
-            <div class="more-option-head" v-if="store.getters.getUserInfo.identity == 'CONTRIBUTOR'">
-              <span>指导老师</span></div>
-            <el-input
-                v-if="store.getters.getUserInfo.identity == 'CONTRIBUTOR'"
-                v-model="articleDetail.mentor"
-                class="editor-mentor"
-                :autosize="{ minRows: 1, maxRows: 3}"
-                type="textarea"
-                placeholder="指导老师名称"
-            />
+            <div class="more-option-head"><span>基本信息</span></div>
+            <el-form :model="articleDetail" ref="basicInfoFormRef">
+              <el-form-item label="作者名称" prop="authorName">
+                <el-input v-model="articleDetail.authorName" placeholder="请输入作者姓名"></el-input>
+              </el-form-item>
+              <el-form-item label="作者学校" prop="authorOrganization">
+                <el-input v-model="articleDetail.authorOrganization" placeholder="请输入作者所在的学校"></el-input>
+              </el-form-item>
+              <el-form-item label="作者年级" prop="authorGrade">
+                <el-input v-model="articleDetail.authorGrade" placeholder="请输入作者所在的年级"></el-input>
+              </el-form-item>
+              <el-form-item label="指导老师" prop="mentor">
+                <el-input v-model="articleDetail.mentor" placeholder="请输入指导老师姓名"></el-input>
+              </el-form-item>
+            </el-form>
 
             <div class="more-option-head"><span>文章标签</span></div>
             <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
@@ -207,7 +211,8 @@ const contributeManager = reactive({
   contributeWay: 'PUBLIC',
   contributeTo: '',
   loading: false,
-  options: []
+  options: [],
+  isContributor: false,
 })
 
 const activeCollapse = ref(['more_option'])
@@ -222,9 +227,14 @@ const articleDetail: AttributeAddableObject = reactive({
   attr: '{}',
   raw: {},
   file_type: '',
-  received_by: ''
+  received_by: '',
+  mentor: '',
+  authorName: '',
+  authorOrganization: '',
+  authorGrade: '',
 })
 const editFormRef = ref<FormInstance>()
+const basicInfoFormRef = ref<FormInstance>()
 const editRules = reactive<FormRules>({
   title: [
     {required: true, message: '请输入标题', trigger: 'blur'},
@@ -243,19 +253,11 @@ const searchFilterChange = () => {
 const handleContributeWayChange = () => {
 
 }
-
 // 有article_id时初始化ArticleDetail
-(async () => {
-  if (store.getters.getUserInfo.identity == '未登录') {
-    ElMessage({
-      showClose: true,
-      message: '上传稿件前请先登录哦',
-      type: 'info'
-    })
-    router.push({name: 'login'})
+const getArticleDetail = async () => {
+  if (route.query.id === '' || route.query.id === undefined) {
     return
   }
-  if (route.query.id === '' || route.query.id === undefined) return
   await SYNC_GET('/article/articleDetail', {
     article_id: route.query.id
   }, async (response) => {
@@ -277,7 +279,7 @@ const handleContributeWayChange = () => {
       errorCallback(response)
     }
   })
-})()
+}
 
 async function getRaw(articleId: String) {
   axios({
@@ -299,6 +301,7 @@ async function getRaw(articleId: String) {
     console.error(error);
   });
 }
+
 const handleReleaseClicked = () => {
   editFormRef.value?.validate(async (valid) => {
     if (!valid) {
@@ -445,6 +448,11 @@ const changeInputBox = (file: any) => {
   }
   saveBtnType.value = 'success'
   saveBtnText.value = '保存'
+  if (articleDetail.title == '') {
+    if (file.raw.name != undefined && file.raw.name.includes('.')) {
+      articleDetail.title = file.name.split('.')[0]
+    }
+  }
 }
 
 const handleDelArticleClicked = async () => {
@@ -466,7 +474,7 @@ const handleDelArticleClicked = async () => {
   delArticleDialogVisible.value = false
   router.back()
 }
-const getUserByName = (userName: string) => {
+const getExpertAndHunterByName = (userName: string) => {
   if (userName == '') {
     return
   }
@@ -483,12 +491,37 @@ const getUserByName = (userName: string) => {
   })
 }
 
-
 const handleFileRemove = () => {
   articleDetail.raw = {}
   previewType.value = "info"
 }
 
+// 初始化
+(async () => {
+  if (store.getters.getUserInfo.identity == '未登录') {
+    ElMessage({
+      showClose: true,
+      message: '上传稿件前请先登录哦',
+      type: 'info'
+    })
+    router.push({name: 'login'})
+    return
+  }
+  let userInfo = store.getters.getUserInfo
+  if (userInfo.identity == 'CONTRIBUTOR' || userInfo.identity == 'ADMINISTRATOR') {
+    console.log(userInfo)
+    contributeManager.isContributor = true
+    articleDetail.authorName = userInfo.name
+    articleDetail.authorOrganization = userInfo.organization
+    if(userInfo.identity == 'CONTRIBUTOR') {
+      articleDetail.authorGrade = userInfo.attrs.grade
+    } else {
+      articleDetail.authorGrade = userInfo.attrs.duties
+    }
+  }
+  // 有article_id时初始化ArticleDetail
+  await getArticleDetail();
+})()
 </script>
 
 <style scoped>
@@ -496,9 +529,11 @@ const handleFileRemove = () => {
   /*display: flex;*/
   margin: 0 0 10px 0;
 }
+
 .title-form-item {
   margin-bottom: 10px;
 }
+
 .title-head {
   display: flex;
   justify-content: space-between;
@@ -506,6 +541,7 @@ const handleFileRemove = () => {
   margin-bottom: 10px;
   font-size: 18px;
 }
+
 .preview_file {
   margin: 0 10px 0 0 !important;
 }
@@ -537,6 +573,7 @@ const handleFileRemove = () => {
 .upload-file {
   margin-right: 15px;
 }
+
 .description-head {
   display: flex;
   justify-content: space-between;
@@ -544,6 +581,7 @@ const handleFileRemove = () => {
   margin-bottom: 10px;
   font-size: 18px;
 }
+
 .more-option-head {
   display: flex;
   justify-content: space-between;
@@ -616,7 +654,7 @@ const handleFileRemove = () => {
 }
 
 .button-container {
-
+  margin-bottom: 20px;
 }
 
 .upload-head {
@@ -636,6 +674,7 @@ const handleFileRemove = () => {
 .upload-file-card {
   margin-bottom: 15px;
 }
+
 .edit-form:deep(.el-form-item) {
   margin-bottom: unset;
 }
