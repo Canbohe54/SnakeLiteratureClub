@@ -38,13 +38,14 @@
 
                 <div class="description-head"><span>文章描述</span></div>
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+                <div class="filter-head"><span>文章标签</span></div>
+                <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
+
                 <div class="contain-head"><span>文章内容</span></div>
                 <!-- 待弃用 -->
                 <ArticleDisplayCard class="article-contain-card" :articleRaw="articleDetail.raw"
                                     :lock-before-preview="false"
                                     :article-id="articleDetail.id"></ArticleDisplayCard>
-                <div class="filter-head"><span>文章标签</span></div>
-                <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
               </el-collapse>
             </el-card>
 

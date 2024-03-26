@@ -33,20 +33,33 @@
                 </el-button>
               </div>
 
-              <el-divider/>
+<!--              <el-divider/>-->
               <!--              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0"-->
               <!--                              :lock-before-preview="true" :article-id="articleDetail.id">-->
               <!--              </ArticlePreview>-->
-              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="true" :article-id="articleDetail.id"></ArticleDisplayCard>
-              <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+              <el-collapse style="padding-top: 10px">
+
+                <div class="description-head"><span>文章描述</span></div>
+                <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+                <div class="filter-head"><span>文章标签</span></div>
+                <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
+
+                <div class="contain-head"><span>文章内容</span></div>
+                <!-- 待弃用 -->
+                <ArticleDisplayCard class="article-contain-card" :articleRaw="articleDetail.raw"
+                                    :lock-before-preview="false"
+                                    :article-id="articleDetail.id"></ArticleDisplayCard>
+              </el-collapse>
+<!--              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="true" :article-id="articleDetail.id"></ArticleDisplayCard>-->
+<!--              <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>-->
             </el-card>
           </el-main>
-          <el-card class="gradePanel">
-            <GradeDisplay class="graDis"/>
-            <div class="gradeEdit" v-if="store.getters.getUserInfo.identity=='专家'">
-              <GradeEditor class="graedit"/>
-            </div>
-          </el-card>
+<!--          <el-card class="gradePanel">-->
+<!--            <GradeDisplay class="graDis"/>-->
+<!--            <div class="gradeEdit" v-if="store.getters.getUserInfo.identity=='专家'">-->
+<!--              <GradeEditor class="graedit"/>-->
+<!--            </div>-->
+<!--          </el-card>-->
           <el-footer>
             <suspense>
               <CommentDisplay :articleId="route.query.id"/>
@@ -91,6 +104,7 @@ import ArticlePreview from '@/components/article/ArticlePreview.vue'
 import axios from "axios";
 import ArticlePDF from "@/components/article/ArticlePDF.vue";
 import ArticleDisplayCard from "@/components/article/ArticleDisplayCard.vue";
+import SearchFilter from "@/components/search/SearchFilter.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -111,11 +125,13 @@ const articleDetail = reactive<AttributeAddableObject>({
 })
 
 const displaySize = ref("default")
-
+const SearchFilterRef = ref()
 const isFavorited = ref(false)
 
 const delArticleDialogVisible = ref(false)
-
+const searchFilterChange = () => {
+  articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
+}
 async function getTextBy() {
   articleDetail.text_by_id = articleDetail.text_by
   await SYNC_GET('/usr/getUserBasicInfo', {
@@ -329,5 +345,30 @@ const handleUpdateArticleClicked = () => {
   display: flex;
   white-space: pre-wrap;
   text-align: start !important;
+  margin-bottom: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.description-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+.filter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+.contain-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
 }
 </style>
