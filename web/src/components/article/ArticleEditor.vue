@@ -1,16 +1,36 @@
 <template xmlns="http://www.w3.org/1999/html">
   <el-row>
     <el-col :span="18" :offset="3">
-      <el-input
-          class="editor-header"
-          v-model="articleDetail.title"
-          maxlength="50"
-          show-word-limit
-          :autosize="{ minRows: 1, maxRows: 3}"
-          type="textarea"
-          placeholder="请输入标题（建议30字以内）"
-      />
       <el-card class="upload-file-card">
+        <el-form :rules="editRules" ref="editFormRef" :model="articleDetail" class="edit-form">
+
+          <el-form-item prop="title" class="title-form-item">
+            <div class="title-head"><span>文章标题</span></div>
+            <el-input
+
+                class="editor-header"
+                v-model="articleDetail.title"
+                maxlength="50"
+                show-word-limit
+                :autosize="{ minRows: 1, maxRows: 3}"
+                type="textarea"
+                placeholder="请输入标题（建议30字以内）"
+
+            />
+          </el-form-item>
+          <el-form-item prop="description">
+            <div class="description-head"><span>文章描述</span></div>
+            <el-input
+                class="editor-description"
+                v-model="articleDetail.description"
+                maxlength="200"
+                show-word-limit
+                :autosize="{ minRows: 4, maxRows: 10}"
+                type="textarea"
+                placeholder="请输入描述（建议100字以内）"
+            />
+          </el-form-item>
+        </el-form>
 
         <div class="upload-head"><span>上传文章</span></div>
         <!--        </el-tooltip>-->
@@ -51,12 +71,12 @@
 
       </el-card>
 
-      <el-dialog v-model="dialogManager.dialogVisible">
-        <img :src="dialogImageUrl" alt="Preview Image">
-      </el-dialog>
+      <!--      <el-dialog v-model="dialogManager.dialogVisible">-->
+      <!--        <img :src="dialogImageUrl" alt="Preview Image">-->
+      <!--      </el-dialog>-->
       <el-card class="more-option-card">
-        <el-collapse>
-          <el-collapse-item class="more-option" title="更多设置" name="1">
+        <el-collapse v-model="activeCollapse">
+          <el-collapse-item class="more-option" title="更多设置" name="more_option">
 
             <div class="more-option-head"><span>投稿方式</span></div>
             <div class="contribute-way-container">
@@ -73,7 +93,7 @@
                   filterable
                   remote
                   reserve-keyword
-                  placeholder="请输入或选择收稿方"
+                  placeholder="请输入收稿方"
                   no-data-text="暂无匹配的收稿方"
                   no-match-text="暂无匹配的收稿方"
                   default-first-option
@@ -94,18 +114,14 @@
                   >{{ item.organization }}</span
                   >
                 </el-option>
+                <template #loading>
+                  <svg class="circular" viewBox="0 0 50 50">
+                    <circle class="path" cx="25" cy="25" r="20" fill="none"/>
+                  </svg>
+                </template>
               </el-select>
             </div>
-            <div class="more-option-head"><span>文章描述</span></div>
-            <el-input
-                class="editor-description"
-                v-model="articleDetail.description"
-                maxlength="200"
-                show-word-limit
-                :autosize="{ minRows: 4, maxRows: 10}"
-                type="textarea"
-                placeholder="请输入描述（建议100字以内）"
-            />
+
             <div class="more-option-head" v-if="store.getters.getUserInfo.identity == 'CONTRIBUTOR'">
               <span>指导老师</span></div>
             <el-input
@@ -130,7 +146,7 @@
             saveBtnText
           }}
         </el-button>
-        <el-button class="3" type="success" @click="release">发布</el-button>
+        <el-button class="3" type="success" @click="handleReleaseClicked">发布</el-button>
       </div>
       <!--      <el-button type="danger" @click="delArticleDialogVisible=true">删除文章</el-button>-->
       <el-dialog
@@ -155,8 +171,8 @@
 
 <script lang="ts" setup>
 import {reactive, ref, watch} from 'vue'
-import type {UploadFile, UploadInstance} from 'element-plus'
-import {ElMessage} from 'element-plus'
+import type {FormRules, UploadFile, UploadInstance} from 'element-plus'
+import {ElMessage, FormInstance} from 'element-plus'
 import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 import {useStore} from 'vuex'
 import {useRoute} from 'vue-router'
@@ -164,10 +180,8 @@ import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 import router from '@/router'
 import mammoth from 'mammoth'
-import {Plus, UploadFilled} from '@element-plus/icons-vue'
+import {UploadFilled} from '@element-plus/icons-vue'
 import {base64ToFile, generateImageName} from '@/scripts/ImageUtil'
-import {fileToBlob} from '@/scripts/DocumentUtil'
-import {renderAsync} from 'docx-preview'
 import {errorCallback, errorMessage} from "@/scripts/ErrorCallBack";
 import {acceptFileType} from "@/scripts/common/AcceptFileType";
 import ArticlePreview from '@/components/article/ArticlePreview.vue'
@@ -195,6 +209,8 @@ const contributeManager = reactive({
   loading: false,
   options: []
 })
+
+const activeCollapse = ref(['more_option'])
 const articleDetail: AttributeAddableObject = reactive({
   id: null,
   text: '',
@@ -208,7 +224,15 @@ const articleDetail: AttributeAddableObject = reactive({
   file_type: '',
   received_by: ''
 })
-
+const editFormRef = ref<FormInstance>()
+const editRules = reactive<FormRules>({
+  title: [
+    {required: true, message: '请输入标题', trigger: 'blur'},
+  ],
+  description: [
+    {required: true, message: '请输入文章描述', trigger: 'blur'},
+  ],
+})
 watch(articleDetail, () => {
   saveBtnType.value = 'success'
   saveBtnText.value = '保存'
@@ -275,9 +299,22 @@ async function getRaw(articleId: String) {
     console.error(error);
   });
 }
-
+const handleReleaseClicked = () => {
+  editFormRef.value?.validate(async (valid) => {
+    if (!valid) {
+      ElMessage({
+        showClose: true,
+        message: '请填写文章标题和文章描述',
+        type: 'error'
+      })
+      return false
+    }
+    release()
+  })
+}
 // 保存草稿
 const save = async () => {
+
   let param = new FormData()
   param.append("raw_file", articleDetail.raw)
   param.append("token", store.getters.getToken)
@@ -296,7 +333,6 @@ const save = async () => {
   await SYNC_POST('/contributor/contribute', param, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
       articleDetail.id = response.data.data.id
-      console.log('Save successfully!')
       ElMessage({
         showClose: true,
         message: '草稿已保存',
@@ -431,6 +467,9 @@ const handleDelArticleClicked = async () => {
   router.back()
 }
 const getUserByName = (userName: string) => {
+  if (userName == '') {
+    return
+  }
   SYNC_GET('/usr/getUserBasicInfoByNameNoPagination', {
     name: userName,
     identity: ['EXPERT', 'HUNTER']
@@ -457,16 +496,25 @@ const handleFileRemove = () => {
   /*display: flex;*/
   margin: 0 0 10px 0;
 }
-
+.title-form-item {
+  margin-bottom: 10px;
+}
+.title-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
 .preview_file {
   margin: 0 10px 0 0 !important;
 }
 
 .editor-header {
   font-size: 25px;
-  margin-bottom: 15px;
   box-shadow: var(--el-box-shadow-light);
   border-radius: 10px;
+  margin-bottom: 10px;
 }
 
 .editor-header :deep(.el-textarea__inner) {
@@ -489,7 +537,13 @@ const handleFileRemove = () => {
 .upload-file {
   margin-right: 15px;
 }
-
+.description-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
 .more-option-head {
   display: flex;
   justify-content: space-between;
@@ -501,7 +555,7 @@ const handleFileRemove = () => {
 
 .editor-description {
   font-size: 18px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   box-shadow: var(--el-box-shadow-light);
   border-radius: 10px;
 }
@@ -566,10 +620,12 @@ const handleFileRemove = () => {
 }
 
 .upload-head {
-  padding-left: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
   font-size: 18px;
-  text-align: start;
-  padding-bottom: 10px;
+  line-height: 32px;
 }
 
 .upload-file-card:deep(.el-card__body) {
@@ -580,9 +636,8 @@ const handleFileRemove = () => {
 .upload-file-card {
   margin-bottom: 15px;
 }
-
-.upload-file-entry {
-  margin-top: 0;
+.edit-form:deep(.el-form-item) {
+  margin-bottom: unset;
 }
 
 .upload-file-name-list {
