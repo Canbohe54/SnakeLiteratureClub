@@ -35,7 +35,7 @@ import {SYNC_GET} from '@/scripts/Axios'
 import {useStore} from 'vuex'
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import {errorCallback} from '@/scripts/ErrorCallBack'
-import router from "@/router"
+import router from "@/router";
 
 const store = useStore();
 const receivedTableData = reactive<AttributeAddableObject>([])
@@ -112,7 +112,7 @@ const getReceivedArticle = async (pageNum: Number, pageSize: Number) => {
 
 function gotoDetail(articleId: any) {
   if (articleId !== '' && articleId !== undefined) {
-    router.push({path: '/expertReceivedArticleDetail', query: {id: articleId}})
+    router.push({path: '/receivedArticleDetail', query: {id: articleId}})
   } else {
     router.push({path: '/articleNotFound'})
   }

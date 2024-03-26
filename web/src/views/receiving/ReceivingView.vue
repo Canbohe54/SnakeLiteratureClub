@@ -2,7 +2,7 @@
   <el-scrollbar height="100vh">
     <div class="container">
       <NavBar class="navbar" /><!--导航栏-->
-      <ReceivedArticleDetail class="artdetail"/>
+      <Receiving class="receiving"/>
 
     </div>
   </el-scrollbar>
@@ -10,15 +10,15 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import NavBar from '@/components/NavBarResponsive.vue'
-import ReceivedArticleDetail from '@/components/hunter/ReceivedArticleDetail.vue'
+import Receiving from '@/components/receiving/Receiving.vue'
 
 @Options({
   components: {
-    ReceivedArticleDetail,
+    Receiving,
     NavBar,
   }
 })
-export default class HunterReceivedArticleDetailView extends Vue { }
+export default class ReceivingView extends Vue { }
 </script>
 <style>
 .navbar {

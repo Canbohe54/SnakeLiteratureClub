@@ -98,11 +98,11 @@ const identityDepedOption = reactive([
         title: '待审阅稿件',
     },
     { // 3
-        index: 'expertReceiving',
+        index: 'receiving',
         title: '待推荐稿件',
     },
     { // 5
-        index: 'hunterReceiving',
+        index: 'receiving',
         title: '收到稿件',
     }
 ])

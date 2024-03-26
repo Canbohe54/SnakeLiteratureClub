@@ -169,24 +169,14 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/ArticleDetailView.vue')
     },
     {
-        path: '/hunterReceivedArticleDetail',
-        name: 'hunterReceivedArticleDetail',
-        component: () => import('../views/receiving/HunterReceivedArticleDetailView.vue')
+        path: '/receivedArticleDetail',
+        name: 'receivedArticleDetail',
+        component: () => import('../views/receiving/ReceivedArticleDetailView.vue')
     },
     {
-        path: '/expertReceivedArticleDetail',
-        name: 'expertReceivedArticleDetail',
-        component: () => import('../views/receiving/ExpertReceivedArticleDetailView.vue')
-    },
-    {
-        path: '/hunterReceiving',
-        name: 'hunterReceiving',
-        component: () => import('../views/receiving/HunterReceivingView.vue')
-    },
-    {
-        path: '/expertReceiving',
-        name: 'expertReceiving',
-        component: () => import('../views/receiving/ExpertReceivingView.vue')
+        path: '/receiving',
+        name: 'receiving',
+        component: () => import('../views/receiving/ReceivingView.vue')
     },
     {
         path: '/articleAuditor',

@@ -33,7 +33,7 @@
                 </el-button>
               </div>
 
-<!--              <el-divider/>-->
+              <el-divider/>
               <!--              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0"-->
               <!--                              :lock-before-preview="true" :article-id="articleDetail.id">-->
               <!--              </ArticlePreview>-->
@@ -50,16 +50,11 @@
                                     :lock-before-preview="false"
                                     :article-id="articleDetail.id"></ArticleDisplayCard>
               </el-collapse>
-<!--              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="true" :article-id="articleDetail.id"></ArticleDisplayCard>-->
-<!--              <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>-->
+              <!--              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="true" :article-id="articleDetail.id"></ArticleDisplayCard>-->
+              <!--              <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>-->
             </el-card>
           </el-main>
-<!--          <el-card class="gradePanel">-->
-<!--            <GradeDisplay class="graDis"/>-->
-<!--            <div class="gradeEdit" v-if="store.getters.getUserInfo.identity=='专家'">-->
-<!--              <GradeEditor class="graedit"/>-->
-<!--            </div>-->
-<!--          </el-card>-->
+
           <el-footer>
             <suspense>
               <CommentDisplay :articleId="route.query.id"/>
@@ -88,28 +83,23 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref} from "vue";
-import {AttributeAddableObject} from "@/scripts/ArticleTagFilter";
-import {useRoute, useRouter} from "vue-router";
-import {ElMessage} from "element-plus";
-import {SYNC_GET, SYNC_POST} from "@/scripts/Axios";
-import {Star} from "@element-plus/icons-vue";
-import GradeEditor from "@/components/grade/GradeEditor.vue";
-import GradeDisplay from "@/components/grade/GradeDisplay.vue";
-import {useStore} from "vuex";
-import CommentDisplay from "@/components/article/CommentDisplay.vue";
-import {toUserPage} from "@/scripts/userInfo";
-import {errorCallback} from "@/scripts/ErrorCallBack";
-import ArticlePreview from '@/components/article/ArticlePreview.vue'
-import axios from "axios";
-import ArticlePDF from "@/components/article/ArticlePDF.vue";
-import ArticleDisplayCard from "@/components/article/ArticleDisplayCard.vue";
-import SearchFilter from "@/components/search/SearchFilter.vue";
+import {reactive, ref} from 'vue'
+import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
+import {useRoute, useRouter} from 'vue-router'
+import {ElMessage} from 'element-plus'
+import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
+import {useStore} from 'vuex'
+import CommentDisplay from '@/components/article/CommentDisplay.vue'
+import {toUserPage} from '@/scripts/userInfo'
+import {errorCallback} from '@/scripts/ErrorCallBack'
+import axios from 'axios'
+import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
+import SearchFilter from '@/components/search/SearchFilter.vue'
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
-
+const SearchFilterRef = ref()
 const articleDetail = reactive<AttributeAddableObject>({
   id: null,
   text: '',
@@ -125,7 +115,7 @@ const articleDetail = reactive<AttributeAddableObject>({
 })
 
 const displaySize = ref("default")
-const SearchFilterRef = ref()
+
 const isFavorited = ref(false)
 
 const delArticleDialogVisible = ref(false)
