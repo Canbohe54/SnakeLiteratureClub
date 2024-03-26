@@ -2,14 +2,24 @@
     <el-card class="article-el-card" body-style="padding:0;">
         <div class="article-card-disp">
             <div>
-                <div class="article-status-container" v-if="statusVisible">
+                <div class="article-status-container" v-if="statusVisible && (articleInfo.status == 'SUBMITTED' || articleInfo.status == 'PUBLISHED')">
                     <el-tooltip :content="handleStatusTag()" placement="bottom" effect="light">
-                        <div class="article-status-div" :id="articleInfo.articleId"></div>
+                        <div class="article-status-div" :id="'status' + articleInfo.articleId"></div>
                     </el-tooltip>
                 </div>
                 <div class="article-info-card">
-                    <div class="article-info-title"><span class="article-title-span" @click="handleCardClicked">{{
-                    articleInfo.title }}</span></div>
+                    <div class="article-info-title"><span :id="'title' + articleInfo.articleId"
+                            class="article-title-span" @click="handleCardClicked">{{
+                    articleInfo.title }}</span>
+                        <el-tooltip :content="handleStatusIcon()" placement="bottom" effect="light"
+                            v-if="iconVisible && (articleInfo.status == 'SUBMITTED' || articleInfo.status == 'BEING_AUDITED' || articleInfo.status == 'FAIL_AUDITED' || articleInfo.status == 'ROUGH')">
+                            <el-icon :id="'statusIcon' + articleInfo.articleId" @click="handleCardClicked">
+                                <Lock
+                                    v-if="articleInfo.status == 'SUBMITTED' || articleInfo.status == 'BEING_AUDITED' || articleInfo.status == 'FAIL_AUDITED'" />
+                                <Edit v-if="articleInfo.status == 'ROUGH'" />
+                            </el-icon>
+                        </el-tooltip>
+                    </div>
                     <div class="article-author-info">
                         <span>{{ articleInfo.contributor }}</span>
                         <span>（{{ articleInfo.grade }}）</span>
@@ -21,20 +31,25 @@
                 }}</span>
                     </div>
                     <div class="article-info-descrption">{{ articleInfo.description }}</div>
+                    <div class="article-info-tags" v-if="tagsVisible"><el-tag class="article-info-tag"
+                            v-for="tag in articleInfo.tags" effect="light" type="info" disable-transitions round>{{ tag
+                            }}</el-tag></div>
                     <div class="article-info-time">{{ articleInfo.time }}</div>
                 </div>
             </div>
             <div class="article-menu" v-if="isArticleMenuOpen" v-on:mouseleave="isArticleMenuOpen = false;">
-                <el-button @click="console.log('locked');">进入审阅（锁定稿件）</el-button>
-                <el-button @click="isArticleMenuOpen=false;">取消</el-button>
+                <el-button v-for="options in getMenu()" @click="options.onClick" type="primary">{{ options.text }}</el-button>
+                <el-button @click="isArticleMenuOpen = false;" type="info">取消</el-button>
             </div>
         </div>
     </el-card>
 </template>
 
 <script setup>
+import router from '@/router';
 import { reactive, toRefs, ref, onUpdated, onMounted } from 'vue';
 import { useStore } from 'vuex';
+import { Lock, Edit,Comment } from '@element-plus/icons-vue';
 
 const store = useStore();
 
@@ -54,62 +69,242 @@ const props = defineProps({
         mentor: String, //导师
         description: String, //描述
         status: String, //稿件
+        isPublic: Boolean, //是否公开
         time: String, //时间
-        mark: Number, //分数
+        tags: Array, //标签
+        received_by: String, //刊登报刊
+        audit_by: String, //审核员
+        audit_suggestion: String, //审核意见
     },
     statusVisible: {
+        type: Boolean,
+        default: true,
+    },
+    iconVisible: {
+        type: Boolean,
+        default: true,
+    },
+    tagsVisible: {
+        type: Boolean,
+        default: true,
+    },
+    menuVisible: {
         type: Boolean,
         default: true,
     }
 })
 
-const { articleInfo, statusVisible } = toRefs(props)
+const menuOnStatus = reactive({
+    user_failed_audited:[
+        {
+            text: '查看审核意见',
+            onClick: handleArticleDetail
+        },
+        {
+            text: '删除稿件',
+            onClick: handleArticleDeleate
+        },
+        {
+            text: '编辑稿件',
+            onClick: handleArticleEdit
+        }
+    ],
+    user_rough:[
+        {
+            text: '删除稿件',
+            onClick: handleArticleDeleate
+        },
+        {
+            text: '编辑稿件',
+            onClick: handleArticleEdit
+        }
+    ],
+    user_submitted:[
+    {
+            text: '查看稿件',
+            onClick: handleArticleDetail
+        },
+        {
+            text: '编辑稿件',
+            onClick: handleArticleEdit
+        }
+    ],
+    user_published_public:[
+        {
+            text: '查看稿件',
+            onClick: handleArticleDetail
+        },
+        {
+            text: '不再公开稿件',
+            onClick: handleArticlePrivate
+        }
+    ],
+    user_published_private:[
+        {
+            text: '查看稿件',
+            onClick: handleArticleDetail
+        },
+        {
+            text: '公开稿件',
+            onClick: handleArticlePublic
+        }
+    ],
+    expert_hunter:[
+        {
+            text: '进入审阅（锁定稿件）',
+            onClick: handleArticleDetail
+        }
+    ],
+})
+
+function getMenu(){
+    if (articleInfo.value.userId === currentUser.userId) {
+        if (articleInfo.value.status === 'FAIL_AUDITED') {
+            return menuOnStatus.user_failed_audited
+        } else if (articleInfo.value.status === 'ROUGH') {
+            return menuOnStatus.user_rough
+        } else if (articleInfo.value.status === 'SUBMITTED') {
+            return menuOnStatus.user_submitted
+        } else if (articleInfo.value.status === 'PUBLISHED') {
+            if (articleInfo.value.isPublic) {
+                return menuOnStatus.user_published_public
+            } else {
+                return menuOnStatus.user_published_private
+            }
+        }
+    } else {
+        if (currentUser.identity === 'EXPERT' || currentUser.identity === 'HUNTER' || currentUser.identity === 'ADMINISTRATOR') {
+            return menuOnStatus.expert_hunter
+        }
+    }
+}
+
+const { articleInfo, statusVisible, tagsVisible, menuVisible } = toRefs(props)
 
 const isArticleMenuOpen = ref(false)
+
 /*
 若status为空，此articleInfo为审核员、专家、报刊专员页面使用
 刊登稿件
 公开稿件
 */
 function handleStatusTag() {
-    if (articleInfo.value.received_by != '' && articleInfo.value.status === 'PUBLISHED') {
-        return '刊登作品：已刊登于 ' + articleInfo.value.received_by
-    } else {
-        return '公开作品'
-    }
-}
-
-function handleStatusColor() {
     if (articleInfo.value.status === 'PUBLISHED') {
         if (articleInfo.value.received_by != '') {
-            $('#' + articleInfo.value.articleId).css('border-top-color', 'var(--status-published)')
-            $('#' + articleInfo.value.articleId).css('border-right-color', 'var(--status-published)')
-            $('#' + articleInfo.value.articleId).css('border-left-color', 'var(--status-published)')
+            return '刊登作品：已刊登于 ' + articleInfo.value.received_by
         } else {
-            $('#' + articleInfo.value.articleId).css('border-top-color', 'var(--status-public)')
-            $('#' + articleInfo.value.articleId).css('border-right-color', 'var(--status-public)')
-            $('#' + articleInfo.value.articleId).css('border-left-color', 'var(--status-public)')
+            return '公开作品'
+        }
+    } else if (articleInfo.value.status === 'SUBMITTED') {
+        if (articleInfo.value.audit_by != '') {
+            return '复审稿件'
+        } else {
+            return '初审稿件'
         }
     }
 
+}
+
+function handleStatusIcon() {
+    if (articleInfo.value.status === 'ROUGH') {
+        return '草稿'
+    } else if (articleInfo.value.status === 'SUBMITTED' || articleInfo.value.status === 'BEING_AUDITED') {
+        return '已提交待审核'
+    } else if (articleInfo.value.status === 'FAIL_AUDITED') {
+        return '审核未通过'
+    }
+    if (articleInfo.value.status === 'PUBLISHED') {
+        if (articleInfo.value.isPublic) {
+            return '上锁稿件'
+        }
+    }
+}
+
+function handleStatus() {
+    switch (articleInfo.value.status) {
+        case 'ROUGH':
+            break
+        case 'SUBMITTED':
+            if (articleInfo.value.audit_by != '') {
+                $('#status' + articleInfo.value.articleId).css('border-top-color', 'var(--status-published)')
+                $('#status' + articleInfo.value.articleId).css('border-right-color', 'var(--status-published)')
+                $('#status' + articleInfo.value.articleId).css('border-left-color', 'var(--status-published)')
+            } else {
+                $('#status' + articleInfo.value.articleId).css('border-top-color', 'var(--status-public)')
+                $('#status' + articleInfo.value.articleId).css('border-right-color', 'var(--status-public)')
+                $('#status' + articleInfo.value.articleId).css('border-left-color', 'var(--status-public)')
+            }
+            break
+        case 'BEING_AUDITED':
+            break
+        case 'FAIL_AUDITED':
+            $('#title' + articleInfo.value.articleId).css('color', '#f56c6c')
+            $('#statusIcon' + articleInfo.value.articleId).css('color', '#f56c6c')
+            break
+        case 'PUBLISHED':
+            if (articleInfo.value.received_by != '') {
+                $('#status' + articleInfo.value.articleId).css('border-top-color', 'var(--status-published)')
+                $('#status' + articleInfo.value.articleId).css('border-right-color', 'var(--status-published)')
+                $('#status' + articleInfo.value.articleId).css('border-left-color', 'var(--status-published)')
+            } else {
+                $('#status' + articleInfo.value.articleId).css('border-top-color', 'var(--status-public)')
+                $('#status' + articleInfo.value.articleId).css('border-right-color', 'var(--status-public)')
+                $('#status' + articleInfo.value.articleId).css('border-left-color', 'var(--status-public)')
+            }
+            break
+    }
 }
 // window.onload = function () {
 //     handleStatusColor()
 // }
 onMounted(() => { // setup语法糖下渲染时周期函数
-    handleStatusColor()
-    console.log(articleInfo.value)
-    console.log(statusVisible.value)
+    handleStatus()
 })
 
 function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师，直接进入阅读界面
-    if (articleInfo.value.status == '' && (currentUser.identity === 'EXPERT' || currentUser.identity === 'HUNTER')) {
+    if (menuVisible.value) {
         isArticleMenuOpen.value = !isArticleMenuOpen.value
     } else {
-
-        //TODO: 跳转到文章详情页
+        router.push({
+            path: '/articleDetail',
+            query: {
+                id: articleInfo.value.articleId
+            }
+        })
     }
 }
+
+
+
+function handleArticleDetail() {
+    router.push({
+        path: '/articleDetail',
+        query: {
+            id: articleInfo.value.articleId
+        }
+    })
+}
+
+function handleArticleSubmit() {
+
+}
+
+function handleArticleDeleate() {
+
+}
+
+function handleArticleEdit() {
+
+}
+
+function handleArticlePrivate() {
+
+}
+
+function handleArticlePublic() {
+
+}
+
 </script>
 
 <style scoped>
@@ -154,6 +349,8 @@ function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师�
 
 .article-info-title {
     font: bold 20px 'Microsoft YaHei';
+    display: flex;
+    align-items: center;
 }
 
 .article-title-span {
@@ -161,7 +358,7 @@ function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师�
 }
 
 .article-title-span:hover {
-    color: #757575;
+    color: #1375d7;
 }
 
 .article-author-info {
@@ -177,6 +374,14 @@ function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师�
     -webkit-line-clamp: 2;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.article-info-tags {
+    margin-top: 10px;
+}
+
+.article-info-tag {
+    margin-right: 5px;
 }
 
 .article-info-time {

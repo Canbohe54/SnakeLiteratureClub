@@ -1,6 +1,7 @@
 <template xmlns="http://www.w3.org/1999/html">
   <el-row>
-    <el-col :span="18" :offset="3">
+    <el-col :md="3" class="hidden-sm-and-down"></el-col>
+    <el-col :md="18" :sm="24" >
       <el-card class="upload-file-card">
         <el-form :rules="editRules" ref="editFormRef" :model="articleDetail" class="edit-form">
 
@@ -170,6 +171,7 @@
         </template>
       </el-dialog>
     </el-col>
+    <el-col :md="3" class="hidden-sm-and-down"></el-col>
   </el-row>
 </template>
 
@@ -697,6 +699,5 @@ const handleFileRemove = () => {
 }
 
 .contribute-to-selection {
-  display: flex;
 }
 </style>

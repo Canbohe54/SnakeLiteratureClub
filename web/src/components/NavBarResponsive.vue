@@ -9,8 +9,8 @@
             </div>
         </el-col>
         <el-col :lg="10" :md="10" class="hidden-sm-and-down"><!--md及以上时的菜单，horizontal，展开的-->
-            <el-menu :default-active="activeIndex" class="el-menu-demo nav-menu" mode="horizontal" router>
-                <el-menu-item v-for="item in menu_option" :index="item.index"
+            <el-menu :default-active="activeIndex" class="el-menu-demo nav-menu" mode="horizontal" router :ellipsis-icon="MoreFilled">
+                <el-menu-item v-for="item in menu_option" :index="item.index" :route="item.route"
                     class="nav-menu-option">
                     {{ item.title }}
                 </el-menu-item>
@@ -49,8 +49,8 @@
         <el-col :span="24">
             <el-collapse-transition>
                 <div v-show="sm_menu_expand">
-                    <el-menu :default-active="activeIndex" class="el-menu-demo sm-menu-detail" mode="vertical" router>
-                        <el-menu-item v-for="item in menu_option" :index="item.index" class="sm-menu-items">
+                    <el-menu :default-active="activeIndex" class="el-menu-demo sm-menu-detail" mode="vertical">
+                        <el-menu-item v-for="item in menu_option" :index="item.index" class="sm-menu-items" :route="item.route">
                             {{ item.title }}
                         </el-menu-item>
                     </el-menu>
@@ -70,7 +70,7 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { Search, Upload, User } from '@element-plus/icons-vue';
+import { Search, Upload, User, MoreFilled } from '@element-plus/icons-vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import SearchBar from './SearchBar.vue';
@@ -88,22 +88,27 @@ const identityDepedOption = reactive([
     { // 0
         index: 'articleEditor',
         title: '我要投稿',
+        route: '/articleEditor'
     },
     { // 1
         index: 'articleEditor',
         title: '代投文章',
+        route: '/articleEditor'
     },
     { // 2
         index: 'articleAuditor',
         title: '待审阅稿件',
+        route: '/articleAuditor'
     },
     { // 3
         index: 'receiving',
         title: '待推荐稿件',
+        route: '/expertReceiving'
     },
     { // 5
         index: 'receiving',
         title: '收到稿件',
+        route: '/hunterReceiving'
     }
 ])
 
@@ -111,14 +116,17 @@ const menu_option = reactive([
     {
         index: 'lobby',
         title: '文学大厅',
+        route: '/lobby'
     },
     {
         index: 'public',
         title: '公开作品',
+        route: '/public'
     },
     {
         index: 'published',
         title: '优秀作品',
+        route: '/published'
     }
 ])
 

@@ -1,6 +1,7 @@
 <template>
     <div class="user-simp-info" v-if="getToken() != ''">
-        <el-avatar :size="64" id="avatar"><img id="avatar-img"/></el-avatar>
+        <!-- <el-avatar :size="64" id="avatar"><img id="avatar-img"/></el-avatar> -->
+        <SnakeAvatar :pictureUrl="userInfo.pictureUrl" :size="64"/>
         <div class="user-simp-info-disp">
             <div class="user-simp-name">{{ userInfo.name }}</div>
             <div><IdentityTag :identity="userInfo.identity"></IdentityTag></div>
@@ -27,22 +28,23 @@ import { getToken } from '@/scripts/token';
 import { useStore } from 'vuex';
 import { onMounted, onUpdated, reactive, ref } from 'vue';
 import IdentityTag from '@/components/common/IdentityTag.vue';
+import SnakeAvatar from '@/components/common/SnakeAvatar.vue';
 
 // console.log(getToken())
 const store = useStore()
 const userInfo = reactive(store.getters.getUserInfo)
 
-function init(){
-    if (userInfo.pictureUrl){
-        let avatar = JSON.parse(userInfo.pictureUrl)
-        $("#avatar").css("background-color", `${avatar.color}`)
-        $("#avatar-img").attr("src", 'avatars/'+`${avatar.avatar}`+'.png')
-    }
-}
-init()
-onMounted(() => {
-    init()
-})
+// function init(){
+//     if (userInfo.pictureUrl){
+//         let avatar = JSON.parse(userInfo.pictureUrl)
+//         $("#avatar").css("background-color", `${avatar.color}`)
+//         $("#avatar-img").attr("src", 'avatars/'+`${avatar.avatar}`+'.png')
+//     }
+// }
+// init()
+// onMounted(() => {
+//     init()
+// })
 
 function handleLogout(){
     store.commit('clear')

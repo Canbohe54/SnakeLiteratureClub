@@ -23,10 +23,9 @@
                 </p>
             </div>
         </div>
-        <div>
-          <!-- :class="isUserMyFollowed!=='true'?'followed':''" -->
+        <!-- <div>
             <el-button :type="isUserMyFollowed==='true'? 'info': 'primary' " class="followed" plain v-if="route.params.id !== store.getters.getUserInfo.id" :onclick="handleFollowPeople">{{ isUserMyFollowed==='true'?"已关注":"关注" }}</el-button>
-        </div>
+        </div> -->
     </el-row>
 </template>
 <script lang="ts" setup>

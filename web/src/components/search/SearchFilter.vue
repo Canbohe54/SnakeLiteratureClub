@@ -6,7 +6,7 @@
       </el-col>
       <el-col :span="21">
         <el-checkbox-group class="checkboxGroup" tag="span" v-model="filterSelection[groupKey]" :label="groupKey">
-          <el-checkbox-button class="checkboxButton" v-for="key in group" :label="key" :disabled="props.disabled">{{ key }}</el-checkbox-button>
+          <el-checkbox border v-for="key in group" :label="key" :disabled="props.disabled">{{ key }}</el-checkbox>
         </el-checkbox-group>
       </el-col>
     </el-row>
@@ -75,10 +75,10 @@ defineExpose({ filterSelection, loadSelection })
   padding-left: 3%;
   float: left;
 }
-.checkboxGroup :deep(.is-checked) {
+/* .checkboxGroup :deep(.is-checked) {
   border-color: rgba(185, 161, 203, 0.7);
   background-color: rgba(66, 185, 131, 0.3);
-}
+} */
 .checkboxButton :deep(.el-checkbox-button__inner) {
   border: none !important;
   background-color: rgba(0, 0, 0, 0) !important;

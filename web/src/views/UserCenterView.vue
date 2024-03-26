@@ -5,7 +5,7 @@
       <div class="common-layout user-center-disp">
         <el-container>
           <el-header class="user-header">
-            <InfoDetailDisplay />
+            <UserVisitingCard :userInfo="userInfo" />
           </el-header>
           <el-header class="user-center-bar">
             <UserCenterBar />
@@ -42,6 +42,8 @@ import { Options, Vue } from 'vue-class-component'
 import NavBar from '@/components/NavBarResponsive.vue'
 import InfoDetailDisplay from '@/components/userCenter/InfoDetailDisplay.vue'
 import UserCenterBar from '@/components/userCenter/UserCenterBar.vue'
+import UserVisitingCard from '@/components/user/UserVisitingCard.vue'
+import {reactive} from "vue";
 
 @Options({
   components: {
@@ -57,5 +59,15 @@ import UserCenterBar from '@/components/userCenter/UserCenterBar.vue'
     }
   }
 })
-export default class UserCenterView extends Vue { }
+export default class UserCenterView extends Vue {
+  setup(){
+    const userInfo = reactive({
+      name: '张三',
+      avatar: '{"avatar":"1","color":""}'
+    })
+    return {
+      userInfo
+    }
+  }
+}
 </script>
