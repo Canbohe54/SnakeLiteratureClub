@@ -320,7 +320,7 @@ const release = async () => {
   param.append("textBy", '')
   param.append("title", articleDetail.title)
   param.append("description", articleDetail.description)
-  param.append("status", 'PUBLISHED')
+  param.append("status", 'SUBMITTED')
   param.append("attr", `{"tags":${articleDetail.attr}}`)
   param.append("fileType", articleDetail.file_type)
   if (contributeManager.contributeWay == 'PUBLISHED') {
