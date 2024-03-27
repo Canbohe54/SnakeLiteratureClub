@@ -76,10 +76,10 @@
       </div>
       <div class="button-container">
         <el-button v-if="showArticle" class="3" type="success" @click="handleAuditClicked(true)">
-          审核通过！
+          受理
         </el-button>
         <el-button v-if="showArticle" class="3" type="danger" @click="handleAuditClicked(false)">
-          审核不通过
+          先打回
         </el-button>
         <el-button class="3" @click="handleExit">退出审核</el-button>
       </div>

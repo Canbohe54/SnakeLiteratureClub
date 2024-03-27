@@ -480,6 +480,7 @@ const getExpertAndHunterByName = (userName: string) => {
   if (userName == '') {
     return
   }
+  contributeManager.loading = true
   SYNC_GET('/usr/getUserBasicInfoByNameNoPagination', {
     name: userName,
     identity: ['EXPERT', 'HUNTER']
@@ -490,6 +491,7 @@ const getExpertAndHunterByName = (userName: string) => {
       contributeManager.options = []
       errorCallback(response)
     }
+    contributeManager.loading = false
   })
 }
 

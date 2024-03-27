@@ -18,9 +18,9 @@
                 <el-button type="primary" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
                            @click="handleUpdateArticleClicked">修改文章
                 </el-button>
-                <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
-                           @click="delArticleDialogVisible=true">删除文章
-                </el-button>
+<!--                <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"-->
+<!--                           @click="delArticleDialogVisible=true">删除文章-->
+<!--                </el-button>-->
                 <el-button type="warning" link :onclick="handleFavorite">{{
                     isFavorited ? '取消收藏' : '收藏'
                   }}
@@ -33,10 +33,6 @@
                 </el-button>
               </div>
 
-              <el-divider/>
-              <!--              <ArticlePreview :articleRaw="articleDetail.raw" :disabled="articleDetail.raw.size == 0"-->
-              <!--                              :lock-before-preview="true" :article-id="articleDetail.id">-->
-              <!--              </ArticlePreview>-->
               <el-collapse style="padding-top: 10px">
 
                 <div class="description-head"><span>文章描述</span></div>
@@ -55,26 +51,66 @@
             </el-card>
           </el-main>
 
-          <el-footer>
-            <suspense>
-              <CommentDisplay :articleId="route.query.id"/>
-            </suspense>
-          </el-footer>
         </el-container>
       </div>
+      <div class="button-container">
+        <el-button v-if="identity === 'EXPERT'" class="3" type="success" @click="handleRecommendClicked">
+          向杂志社推荐
+        </el-button>
+        <el-button v-if="identity === 'HUNTER'" class="3" type="success" @click="handleAcceptClicked">
+          受理
+        </el-button>
+        <el-button class="3" type="danger" @click="handleUnRecommendClicked">
+          先打回
+        </el-button>
+      </div>
       <el-dialog
-          draggable
-          v-model="delArticleDialogVisible"
-          title="删除文章"
-          width="30%"
+        draggable
+        v-model="recommendManager.recommendDialogVisible"
+        title="向杂志社推荐"
+        width="30%"
       >
-        <span>确定删除文章？</span>
+        <span class="recommend-to-head">收稿方</span>
+        <el-select
+          class="contribute-to-selection"
+          v-model="recommendManager.recommendTo"
+          filterable
+          remote
+          reserve-keyword
+          placeholder="请输入收稿方"
+          no-data-text="暂无匹配的收稿方"
+          no-match-text="暂无匹配的收稿方"
+          default-first-option
+          remote-show-suffix
+          :remote-method="getHunterByName"
+          :loading="recommendManager.loading"
+          style="width: 240px"
+        >
+          <el-option
+            v-for="item in recommendManager.options"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          >
+            <span style="float: left">{{ item.name }}</span>
+            <span
+              style="float: right;color: var(--el-text-color-secondary);font-size: 13px;"
+            >{{ item.organization }}</span
+            >
+          </el-option>
+          <template #loading>
+            <svg class="circular" viewBox="0 0 50 50">
+              <circle class="path" cx="25" cy="25" r="20" fill="none"/>
+            </svg>
+          </template>
+        </el-select>
         <template #footer>
       <span class="dialog-footer">
-        <el-button @click="delArticleDialogVisible = false">取消</el-button>
-        <el-button type="danger" @click="handleDelArticleClicked">
-          删除
+        <el-button type="primary" @click="handleRecommendArticleClicked">
+          推荐
         </el-button>
+        <el-button @click="recommendManager.recommendDialogVisible = false">取消</el-button>
+
       </span>
         </template>
       </el-dialog>
@@ -115,13 +151,18 @@ const articleDetail = reactive<AttributeAddableObject>({
 })
 
 const displaySize = ref("default")
-
+const identity = ref('')
 const isFavorited = ref(false)
-
-const delArticleDialogVisible = ref(false)
+const recommendManager = reactive({
+  recommendDialogVisible: false,
+  recommendTo: '',
+  options: [],
+  loading: false
+})
 const searchFilterChange = () => {
   articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
 }
+
 async function getTextBy() {
   articleDetail.text_by_id = articleDetail.text_by
   await SYNC_GET('/usr/getUserBasicInfo', {
@@ -135,45 +176,11 @@ async function getTextBy() {
   })
 }
 
-// 有article_id时初始化ArticleDetail
-(async () => {
-  let articleRaw: ArrayBuffer
-  if (route.query.id === '' || route.query.id === undefined) return
-  await SYNC_GET('/article/getPermissions', {
-    article_id: route.query.id,
-    requester: store.getters.getUserInfo.id
-  }, async (response) => {
-    if (response.status === 200 && response.data.code === 2001) {
-      await SYNC_GET('/article/articleDetail', {
-        article_id: route.query.id
-      }, async (response) => {
-        if (response.status === 200 && response.data.code === 2001) {
-          // console.log(response)
-          for (const dataKey in response.data.data.article) {
-            if (dataKey == 'raw') {
-              continue
-            }
-            articleDetail[dataKey] = response.data.data.article[dataKey]
-          }
 
-          await getTextBy()
-          await getRaw(articleDetail.id)
-          if (store.getters.getToken !== '') {
-            await getIsFavorited()
-          }
-        } else {
-          errorCallback(response)
-        }
-      })
-    } else {
-      errorCallback(response)
-    }
-  })
-
-})()
 const articlePDF = reactive({
   raw: {}
 })
+
 async function getPDF(articleId: String) {
   axios({
     url: '/article/word2pdf',
@@ -190,6 +197,7 @@ async function getPDF(articleId: String) {
     console.error(error);
   });
 }
+
 async function getRaw(articleId: String) {
   axios({
     url: '/article/getArticleFileById',
@@ -205,6 +213,23 @@ async function getRaw(articleId: String) {
   }).catch(error => {
     console.error(error);
   });
+}
+const getHunterByName = async (userName: string) => {
+  if (userName == '') {
+    return
+  }
+  recommendManager.loading = true
+  await SYNC_GET('/usr/getUserBasicInfoByNameNoPagination', {
+    name: userName,
+    identity: ['HUNTER']
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      recommendManager.options = response.data.data
+    } else {
+      errorCallback(response)
+    }
+    recommendManager.loading = false
+  })
 }
 
 async function getIsFavorited() {
@@ -272,22 +297,25 @@ const handleAuthorClicked = () => {
     router.push({path: '/userNotFound'})
   }
 }
-const handleDelArticleClicked = async () => {
-  await SYNC_POST('/contributor/delArticle', {
-    token: store.getters.getToken,
-    article_id: articleDetail.id
+const handleRecommendArticleClicked = async () => {
+  let userInfo = store.getters.getUserInfo
+  await SYNC_POST('/expert/recommendArticle', {
+    id: userInfo.id,
+    identity: userInfo.identity,
+    article_id: articleDetail.id,
+    recommend_to: recommendManager.recommendTo
   }, async (response) => {
     if (response.status === 200 && response.data.statusMsg === 'Success.') {
       ElMessage({
         showClose: true,
-        message: '删除文章成功',
-        type: 'warning'
+        message: '成功推荐文章',
+        type: 'success'
       })
     } else {
       errorCallback(response)
     }
   })
-  delArticleDialogVisible.value = false
+  recommendManager.recommendDialogVisible = false
   router.back()
 }
 const handleUpdateArticleClicked = () => {
@@ -297,6 +325,51 @@ const handleUpdateArticleClicked = () => {
     router.push({path: '/articleNotFound'})
   }
 }
+
+const handleRecommendClicked = () => {
+    recommendManager.recommendDialogVisible = true
+}
+const handleAcceptClicked = () => {
+}
+const handleUnRecommendClicked = () => {
+}
+// 有article_id时初始化ArticleDetail
+(async () => {
+  let articleRaw: ArrayBuffer
+  identity.value = store.getters.getUserInfo.identity
+  if (route.query.id === '' || route.query.id === undefined) return
+  await SYNC_GET('/article/getPermissions', {
+    article_id: route.query.id,
+    requester: store.getters.getUserInfo.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      await SYNC_GET('/article/articleDetail', {
+        article_id: route.query.id
+      }, async (response) => {
+        if (response.status === 200 && response.data.code === 2001) {
+          for (const dataKey in response.data.data.article) {
+            if (dataKey == 'raw') {
+              continue
+            }
+            articleDetail[dataKey] = response.data.data.article[dataKey]
+          }
+          SearchFilterRef.value.loadSelection(JSON.parse(articleDetail.attr))
+          articleDetail.attr = JSON.parse(articleDetail.attr).tags
+          await getTextBy()
+          await getRaw(articleDetail.id)
+          if (store.getters.getToken !== '') {
+            await getIsFavorited()
+          }
+        } else {
+          errorCallback(response)
+        }
+      })
+    } else {
+      errorCallback(response)
+    }
+  })
+
+})()
 </script>
 <style scoped>
 .article-box-card {
@@ -347,6 +420,7 @@ const handleUpdateArticleClicked = () => {
   margin-bottom: 10px;
   font-size: 18px;
 }
+
 .filter-head {
   display: flex;
   justify-content: space-between;
@@ -354,11 +428,19 @@ const handleUpdateArticleClicked = () => {
   margin-bottom: 10px;
   font-size: 18px;
 }
+
 .contain-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
   font-size: 18px;
+}
+
+.button-container {
+  margin-bottom: 50px;
+}
+.recommend-to-head {
+  margin-right: 15px;
 }
 </style>
