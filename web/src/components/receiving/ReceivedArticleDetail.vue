@@ -153,6 +153,7 @@ import {errorCallback} from '@/scripts/ErrorCallBack'
 import axios from 'axios'
 import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
 import SearchFilter from '@/components/search/SearchFilter.vue'
+import {lockArticleById} from "@/scripts/ArticleLocker";
 
 const router = useRouter()
 const route = useRoute()
@@ -362,8 +363,9 @@ const handleAcceptClicked = () => {
 const handleUnRecommendClicked = () => {
 }
 
-const handleAcceptArticleClicked = () => {
-
+const handleAcceptArticleClicked = async () => {
+  // 被收录，继续锁12小时，等待作者锁定文章
+  await lockArticleById(articleDetail.id, store.getters.getUserInfo.id,43200)
 }
 // 有article_id时初始化ArticleDetail
 (async () => {

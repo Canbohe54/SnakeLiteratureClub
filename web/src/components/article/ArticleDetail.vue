@@ -21,8 +21,12 @@
                 <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
                            @click="delArticleDialogVisible=true">删除文章
                 </el-button>
-                <el-button type="warning" link :onclick="handleFavorite">{{
-                    isFavorited ? '取消收藏' : '收藏'
+<!--                <el-button type="warning" link :onclick="handleFavorite">{{-->
+<!--                    isFavorited ? '取消收藏' : '收藏'-->
+<!--                  }}-->
+<!--                </el-button>-->
+                <el-button type="warning" link :onclick="handleLock">{{
+                    isLocked ? '取消锁定' : '锁定'
                   }}
                 </el-button>
                 <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小
@@ -72,21 +76,20 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref} from "vue";
-import {AttributeAddableObject} from "@/scripts/ArticleTagFilter";
-import {useRoute, useRouter} from "vue-router";
-import {ElMessage} from "element-plus";
-import {SYNC_GET, SYNC_POST} from "@/scripts/Axios";
-import {Star} from "@element-plus/icons-vue";
-import GradeEditor from "@/components/grade/GradeEditor.vue";
-import GradeDisplay from "@/components/grade/GradeDisplay.vue";
-import {useStore} from "vuex";
-import CommentDisplay from "@/components/article/CommentDisplay.vue";
-import {toUserPage} from "@/scripts/userInfo";
-import {errorCallback} from "@/scripts/ErrorCallBack";
-import ArticlePreview from '@/components/article/ArticlePreview.vue'
-import axios from "axios";
-import ArticleDisplayCard from "@/components/article/ArticleDisplayCard.vue";
+import {reactive, ref} from 'vue'
+import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
+import {useRoute, useRouter} from 'vue-router'
+import {ElMessage} from 'element-plus'
+import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
+import GradeEditor from '@/components/grade/GradeEditor.vue'
+import GradeDisplay from '@/components/grade/GradeDisplay.vue'
+import {useStore} from 'vuex'
+import CommentDisplay from '@/components/article/CommentDisplay.vue'
+import {toUserPage} from '@/scripts/userInfo'
+import {errorCallback} from '@/scripts/ErrorCallBack'
+import axios from 'axios'
+import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
+import {lockArticleById, unlockArticle} from '@/scripts/ArticleLocker'
 
 // 该页面没有锁
 const router = useRouter()
@@ -109,7 +112,7 @@ const articleDetail = reactive<AttributeAddableObject>({
 
 const displaySize = ref("default")
 
-const isFavorited = ref(false)
+const isLocked = ref(false)
 
 const delArticleDialogVisible = ref(false)
 
@@ -126,33 +129,7 @@ async function getTextBy() {
   })
 }
 
-// 有article_id时初始化ArticleDetail
-(async () => {
-  let articleRaw: ArrayBuffer
-  if (route.query.id === '' || route.query.id === undefined) return
-  await SYNC_GET('/article/articleDetail', {
-    article_id: route.query.id
-  }, async (response) => {
-    if (response.status === 200 && response.data.code === 2001) {
-      console.log(response.data)
-      for (const dataKey in response.data.data.article) {
-        if (dataKey == 'raw') {
-          continue
-        }
-        articleDetail[dataKey] = response.data.data.article[dataKey]
-      }
 
-      await getTextBy()
-      await getRaw(articleDetail.id)
-
-      if (store.getters.getToken !== '') {
-        await getIsFavorited()
-      }
-    } else {
-      errorCallback(response)
-    }
-  })
-})()
 async function getRaw(articleId: String) {
   axios({
     url: '/article/getArticleFileById',
@@ -170,61 +147,26 @@ async function getRaw(articleId: String) {
   });
 }
 
-async function getIsFavorited() {
-  await SYNC_GET('/usr/isArticleFavor', {
-    token: store.getters.getToken,
-    article_id: articleDetail.id
-  }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
-      if (response.data.isFavor === "True") {
-        isFavorited.value = true
-      } else {
-        isFavorited.value = false
-      }
+async function getIsLocked () {
+  await SYNC_GET('/article/checkLocked',{
+    articleId: articleDetail.id
+  },async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      console.log(response)
+      isLocked.value = response.data
     } else {
       errorCallback(response)
     }
   })
 }
+async function handleLock() {
+  // TODO： 锁多久 解锁的业务逻辑
+  if(isLocked){
+    await unlockArticle(articleDetail.id)
+  }else {
+    await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 3600)
+  }
 
-async function handleFavorite() {
-  if (store.getters.getToken === '') {
-    router.push('/login')
-    return
-  }
-  if (isFavorited.value) {
-    await SYNC_POST('/usr/cancelFavorite', {
-      token: store.getters.getToken,
-      article_id: articleDetail.id
-    }, async (response) => {
-      if (response.status === 200 && response.data.statusMsg === 'Success.') {
-        ElMessage({
-          showClose: true,
-          message: '取消收藏成功',
-          type: 'info'
-        })
-        isFavorited.value = false
-      } else {
-        errorCallback(response)
-      }
-    })
-  } else {
-    await SYNC_POST('/usr/addFavorite', {
-      token: store.getters.getToken,
-      article_id: articleDetail.id
-    }, async (response) => {
-      if (response.status === 200 && response.data.statusMsg === 'Success.') {
-        ElMessage({
-          showClose: true,
-          message: '收藏成功',
-          type: 'success'
-        })
-        isFavorited.value = true
-      } else {
-        errorCallback(response)
-      }
-    })
-  }
 }
 
 const handleAuthorClicked = () => {
@@ -260,6 +202,31 @@ const handleUpdateArticleClicked = () => {
     router.push({path: '/articleNotFound'})
   }
 }
+
+// 有article_id时初始化ArticleDetail
+(async () => {
+  let articleRaw: ArrayBuffer
+  if (route.query.id === '' || route.query.id === undefined) return
+  await SYNC_GET('/article/articleDetail', {
+    article_id: route.query.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      console.log(response.data)
+      for (const dataKey in response.data.data.article) {
+        if (dataKey == 'raw') {
+          continue
+        }
+        articleDetail[dataKey] = response.data.data.article[dataKey]
+      }
+      await getIsLocked()
+      await getTextBy()
+      await getRaw(articleDetail.id)
+
+    } else {
+      errorCallback(response)
+    }
+  })
+})()
 </script>
 <style scoped>
 .article-box-card {

@@ -9,8 +9,8 @@
                 </div>
                 <div class="article-info-card">
                     <div class="article-info-title"><span :id="'title' + articleInfo.articleId"
-                            class="article-title-span" @click="handleCardClicked">{{
-                    articleInfo.title }}</span>
+                            class="article-title-span" @click="handleCardClicked">
+                      {{ articleInfo.title }}</span>
                         <el-tooltip :content="handleStatusIcon()" placement="bottom" effect="light"
                             v-if="iconVisible && (articleInfo.status == 'SUBMITTED' || articleInfo.status == 'BEING_AUDITED' || articleInfo.status == 'FAIL_AUDITED' || articleInfo.status == 'ROUGH')">
                             <el-icon :id="'statusIcon' + articleInfo.articleId" @click="handleCardClicked">
@@ -50,6 +50,8 @@ import router from '@/router';
 import { reactive, toRefs, ref, onUpdated, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { Lock, Edit,Comment } from '@element-plus/icons-vue';
+import {SYNC_GET} from "@/scripts/Axios";
+import {lockArticleById} from "@/scripts/ArticleLocker";
 
 const store = useStore();
 
@@ -276,13 +278,22 @@ function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师�
 
 
 
-function handleArticleDetail() {
-    router.push({
+async function handleArticleDetail() {
+  await SYNC_GET('/article/getPermissions',{
+    articleId: articleInfo.value.articleId,
+    requester: currentUser.userId
+  }, async (response) => {
+    if(response.status === 200 && response.data.code === 2001){
+      // 锁2小时
+      await lockArticleById(articleInfo.value.articleId, currentUser.userId,7200)
+      router.push({
         path: '/articleDetail',
         query: {
-            id: articleInfo.value.articleId
+          id: articleInfo.value.articleId
         }
-    })
+      })
+    }
+  })
 }
 
 function handleArticleSubmit() {
