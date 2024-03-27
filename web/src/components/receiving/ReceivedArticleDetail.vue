@@ -54,14 +54,14 @@
         </el-container>
       </div>
       <div class="button-container">
-        <el-button v-if="identity === 'EXPERT'" class="3" type="success" @click="handleRecommendClicked">
+        <el-button v-if="identity === 'EXPERT' || identity === 'ADMINISTRATOR'" class="3" type="success" @click="handleRecommendClicked">
           向杂志社推荐
         </el-button>
-        <el-button v-if="identity === 'HUNTER'" class="3" type="success" @click="handleAcceptClicked">
+        <el-button v-if="identity === 'HUNTER' || identity === 'ADMINISTRATOR'" class="3" type="success" @click="handleAcceptClicked">
           受理
         </el-button>
         <el-button class="3" type="danger" @click="handleUnRecommendClicked">
-          先打回
+          打回
         </el-button>
       </div>
       <el-dialog
@@ -105,7 +105,7 @@
           </template>
         </el-select>
         <template #footer>
-      <span class="dialog-footer">
+      <span class="accept-button-container">
         <el-button type="primary" @click="handleRecommendArticleClicked">
           推荐
         </el-button>
@@ -113,6 +113,28 @@
 
       </span>
         </template>
+      </el-dialog>
+
+      <el-dialog
+        draggable
+        v-model="acceptManager.acceptDialogVisible"
+        title="收录文章"
+        width="30%"
+      >
+        <div class="accept-head"><span>受录邀请</span></div>
+        <el-input v-model="acceptManager.acceptInfo"
+                  maxlength="200"
+                  show-word-limit
+                  class="accept-info-input"
+                  :autosize="{ minRows: 4, maxRows: 10}"
+                  type="textarea"
+                  placeholder="例如：感谢您的投稿，请您将文章上锁并发送到..."></el-input>
+        <span class="accept-button-container">
+        <el-button type="primary" @click="handleAcceptArticleClicked">
+          收录
+        </el-button>
+        <el-button @click="acceptManager.acceptDialogVisible = false">取消</el-button>
+        </span>
       </el-dialog>
     </el-col>
   </el-row>
@@ -158,6 +180,11 @@ const recommendManager = reactive({
   recommendTo: '',
   options: [],
   loading: false
+})
+
+const acceptManager = reactive({
+  acceptDialogVisible: false,
+  acceptInfo: '感谢您的投稿，请您将文章上锁并发送到'
 })
 const searchFilterChange = () => {
   articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
@@ -330,8 +357,13 @@ const handleRecommendClicked = () => {
     recommendManager.recommendDialogVisible = true
 }
 const handleAcceptClicked = () => {
+  acceptManager.acceptDialogVisible = true
 }
 const handleUnRecommendClicked = () => {
+}
+
+const handleAcceptArticleClicked = () => {
+
 }
 // 有article_id时初始化ArticleDetail
 (async () => {
@@ -442,5 +474,21 @@ const handleUnRecommendClicked = () => {
 }
 .recommend-to-head {
   margin-right: 15px;
+}
+.accept-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+.accept-button-container{
+  display: flex;
+  justify-content: flex-end;
+}
+.accept-info-input {
+  margin-bottom: 10px;
+  box-shadow: var(--el-box-shadow-light);
+  border-radius: 10px;
 }
 </style>

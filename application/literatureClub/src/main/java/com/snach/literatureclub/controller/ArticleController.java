@@ -107,24 +107,6 @@ public class ArticleController {
     }
 
     /**
-     * 锁定文章，将锁定者加入该文章可访问列表
-     * redis设置锁的过期时间
-     *
-     * @param articleId 文章id
-     * @param expire    过期时间，单位：秒
-     * @param lockedBy  锁定者的token
-     */
-    @RequestMapping(value = "lockArticleById", method = RequestMethod.POST)
-    public boolean lockArticleById(@RequestParam("article_id") String articleId, long expire, @RequestParam(name = "locked_by") String lockedBy) {
-        return articleService.lockArticleById(articleId, expire, lockedBy);
-    }
-
-    @RequestMapping(value = "unlockArticleById", method = RequestMethod.POST)
-    public boolean unlockArticleById(@RequestParam("article_id") String articleId, @RequestParam(name = "unlocked_by") String unlockedBy) {
-        return articleService.unLockArticleById(articleId, unlockedBy);
-    }
-
-    /**
      * 获取文章的访问权限
      *
      * @param articleId 文章id
@@ -164,4 +146,24 @@ public class ArticleController {
     public PageInfo<Article> getReceivedArticleById(@RequestParam("auditor_id") String auditorId, @RequestParam("page_num") int pageNum, @RequestParam("page_size") int pageSize) {
         return articleService.getReceivedArticleById(auditorId, pageNum, pageSize);
     }
+
+    /**
+     * 锁定文章，将锁定者加入该文章可访问列表
+     * redis设置锁的过期时间
+     *
+     * @param articleId 文章id
+     * @param expire    过期时间，单位：秒
+     * @param lockedBy  锁定者的token
+     */
+    @RequestMapping(value = "lockArticleById", method = RequestMethod.POST)
+    public boolean lockArticleById(@RequestParam("article_id") String articleId, long expire, @RequestParam(name = "locked_by") String lockedBy) {
+        return articleService.lockArticleById(articleId, expire, lockedBy);
+    }
+
+    @RequestMapping(value = "unlockArticleById", method = RequestMethod.POST)
+    public boolean unlockArticleById(@RequestParam("article_id") String articleId, @RequestParam(name = "unlocked_by") String unlockedBy) {
+        return articleService.unLockArticleById(articleId, unlockedBy);
+    }
+
+
 }

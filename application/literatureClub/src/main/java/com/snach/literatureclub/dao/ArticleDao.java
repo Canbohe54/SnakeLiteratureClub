@@ -171,7 +171,13 @@ public interface ArticleDao {
             "WHERE id = #{article.id}")
     int updateArticleInfo(@Param("article") Article article);
 
-
+    /**
+     * 更新稿件接收者
+     *
+     * @param articleId  稿件id
+     * @param receivedBy 接收者id
+     * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
+     */
     @Update("UPDATE article SET received_by = #{receivedBy} WHERE id = #{articleId}")
     int updateReceivedBy(String articleId, String receivedBy);
 
