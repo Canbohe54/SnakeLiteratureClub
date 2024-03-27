@@ -113,8 +113,13 @@ public class ArticleController {
      * @param requester 请求者id
      */
     @RequestMapping(value = "getPermissions", method = RequestMethod.GET)
-    public boolean getPermissions(@RequestParam("article_id") String articleId, @RequestParam(name = "requester") String requester) {
+    public boolean getPermissions(String articleId,  String requester) {
         return articleService.getPermissions(articleId, requester);
+    }
+
+    @RequestMapping(value = "checkLocked", method = RequestMethod.GET)
+    public boolean checkLocked(String articleId) {
+        return articleService.checkLock(articleId);
     }
 
     /**
@@ -164,6 +169,4 @@ public class ArticleController {
     public boolean unlockArticleById(@RequestParam("article_id") String articleId, @RequestParam(name = "unlocked_by") String unlockedBy) {
         return articleService.unLockArticleById(articleId, unlockedBy);
     }
-
-
 }

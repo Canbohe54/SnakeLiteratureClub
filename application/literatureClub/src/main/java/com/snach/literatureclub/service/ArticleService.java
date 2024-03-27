@@ -88,6 +88,8 @@ public interface ArticleService {
     boolean unLockArticleById(String articleId, String unlockedBy);
 
     boolean getPermissions(String articleId, String requester);
+
+    boolean checkLock(String articleId);
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -231,5 +233,10 @@ class ArticleServiceImpl implements ArticleService {
             throw new InsufficientPermissionException();
         }
         return true;
+    }
+
+    @Override
+    public boolean checkLock(String articleId) {
+        return articleLocker.checkLock(articleId);
     }
 }
