@@ -2,7 +2,8 @@
     <el-card class="article-el-card" body-style="padding:0;">
         <div class="article-card-disp">
             <div>
-                <div class="article-status-container" v-if="statusVisible && (articleInfo.status == 'SUBMITTED' || articleInfo.status == 'PUBLISHED')">
+                <div class="article-status-container"
+                    v-if="statusVisible && (articleInfo.status == 'SUBMITTED' || articleInfo.status == 'PUBLISHED')">
                     <el-tooltip :content="handleStatusTag()" placement="bottom" effect="light">
                         <div class="article-status-div" :id="'status' + articleInfo.articleId"></div>
                     </el-tooltip>
@@ -27,8 +28,8 @@
                     </div>
                     <div class="article-author-info">
                         <span class="article-info-mentor">{{ articleInfo.mentor === '' ? '' : '指导老师：' }}{{
-                    articleInfo.mentor
-                }}</span>
+                        articleInfo.mentor
+                    }}</span>
                     </div>
                     <div class="article-info-descrption">{{ articleInfo.description }}</div>
                     <div class="article-info-tags" v-if="tagsVisible"><el-tag class="article-info-tag"
@@ -38,7 +39,8 @@
                 </div>
             </div>
             <div class="article-menu" v-if="isArticleMenuOpen" v-on:mouseleave="isArticleMenuOpen = false;">
-                <el-button v-for="options in getMenu()" @click="options.onClick" type="primary">{{ options.text }}</el-button>
+                <el-button v-for="options in getMenu()" @click="options.onClick" :type="options.type">{{ options.text
+                    }}</el-button>
                 <el-button @click="isArticleMenuOpen = false;" type="info">取消</el-button>
             </div>
         </div>
@@ -49,7 +51,7 @@
 import router from '@/router';
 import { reactive, toRefs, ref, onUpdated, onMounted } from 'vue';
 import { useStore } from 'vuex';
-import { Lock, Edit,Comment } from '@element-plus/icons-vue';
+import { Lock, Edit, Comment } from '@element-plus/icons-vue';
 import {SYNC_GET} from "@/scripts/Axios";
 import {lockArticleById} from "@/scripts/ArticleLocker";
 
@@ -97,69 +99,81 @@ const props = defineProps({
 })
 
 const menuOnStatus = reactive({
-    user_failed_audited:[
+    user_failed_audited: [
         {
             text: '查看审核意见',
-            onClick: handleArticleDetail
+            onClick: handleArticleDetail,
+            type: 'primary'
         },
         {
             text: '删除稿件',
-            onClick: handleArticleDeleate
+            onClick: handleArticleDeleate,
+            type: 'danger'
         },
         {
             text: '编辑稿件',
-            onClick: handleArticleEdit
+            onClick: handleArticleEdit,
+            type: 'success'
         }
     ],
-    user_rough:[
+    user_rough: [
         {
             text: '删除稿件',
-            onClick: handleArticleDeleate
+            onClick: handleArticleDeleate,
+            type: 'danger'
         },
         {
             text: '编辑稿件',
-            onClick: handleArticleEdit
+            onClick: handleArticleEdit,
+            type: 'success'
         }
     ],
-    user_submitted:[
-    {
+    user_submitted: [
+        {
             text: '查看稿件',
-            onClick: handleArticleDetail
+            onClick: handleArticleDetail,
+            type: 'primary'
         },
         {
             text: '编辑稿件',
-            onClick: handleArticleEdit
+            onClick: handleArticleEdit,
+            type: 'success'
         }
     ],
-    user_published_public:[
+    user_published_public: [
         {
             text: '查看稿件',
-            onClick: handleArticleDetail
+            onClick: handleArticleDetail,
+            type: 'primary'
         },
         {
             text: '不再公开稿件',
-            onClick: handleArticlePrivate
+            onClick: handleArticlePrivate,
+            type: 'danger'
         }
     ],
-    user_published_private:[
+    user_published_private: [
         {
             text: '查看稿件',
-            onClick: handleArticleDetail
+            onClick: handleArticleDetail,
+            type: 'primary'
         },
         {
             text: '公开稿件',
-            onClick: handleArticlePublic
+            onClick: handleArticlePublic,
+            type: 'success'
         }
     ],
-    expert_hunter:[
+    expert_hunter: [
         {
             text: '进入审阅（锁定稿件）',
-            onClick: handleArticleDetail
+            onClick: handleArticleDetail,
+            type: 'primary'
         }
     ],
 })
 
-function getMenu(){
+function getMenu() {
     if (articleInfo.value.userId === currentUser.userId) {
         if (articleInfo.value.status === 'FAIL_AUDITED') {
             return menuOnStatus.user_failed_audited
@@ -264,7 +278,7 @@ onMounted(() => { // setup语法糖下渲染时周期函数
 })
 
 function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师，直接进入阅读界面
-    if (menuVisible.value) {
+    if (menuVisible.value && currentUser.userId) {
         isArticleMenuOpen.value = !isArticleMenuOpen.value
     } else {
         router.push({
