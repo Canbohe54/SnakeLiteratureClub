@@ -21,11 +21,11 @@
                 <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
                            @click="delArticleDialogVisible=true">删除文章
                 </el-button>
-<!--                <el-button type="warning" link :onclick="handleFavorite">{{-->
-<!--                    isFavorited ? '取消收藏' : '收藏'-->
-<!--                  }}-->
-<!--                </el-button>-->
-                <el-button type="warning" link :onclick="handleLock">{{
+                <!--                <el-button type="warning" link :onclick="handleFavorite">{{-->
+                <!--                    isFavorited ? '取消收藏' : '收藏'-->
+                <!--                  }}-->
+                <!--                </el-button>-->
+                <el-button type="warning" link :onclick="handleLockClicked" >{{
                     isLocked ? '取消锁定' : '锁定'
                   }}
                 </el-button>
@@ -38,8 +38,10 @@
               </div>
 
               <el-divider/>
-              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false" :article-id="articleDetail.id"></ArticleDisplayCard>
               <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
+                                  :article-id="articleDetail.id"></ArticleDisplayCard>
+
             </el-card>
           </el-main>
           <el-card class="gradePanel">
@@ -56,10 +58,10 @@
         </el-container>
       </div>
       <el-dialog
-        draggable
-        v-model="delArticleDialogVisible"
-        title="删除文章"
-        width="30%"
+          draggable
+          v-model="delArticleDialogVisible"
+          title="删除文章"
+          width="30%"
       >
         <span>确定删除文章？</span>
         <template #footer>
@@ -133,38 +135,75 @@ async function getTextBy() {
 async function getRaw(articleId: String) {
   axios({
     url: '/article/getArticleFileById',
-    method:'GET',
-    headers: { 'Content-Type': 'multipart/form-data' },
-    params: { article_id: articleId },
-    responseType:'arraybuffer'
+    method: 'GET',
+    headers: {'Content-Type': 'multipart/form-data'},
+    params: {article_id: articleId},
+    responseType: 'arraybuffer'
 
   }).then(response => {
-    const blob = new Blob([response.data],{type:articleDetail.file_type})
-    articleDetail.raw = new File([blob], articleDetail.title, {type:articleDetail.file_type})
+    const blob = new Blob([response.data], {type: articleDetail.file_type})
+    articleDetail.raw = new File([blob], articleDetail.title, {type: articleDetail.file_type})
 
   }).catch(error => {
     console.error(error);
   });
 }
 
-async function getIsLocked () {
-  await SYNC_GET('/article/checkLocked',{
+async function getIsLocked() {
+  await SYNC_GET('/article/checkLocked', {
     articleId: articleDetail.id
-  },async (response) => {
+  }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
-      console.log(response)
-      isLocked.value = response.data
+      isLocked.value = response.data.data
     } else {
       errorCallback(response)
     }
   })
 }
+
+async function handleUnlock() {
+  // TODO: 更改条件为如果非公开且已刊登，无法手动解锁
+  // if(articleDetail.status === 'PUBLISHED' && articleDetail.receivedBy !== '' && !articleDetail.isPublic)
+  if (articleDetail.status === 'PUBLISHED' && articleDetail.receviedBy !== '') {
+    let expire = 0;
+    await SYNC_GET("/article/getArticleLockExpire",{ articleId: articleDetail.id}, (response) => {
+      if (response.status === 200 && response.data.code === 2001) {
+        console.log(response)
+        expire = response.data.data
+      } else {
+        errorCallback(response)
+      }
+    })
+
+    let message = ''
+    if(expire > 86400){
+      message = `文章已发布，无法手动解锁，将于${expire/86400}天后解锁。`
+    }else if (expire > 3600){
+      message = `该文章已发布，无法手动解锁，将于${expire/3600}小时后解锁。`
+    } else {
+      message = `该文章已发布，无法手动解锁，将于${expire/60}分钟后解锁。`
+    }
+    ElMessage({
+      type: 'warning',
+      message: message,
+      showClose: true
+    })
+  } else {
+    await unlockArticle(articleDetail.id, store.getters.getUserInfo.id)
+    isLocked.value = !isLocked.value
+  }
+}
 async function handleLock() {
-  // TODO： 锁多久 解锁的业务逻辑
-  if(isLocked){
-    await unlockArticle(articleDetail.id)
-  }else {
-    await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 3600)
+  await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 5184000)
+  isLocked.value = !isLocked.value
+}
+async function handleLockClicked() {
+  if (isLocked.value) {
+    // 文章已锁定，执行解锁相关逻辑
+    await handleUnlock()
+  } else {
+    // 文章未锁定，执行锁定相关逻辑
+    await handleLock()
   }
 
 }
@@ -201,6 +240,7 @@ const handleUpdateArticleClicked = () => {
   } else {
     router.push({path: '/articleNotFound'})
   }
+  getIsLocked()
 }
 
 // 有article_id时初始化ArticleDetail
@@ -211,7 +251,6 @@ const handleUpdateArticleClicked = () => {
     article_id: route.query.id
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
-      console.log(response.data)
       for (const dataKey in response.data.data.article) {
         if (dataKey == 'raw') {
           continue

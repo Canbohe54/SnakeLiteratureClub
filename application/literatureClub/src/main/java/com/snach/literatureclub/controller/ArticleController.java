@@ -44,8 +44,7 @@ public class ArticleController {
     }
 
     /**
-     * 根据稿件id查找稿件详细信息，包括标题、描述、修改时间和内容，用于编辑界面显示
-     * 返回格式{ article: #{ARTICLE}, statusMsg: #{STRING}}
+     * 根据稿件id查找稿件详细信息，包括是否公开、文章状态、文章作者信息和收稿方等
      *
      * @param article_id 稿件id
      * @return 稿件详细信息, 执行状态
@@ -122,6 +121,15 @@ public class ArticleController {
         return articleService.checkLock(articleId);
     }
 
+    /**
+     * 获取文章锁的剩余过期时间
+     * @param articleId 文章id
+     * @return 剩余过期时间
+     */
+    @RequestMapping(value = "getArticleLockExpire", method = RequestMethod.GET)
+    public long getArticleLockExpire(String articleId) {
+        return articleService.getArticleLockExpire(articleId);
+    }
     /**
      * 通过id对文章进行敏感词审核
      *

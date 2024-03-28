@@ -28,11 +28,7 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import NavBar from '@/components/NavBarResponsive.vue'
-import InfoDetailDisplay from '@/components/userCenter/InfoDetailDisplay.vue'
-import UserCenterBar from '@/components/userCenter/UserCenterBar.vue'
-import UserVisitingCard from '@/components/user/UserVisitingCard.vue'
-import {reactive} from "vue";
-import NewUserCenter from '@/components/userCenter/NewUserCenter.vue'
+import NewUserCenter from '@/components/user/NewUserCenter.vue'
 
 @Options({
   components: {

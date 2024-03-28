@@ -11,10 +11,16 @@ export const lockArticleById = async (articleId: String, lockedBy: String, expir
      locked_by: lockedBy
    }
    await SYNC_POST('/article/lockArticleById', data, (response: any) =>{
+     let message = ''
+     if(expire > 86400){
+       message = `文章已被锁定，锁定时间${expire/86400}天。`
+     }else {
+       message = `文章已被锁定，锁定时间${expire/3600}小时。`
+     }
      if (response.status === 200 && response.data.code === 2001) {
        ElMessage({
          showClose: true,
-         message: `文章已被锁定，锁定时间${expire/3600}小时。`,
+         message: message,
          type: 'success'
        })
      }else {
