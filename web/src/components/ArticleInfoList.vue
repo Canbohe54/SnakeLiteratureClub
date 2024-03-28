@@ -1,12 +1,15 @@
 <template>
     <el-row>
         <el-col :md="12" :sm="24" v-for="articleInfo in TestArticleList">
-            <ArticleInfo :articleInfo="articleInfo" :statusVisible="currentSettings.statusVisible" :iconVisible="currentSettings.iconVisible" :tagsVisible="currentSettings.tagsVisible"/>
+            <el-card class="article-el-card" body-style="padding:0;">
+                <ArticleInfo :articleInfo="articleInfo" :statusVisible="currentSettings.statusVisible"
+                    :iconVisible="currentSettings.iconVisible" :tagsVisible="currentSettings.tagsVisible" />
+            </el-card>
         </el-col>
     </el-row>
     <el-pagination class="article_list_pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                   :current-page="pageInfo.currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="pageInfo.pageSize"
-                   layout="total, sizes, prev, pager, next, jumper" :total="pageInfo.total">
+        :current-page="pageInfo.currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="pageInfo.pageSize"
+        layout="total, sizes, prev, pager, next, jumper" :total="pageInfo.total">
     </el-pagination>
 </template>
 
@@ -52,7 +55,7 @@ const modeSettings = {
 
 const TestArticleList = reactive([
     {
-        articleId: 'a1',
+        articleId: 'a3F8c0krY3df',
         title: '关于沼气动力学的研究',
         contributor: '田所浩二',
         userId: '114514',
@@ -126,16 +129,22 @@ const TestArticleList = reactive([
 ])
 
 const pageInfo = reactive({
-  currentPage: 1,
-  pageSize: 10,
-  total: 0
+    currentPage: 1,
+    pageSize: 10,
+    total: 0
 })
 </script>
 
 <style scoped>
+.article-el-card {
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
 .article_list_pagination {
-  margin: 20px 0 10px 0;
-  display: flex;
-  justify-content: center;
+    margin: 20px 0 10px 0;
+    display: flex;
+    justify-content: center;
 }
 </style>

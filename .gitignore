@@ -1,3 +1,4 @@
 .idea
 node_modules
 web_history
+/web/src/components/DEPRECATED/

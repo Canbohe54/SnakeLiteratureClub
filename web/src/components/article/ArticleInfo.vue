@@ -1,5 +1,5 @@
 <template>
-    <el-card class="article-el-card" body-style="padding:0;">
+
         <div class="article-card-disp">
             <div>
                 <div class="article-status-container"
@@ -21,12 +21,12 @@
                             </el-icon>
                         </el-tooltip>
                     </div>
-                    <div class="article-author-info">
+                    <div class="article-author-info" v-if="authorInfoVisible">
                         <span>{{ articleInfo.contributor }}</span>
                         <span>（{{ articleInfo.grade }}）</span>
                         <span>{{ articleInfo.organization }}</span>
                     </div>
-                    <div class="article-author-info">
+                    <div class="article-author-info" v-if="authorInfoVisible">
                         <span class="article-info-mentor">{{ articleInfo.mentor === '' ? '' : '指导老师：' }}{{
                         articleInfo.mentor
                     }}</span>
@@ -44,7 +44,6 @@
                 <el-button @click="isArticleMenuOpen = false;" type="info">取消</el-button>
             </div>
         </div>
-    </el-card>
 </template>
 
 <script setup>
@@ -81,6 +80,10 @@ const props = defineProps({
         audit_suggestion: String, //审核意见
     },
     statusVisible: {
+        type: Boolean,
+        default: true,
+    },
+    authorInfoVisible: {
         type: Boolean,
         default: true,
     },
@@ -195,7 +198,7 @@ function getMenu() {
     }
 }
 
-const { articleInfo, statusVisible, tagsVisible, menuVisible } = toRefs(props)
+const { articleInfo, statusVisible, authorInfoVisible, tagsVisible, menuVisible } = toRefs(props)
 
 const isArticleMenuOpen = ref(false)
 
