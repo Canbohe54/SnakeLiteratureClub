@@ -132,8 +132,8 @@ function init(){
     }
     console.log(avatar)
 }
-init()
 onMounted(() => {
     init()
 })
+init()
 </script>

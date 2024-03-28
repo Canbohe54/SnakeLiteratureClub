@@ -17,7 +17,7 @@ import { useStore } from 'vuex';
 const props = defineProps({
     mode: {
         type: String,
-        default: 'received',
+        default: 'USER_OWN'
     }
 })
 
@@ -61,6 +61,7 @@ const TestArticleList = reactive([
         mentor: '野兽先辈',
         description: '这是一篇关于沼气动力学的研究论文，主要研究了沼气的产生、利用和储存等方面的问题。这世间有关沼气动力学的资料少之又少，为了填补这方面的空缺，作者田所浩二潜心研究，不断付出实践，终于完成了这一篇大作。在这篇论文中，作者详细介绍了沼气的产生原理、利用方法和储存技术，为沼气动力学的研究提供了新的思路和方法。',
         status: 'PUBLISHED',
+        isPublic: true,
         time: '1919年8月10日',
         received_by: '下北泽日报',
         tags: ['生物制沼', '沼气动力学']

@@ -2,19 +2,7 @@
   <el-scrollbar height="100vh">
     <div class="container">
       <NavBar />
-      <div class="common-layout user-center-disp">
-        <el-container>
-          <el-header class="user-header">
-            <UserVisitingCard :userInfo="userInfo" />
-          </el-header>
-          <el-header class="user-center-bar">
-            <UserCenterBar />
-          </el-header>
-          <el-main>
-            <router-view />
-          </el-main>
-        </el-container>
-      </div>
+      <NewUserCenter />
     </div>
   </el-scrollbar>
 </template>
@@ -44,12 +32,12 @@ import InfoDetailDisplay from '@/components/userCenter/InfoDetailDisplay.vue'
 import UserCenterBar from '@/components/userCenter/UserCenterBar.vue'
 import UserVisitingCard from '@/components/user/UserVisitingCard.vue'
 import {reactive} from "vue";
+import NewUserCenter from '@/components/userCenter/NewUserCenter.vue'
 
 @Options({
   components: {
     NavBar,
-    InfoDetailDisplay,
-    UserCenterBar
+    NewUserCenter
   },
   beforeRouteUpdate(to, from, next) {
     if (from.params.id !== to.params.id) {
@@ -59,15 +47,5 @@ import {reactive} from "vue";
     }
   }
 })
-export default class UserCenterView extends Vue {
-  setup(){
-    const userInfo = reactive({
-      name: '张三',
-      avatar: '{"avatar":"1","color":""}'
-    })
-    return {
-      userInfo
-    }
-  }
-}
+export default class UserCenterView extends Vue {}
 </script>
