@@ -32,35 +32,16 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/user/:id',
         name: 'user-info',
-        component: () => import('../views/UserCenterView.vue'),
-        children: [
-            {
-                path: 'article',
-                name: 'user-info-article',
-                component: () => import('../components/userCenter/UserArticleDisplay.vue')
-            },
-            {
-                path: 'favor',
-                component: () => import('../components/userCenter/FavoriteDisplay.vue')
-            },
-            {
-                path: 'followed',
-                component: () => import('../components/userCenter/FollowedDisplay.vue')
-            },
-            {
-                path: '',
-                redirect: {name: 'user-info-article'}
-            }
-        ]
+        component: () => import('../views/UserCenterView.vue')
     },
     {
         path: '/user',
-        redirect: '/user/' + store.getters.getUserInfo.id + '/article',
+        redirect: '/user/' + store.getters.getUserInfo.id,
         beforeEnter: (to, from, next) => {
             if (store.getters.getUserInfo.id === '' || store.getters.getUserInfo.id === undefined) {
                 next('/login')
             } else {
-                next('/user/' + store.getters.getUserInfo.id + '/article')
+                next('/user/' + store.getters.getUserInfo.id)
             }
         }
     },
