@@ -1,26 +1,26 @@
 <template>
-  <div class="confirm">
-    <h3>需要验证身份</h3>
-    <div class="info-confirm-form">
-      <el-avatar class="user-avatar-preview" :size="50" :src="userInfo.avatar"></el-avatar>
-      <el-text class="signed-text">已登录账户</el-text>
-      <el-tag :type="userTagType"  disable-transitions>{{ userInfo.name }} · {{ userInfo.identity }}</el-tag>
-    </div>
-    <div class="passwd-confirm-form">
-      <el-form ref="confirmPasswdRef" :model="confirmPasswd" :rules="confirmPasswdRules" label-width="80px" label-position="top" size="large" >
-        <el-form-item label="请输入密码" class="confirm-passwd" prop="passwd">
-          <el-input v-model="confirmPasswd.passwd" show-password></el-input>
-        </el-form-item>
-      </el-form>
-      <div class="loginBottom">
-        <div></div>
-        <el-button type="primary" class="loginButton" @click="onSubmit(confirmPasswdRef)">验证</el-button>
-        <div>
-          <router-link to="/forget/confirm" class="forget-password-confirm">忘记密码？</router-link>
-        </div>
-      </div>
-    </div>
-  </div>
+<!--  <div class="confirm">-->
+<!--    <h3>需要验证身份</h3>-->
+<!--    <div class="info-confirm-form">-->
+<!--      <el-avatar class="user-avatar-preview" :size="50" :src="userInfo.avatar"></el-avatar>-->
+<!--      <el-text class="signed-text">已登录账户</el-text>-->
+<!--      <el-tag :type="userTagType"  disable-transitions>{{ userInfo.name }} · {{ userInfo.identity }}</el-tag>-->
+<!--    </div>-->
+<!--    <div class="passwd-confirm-form">-->
+<!--      <el-form ref="confirmPasswdRef" :model="confirmPasswd" :rules="confirmPasswdRules" label-width="80px" label-position="top" size="large" >-->
+<!--        <el-form-item label="请输入密码" class="confirm-passwd" prop="passwd">-->
+<!--          <el-input v-model="confirmPasswd.passwd" show-password></el-input>-->
+<!--        </el-form-item>-->
+<!--      </el-form>-->
+<!--      <div class="loginBottom">-->
+<!--        <div></div>-->
+<!--        <el-button type="primary" class="loginButton" @click="onSubmit(confirmPasswdRef)">验证</el-button>-->
+<!--        <div>-->
+<!--          <router-link to="/forget/confirm" class="forget-password-confirm">忘记密码？</router-link>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
 </template>
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
@@ -29,7 +29,7 @@ import { POST } from '@/scripts/Axios'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
-import { checkPasswordRule, level } from '../../uiScripts/CheckPassword'
+// import { checkPasswordRule, level } from '../../uiScripts/CheckPassword'
 const store = useStore()
 const route = useRoute()
 interface ConfirmPasswd {
@@ -57,31 +57,31 @@ const identityTagType = (userIdentity: string) => {
 const userInfo = reactive(store.getters.getUserInfo)
 const userTagType = ref(identityTagType(userInfo.identity))
 
-const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密码
-  if (value === '') {
-    callback(new Error('密码不能为空'))
-  } else {
-    const name = '空'
-    const result = checkPasswordRule(value, name)
-    if (result === '校验通过') {
-      callback()
-    } else {
-      callback(new Error(result))
-    }
-    callback()
-  }
-}
-const confirmPasswdRules = reactive<FormRules<ConfirmPasswd>>({ // 表单验证规则
-  passwd: [{ required: true, validator: validatePasswd, trigger: 'blur' }]
-})
+// const validatePasswd = (rule: any, value: any, callback: any) => { // 验证密码
+//   if (value === '') {
+//     callback(new Error('密码不能为空'))
+//   } else {
+//     const name = '空'
+//     const result = checkPasswordRule(value, name)
+//     if (result === '校验通过') {
+//       callback()
+//     } else {
+//       callback(new Error(result))
+//     }
+//     callback()
+//   }
+// }
+// const confirmPasswdRules = reactive<FormRules<ConfirmPasswd>>({ // 表单验证规则
+//   passwd: [{ required: true, validator: validatePasswd, trigger: 'blur' }]
+// })
 
 const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
   console.log(formEl)
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
-    
+
     if (valid) {
-      POST('/usr/verifyPasswd', { 
+      POST('/usr/verifyPasswd', {
         token: store.getters.getToken,
         password: confirmPasswd.passwd
       }, (response) => {
@@ -99,7 +99,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
           } else if (route.path.split('/')[2] === 'email'){
             router.push({path:'/account/email/change',query:{kouji: store.getters.getUserInfo.id, tadokoro:response.data.hard_token}})
           }
-            
+
         } else {
           ElMessage.error('密码验证失败，请检查网络连接')
           console.log(response.data.statusMsg)

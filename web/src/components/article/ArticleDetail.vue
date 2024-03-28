@@ -44,12 +44,7 @@
 
             </el-card>
           </el-main>
-          <el-card class="gradePanel">
-            <GradeDisplay class="graDis"/>
-            <div class="gradeEdit" v-if="store.getters.getUserInfo.identity=='专家'">
-              <GradeEditor class="graedit"/>
-            </div>
-          </el-card>
+
           <el-footer>
             <suspense>
               <CommentDisplay :articleId="route.query.id"/>
@@ -83,8 +78,6 @@ import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
-import GradeEditor from '@/components/grade/GradeEditor.vue'
-import GradeDisplay from '@/components/grade/GradeDisplay.vue'
 import {useStore} from 'vuex'
 import CommentDisplay from '@/components/article/CommentDisplay.vue'
 import {toUserPage} from '@/scripts/userInfo'
