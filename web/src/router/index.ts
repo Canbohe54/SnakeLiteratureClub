@@ -184,11 +184,6 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/ArticleAuditorView.vue')
     },
     {
-        path: '/grade',
-        name: 'grade',
-        component: () => import('../views/GradeEditView.vue')
-    },
-    {
         path: '/about',
         name: 'about',
         // route level code-splitting

@@ -3,8 +3,6 @@
     <div class="container">
       <NavBar class="navbar" /><!--导航栏-->
       <ArticleDetail class="artdetail"/>
-<!--    <GradeDisplay/>-->
-<!--    <GradeEditor/>-->
     </div>
   </el-scrollbar>
 </template>
@@ -16,8 +14,6 @@ import GradeDisplay from "@/components/grade/GradeDisplay.vue";
 import GradeEditor from "@/components/grade/GradeEditor.vue";
 @Options({
   components: {
-    GradeEditor,
-    GradeDisplay,
     NavBar,
     ArticleDetail,
   }
