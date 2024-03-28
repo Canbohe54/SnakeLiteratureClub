@@ -44,4 +44,9 @@ public class ArticleLocker {
         Jedis jedis = connectionFactory.getJedis(serviceType);
         return jedis.sismember(articleId, userId);
     }
+
+    public synchronized long getArticleLockExpire(String articleId) {
+        Jedis jedis = connectionFactory.getJedis(serviceType);
+        return jedis.ttl(articleId);
+    }
 }

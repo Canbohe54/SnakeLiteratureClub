@@ -90,6 +90,8 @@ public interface ArticleService {
     boolean getPermissions(String articleId, String requester);
 
     boolean checkLock(String articleId);
+
+    long getArticleLockExpire(String articleId);
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -238,5 +240,10 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public boolean checkLock(String articleId) {
         return articleLocker.checkLock(articleId);
+    }
+
+    @Override
+    public long getArticleLockExpire(String articleId) {
+        return articleLocker.getArticleLockExpire(articleId);
     }
 }
