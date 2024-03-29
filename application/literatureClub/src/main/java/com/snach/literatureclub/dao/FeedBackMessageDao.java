@@ -19,6 +19,9 @@ public interface FeedBackMessageDao {
     @Select("SELECT id, `from`, message, `to` FROM message WHERE `from`=#{from}")
     List<Message> getMessageByArticleId(String from);
 
+    @Select("SELECT id, `from`, message, `to` FROM message WHERE id=#{id}")
+    Message getMessageById(String id);
+
     // INSERT
     @Insert("INSERT INTO message(id, `from`, message, `to`) VALUES (#{m.id}, #{m.from}, #{m.message}, #{m.to})")
     void insertMessage(@Param("m") Message message);

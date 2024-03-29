@@ -1,6 +1,7 @@
 package com.snach.literatureclub.service;
 
 import com.snach.literatureclub.bean.Message;
+import com.snach.literatureclub.common.exception.InsufficientPermissionException;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.dao.FeedBackMessageDao;
 import com.snach.literatureclub.utils.IdManager;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.snach.literatureclub.utils.TokenTools.getPayload;
 
 @Service
 public interface FeedbackMessageService {
@@ -65,7 +68,11 @@ class FeedbackMessageServiceImpl implements FeedbackMessageService {
         if (!TokenTools.tokenVerify(token)) {
             throw new InvalidTokenException();
         }
-        // TODO: 需要验证该message是否该用户的
+        String userId = getPayload(token, "id");
+        Message message = feedBackMessageDao.getMessageById(messageId);
+        if (!userId.equals(message.getFrom())) {
+            throw new InsufficientPermissionException();
+        }
         feedBackMessageDao.deleteMessage(messageId);
         return true;
     }

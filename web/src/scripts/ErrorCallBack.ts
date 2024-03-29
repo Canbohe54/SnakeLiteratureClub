@@ -3,15 +3,17 @@ import { ElMessage } from 'element-plus'
 export function errorCallback(response: any) {
   console.log(response)
   if (response.status === 200) {
-    ElMessage({
-      showClose: true,
-      message: response.data.message,
-      type: 'error'
-    })
+      ElMessage({
+        showClose: true,
+        message: response.data.message,
+        grouping: true,
+        type: 'error'
+      })
   } else {
     ElMessage({
       showClose: true,
       message: 'Network Error!',
+      grouping: true,
       type: 'error'
     })
   }
