@@ -27,13 +27,13 @@ public interface ArticleDao {
      *
      * @param article 封装有稿件信息的Article对象
      */
-    @Insert("INSERT INTO article(id, title,description,text,`time`,status,attr,text_by, raw, mentor, file_type, received_by) " +
-            "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.attr},#{article.textBy},#{article.raw},#{article.mentor},#{article.fileType},#{article.receivedBy})")
+    @Insert("INSERT INTO article(id, title, description, text,`time`, status, tags, text_by, raw, mentor, file_type, received_by) " +
+            "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.tags},#{article.textBy},#{article.raw},#{article.mentor},#{article.fileType},#{article.receivedBy})")
     void insertArticle(@Param("article") Article article);
 
     // ======================================SELECT==========================================
 
-    @Select("SELECT id, title,description,text,`time`,status,attr,text_by as textBy, mentor, file_type as fileType" +
+    @Select("SELECT id, title,description,text,`time`,status, tags, text_by as textBy, mentor, file_type as fileType" +
             " FROM article WHERE status=#{status} LIMIT 1 FOR UPDATE")
     Article getArticleByStatus(ArticleStatus status);
 
@@ -45,7 +45,7 @@ public interface ArticleDao {
      */
     @Select({"<script>",
             "SELECT ",
-            "a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr ",
+            "a.id id,a.title title,a.description description,a.time time,a.status status, a.tags tags ",
             "FROM article a left join contributor_article_list c on a.id = c.article_id ",
             "WHERE c.contributor_id = #{contributor_id} AND a.status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
@@ -71,7 +71,7 @@ public interface ArticleDao {
      * @param article_id 稿件id
      * @return id对应的稿件信息的Article对象
      */
-    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.attr attr, a.text_by textBy FROM article a WHERE id = #{id}")
+    @Select("SELECT a.id id,a.title title,a.description description,a.time time,a.status status, a.tags tags, a.text_by textBy FROM article a WHERE id = #{id}")
     Article getArticleBasicById(@Param("id") String article_id);
 
     /**
@@ -80,7 +80,7 @@ public interface ArticleDao {
      * @param id 稿件id
      * @return id对应的稿件信息的Article对象
      */
-    @Select("SELECT id, text, time, text_by as textBy, title, description, status, attr, `file_type` as fileType FROM article WHERE id = #{id}")
+    @Select("SELECT id, text, time, text_by as textBy, title, description, status, tags, `file_type` as fileType, author_name as authorName, author_org as authorOrganization, author_grade as authorGrade FROM article WHERE id = #{id}")
     Article getArticleById(@Param("id") String id);
 
     /**
@@ -88,7 +88,7 @@ public interface ArticleDao {
      *
      * @return 所有的稿件信息的Article对象List
      */
-    @Select("SELECT id, time, text_by as textBy, title, description, status, attr FROM article WHERE status = 'PUBLISHED'")
+    @Select("SELECT id, time, text_by as textBy, title, description, status, tags FROM article WHERE status = 'PUBLISHED'")
     List<Article> getAllArticles();
 
     /**
@@ -100,8 +100,8 @@ public interface ArticleDao {
      */
     @Select({"<script>",
             "SELECT ",
-            "id, text, time, text_by as textBy, title, description, status, attr ",
-            "FROM article WHERE title LIKE '%${keyword}%' AND attr LIKE '%\"tags\":%\"${tag}\"%]%' AND status in",
+            "id, text, time, text_by as textBy, title, description, status, tags ",
+            "FROM article WHERE title LIKE '%${keyword}%' AND tags LIKE '%\"tags\":%\"${tag}\"%]%' AND status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
             "#{item}",
             "</foreach>",
@@ -117,7 +117,7 @@ public interface ArticleDao {
      */
     @Select({"<script>",
             "SELECT ",
-            "id, time, text_by as textBy, title, description, status, attr ",
+            "id, time, text_by as textBy, title, description, status, tags ",
             "FROM article WHERE title LIKE '%${keyword}%' AND status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
             "#{item}",
@@ -126,7 +126,7 @@ public interface ArticleDao {
     })
     List<Article> getArticlesByKeyword(String keyword, @Param("items") List<ArticleStatus> statusList);
 
-    @Select("SELECT id, time, text_by as textBy, title, description, status, attr" +
+    @Select("SELECT id, time, text_by as textBy, title, description, status, tags" +
             " FROM article WHERE received_by = #{userId}")
     List<Article> getArticleByReceivedBy(String userId);
 
@@ -167,7 +167,7 @@ public interface ArticleDao {
      * @param article 封装有稿件信息的Article对象
      * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
      */
-    @Update("UPDATE article SET title = #{article.title}, description = #{article.description}, time = #{article.time},status = #{article.status}, attr = #{article.attr} " +
+    @Update("UPDATE article SET title = #{article.title}, description = #{article.description}, time = #{article.time},status = #{article.status}, tags = #{article.tags} " +
             "WHERE id = #{article.id}")
     int updateArticleInfo(@Param("article") Article article);
 
@@ -193,7 +193,7 @@ public interface ArticleDao {
             "text = #{article.text}, " +
             "`time` = #{article.time}, " +
             "status = #{article.status}, " +
-            "attr = #{article.attr}, " +
+            "tags = #{article.tags}, " +
             "raw = #{article.raw}, " +
             "mentor = #{article.mentor}, " +
             "file_type = #{article.fileType}, " +
