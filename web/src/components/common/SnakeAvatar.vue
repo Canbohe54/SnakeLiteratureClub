@@ -20,9 +20,9 @@
         :onDragOver="onDragOver"
         :onDragStart="onDragStart"
         :onDrop="onDrop"
-        :id="'avatar_'+avatar.avatar+'_'+avatar.color.split('#')[1]"
+        :id="'avatar_'+(avatar!=null?(avatar.avatar+'_'+avatar.color.split('#')[1]):'')"
     >
-        <img :id="'avatar-img_'+avatar.avatar+'_'+avatar.color.split('#')[1]" />
+        <img :id="'avatar-img_'+(avatar!=null?(avatar.avatar+'_'+avatar.color.split('#')[1]):'')" />
     </el-avatar>
 </template>
 
@@ -126,11 +126,12 @@ const { pictureUrl } = toRefs(props)
 const avatar = reactive(pictureUrl.value? JSON.parse(pictureUrl.value) : null)
 
 function init(){
+
     if (avatar){
         $("#avatar_"+avatar.avatar+"_"+avatar.color.split('#')[1]).css("background-color", `${avatar.color}`)
         $("#avatar-img_"+avatar.avatar+"_"+avatar.color.split('#')[1]).attr("src", 'avatars/'+`${avatar.avatar}`+'.png')
     }
-    console.log(avatar)
+
 }
 onMounted(() => {
     init()

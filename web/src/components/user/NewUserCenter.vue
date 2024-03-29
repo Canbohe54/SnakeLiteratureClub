@@ -12,6 +12,7 @@
                 <UserStatistics />
             </el-card>
             <el-card class="user-center-main">
+                <PublicList />
             </el-card>
             <el-divider border-style="dashed"  style="margin: 24px 20px;width: auto;"><el-text type="info">我也是有底线的~</el-text></el-divider>
         </el-col>
@@ -21,6 +22,7 @@
 <script setup>
 import UserVisitingCard from './UserVisitingCard.vue';
 import UserStatistics from './UserStatistics.vue';
+import PublicList from './articleList/PublicList.vue';
 </script>
 
 <style scoped>

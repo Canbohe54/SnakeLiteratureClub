@@ -1,5 +1,4 @@
 <template>
-
         <div class="article-card-disp">
             <div>
                 <div class="article-status-container"
