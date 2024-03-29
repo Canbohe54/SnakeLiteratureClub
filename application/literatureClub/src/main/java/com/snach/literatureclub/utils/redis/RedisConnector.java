@@ -4,23 +4,23 @@ import com.snach.literatureclub.common.DatabaseServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Configuration
-public class RedisConnectionFactory {
-    private static final Logger logger = LoggerFactory.getLogger(RedisConnectionFactory.class);
+@Component
+public class RedisConnector {
+    private static final Logger logger = LoggerFactory.getLogger(RedisConnector.class);
 
     private static Map<DatabaseServiceType, Integer> redisDatabaseNumberMap;
 
     private final JedisPool jedisPool;
 
     @Autowired
-    public RedisConnectionFactory(JedisPool jedisPool) {
+    public RedisConnector(JedisPool jedisPool) {
         this.jedisPool = jedisPool;
     }
 

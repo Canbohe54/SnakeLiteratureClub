@@ -171,6 +171,11 @@
             <artifactId>aspose-words</artifactId>
             <version>15.8.0</version>
         </dependency>
+        <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.2.21</version>
+        </dependency>
 
     </dependencies>
 

@@ -13,9 +13,9 @@ spring:
 
 
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+    type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      type: com.alibaba.druid.pool.DruidDataSource
+#      type: com.alibaba.druid.pool.DruidDataSource
       #     连接池配置信息(通常来说，只需要修改initialSize、minIdle、maxActive
       #     如果用Oracle，则把poolPreparedStatements配置为true，mysql可以配置为false。分库分表较多的数据库，建议配置为false。
       #     removeabandoned不建议在生产环境中打开如果用SQL Server，建议追加配置)

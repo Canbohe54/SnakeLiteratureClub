@@ -2,7 +2,7 @@ package com.snach.literatureclub.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snach.literatureclub.common.DatabaseServiceType;
-import com.snach.literatureclub.utils.redis.RedisConnectionFactory;
+import com.snach.literatureclub.utils.redis.RedisConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,10 +25,10 @@ class CommonServiceImpl implements CommonService {
     @Value("${snach.common.redisKeyOfCurrentUserId:CURRENT_USER_ID}")
     private String redisKeyNameOfCurrentUserId;
 
-    private final RedisConnectionFactory connectionFactory;
+    private final RedisConnector connectionFactory;
 
     @Autowired
-    public CommonServiceImpl(RedisConnectionFactory connectionFactory) {
+    public CommonServiceImpl(RedisConnector connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
