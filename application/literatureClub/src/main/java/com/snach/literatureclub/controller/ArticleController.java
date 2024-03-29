@@ -177,4 +177,13 @@ public class ArticleController {
     public boolean unlockArticleById(@RequestParam("article_id") String articleId, @RequestParam(name = "unlocked_by") String unlockedBy) {
         return articleService.unLockArticleById(articleId, unlockedBy);
     }
+
+    @RequestMapping(value = "changeArticleStatus", method = RequestMethod.POST)
+    public boolean changeArticleStatus(String articleId, ArticleStatus status, String token) {
+        return articleService.changeArticleStatus(articleId, status, token);
+    }
+    @RequestMapping(value = "changeArticleReceivedBy", method = RequestMethod.POST)
+    public boolean changeArticleReceivedBy(String articleId, String receivedBy, String token) {
+        return articleService.changeArticleReceivedBy(articleId, receivedBy, token);
+    }
 }
