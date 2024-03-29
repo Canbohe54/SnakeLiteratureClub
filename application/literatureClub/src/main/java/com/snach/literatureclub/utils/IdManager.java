@@ -1,7 +1,7 @@
 package com.snach.literatureclub.utils;
 
 import com.snach.literatureclub.common.DatabaseServiceType;
-import com.snach.literatureclub.utils.redis.RedisConnectionFactory;
+import com.snach.literatureclub.utils.redis.RedisConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +14,10 @@ public class IdManager {
     @Value("${snach.common.redisKeyOfCurrentUserId:CURRENT_USER_ID}")
     private String redisKeyNameOfCurrentUserId;
 
-    private final RedisConnectionFactory connectionFactory;
+    private final RedisConnector connectionFactory;
 
     @Autowired
-    public IdManager(RedisConnectionFactory connectionFactory) {
+    public IdManager(RedisConnector connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
