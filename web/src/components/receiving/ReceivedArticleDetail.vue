@@ -15,16 +15,6 @@
                 </el-text>
               </el-row>
               <div style="display: flex; justify-content:center;align-items: flex-end;">
-                <el-button type="primary" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
-                           @click="handleUpdateArticleClicked">修改文章
-                </el-button>
-<!--                <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"-->
-<!--                           @click="delArticleDialogVisible=true">删除文章-->
-<!--                </el-button>-->
-                <el-button type="warning" link :onclick="handleFavorite">{{
-                    isFavorited ? '取消收藏' : '收藏'
-                  }}
-                </el-button>
                 <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小
                 </el-button>
                 <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中
@@ -54,47 +44,52 @@
         </el-container>
       </div>
       <div class="button-container">
-        <el-button v-if="identity === 'EXPERT' || identity === 'ADMINISTRATOR'" class="3" type="success" @click="handleRecommendClicked">
-          向杂志社推荐
+        <el-button v-if="identity === 'EXPERT' || identity === 'ADMINISTRATOR'" class="3" type="success"
+                   @click="handleRecommendClicked">
+          向报社推荐
         </el-button>
-        <el-button v-if="identity === 'HUNTER' || identity === 'ADMINISTRATOR'" class="3" type="success" @click="handleAcceptClicked">
+        <el-button v-if="identity === 'HUNTER' || identity === 'ADMINISTRATOR'" class="3" type="success"
+                   @click="handleAcceptClicked">
           受理
         </el-button>
-        <el-button class="3" type="danger" @click="handleUnRecommendClicked">
+        <el-button class="3" type="warning" @click="handleRejectClicked">
           打回
+        </el-button>
+        <el-button class="3" type="warning" @click="handleTestClicked">
+          Test
         </el-button>
       </div>
       <el-dialog
-        draggable
-        v-model="recommendManager.recommendDialogVisible"
-        title="向杂志社推荐"
-        width="30%"
+          draggable
+          v-model="recommendManager.recommendDialogVisible"
+          title="向报社推荐"
+          width="30%"
       >
         <span class="recommend-to-head">收稿方</span>
         <el-select
-          class="contribute-to-selection"
-          v-model="recommendManager.recommendTo"
-          filterable
-          remote
-          reserve-keyword
-          placeholder="请输入收稿方"
-          no-data-text="暂无匹配的收稿方"
-          no-match-text="暂无匹配的收稿方"
-          default-first-option
-          remote-show-suffix
-          :remote-method="getHunterByName"
-          :loading="recommendManager.loading"
-          style="width: 240px"
+            class="contribute-to-selection"
+            v-model="recommendManager.recommendTo"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入收稿方"
+            no-data-text="暂无匹配的收稿方"
+            no-match-text="暂无匹配的收稿方"
+            default-first-option
+            remote-show-suffix
+            :remote-method="getHunterByName"
+            :loading="recommendManager.loading"
+            style="width: 240px"
         >
           <el-option
-            v-for="item in recommendManager.options"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
+              v-for="item in recommendManager.options"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
           >
             <span style="float: left">{{ item.name }}</span>
             <span
-              style="float: right;color: var(--el-text-color-secondary);font-size: 13px;"
+                style="float: right;color: var(--el-text-color-secondary);font-size: 13px;"
             >{{ item.organization }}</span
             >
           </el-option>
@@ -116,12 +111,12 @@
       </el-dialog>
 
       <el-dialog
-        draggable
-        v-model="acceptManager.acceptDialogVisible"
-        title="收录文章"
-        width="30%"
+          draggable
+          v-model="acceptManager.acceptDialogVisible"
+          title="收录文章"
+          width="30%"
       >
-        <div class="accept-head"><span>受录邀请</span></div>
+        <div class="accept-head"><span>收录邀请</span></div>
         <el-input v-model="acceptManager.acceptInfo"
                   maxlength="200"
                   show-word-limit
@@ -136,24 +131,44 @@
         <el-button @click="acceptManager.acceptDialogVisible = false">取消</el-button>
         </span>
       </el-dialog>
+      <el-dialog
+          draggable
+          v-model="rejectManager.rejectDialogVisible"
+          title="打回文章"
+          width="30%"
+      >
+        <div class="accept-head"><span>打回理由</span></div>
+        <el-input v-model="rejectManager.rejectInfo"
+                  maxlength="200"
+                  show-word-limit
+                  class="accept-info-input"
+                  :autosize="{ minRows: 4, maxRows: 10}"
+                  type="textarea"
+                  placeholder="例如：感谢您的投稿，但很遗憾..."></el-input>
+        <span class="accept-button-container">
+        <el-button type="primary" @click="handleRejectArticleClicked">
+          打回
+        </el-button>
+        <el-button @click="rejectManager.rejectDialogVisible = false">取消</el-button>
+        </span>
+      </el-dialog>
     </el-col>
   </el-row>
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref} from 'vue'
+import {getCurrentInstance, reactive, ref} from 'vue'
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 import {useStore} from 'vuex'
-import CommentDisplay from '@/components/article/CommentDisplay.vue'
 import {toUserPage} from '@/scripts/userInfo'
 import {errorCallback} from '@/scripts/ErrorCallBack'
 import axios from 'axios'
 import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
 import SearchFilter from '@/components/search/SearchFilter.vue'
-import {lockArticleById} from "@/scripts/ArticleLocker";
+import {lockArticleById} from '@/scripts/ArticleLocker'
 
 const router = useRouter()
 const route = useRoute()
@@ -168,11 +183,10 @@ const articleDetail = reactive<AttributeAddableObject>({
   title: '',
   description: '',
   status: '',
-  attr: '',
+  tags: '{}',
   raw: {},
   file_type: ''
 })
-
 const displaySize = ref("default")
 const identity = ref('')
 const isFavorited = ref(false)
@@ -185,7 +199,12 @@ const recommendManager = reactive({
 
 const acceptManager = reactive({
   acceptDialogVisible: false,
-  acceptInfo: '感谢您的投稿，请您将文章上锁并发送到'
+  acceptInfo: '感谢您的投稿，请您将文章上锁并发送到',
+
+})
+const rejectManager = reactive({
+  rejectDialogVisible: false,
+  rejectInfo: '感谢您的投稿，但很遗憾，'
 })
 const searchFilterChange = () => {
   articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
@@ -242,6 +261,7 @@ async function getRaw(articleId: String) {
     console.error(error);
   });
 }
+
 const getHunterByName = async (userName: string) => {
   if (userName == '') {
     return
@@ -260,63 +280,6 @@ const getHunterByName = async (userName: string) => {
   })
 }
 
-async function getIsFavorited() {
-  await SYNC_GET('/usr/isArticleFavor', {
-    token: store.getters.getToken,
-    article_id: articleDetail.id
-  }, async (response) => {
-    if (response.status === 200 && response.data.code === 2001) {
-      if (response.data.isFavor === "True") {
-        isFavorited.value = true
-      } else {
-        isFavorited.value = false
-      }
-    } else {
-      errorCallback(response)
-    }
-  })
-}
-
-async function handleFavorite() {
-  if (store.getters.getToken === '') {
-    router.push('/login')
-    return
-  }
-  if (isFavorited.value) {
-    await SYNC_POST('/usr/cancelFavorite', {
-      token: store.getters.getToken,
-      article_id: articleDetail.id
-    }, async (response) => {
-      if (response.status === 200 && response.data.statusMsg === 'Success.') {
-        ElMessage({
-          showClose: true,
-          message: '取消收藏成功',
-          type: 'info'
-        })
-        isFavorited.value = false
-      } else {
-        errorCallback(response)
-      }
-    })
-  } else {
-    await SYNC_POST('/usr/addFavorite', {
-      token: store.getters.getToken,
-      article_id: articleDetail.id
-    }, async (response) => {
-      if (response.status === 200 && response.data.statusMsg === 'Success.') {
-        ElMessage({
-          showClose: true,
-          message: '收藏成功',
-          type: 'success'
-        })
-        isFavorited.value = true
-      } else {
-        errorCallback(response)
-      }
-    })
-  }
-}
-
 const handleAuthorClicked = () => {
   if (articleDetail.text_by !== '' && articleDetail.text_by !== undefined) {
     // router.push('/user/'+articleDetail.text_by_id)
@@ -333,7 +296,7 @@ const handleRecommendArticleClicked = async () => {
     article_id: articleDetail.id,
     recommend_to: recommendManager.recommendTo
   }, async (response) => {
-    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+    if (response.status === 200 && response.data.code === 2001) {
       ElMessage({
         showClose: true,
         message: '成功推荐文章',
@@ -346,6 +309,80 @@ const handleRecommendArticleClicked = async () => {
   recommendManager.recommendDialogVisible = false
   router.back()
 }
+const addMessage = async () => {
+  await SYNC_POST('/message/addMessage', {
+    from: userInfo.id,
+    to: articleDetail.text_by_id,
+    message: rejectManager.rejectInfo
+  }, async response => {
+    if (response.status === 200 && response.data.code === 2001) {
+      await (async () => {
+        ElMessage({
+          showClose: true,
+          message: '感谢您的反馈',
+          type: 'success'
+        })
+      })()
+    } else {
+      errorCallback(response)
+    }
+    rejectManager.rejectDialogVisible = false
+  })
+}
+const handleRejectArticleClicked = async () => {
+  let userInfo = store.getters.getUserInfo
+  await SYNC_POST('/article/changeArticleReceivedBy', {
+    articleId: articleDetail.id,
+    receivedBy: '',
+    token: store.getters.getToken
+  }, async (response: any) => {
+    if (response.status !== 200 || response.data.code !== 2001) {
+      errorCallback(response)
+    } else {
+      await addMessage()
+    }
+  })
+
+}
+
+const handleAcceptArticleClicked = async () => {
+  let userInfo = store.getters.getUserInfo
+  await SYNC_POST('/message/addMessage', {
+    from: userInfo.id,
+    to: articleDetail.text_by_id,
+    message: rejectManager.rejectInfo
+  }, async response => {
+    if (response.status === 200 && response.data.code === 2001) {
+      ElMessage({
+        showClose: true,
+        message: '受理完成!',
+        type: 'success'
+      })
+    } else {
+      errorCallback(response)
+    }
+    // 被收录，继续锁12小时，等待作者锁定文章
+    await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 43200)
+    router.back()
+  })
+}
+
+const handleRecommendClicked = () => {
+  recommendManager.recommendDialogVisible = true
+}
+const handleAcceptClicked = () => {
+  acceptManager.acceptDialogVisible = true
+}
+const handleRejectClicked = () => {
+  rejectManager.rejectDialogVisible = true
+}
+const handleTestClicked = () => {
+  ElMessage({
+    showClose: true,
+    message: '受理完成!',
+    type: 'success'
+  })
+}
 const handleUpdateArticleClicked = () => {
   if (articleDetail.id !== '' && articleDetail.id !== undefined) {
     router.push({path: '/articleEditor', query: {id: articleDetail.id}})
@@ -353,27 +390,13 @@ const handleUpdateArticleClicked = () => {
     router.push({path: '/articleNotFound'})
   }
 }
-
-const handleRecommendClicked = () => {
-    recommendManager.recommendDialogVisible = true
-}
-const handleAcceptClicked = () => {
-  acceptManager.acceptDialogVisible = true
-}
-const handleUnRecommendClicked = () => {
-}
-
-const handleAcceptArticleClicked = async () => {
-  // 被收录，继续锁12小时，等待作者锁定文章
-  await lockArticleById(articleDetail.id, store.getters.getUserInfo.id,43200)
-}
 // 有article_id时初始化ArticleDetail
 (async () => {
   let articleRaw: ArrayBuffer
   identity.value = store.getters.getUserInfo.identity
   if (route.query.id === '' || route.query.id === undefined) return
   await SYNC_GET('/article/getPermissions', {
-    article_id: route.query.id,
+    articleId: route.query.id,
     requester: store.getters.getUserInfo.id
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
@@ -382,18 +405,12 @@ const handleAcceptArticleClicked = async () => {
       }, async (response) => {
         if (response.status === 200 && response.data.code === 2001) {
           for (const dataKey in response.data.data.article) {
-            if (dataKey == 'raw') {
-              continue
-            }
             articleDetail[dataKey] = response.data.data.article[dataKey]
           }
-          SearchFilterRef.value.loadSelection(JSON.parse(articleDetail.attr))
-          articleDetail.attr = JSON.parse(articleDetail.attr).tags
+          SearchFilterRef.value.loadSelection(articleDetail.tags)
           await getTextBy()
           await getRaw(articleDetail.id)
-          if (store.getters.getToken !== '') {
-            await getIsFavorited()
-          }
+
         } else {
           errorCallback(response)
         }
@@ -474,9 +491,11 @@ const handleAcceptArticleClicked = async () => {
 .button-container {
   margin-bottom: 50px;
 }
+
 .recommend-to-head {
   margin-right: 15px;
 }
+
 .accept-head {
   display: flex;
   justify-content: space-between;
@@ -484,10 +503,12 @@ const handleAcceptArticleClicked = async () => {
   margin-bottom: 10px;
   font-size: 15px;
 }
-.accept-button-container{
+
+.accept-button-container {
   display: flex;
   justify-content: flex-end;
 }
+
 .accept-info-input {
   margin-bottom: 10px;
   box-shadow: var(--el-box-shadow-light);

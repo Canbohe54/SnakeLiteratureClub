@@ -156,8 +156,8 @@ async function getIsLocked() {
 
 async function handleUnlock() {
   // TODO: 更改条件为如果非公开且已刊登，无法手动解锁
-  // if(articleDetail.status === 'PUBLISHED' && articleDetail.receivedBy !== '' && !articleDetail.isPublic)
-  if (articleDetail.status === 'PUBLISHED' && articleDetail.receviedBy !== '') {
+  if(articleDetail.status === 'PUBLISHED' && articleDetail.receivedBy !== '' && !articleDetail.public) {
+  // if (articleDetail.status === 'PUBLISHED' && articleDetail.receviedBy !== '') {
     let expire = 0;
     await SYNC_GET("/article/getArticleLockExpire",{ articleId: articleDetail.id}, (response) => {
       if (response.status === 200 && response.data.code === 2001) {
