@@ -147,9 +147,6 @@ const currentLikeCount = ref(0)
 const currentViewCount = ref(0)
 
 let isUp = ref(false)
-function handleClick() {
-  isUp.value = !isUp.value
-}
 
 function handleDiscriptionSmall() {
   $('.article-description').css('font-size', '16px')
@@ -275,11 +272,16 @@ const addViewCount = async () => {
 }
 
 
-onMounted(() => {
+onMounted(async () => {
+  await getLikeStatus()
+    if(isUp.value){
+    $('.like-container').addClass('liked')
+  }
   // 设置5秒后执行跳转操作
-  setTimeout(() => {
+  setTimeout(async () => {
     addViewCount()
   }, 5000); // 5000毫秒即5秒
+  
 });
 
 async function getRaw(articleId: String) {
