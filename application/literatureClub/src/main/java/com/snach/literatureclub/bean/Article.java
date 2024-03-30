@@ -70,6 +70,7 @@ public class Article {
     @JsonProperty("audited_by")
     String auditedBy;
 
+    String reason;
     public String getTags() {
         ObjectMapper objectMapper = new ObjectMapper();
         try {

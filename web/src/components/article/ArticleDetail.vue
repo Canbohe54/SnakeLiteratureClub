@@ -4,7 +4,7 @@
       <div>
         <el-container>
           <el-main>
-            <el-card>
+            <el-card class="article-card">
               <el-row class="article-box-card">
                 <el-text class="article-detail-title">{{ articleDetail.title }}</el-text>
               </el-row>
@@ -22,7 +22,7 @@
                            @click="delArticleDialogVisible=true">删除文章
                 </el-button>
 
-                <el-button type="warning" link :onclick="handleLockClicked" >{{
+                <el-button type="warning" link :onclick="handleLockClicked">{{
                     isLocked ? '取消锁定' : '锁定'
                   }}
                 </el-button>
@@ -34,17 +34,28 @@
                 </el-button>
               </div>
               <el-collapse style="padding-top: 10px">
-              <div class="description-head"><span>文章描述</span></div>
-              <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
-              <div class="contain-head"><span>文章内容</span></div>
-              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
-                                  :article-id="articleDetail.id"></ArticleDisplayCard>
-                <div class="contain-head" v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"><span>专家/报社反馈</span></div>
-              <!-- TODO: 专家/报社反馈 -->
-              </el-collapse>
-            </el-card>
-          </el-main>
+                <div class="description-head"><span>文章描述</span></div>
+                <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+                <div class="contain-head"><span>文章内容</span></div>
+                <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
+                                    :article-id="articleDetail.id"></ArticleDisplayCard>
 
+              </el-collapse>
+
+            </el-card>
+
+          <el-card>
+            <div class="contain-head" v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
+              <span>专家/报社反馈</span></div>
+            <!-- TODO: 专家/报社反馈 -->
+
+            <div class="contain-head" v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
+              <span>审核建议</span></div>
+            <el-text class="article-reason" v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
+                     :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' : articleDetail.reason }}
+            </el-text>
+          </el-card>
+          </el-main>
           <el-footer>
             <suspense>
               <CommentDisplay :articleId="route.query.id"/>
@@ -53,10 +64,10 @@
         </el-container>
       </div>
       <el-dialog
-          draggable
-          v-model="delArticleDialogVisible"
-          title="删除文章"
-          width="30%"
+        draggable
+        v-model="delArticleDialogVisible"
+        title="删除文章"
+        width="30%"
       >
         <span>确定删除文章？</span>
         <template #footer>
@@ -157,9 +168,9 @@ async function getIsLocked() {
 
 async function handleUnlock() {
   // 如果非公开且已刊登，无法手动解锁
-  if(articleDetail.status === 'PUBLISHED' && articleDetail.received_by !== '' && !articleDetail.public) {
+  if (articleDetail.status === 'PUBLISHED' && articleDetail.received_by !== '' && !articleDetail.public) {
     let expire = 0;
-    await SYNC_GET("/article/getArticleLockExpire",{ articleId: articleDetail.id}, (response) => {
+    await SYNC_GET("/article/getArticleLockExpire", {articleId: articleDetail.id}, (response) => {
       if (response.status === 200 && response.data.code === 2001) {
         expire = response.data.data
       } else {
@@ -168,12 +179,12 @@ async function handleUnlock() {
     })
 
     let message = ''
-    if(expire > 86400){
-      message = `文章已发布，无法手动解锁，将于${Math.ceil(expire/86400)}天后解锁。`
-    }else if (expire > 3600){
-      message = `该文章已发布，无法手动解锁，将于${Math.ceil(expire/3600)}小时后解锁。`
-    } else if (expire > 0){
-      message = `该文章已发布，无法手动解锁，将于${Math.ceil(expire/60)}分钟后解锁。`
+    if (expire > 86400) {
+      message = `文章已发布，无法手动解锁，将于${Math.ceil(expire / 86400)}天后解锁。`
+    } else if (expire > 3600) {
+      message = `该文章已发布，无法手动解锁，将于${Math.ceil(expire / 3600)}小时后解锁。`
+    } else if (expire > 0) {
+      message = `该文章已发布，无法手动解锁，将于${Math.ceil(expire / 60)}分钟后解锁。`
     } else {
       isLocked.value = false
     }
@@ -187,10 +198,12 @@ async function handleUnlock() {
     isLocked.value = !isLocked.value
   }
 }
+
 async function handleLock() {
   await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 5184000)
   isLocked.value = !isLocked.value
 }
+
 async function handleLockClicked() {
   if (isLocked.value) {
     // 文章已锁定，执行解锁相关逻辑
@@ -262,6 +275,10 @@ const handleUpdateArticleClicked = () => {
 })()
 </script>
 <style scoped>
+.article-card {
+  margin-bottom: 20px;
+}
+
 .article-box-card {
   display: flex;
   justify-content: center;
@@ -296,5 +313,17 @@ const handleUpdateArticleClicked = () => {
   display: flex;
   white-space: pre-wrap;
   text-align: start !important;
+  margin-bottom: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.article-reason {
+  display: flex;
+  white-space: pre-wrap;
+  text-align: start !important;
+  margin-bottom: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 </style>
