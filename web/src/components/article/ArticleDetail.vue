@@ -40,6 +40,7 @@
                 <div class="contain-head"><span>文章内容</span></div>
                 <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
                                     :article-id="articleDetail.id"></ArticleDisplayCard>
+<!--                  点赞-->
                 <div class="circle flex-h" @click="like()" :class="isUp?'check':''">
                   <div class="img-box" :class="isUp?'img-box-check':''">
                     <img v-if="isUp" src="@/assets/images/like.svg" alt="" />
