@@ -164,6 +164,9 @@ public interface ArticleDao {
     @Update("UPDATE article SET status = #{status} WHERE id = #{id}")
     int updateStatus(@Param("status") ArticleStatus status, @Param("id") String id);
 
+    @Update("UPDATE article SET status = #{status}, reason = #{reason} WHERE id = #{id}")
+    int audit(@Param("id") String id, @Param("status") ArticleStatus status, String reason);
+
     /**
      * 更新稿件基础信息,包括包括标题和描述
      *
