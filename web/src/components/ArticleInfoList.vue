@@ -1,17 +1,17 @@
 <template>
     <el-row>
-        <el-col :md="12" :sm="24" v-for="articleInfo in articleListRef" v-if="is_card">
+        <el-col :md="12" :sm="24" v-for="articleInfo in articleList" v-if="is_card">
             <el-card class="article-el-card" body-style="padding:0;">
                 <ArticleInfo :articleInfo="articleInfo" :statusVisible="currentSettings.statusVisible"
                     :iconVisible="currentSettings.iconVisible" :tagsVisible="currentSettings.tagsVisible" />
             </el-card>
         </el-col>
-        <el-col :span="24" v-if="!is_card" v-for="articleInfo in articleListRef">
+        <el-col :span="24" v-if="!is_card" v-for="articleInfo in articleList">
             <ArticleInfo :articleInfo="articleInfo" :statusVisible="currentSettings.statusVisible"
                 :iconVisible="currentSettings.iconVisible" :tagsVisible="currentSettings.tagsVisible"
                 class="not-card-info" />
         </el-col>
-        <el-col :span="24" v-if="TestArticleList.length === 0">
+        <el-col :span="24" v-if="articleList.length === 0">
             <el-empty description="暂无文章" />
         </el-col>
     </el-row>
@@ -115,8 +115,6 @@ const props = defineProps({
 
 const { mode, is_card, articleList } = toRefs(props)
 
-const articleListRef = ref(articleList.value)
-
 const currentSettings = reactive({
     statusVisible: true,
     iconVisible: true,
@@ -149,7 +147,6 @@ const modeSettings = {
 onMounted(() => {
     Object.assign(currentSettings, modeSettings[props.mode])
 })
-console.log(articleListRef.value.length)
 
 const pageInfo = reactive({
     currentPage: 1,
