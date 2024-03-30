@@ -79,6 +79,12 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper-spring-boot-starter</artifactId>
@@ -177,6 +183,23 @@
             <version>1.2.21</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+
+        <!-- idworker 产生唯一（不重复）自增式的id,常用于分布式 -->
+        <dependency>
+            <groupId>com.github.bingoohuang</groupId>
+            <artifactId>idworker-client</artifactId>
+            <version>0.0.8</version>
+        </dependency>
+        <!-- Apache Collections Utils 集合/数组等判断size=0时线程安全 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -195,6 +218,7 @@
                 </configuration>
             </plugin>
         </plugins>
+
     </build>
 
 </project>

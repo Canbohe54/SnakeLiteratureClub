@@ -218,4 +218,7 @@ public interface ArticleDao {
      */
     @Delete("DELETE FROM article WHERE id = #{id}")
     void deleteArticleById(@Param("id") String id);
+
+    @Select("SELECT id FROM article")
+    List<String> getAllArticleId();
 }

@@ -213,7 +213,7 @@ export default {
     mounted() {
         // this.pdfUrl = process.env.VUE_APP_TARGET_API + '/ljkj_experienceFile/' + this.pdfIdMsg.uid + '.' + this.pdfIdMsg.gid + '.' + this.pdfIdMsg.eid + '.pdf'
         // var url = this.pdfUrl + '?' + Math.random()// 去除缓存
-        let url = 'http://localhost:19198/article/File2Pdf?article_id=a3FrhDG2lxK2'
+        let url = 'http://localhost:19198/article/File2Pdf?article_id=a3F7rTx715lO'
         const _this = this
         async function getPdfContent() { // 加载pdf，并分页
             const arrayBuffer = await fetch(url, { method: 'get' }).then((res) => res.arrayBuffer())
@@ -371,6 +371,9 @@ export default {
 
                 // 新增：添加新的自由线条对象到数组
                 this.freehandLines.push({
+                    page: this.page,
+                    x: offsetX,
+                    y: offsetY,
                     pathData: `M ${offsetX} ${offsetY}`,
                     color: this.lineColor
                 })
@@ -479,10 +482,8 @@ export default {
             this.ubuntuFont = await this.pdfDoc.embedFont(fontBytes, { subset: true })// 不加subset:true,pdf会变得很大
             // 把所有的文字和线框的标记都画到pdf上去
             // FIXME: 无法保存绘图后的PDF
-            let newPdf = {}
             for (let k = 0; k < this.page; k++) {
                 const firstPage = pages[k]
-                console.log(firstPage)
                 for (let i = 0; i < this.contentListAll.length; i++) {
                     const content = this.contentListAll[i]
                     if (content.page - 1 === k) {
@@ -498,8 +499,6 @@ export default {
                     }
                     // }
                 }
-                console.log(pages[k])
-                console.log(firstPage === pages[k])
                 for (let i = 0; i < this.lineListAll.length; i++) {
                     const content = this.lineListAll[i]
                     if (content.page - 1 === k) {
@@ -525,6 +524,7 @@ export default {
                 for (let i = 0; i < this.freehandLines.length; i++) {
                     const line = this.freehandLines[i]
                     if (line.page - 1 === k) {
+                      console.log("划线" + k)
                       firstPage.drawSvgPath(line.pathData, {
                             borderColor: paramColor,
                             borderWidth: 2
@@ -532,12 +532,6 @@ export default {
                     }
                 }
             }
-            let newPDFDoc = PDFDocument.create()
-            // 合并所有page
-            // for(let i = 0; i < this.page; i++){
-            //   newPDFDoc =
-            // }
-            // 把pdf转化成base64
             const pdfContent = await this.pdfDoc.saveAsBase64({
                 dataUri: true
             })

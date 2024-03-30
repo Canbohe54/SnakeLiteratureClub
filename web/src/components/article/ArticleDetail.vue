@@ -33,6 +33,25 @@
                 <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大
                 </el-button>
               </div>
+
+              <el-divider/>
+              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false" :article-id="articleDetail.id"></ArticleDisplayCard>
+              <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+              <div class="circle flex-h" @click="like()" :class="isUp?'check':''">
+                <div class="img-box" :class="isUp?'img-box-check':''">
+                  <img v-if="isUp" src="@/assets/images/like.svg" alt="" />
+                  <img v-else src="@/assets/images/unlike.svg" alt="" />
+                </div>
+              </div>
+              <div class="likeCount">
+                {{ currentLikeCount }}
+              </div>
+              <div>
+                <el-icon>
+                  <View />
+                </el-icon>
+                <div>{{ currentViewCount }}</div>
+              </div>
               <el-collapse style="padding-top: 10px">
                 <div class="description-head"><span>文章描述</span></div>
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
@@ -84,7 +103,7 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref} from 'vue'
+import {onMounted, reactive, ref} from 'vue'
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
@@ -96,6 +115,7 @@ import {errorCallback} from '@/scripts/ErrorCallBack'
 import axios from 'axios'
 import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
 import {lockArticleById, unlockArticle} from '@/scripts/ArticleLocker'
+import {View} from "@element-plus/icons-vue";
 import UserMessageDisplay from "@/components/article/UserMessageDisplay.vue";
 
 // 该页面没有锁
@@ -125,6 +145,15 @@ const isLocked = ref(false)
 
 const delArticleDialogVisible = ref(false)
 
+const currentStatus = ref('')
+const currentLikeCount = ref(0)
+const currentViewCount = ref(0)
+
+let isUp = ref(false)
+function handleClick () {
+  isUp.value = !isUp.value
+}
+
 async function getTextBy() {
   articleDetail.text_by_id = articleDetail.text_by
   await SYNC_GET('/usr/getUserBasicInfo', {
@@ -138,6 +167,108 @@ async function getTextBy() {
   })
 }
 
+async function getLikeStatus() {
+  if(store.getters.getUserInfo.identity === '未登录'){
+      isUp.value = false
+      return
+  }
+  await SYNC_GET('/like/getLikeStatus', {
+    articleId: route.query.id,
+    userId: store.getters.getUserInfo.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      currentStatus.value = response.data.data.currentStatus
+      // console.log(currentStatus.value)
+      if(currentStatus.value === 'like'){
+        isUp.value = true
+      } else{
+        isUp.value = false
+      }
+    }
+  })
+}
+
+async function getLikeCount() {
+  await SYNC_GET('/like/getLikeCountByArticleID', {
+    articleId: route.query.id,
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      currentLikeCount.value = response.data.data.currentLikeCount
+    }
+  })
+}
+
+async function getViewCount() {
+  await SYNC_GET('/view/getViewCount', {
+    articleId: route.query.id,
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      currentViewCount.value = response.data.data.currentViewCount
+    }
+    else{
+        errorCallback(response)
+    }
+  })
+}
+
+const like = async () => {
+  if(store.getters.getUserInfo.identity === '未登录'){
+    ElMessage({
+      showClose: true,
+      message: '请先登录',
+      type: 'warning'
+    })
+    return
+  }
+  await SYNC_POST('/like/like', {
+    token: store.getters.getToken,
+    articleId: articleDetail.id,
+    userId: store.getters.getUserInfo.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      if(response.data.data.currentStatus === 'like'){
+        isUp.value = true
+        currentLikeCount.value += 1
+        ElMessage({
+          showClose: true,
+          message: '点赞成功',
+          type: 'success'
+        })
+      } else{
+        isUp.value = false
+        currentLikeCount.value -= 1
+        ElMessage({
+          showClose: true,
+          message: '取消点赞成功',
+          type: 'success'
+        })
+      }
+    } else {
+      errorCallback(response)
+    }
+  })
+}
+
+const addViewCount = async () => {
+  await SYNC_POST('/view/addViewCount', {
+    token: store.getters.getToken,
+    articleId: articleDetail.id,
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      currentViewCount.value = response.data.data.currentViewCount
+    } else {
+      errorCallback(response)
+    }
+  })
+}
+
+
+onMounted(() => {
+    // 设置5秒后执行跳转操作
+    setTimeout(() => {
+        addViewCount()
+    }, 5000); // 5000毫秒即5秒
+});
 
 async function getRaw(articleId: String) {
   axios({
@@ -269,6 +400,9 @@ const handleUpdateArticleClicked = () => {
       await getIsLocked()
       await getTextBy()
       await getRaw(articleDetail.id)
+      await getLikeStatus()
+      await getLikeCount()
+      await getViewCount()
 
     } else {
       errorCallback(response)
@@ -327,5 +461,117 @@ const handleUpdateArticleClicked = () => {
   margin-bottom: 20px;
   margin-left: 10px;
   margin-right: 10px;
+}
+
+.circle {
+  width: 20px;
+  height: 20px;
+  margin: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0px 0px 0px 0px rgba(223, 46, 58, 0.5);
+  .img-box {
+    width: 20px;
+    height: 20px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -khtml-user-select: none;
+    user-select: none; /* 防止快速点击图片被选中，可不加，为提高体验，博主加上了这几行代码。*/
+    & img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+.check {
+  -webkit-transition: box-shadow 0.5s;
+  -moz-transition: box-shadow 0.5s;
+  -o-transition: box-shadow 0.5s;
+  transition: box-shadow 0.5s;
+  box-shadow: 0px 0px 0px 1em rgba(226, 32, 44, 0);
+}
+.img-box-check {
+  animation: anm 0.5s;
+  -moz-animation: anm 0.5s;
+  -webkit-animation: anm 0.5s;
+  -o-animation: anm 0.5s;
+}
+@keyframes anm {
+  0% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+  }
+  50% {
+    transform: scale(1.3);
+    -webkit-transform: scale(1.3);
+    -moz-transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+  }
+}
+
+/* 以下为处理兼容代码，可不看。*/
+
+@-moz-keyframes anm {
+  0% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+  }
+  50% {
+    transform: scale(1.3);
+    -webkit-transform: scale(1.3);
+    -moz-transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+  }
+}
+
+@-webkit-keyframes anm {
+  0% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+  }
+  50% {
+    transform: scale(1.3);
+    -webkit-transform: scale(1.3);
+    -moz-transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+  }
+}
+
+@-o-keyframes anm {
+  0% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+  }
+  50% {
+    transform: scale(1.3);
+    -webkit-transform: scale(1.3);
+    -moz-transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+  }
+}
+
+.likeCount {
+  text-align: left;
 }
 </style>
