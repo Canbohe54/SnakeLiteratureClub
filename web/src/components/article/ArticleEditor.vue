@@ -72,9 +72,6 @@
 
       </el-card>
 
-      <!--      <el-dialog v-model="dialogManager.dialogVisible">-->
-      <!--        <img :src="dialogImageUrl" alt="Preview Image">-->
-      <!--      </el-dialog>-->
       <el-card class="more-option-card">
         <el-collapse v-model="activeCollapse">
           <el-collapse-item class="more-option" title="更多设置" name="more_option">
@@ -122,12 +119,12 @@
                 </template>
               </el-select>
             </div>
-            <div class="more-option-head" v-if="articleDetail.audited_by === ''"><span>审核方式</span></div>
-            <div class="contribute-way-container" v-if="articleDetail.audited_by === ''">
+            <div class="more-option-head" v-if="articleDetail.audited_by !== ''"><span>审核方式</span></div>
+            <div class="contribute-way-container" v-if="articleDetail.audited_by !== ''">
               <el-radio-group v-model="contributeManager.sameAuditor" class="contribute-way-radio"
                               @change="handleAuditWayChange">
-                <el-radio label="true" value="true">请相同审核员提建议</el-radio>
-                <el-radio label="false" value="false">随机进行审核</el-radio>
+                <el-radio :label="true" :value="true">请相同审核员提建议</el-radio>
+                <el-radio :label="false" :value="false">随机进行审核</el-radio>
               </el-radio-group>
             </div>
             <div class="more-option-head"><span>基本信息</span></div>
@@ -209,7 +206,6 @@ const saveBtnType = ref('success')
 const saveBtnText = ref('保存')
 const delArticleDialogVisible = ref(false)
 let imageFileList = ref<UploadFile[]>([])
-const dialogImageUrl = ref('')
 const previewType = ref("info")
 const dialogManager = reactive({
   txtContainerVisible: false,
@@ -277,6 +273,7 @@ const getArticleDetail = async () => {
   await SYNC_GET('/article/articleDetail', {
     article_id: route.query.id
   }, async (response) => {
+    console.log(response)
     if (response.status === 200 && response.data.code === 2001) {
       for (const dataKey in response.data.data.article) {
         if (dataKey == 'raw') {
@@ -288,6 +285,9 @@ const getArticleDetail = async () => {
       if (articleDetail.received_by !== '') {
         contributeManager.contributeWay = 'PUBLISHED'
         contributeManager.contributeTo = articleDetail.received_by
+      }
+      if (articleDetail.audited_by !== '') {
+        contributeManager.sameAuditor = true
       }
       await getRaw(articleDetail.id)
     } else {

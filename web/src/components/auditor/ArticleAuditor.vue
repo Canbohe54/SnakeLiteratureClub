@@ -79,7 +79,7 @@
           受理
         </el-button>
         <el-button v-if="showArticle" class="3" type="danger" @click="handleAuditClicked(false)">
-          先打回
+          打回
         </el-button>
         <el-button class="3" @click="handleExit">退出审核</el-button>
       </div>
@@ -106,7 +106,7 @@
 <script lang="ts" setup>
 import {reactive, ref} from 'vue'
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
 import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
 
@@ -131,7 +131,7 @@ const articleDetail = reactive<AttributeAddableObject>({
   title: '',
   description: '',
   status: '',
-  attr: '',
+  tags: {},
   raw: {},
   file_type: ''
 })
@@ -144,7 +144,7 @@ const delArticleDialogVisible = ref(false)
 
 
 const searchFilterChange = () => {
-  articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
+  articleDetail.tags = SearchFilterRef.value.filterSelection
 }
 
 async function getTextBy() {
@@ -170,7 +170,6 @@ const getAuditedArticle = async () => {
 
   await SYNC_GET('/auditor/getUnauditedArticle', param, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
-      console.log(response)
       if (response.data.data.id == 'null') {
         showArticle.value = false
         return
@@ -182,8 +181,7 @@ const getAuditedArticle = async () => {
         }
         articleDetail[dataKey] = response.data.data[dataKey]
       }
-      SearchFilterRef.value.loadSelection(JSON.parse(articleDetail.attr))
-      articleDetail.attr = JSON.parse(articleDetail.attr).tags
+      SearchFilterRef.value.loadSelection(articleDetail.tags)
       await getTextBy()
       await getRaw(articleDetail.id)
     } else {
