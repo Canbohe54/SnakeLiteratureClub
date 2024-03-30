@@ -22,7 +22,7 @@
                            @click="delArticleDialogVisible=true">删除文章
                 </el-button>
 
-                <el-button type="warning" link :onclick="handleLockClicked">{{
+                <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id" :onclick="handleLockClicked">{{
                     isLocked ? '取消锁定' : '锁定'
                   }}
                 </el-button>
@@ -34,32 +34,27 @@
                 </el-button>
               </div>
 
-              <el-divider/>
-              <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false" :article-id="articleDetail.id"></ArticleDisplayCard>
-              <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
-<!--              点赞-->
-              <div class="circle flex-h" @click="like()" :class="isUp?'check':''">
-                <div class="img-box" :class="isUp?'img-box-check':''">
-                  <img v-if="isUp" src="@/assets/images/like.svg" alt="" />
-                  <img v-else src="@/assets/images/unlike.svg" alt="" />
-                </div>
-              </div>
-              <div class="likeCount">
-                {{ currentLikeCount }}
-              </div>
-              <div>
-                <el-icon>
-                  <View />
-                </el-icon>
-                <div>{{ currentViewCount }}</div>
-              </div>
               <el-collapse style="padding-top: 10px">
                 <div class="description-head"><span>文章描述</span></div>
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
                 <div class="contain-head"><span>文章内容</span></div>
                 <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
                                     :article-id="articleDetail.id"></ArticleDisplayCard>
-
+                <div class="circle flex-h" @click="like()" :class="isUp?'check':''">
+                  <div class="img-box" :class="isUp?'img-box-check':''">
+                    <img v-if="isUp" src="@/assets/images/like.svg" alt="" />
+                    <img v-else src="@/assets/images/unlike.svg" alt="" />
+                  </div>
+                </div>
+                <div class="likeCount">
+                  {{ currentLikeCount }}
+                </div>
+                <div>
+                  <el-icon>
+                    <View />
+                  </el-icon>
+                  <div>{{ currentViewCount }}</div>
+                </div>
               </el-collapse>
 
             </el-card>
@@ -217,7 +212,8 @@ const like = async () => {
     ElMessage({
       showClose: true,
       message: '请先登录',
-      type: 'warning'
+      type: 'warning',
+      grouping: true,
     })
     return
   }
