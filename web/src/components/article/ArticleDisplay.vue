@@ -34,7 +34,6 @@
   </el-row>
 </template>
 <script lang="ts" setup>
-import ArticleInfoCard from "@/components/article/ArticleInfoCard.vue";
 import { reactive, watch } from 'vue'
 import { SYNC_GET, SYNC_POST } from '@/scripts/Axios'
 import { useRoute } from 'vue-router'

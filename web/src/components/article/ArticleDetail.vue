@@ -44,15 +44,15 @@
 
             </el-card>
 
-          <el-card>
-            <div class="contain-head" v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
-              <span>专家/报社反馈</span></div>
-            <!-- TODO: 专家/报社反馈 -->
+          <el-card v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
+            <div class="contain-head">
+              <span>专家/报社反馈</span>
+              <UserMessageDisplay :article-id="route.query.id" />
+            </div>
 
-            <div class="contain-head" v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
+            <div class="contain-head">
               <span>审核建议</span></div>
-            <el-text class="article-reason" v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
-                     :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' : articleDetail.reason }}
+            <el-text class="article-reason" :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' : articleDetail.reason }}
             </el-text>
           </el-card>
           </el-main>
@@ -96,6 +96,7 @@ import {errorCallback} from '@/scripts/ErrorCallBack'
 import axios from 'axios'
 import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
 import {lockArticleById, unlockArticle} from '@/scripts/ArticleLocker'
+import UserMessageDisplay from "@/components/article/UserMessageDisplay.vue";
 
 // 该页面没有锁
 const router = useRouter()
