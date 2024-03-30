@@ -79,10 +79,14 @@ class AuditorServiceImpl implements AuditorService {
         if (!auditor.checkIdentity(Identity.AUDITOR) && !auditor.checkIdentity(Identity.ADMINISTRATOR)) {
             throw new InsufficientPermissionException();
         }
-        Article article = articleDao.getArticleByStatus(ArticleStatus.SUBMITTED);
-        if (article == null) {
-            article = new Article();
-            article.setId("null");
+        Article article;
+        article = articleDao.getArticleByStatusAndAuditedBy(ArticleStatus.SUBMITTED, auditor.getId());
+        if(article == null){
+            article = articleDao.getArticleByStatus(ArticleStatus.SUBMITTED);
+            if (article == null) {
+                article = new Article();
+                article.setId("null");
+            }
         }
         articleDao.updateStatus(ArticleStatus.BEING_AUDITED, article.getId());
         return article;
@@ -93,6 +97,7 @@ class AuditorServiceImpl implements AuditorService {
         if (!auditor.checkIdentity(Identity.AUDITOR) && !auditor.checkIdentity(Identity.ADMINISTRATOR)) {
             throw new InsufficientPermissionException();
         }
+        articleDao.updateAuditedBy(articleId, auditor.getId());
         if (auditResult) {
             articleDao.updateStatus(ArticleStatus.PUBLISHED, articleId);
         }else {

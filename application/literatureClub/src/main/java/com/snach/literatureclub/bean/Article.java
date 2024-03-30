@@ -67,6 +67,8 @@ public class Article {
     @Nullable
     @JsonProperty("received_by")
     String receivedBy;
+    @JsonProperty("audited_by")
+    String auditedBy;
 
     public String getTags() {
         ObjectMapper objectMapper = new ObjectMapper();

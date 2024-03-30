@@ -1,7 +1,7 @@
 <template xmlns="http://www.w3.org/1999/html">
   <el-row>
     <el-col :md="3" class="hidden-sm-and-down"></el-col>
-    <el-col :md="18" :sm="24" >
+    <el-col :md="18" :sm="24">
       <el-card class="upload-file-card">
         <el-form :rules="editRules" ref="editFormRef" :model="articleDetail" class="edit-form">
 
@@ -9,26 +9,26 @@
             <div class="title-head"><span>文章标题</span></div>
             <el-input
 
-                class="editor-header"
-                v-model="articleDetail.title"
-                maxlength="50"
-                show-word-limit
-                :autosize="{ minRows: 1, maxRows: 3}"
-                type="textarea"
-                placeholder="请输入标题（建议30字以内）"
+              class="editor-header"
+              v-model="articleDetail.title"
+              maxlength="50"
+              show-word-limit
+              :autosize="{ minRows: 1, maxRows: 3}"
+              type="textarea"
+              placeholder="请输入标题（建议30字以内）"
 
             />
           </el-form-item>
           <el-form-item prop="description">
             <div class="description-head"><span>文章描述</span></div>
             <el-input
-                class="editor-description"
-                v-model="articleDetail.description"
-                maxlength="200"
-                show-word-limit
-                :autosize="{ minRows: 4, maxRows: 10}"
-                type="textarea"
-                placeholder="请输入描述（建议100字以内）"
+              class="editor-description"
+              v-model="articleDetail.description"
+              maxlength="200"
+              show-word-limit
+              :autosize="{ minRows: 4, maxRows: 10}"
+              type="textarea"
+              placeholder="请输入描述（建议100字以内）"
             />
           </el-form-item>
         </el-form>
@@ -36,22 +36,22 @@
         <div class="upload-head"><span>上传文章</span></div>
         <!--        </el-tooltip>-->
         <el-tooltip
-            class="box-item"
-            effect="light"
-            content="限制1个.docx或.txt文件，上传新内容将覆盖旧内容"
-            placement="top"
+          class="box-item"
+          effect="light"
+          content="限制1个.docx或.txt文件，上传新内容将覆盖旧内容"
+          placement="top"
         >
           <div>
             <el-upload
-                ref="upload"
-                class="upload-doc"
-                drag
-                action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-                :limit="1"
-                :on-change="changeInputBox"
-                :auto-upload=false
-                :show-file-list="false"
-                list-type="text"
+              ref="upload"
+              class="upload-doc"
+              drag
+              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+              :limit="1"
+              :on-change="changeInputBox"
+              :auto-upload=false
+              :show-file-list="false"
+              list-type="text"
             >
               <el-icon class="el-icon--upload">
                 <upload-filled/>
@@ -88,30 +88,30 @@
               </el-radio-group>
               <!--              <el-input v-if="contributeManager.contributeWay == 'PUBLISHED'" v-model="contributeManager.contributeTo" placeholder="请输入收稿方" />-->
               <el-select
-                  class="contribute-to-selection"
-                  v-if="contributeManager.contributeWay == 'PUBLISHED'"
-                  v-model="contributeManager.contributeTo"
-                  filterable
-                  remote
-                  reserve-keyword
-                  placeholder="请输入收稿方"
-                  no-data-text="暂无匹配的收稿方"
-                  no-match-text="暂无匹配的收稿方"
-                  default-first-option
-                  remote-show-suffix
-                  :remote-method="getExpertAndHunterByName"
-                  :loading="contributeManager.loading"
-                  style="width: 240px"
+                class="contribute-to-selection"
+                v-if="contributeManager.contributeWay == 'PUBLISHED'"
+                v-model="contributeManager.contributeTo"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入收稿方"
+                no-data-text="暂无匹配的收稿方"
+                no-match-text="暂无匹配的收稿方"
+                default-first-option
+                remote-show-suffix
+                :remote-method="getExpertAndHunterByName"
+                :loading="contributeManager.loading"
+                style="width: 240px"
               >
                 <el-option
-                    v-for="item in contributeManager.options"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
+                  v-for="item in contributeManager.options"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 >
                   <span style="float: left">{{ item.name }}</span>
                   <span
-                      style="float: right;color: var(--el-text-color-secondary);font-size: 13px;"
+                    style="float: right;color: var(--el-text-color-secondary);font-size: 13px;"
                   >{{ item.organization }}</span
                   >
                 </el-option>
@@ -121,6 +121,14 @@
                   </svg>
                 </template>
               </el-select>
+            </div>
+            <div class="more-option-head"><span>审核方式</span></div>
+            <div class="contribute-way-container">
+              <el-radio-group v-model="contributeManager.sameAuditor" class="contribute-way-radio"
+                              @change="handleAuditWayChange">
+                <el-radio label="true" value="true">请相同审核员提建议</el-radio>
+                <el-radio label="false" value="false">随机进行审核</el-radio>
+              </el-radio-group>
             </div>
             <div class="more-option-head"><span>基本信息</span></div>
             <el-form :model="articleDetail" ref="basicInfoFormRef">
@@ -155,10 +163,10 @@
       </div>
       <!--      <el-button type="danger" @click="delArticleDialogVisible=true">删除文章</el-button>-->
       <el-dialog
-          draggable
-          v-model="delArticleDialogVisible"
-          title="删除文章"
-          width="30%"
+        draggable
+        v-model="delArticleDialogVisible"
+        title="删除文章"
+        width="30%"
       >
         <span>确定删除文章？</span>
         <template #footer>
@@ -215,6 +223,7 @@ const contributeManager = reactive({
   loading: false,
   options: [],
   isContributor: false,
+  sameAuditor: true,
 })
 
 const activeCollapse = ref(['more_option'])
@@ -234,6 +243,7 @@ const articleDetail: AttributeAddableObject = reactive({
   authorName: '',
   authorOrganization: '',
   authorGrade: '',
+  audited_by: '',
 })
 const editFormRef = ref<FormInstance>()
 const basicInfoFormRef = ref<FormInstance>()
@@ -250,9 +260,13 @@ watch(articleDetail, () => {
   saveBtnText.value = '保存'
 })
 const searchFilterChange = () => {
-  articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
+  articleDetail.tags = SearchFilterRef.value.filterSelection
 }
 const handleContributeWayChange = () => {
+
+}
+
+const handleAuditWayChange = () => {
 
 }
 // 有article_id时初始化ArticleDetail
@@ -270,8 +284,7 @@ const getArticleDetail = async () => {
         }
         articleDetail[dataKey] = response.data.data.article[dataKey]
       }
-      SearchFilterRef.value.loadSelection(JSON.parse(articleDetail.attr))
-      articleDetail.attr = JSON.parse(articleDetail.attr).tags
+      SearchFilterRef.value.loadSelection(articleDetail.tags)
       if (articleDetail.received_by !== '') {
         contributeManager.contributeWay = 'PUBLISHED'
         contributeManager.contributeTo = articleDetail.received_by
@@ -335,6 +348,9 @@ const save = async () => {
     console.log(contributeManager.contributeTo)
     param.append("receivedBy", contributeManager.contributeTo)
   }
+  if (contributeManager.sameAuditor) {
+    param.append('auditedBy', articleDetail.audited_by)
+  }
   await SYNC_POST('/contributor/contribute', param, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
       articleDetail.id = response.data.data.id
@@ -367,21 +383,24 @@ const release = async () => {
   if (contributeManager.contributeWay == 'PUBLISHED') {
     param.append("receivedBy", contributeManager.contributeTo)
   }
+  if (contributeManager.sameAuditor) {
+    param.append('auditedBy', articleDetail.audited_by)
+  }
 
 
   await SYNC_POST('/contributor/contribute', param, async (response) => {
-        if (response.status === 200 && response.data.message === 'Success.') {
-          console.log('Release successfully!')
-          ElMessage({
-            showClose: true,
-            message: '已成功发布文章!',
-            type: 'success'
-          })
-          location.href = '/#/user/' + store.getters.getUserInfo.id
-        } else {
-          errorCallback(response)
-        }
+      if (response.status === 200 && response.data.message === 'Success.') {
+        console.log('Release successfully!')
+        ElMessage({
+          showClose: true,
+          message: '已成功发布文章!',
+          type: 'success'
+        })
+        location.href = '/#/user/' + store.getters.getUserInfo.id
+      } else {
+        errorCallback(response)
       }
+    }
   )
 }
 const analyzeTXT = (file: any) => {
@@ -396,38 +415,38 @@ const analyzeDOCX = (file: any) => {
   fileReader.onload = async (event) => {
     const arrayBuffer = event.target?.result as ArrayBuffer
     mammoth.convertToHtml({arrayBuffer: arrayBuffer})
-        .then(async function (result) {
-          let html = result.value; // The generated HTML
-          let match = html.match(/<img(.|\n)*?\/>/mg)
+      .then(async function (result) {
+        let html = result.value; // The generated HTML
+        let match = html.match(/<img(.|\n)*?\/>/mg)
 
-          //提取src="后的base64图片
-          const base64List = (match?.map((item: any) => {
-            return item.toString().match(/src=".*"/mg)[0].toString().slice(5, -1)
-          })) as Array<string>
+        //提取src="后的base64图片
+        const base64List = (match?.map((item: any) => {
+          return item.toString().match(/src=".*"/mg)[0].toString().slice(5, -1)
+        })) as Array<string>
 
-          imageFileList.value = base64List.map((item: any, index: any) => {
-            let file: File = base64ToFile(item, index)
-            const newImageName = generateImageName(file.name)
+        imageFileList.value = base64List.map((item: any, index: any) => {
+          let file: File = base64ToFile(item, index)
+          const newImageName = generateImageName(file.name)
 
-            let upLoadFile: UploadFile = {
-              name: newImageName,
-              uid: file.uid,
-              status: 'ready',
-              size: file.size,
-              url: URL.createObjectURL(file),
-              percentage: 0,
-              raw: file
-            }
-            return upLoadFile
-          })
-
-          let content = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
-          articleDetail.text = content.replace(/(\n\n)/gm, '\n')
-          let messages = result.messages; // Any messages, such as warnings during conversion
+          let upLoadFile: UploadFile = {
+            name: newImageName,
+            uid: file.uid,
+            status: 'ready',
+            size: file.size,
+            url: URL.createObjectURL(file),
+            percentage: 0,
+            raw: file
+          }
+          return upLoadFile
         })
-        .catch(function (error) {
-          console.error(error);
-        });
+
+        let content = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
+        articleDetail.text = content.replace(/(\n\n)/gm, '\n')
+        let messages = result.messages; // Any messages, such as warnings during conversion
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
   }
   fileReader.readAsArrayBuffer(file.raw);
 }
@@ -513,11 +532,10 @@ const handleFileRemove = () => {
   }
   let userInfo = store.getters.getUserInfo
   if (userInfo.identity == 'CONTRIBUTOR' || userInfo.identity == 'ADMINISTRATOR') {
-    console.log(userInfo)
     contributeManager.isContributor = true
     articleDetail.authorName = userInfo.name
     articleDetail.authorOrganization = userInfo.organization
-    if(userInfo.identity == 'CONTRIBUTOR') {
+    if (userInfo.identity == 'CONTRIBUTOR') {
       articleDetail.authorGrade = userInfo.attrs.grade
     } else {
       articleDetail.authorGrade = userInfo.attrs.duties

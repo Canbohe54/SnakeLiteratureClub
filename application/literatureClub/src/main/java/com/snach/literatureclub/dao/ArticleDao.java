@@ -27,9 +27,9 @@ public interface ArticleDao {
      *
      * @param article 封装有稿件信息的Article对象
      */
-    @Insert("INSERT INTO article(id, title, description, text,`time`, status, tags, text_by, raw, mentor, file_type, received_by) " +
-            "VALUES(#{article.id}, #{article.title},#{article.description}, #{article.text}, #{article.time},#{article.status},#{article.tags},#{article.textBy},#{article.raw},#{article.mentor},#{article.fileType},#{article.receivedBy})")
-    void insertArticle(@Param("article") Article article);
+    @Insert("INSERT INTO article(id, title, description, text,`time`, status, tags, text_by, raw, mentor, file_type, received_by, audited_by) " +
+            "VALUES(#{a.id}, #{a.title},#{a.description}, #{a.text}, #{a.time},#{a.status},#{a.tags},#{a.textBy},#{a.raw},#{a.mentor},#{a.fileType},#{a.receivedBy}, #{a.auditedBy})")
+    void insertArticle(@Param("a") Article article);
 
     // ======================================SELECT==========================================
 
@@ -37,6 +37,9 @@ public interface ArticleDao {
             " FROM article WHERE status=#{status} LIMIT 1 FOR UPDATE")
     Article getArticleByStatus(ArticleStatus status);
 
+    @Select("SELECT id, title,description,text,`time`,status, tags, text_by as textBy, mentor, file_type as fileType" +
+            " FROM article WHERE status=#{status} AND audited_by=#{auditedBy} LIMIT 1 FOR UPDATE")
+    Article getArticleByStatusAndAuditedBy(ArticleStatus status, String auditedBy);
     /**
      * 根据作者id查找其稿件，返回稿件id、标题、描述和时间
      *
@@ -200,6 +203,9 @@ public interface ArticleDao {
             "received_by = #{article.receivedBy} " +
             "WHERE id = #{article.id}")
     int updateArticleDetail(@Param("article") Article article);
+
+    @Update("UPDATE article SET audited_by=#{auditedBy} WHERE id=#{articleId}")
+    int updateAuditedBy(String articleId, String auditedBy);
 
     // ======================================DELETE==========================================
     /**

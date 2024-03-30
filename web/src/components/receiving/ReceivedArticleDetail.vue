@@ -189,7 +189,6 @@ const articleDetail = reactive<AttributeAddableObject>({
 })
 const displaySize = ref("default")
 const identity = ref('')
-const isFavorited = ref(false)
 const recommendManager = reactive({
   recommendDialogVisible: false,
   recommendTo: '',
