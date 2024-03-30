@@ -115,6 +115,7 @@ const articleDetail = reactive<AttributeAddableObject>({
   raw: {},
   file_type: '',
   received_by: '',
+  reason: '',
 })
 
 const displaySize = ref("default")
