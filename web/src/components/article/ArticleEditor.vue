@@ -273,7 +273,6 @@ const getArticleDetail = async () => {
   await SYNC_GET('/article/articleDetail', {
     article_id: route.query.id
   }, async (response) => {
-    console.log(response)
     if (response.status === 200 && response.data.code === 2001) {
       for (const dataKey in response.data.data.article) {
         if (dataKey == 'raw') {
@@ -343,11 +342,9 @@ const save = async () => {
   param.append("title", articleDetail.title)
   param.append("description", articleDetail.description)
   param.append("status", 'ROUGH')
-  console.log(articleDetail.tags)
   param.append("tags", articleDetail.tags)
   param.append("fileType", articleDetail.file_type)
   if (contributeManager.contributeWay == 'PUBLISHED') {
-    console.log(contributeManager.contributeTo)
     param.append("receivedBy", contributeManager.contributeTo)
   }
   if (contributeManager.sameAuditor) {
