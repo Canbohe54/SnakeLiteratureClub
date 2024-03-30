@@ -19,14 +19,14 @@
     <ul class="CommentList" v-if="commentDisplayConf.maxCommentRowsNum > 0" v-infinite-scroll="loadCommentList">
       <li v-for="(item) in commentList">
         <el-row class="CommentDisplay">
-          <el-avatar :src="item.commenterAvatar" @click="toUserPage(item.commenterId)" class="CommenterAvatar"/>
+          <SnakeAvatar :src="item.commenterAvatar" @click="toUserPage(item.commenterId)" class="CommenterAvatar"/>
           <div class="blank"></div>
           <el-text class="CommenterName" @click="toUserPage(item.commenterId)">{{ item.commenter }}</el-text>
           <div class="e"></div>
           <el-text>{{ item.text }}</el-text>
         </el-row>
         <el-row class="CommentExtra" v-if="item.commenterId === store.getters.getUserInfo.id">
-          <el-button size="small" @click="deleteComment(item.id)">Delete</el-button>
+          <el-button size="small" @click="deleteComment(item.id)">删除</el-button>
         </el-row>
         <el-divider class="CommentDivider"/>
       </li>
@@ -47,6 +47,7 @@ import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { toUserPage } from '@/scripts/userInfo'
+import SnakeAvatar from "@/components/common/SnakeAvatar.vue";
 
 interface Comment {
   commenter: string,
@@ -98,7 +99,7 @@ async function loadCommentList () {
     limit: commentDisplayConf.value.eachLoadLimit
   }, async (response) => {
     if (response.data.code === 2001) {
-      for (const commentRes of response.data.data[0]) {
+      for (const commentRes of response.data.data['res'][0]) {
         const commenter = await getUserInfo(commentRes['text_by'])
         if (commenter === null) {
           ElMessage({
@@ -116,7 +117,7 @@ async function loadCommentList () {
           time: commentRes['time']
         })
       }
-      commentDisplayConf.value.maxCommentRowsNum = response.data.rowsNum
+      commentDisplayConf.value.maxCommentRowsNum = response.data.data.rowsNum
       commentDisplayConf.value.nowDisplayRowsNum += commentDisplayConf.value.eachLoadLimit
     } else {
       ElMessage({
@@ -154,7 +155,7 @@ async function addComment (textOn: string, text: string) {
     textOn: textOn,
     text: text
   }, async (response) => {
-    if (response.data.statusMsg === 'Success.') {
+    if (response.data.code === 2001) {
       ElMessage({
         message: '评论添加成功! ',
         type: 'success'

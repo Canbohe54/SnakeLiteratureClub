@@ -1,25 +1,23 @@
 <template>
-  <el-card>
-    <ul class="MessageList" v-if="messageList.length > 0">
-      <li v-for="(msg) in messageList">
-        <el-row class="MessageDisplay">
-          <el-avatar :src="msg.from.avatar" @click="toUserPage(msg.from.id)" class="SenderAvatar"/>
-          <div class="blank"></div>
-          <el-text class="SenderName" @click="toUserPage(msg.from.id)">{{ msg.from.name }}</el-text>
-          <div class="e"></div>
-          <el-text>{{ msg.message }}</el-text>
-        </el-row>
-        <el-row class="MessageExtra" v-if="msg.from.id === store.getters.getUserInfo.id">
-          <el-button size="small" @click="deleteMessage(msg.id)">Delete</el-button>
-        </el-row>
-        <el-divider class="MessageDivider"/>
-      </li>
-    </ul>
-    <div v-else>
-      <el-text>暂无消息</el-text>
-      <el-divider/>
-    </div>
-  </el-card>
+  <ul class="MessageList" v-if="messageList.length > 0">
+    <li v-for="(msg) in messageList">
+      <el-row class="MessageDisplay">
+        <SnakeAvatar :picture-url="msg.from.avatar" @click="toUserPage(msg.from.id)" class="SenderAvatar"/>
+        <div class="blank"></div>
+        <el-text class="SenderName" @click="toUserPage(msg.from.id)">{{ msg.from.name }}</el-text>
+        <div class="e"></div>
+        <el-text>{{ msg.message }}</el-text>
+      </el-row>
+      <el-row class="MessageExtra" v-if="msg.from.id === store.getters.getUserInfo.id">
+        <el-button size="small" @click="deleteMessage(msg.id)">删除</el-button>
+      </el-row>
+      <el-divider class="MessageDivider"/>
+    </li>
+  </ul>
+  <div v-else>
+    <el-text>暂无消息</el-text>
+    <el-divider/>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -27,8 +25,9 @@ import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'
 import { toUserPage } from '@/scripts/userInfo'
-import { SnachResponse } from "@/scripts/types/ResponseObject"
-import { getCookie } from "@/scripts/cookie"
+import { SnachResponse } from '@/scripts/types/ResponseObject'
+import { getCookie } from '@/scripts/cookie'
+import SnakeAvatar from "@/components/common/SnakeAvatar.vue";
 
 const props = defineProps({
   articleId: {
@@ -143,6 +142,7 @@ function deleteMessage(messageId: string) {
           message: '删除成功',
           type: 'success'
         })
+        loadMessageList()
       } else {
         ElMessage({
           message: data.message,
@@ -163,6 +163,8 @@ loadMessageList()
 }
 
 .MessageDisplay {
+  display: flex;
+  margin-top: 20px;
   margin-bottom: 0;
 }
 
@@ -177,11 +179,11 @@ loadMessageList()
 .MessageExtra {
   display: flex;
   justify-content: flex-end;
-  margin-right: 5px;
+  margin: 0 10px 0 0;
 }
 
 .MessageDivider {
   margin-top: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 0;
 }
 </style>
