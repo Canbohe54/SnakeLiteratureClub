@@ -1,14 +1,15 @@
 <template>
+  <el-tooltip v-if="store.getters.getUserInfo.identity === 'EXPERT' || store.getters.getUserInfo.identity === 'HUNTER' || store.getters.getUserInfo.identity === 'ADMINISTRATOR'"
+      class="box-item"
+      effect="light"
+      content="解除锁定并退出"
+      placement="top"
+  >
+    <el-button class="exit-button" type="primary" @click="handleExitClicked" circle plain>
+      <svg width="24" height="24" viewBox="0 0 48 48" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M31 4a1 1 0 011 1v2a1 1 0 01-1 1H8v32h23a1 1 0 011 1v2a1 1 0 01-1 1H6a2 2 0 01-2-2V6a2 2 0 012-2h25zm4.846 10.658l7.778 7.778a2 2 0 010 2.828l-7.778 7.778a1 1 0 01-1.415 0l-1.414-1.414a1 1 0 010-1.414l4.235-4.235-18.206-.08a1 1 0 01-.996-.996l-.008-1.894a1 1 0 01.88-.997l.125-.007 18.572.082-4.602-4.601a1 1 0 010-1.414l1.414-1.414a1 1 0 011.415 0z" fill="currentColor"/></svg>
+    </el-button>
+  </el-tooltip>
   <div class="operation-afffix">
-    <!-- <div class="circle flex-h" @click="like()" :class="isUp ? 'check' : ''">
-      <div class="img-box" :class="isUp ? 'img-box-check' : ''">
-        <img v-if="isUp" src="@/assets/images/like.svg" alt="" />
-        <img v-else src="@/assets/images/unlike.svg" alt="" />
-      </div>
-    </div>
-    <div class="likeCount">
-      {{ currentLikeCount }}
-    </div> -->
     <div class="like-container" @click="like()">
       <el-icon :size="24"><LikeBroken v-if="!isUp" /><LikeBold v-else/></el-icon>
       <div>{{ currentLikeCount }}</div>
@@ -117,7 +118,6 @@ import UserMessageDisplay from "@/components/article/UserMessageDisplay.vue";
 import LikeBroken from "@/components/common/SnakeIcons/LikeBroken.vue";
 import LikeBold from "@/components/common/SnakeIcons/LikeBold.vue";
 
-// 该页面没有锁
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
@@ -240,7 +240,8 @@ const like = async () => {
         ElMessage({
           showClose: true,
           message: '点赞成功',
-          type: 'success'
+          type: 'success',
+          grouping: true,
         })
       } else {
         isUp.value = false
@@ -249,7 +250,8 @@ const like = async () => {
         ElMessage({
           showClose: true,
           message: '取消点赞成功',
-          type: 'success'
+          type: 'success',
+          grouping: true,
         })
       }
     } else {
@@ -281,7 +283,7 @@ onMounted(async () => {
   setTimeout(async () => {
     addViewCount()
   }, 5000); // 5000毫秒即5秒
-  
+
 });
 
 async function getRaw(articleId: String) {
@@ -351,6 +353,27 @@ async function handleLock() {
   isLocked.value = !isLocked.value
 }
 
+async function handleExitClicked() {
+  await SYNC_POST('/article/checkLocked',{
+    articleId: route.query.id,
+    // requester: store.getters.getUserInfo.id,
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      if(response.data.data === true){
+        await SYNC_POST('/article/getPermissions',{
+          articleId: route.query.id,
+          requester: store.getters.getUserInfo.id,
+        }, async (response) => {
+          if(response.status === 200 && response.data.code === 2001){
+            await unlockArticle(articleDetail.id, store.getters.getUserInfo.id)
+          }
+        })
+      }
+    }
+  })
+  router.back()
+  return
+}
 async function handleLockClicked() {
   if (isLocked.value) {
     // 文章已锁定，执行解锁相关逻辑
@@ -425,13 +448,20 @@ const handleUpdateArticleClicked = () => {
 })()
 </script>
 <style scoped>
+.exit-button {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  bottom: 100px;
+  right: 40px;
+  z-index: 100;
+}
 .operation-afffix {
   position: fixed;
   right: 30px;
   bottom: 20px;
   z-index: 999;
 }
-
 .like-container {
   border-radius: 50%;
   border: 1px solid #ccc;
@@ -440,7 +470,6 @@ const handleUpdateArticleClicked = () => {
   width: 45px;
   height: 45px;
 }
-
 .like-container:hover {
   cursor: pointer;
   color: #409eff;
@@ -450,7 +479,6 @@ const handleUpdateArticleClicked = () => {
 .liked {
   color: #409eff;
 }
-
 .article-card {
   margin-bottom: 20px;
 }
