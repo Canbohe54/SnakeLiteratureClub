@@ -25,18 +25,22 @@ public class FeedbackMessageController {
     public Message getMessage(String userId, String articleId) {
         return feedbackMessageService.getMessage(userId, articleId);
     }
+
     @RequestMapping(value = "getMessageListByArticleId", method = RequestMethod.GET)
     public List<Message> getMessageListByArticleId(String articleId) {
         return feedbackMessageService.getMessageListByArticleId(articleId);
     }
+
     @RequestMapping(value = "getMessageListByUserId", method = RequestMethod.GET)
     public List<Message> getMessageListByUserId(String userId) {
         return feedbackMessageService.getMessageListByUserId(userId);
     }
+
     @RequestMapping(value = "addMessage", method = RequestMethod.POST)
-    public boolean addMessage(Message message) {
-        return feedbackMessageService.addMessage(message);
+    public boolean addMessage(String token, Message message) {
+        return feedbackMessageService.addMessage(token, message);
     }
+
     @RequestMapping(value = "deleteMessage", method = RequestMethod.POST)
     public boolean deleteMessage(String token, String messageId) {
         return feedbackMessageService.deleteMessage(token, messageId);

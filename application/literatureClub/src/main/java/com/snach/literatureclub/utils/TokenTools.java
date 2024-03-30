@@ -102,6 +102,16 @@ public class TokenTools {
         return Objects.equals(getPayload(token, "id"), user.getId());
     }
 
+    public static boolean tokenVerify(String token, String userId) {
+        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
+        try {
+            jwtVerifier.verify(token);
+        } catch (JWTVerificationException e) {
+            return false;
+        }
+        return Objects.equals(getPayload(token, "id"), userId);
+    }
+
     public static boolean hardTokenVerify(String token) {
         JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(HARD_SECRET)).build();
         try {
