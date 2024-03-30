@@ -21,10 +21,7 @@
                 <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
                            @click="delArticleDialogVisible=true">删除文章
                 </el-button>
-                <!--                <el-button type="warning" link :onclick="handleFavorite">{{-->
-                <!--                    isFavorited ? '取消收藏' : '收藏'-->
-                <!--                  }}-->
-                <!--                </el-button>-->
+
                 <el-button type="warning" link :onclick="handleLockClicked" >{{
                     isLocked ? '取消锁定' : '锁定'
                   }}
@@ -36,12 +33,15 @@
                 <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大
                 </el-button>
               </div>
-
-              <el-divider/>
+              <el-collapse style="padding-top: 10px">
+              <div class="description-head"><span>文章描述</span></div>
               <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+              <div class="contain-head"><span>文章内容</span></div>
               <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
                                   :article-id="articleDetail.id"></ArticleDisplayCard>
-
+                <div class="contain-head" v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"><span>专家/报社反馈</span></div>
+              <!-- TODO: 专家/报社反馈 -->
+              </el-collapse>
             </el-card>
           </el-main>
 
@@ -102,7 +102,8 @@ const articleDetail = reactive<AttributeAddableObject>({
   status: '',
   attr: '',
   raw: {},
-  file_type: ''
+  file_type: '',
+  received_by: '',
 })
 
 const displaySize = ref("default")
@@ -155,13 +156,11 @@ async function getIsLocked() {
 }
 
 async function handleUnlock() {
-  // TODO: 更改条件为如果非公开且已刊登，无法手动解锁
-  if(articleDetail.status === 'PUBLISHED' && articleDetail.receivedBy !== '' && !articleDetail.public) {
-  // if (articleDetail.status === 'PUBLISHED' && articleDetail.receviedBy !== '') {
+  // 如果非公开且已刊登，无法手动解锁
+  if(articleDetail.status === 'PUBLISHED' && articleDetail.received_by !== '' && !articleDetail.public) {
     let expire = 0;
     await SYNC_GET("/article/getArticleLockExpire",{ articleId: articleDetail.id}, (response) => {
       if (response.status === 200 && response.data.code === 2001) {
-        console.log(response)
         expire = response.data.data
       } else {
         errorCallback(response)
@@ -170,11 +169,13 @@ async function handleUnlock() {
 
     let message = ''
     if(expire > 86400){
-      message = `文章已发布，无法手动解锁，将于${expire/86400}天后解锁。`
+      message = `文章已发布，无法手动解锁，将于${Math.ceil(expire/86400)}天后解锁。`
     }else if (expire > 3600){
-      message = `该文章已发布，无法手动解锁，将于${expire/3600}小时后解锁。`
+      message = `该文章已发布，无法手动解锁，将于${Math.ceil(expire/3600)}小时后解锁。`
+    } else if (expire > 0){
+      message = `该文章已发布，无法手动解锁，将于${Math.ceil(expire/60)}分钟后解锁。`
     } else {
-      message = `该文章已发布，无法手动解锁，将于${expire/60}分钟后解锁。`
+      isLocked.value = false
     }
     ElMessage({
       type: 'warning',
@@ -271,26 +272,24 @@ const handleUpdateArticleClicked = () => {
   font-weight: bold;
 }
 
+.description-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
 .article-detail-author {
   font-size: 14px;
 }
 
-.e {
-  border-right: 1px solid var(--el-border-color);
-  margin-right: 10px;
-  margin-left: 10px;
-}
-
-.blank {
-  margin-right: 10px;
-}
-
-.gradePanel {
-  margin: 20px 20px;
-}
-
-.gradeDis {
-  text-align: center;
+.contain-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
 }
 
 .article-description {
