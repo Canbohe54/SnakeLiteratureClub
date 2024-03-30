@@ -39,7 +39,7 @@
                 <div class="description-head"><span>文章描述</span></div>
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
                 <div class="filter-head"><span>文章标签</span></div>
-                <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
+                <SearchFilter ref="SearchFilterRef" @change="searchFilterChange" :disabled="true"/>
 
                 <div class="contain-head"><span>文章内容</span></div>
                 <!-- 待弃用 -->
@@ -144,7 +144,7 @@ const delArticleDialogVisible = ref(false)
 
 
 const searchFilterChange = () => {
-  articleDetail.tags = SearchFilterRef.value.filterSelection
+  articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
 }
 
 async function getTextBy() {
@@ -159,37 +159,6 @@ async function getTextBy() {
     }
   })
 }
-
-// 有article_id时初始化ArticleDetail
-const getAuditedArticle = async () => {
-  const userInfo = store.getters.getUserInfo
-  let param = {
-    id: userInfo.id,
-    identity: userInfo.identity
-  }
-
-  await SYNC_GET('/auditor/getUnauditedArticle', param, async (response) => {
-    if (response.status === 200 && response.data.code === 2001) {
-      if (response.data.data.id == 'null') {
-        showArticle.value = false
-        return
-      }
-      showArticle.value = true
-      for (const dataKey in response.data.data) {
-        if (dataKey == 'raw') {
-          continue
-        }
-        articleDetail[dataKey] = response.data.data[dataKey]
-      }
-      SearchFilterRef.value.loadSelection(articleDetail.tags)
-      await getTextBy()
-      await getRaw(articleDetail.id)
-    } else {
-      errorCallback(response)
-    }
-  })
-}
-getAuditedArticle()
 
 async function getRaw(articleId: String) {
   axios({
@@ -323,6 +292,37 @@ const handleExit = async () => {
     }
   })
 }
+// 有article_id时初始化ArticleDetail
+const getAuditedArticle = async () => {
+  const userInfo = store.getters.getUserInfo
+  let param = {
+    id: userInfo.id,
+    identity: userInfo.identity
+  }
+
+  await SYNC_GET('/auditor/getUnauditedArticle', param, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      if (response.data.data.id == 'null') {
+        showArticle.value = false
+        return
+      }
+      showArticle.value = true
+      for (const dataKey in response.data.data) {
+        if (dataKey == 'raw') {
+          continue
+        }
+        articleDetail[dataKey] = response.data.data[dataKey]
+      }
+      SearchFilterRef.value.loadSelection(articleDetail.tags)
+      await getTextBy()
+      await getRaw(articleDetail.id)
+    } else {
+      errorCallback(response)
+    }
+  })
+}
+
+getAuditedArticle()
 </script>
 <style scoped>
 .article-container {

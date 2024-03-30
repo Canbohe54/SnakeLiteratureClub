@@ -111,7 +111,7 @@ const articleDetail = reactive<AttributeAddableObject>({
   title: '',
   description: '',
   status: '',
-  attr: '',
+  tags: '{}',
   raw: {},
   file_type: '',
   received_by: '',

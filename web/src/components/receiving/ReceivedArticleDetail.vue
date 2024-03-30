@@ -206,7 +206,7 @@ const rejectManager = reactive({
   rejectInfo: '感谢您的投稿，但很遗憾，'
 })
 const searchFilterChange = () => {
-  articleDetail.attr = JSON.stringify(SearchFilterRef.value.filterSelection)
+  articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
 }
 
 async function getTextBy() {
@@ -408,6 +408,7 @@ const handleUpdateArticleClicked = () => {
             articleDetail[dataKey] = response.data.data.article[dataKey]
           }
           SearchFilterRef.value.loadSelection(articleDetail.tags)
+          articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
           await getTextBy()
           await getRaw(articleDetail.id)
 

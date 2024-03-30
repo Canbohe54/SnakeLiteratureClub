@@ -231,7 +231,7 @@ const articleDetail: AttributeAddableObject = reactive({
   title: '',
   description: '',
   status: 'ROUGH',
-  attr: '{}',
+  tags: '{}',
   raw: {},
   file_type: '',
   received_by: '',
@@ -256,7 +256,7 @@ watch(articleDetail, () => {
   saveBtnText.value = '保存'
 })
 const searchFilterChange = () => {
-  articleDetail.tags = SearchFilterRef.value.filterSelection
+  articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
 }
 const handleContributeWayChange = () => {
 
@@ -282,6 +282,7 @@ const getArticleDetail = async () => {
         articleDetail[dataKey] = response.data.data.article[dataKey]
       }
       SearchFilterRef.value.loadSelection(articleDetail.tags)
+      articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
       if (articleDetail.received_by !== '') {
         contributeManager.contributeWay = 'PUBLISHED'
         contributeManager.contributeTo = articleDetail.received_by
@@ -342,7 +343,8 @@ const save = async () => {
   param.append("title", articleDetail.title)
   param.append("description", articleDetail.description)
   param.append("status", 'ROUGH')
-  param.append("attr", `{"tags":${articleDetail.attr}}`)
+  console.log(articleDetail.tags)
+  param.append("tags", articleDetail.tags)
   param.append("fileType", articleDetail.file_type)
   if (contributeManager.contributeWay == 'PUBLISHED') {
     console.log(contributeManager.contributeTo)
@@ -378,7 +380,7 @@ const release = async () => {
   param.append("title", articleDetail.title)
   param.append("description", articleDetail.description)
   param.append("status", 'SUBMITTED')
-  param.append("attr", `{"tags":${articleDetail.attr}}`)
+  param.append("tags", articleDetail.tags)
   param.append("fileType", articleDetail.file_type)
   if (contributeManager.contributeWay == 'PUBLISHED') {
     param.append("receivedBy", contributeManager.contributeTo)
