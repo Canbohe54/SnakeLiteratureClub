@@ -3,7 +3,7 @@
         <section class="loginContainer">
             <header>登录</header>
             <el-form :model="loginForm" label-width="auto" class="regForm">
-                <el-form-item label="账号">
+                <el-form-item label="账号/手机号">
                     <el-input v-model="loginForm.userid" placeholder="请输入账号或绑定手机号"></el-input>
                 </el-form-item>
                 <el-form-item label="密码">

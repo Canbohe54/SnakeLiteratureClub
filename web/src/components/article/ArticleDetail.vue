@@ -1,6 +1,21 @@
 <template>
+  <div class="operation-afffix">
+    <!-- <div class="circle flex-h" @click="like()" :class="isUp ? 'check' : ''">
+      <div class="img-box" :class="isUp ? 'img-box-check' : ''">
+        <img v-if="isUp" src="@/assets/images/like.svg" alt="" />
+        <img v-else src="@/assets/images/unlike.svg" alt="" />
+      </div>
+    </div>
+    <div class="likeCount">
+      {{ currentLikeCount }}
+    </div> -->
+    <div class="like-container" @click="like()">
+      <el-icon :size="24"><LikeBroken v-if="!isUp" /><LikeBold v-else/></el-icon>
+      <div>{{ currentLikeCount }}</div>
+    </div>
+  </div>
   <el-row>
-    <el-col :span="18" :offset="3">
+    <el-col :lg="18" :md="20" :sm="24" style="margin: auto;">
       <div>
         <el-container>
           <el-main>
@@ -16,40 +31,28 @@
               </el-row>
               <div style="display: flex; justify-content:center;align-items: flex-end;">
                 <el-button type="primary" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
-                           @click="handleUpdateArticleClicked">修改文章
+                  @click="handleUpdateArticleClicked">修改文章
                 </el-button>
                 <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
-                           @click="delArticleDialogVisible=true">删除文章
+                  @click="delArticleDialogVisible = true">删除文章
                 </el-button>
-
-                <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id" :onclick="handleLockClicked">{{
-                    isLocked ? '取消锁定' : '锁定'
-                  }}
+                <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
+                  :onclick="handleLockClicked">{{ isLocked ? '取消锁定' : '锁定' }}
                 </el-button>
-                <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小
+                <el-button link type="primary" :onclick="handleDiscriptionSmall" style="font-size: 16px;">小
                 </el-button>
-                <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中
+                <el-button link type="primary" :onclick="handleDiscriptionMedium" style="font-size: 18px;">中
                 </el-button>
-                <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大
+                <el-button link type="primary" :onclick="handleDiscriptionLarge" style="font-size: 20px;">大
                 </el-button>
               </div>
 
               <el-collapse style="padding-top: 10px">
                 <div class="description-head"><span>文章描述</span></div>
-                <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+                <el-text class="article-description">{{ articleDetail.description }}</el-text>
                 <div class="contain-head"><span>文章内容</span></div>
                 <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
-                                    :article-id="articleDetail.id"></ArticleDisplayCard>
-<!--                  点赞-->
-                <div class="circle flex-h" @click="like()" :class="isUp?'check':''">
-                  <div class="img-box" :class="isUp?'img-box-check':''">
-                    <img v-if="isUp" src="@/assets/images/like.svg" alt="" />
-                    <img v-else src="@/assets/images/unlike.svg" alt="" />
-                  </div>
-                </div>
-                <div class="likeCount">
-                  {{ currentLikeCount }}
-                </div>
+                  :article-id="articleDetail.id"></ArticleDisplayCard>
                 <div>
                   <el-icon>
                     <View />
@@ -60,39 +63,36 @@
 
             </el-card>
 
-          <el-card v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
-            <div class="contain-head">
-              <span>专家/报社反馈</span>
-              <UserMessageDisplay :article-id="route.query.id" />
-            </div>
+            <el-card v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
+              <div class="contain-head">
+                <span>专家/报社反馈</span>
+                <UserMessageDisplay :article-id="route.query.id" />
+              </div>
 
-            <div class="contain-head">
-              <span>审核建议</span></div>
-            <el-text class="article-reason" :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' : articleDetail.reason }}
-            </el-text>
-          </el-card>
+              <div class="contain-head">
+                <span>审核建议</span>
+              </div>
+              <el-text class="article-reason" :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' :
+      articleDetail.reason }}
+              </el-text>
+            </el-card>
           </el-main>
           <el-footer>
             <suspense>
-              <CommentDisplay :articleId="route.query.id"/>
+              <CommentDisplay :articleId="route.query.id" />
             </suspense>
           </el-footer>
         </el-container>
       </div>
-      <el-dialog
-        draggable
-        v-model="delArticleDialogVisible"
-        title="删除文章"
-        width="30%"
-      >
+      <el-dialog draggable v-model="delArticleDialogVisible" title="删除文章" width="30%">
         <span>确定删除文章？</span>
         <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="delArticleDialogVisible = false">取消</el-button>
-        <el-button type="danger" @click="handleDelArticleClicked">
-          删除
-        </el-button>
-      </span>
+          <span class="dialog-footer">
+            <el-button @click="delArticleDialogVisible = false">取消</el-button>
+            <el-button type="danger" @click="handleDelArticleClicked">
+              删除
+            </el-button>
+          </span>
         </template>
       </el-dialog>
     </el-col>
@@ -100,20 +100,22 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue'
-import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
-import {useRoute, useRouter} from 'vue-router'
-import {ElMessage} from 'element-plus'
-import {SYNC_GET, SYNC_POST} from '@/scripts/Axios'
-import {useStore} from 'vuex'
+import { onMounted, reactive, ref } from 'vue'
+import { AttributeAddableObject } from '@/scripts/ArticleTagFilter'
+import { useRoute, useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import { SYNC_GET, SYNC_POST } from '@/scripts/Axios'
+import { useStore } from 'vuex'
 import CommentDisplay from '@/components/article/CommentDisplay.vue'
-import {toUserPage} from '@/scripts/userInfo'
-import {errorCallback} from '@/scripts/ErrorCallBack'
+import { toUserPage } from '@/scripts/userInfo'
+import { errorCallback } from '@/scripts/ErrorCallBack'
 import axios from 'axios'
 import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
-import {lockArticleById, unlockArticle} from '@/scripts/ArticleLocker'
-import {View} from "@element-plus/icons-vue";
+import { lockArticleById, unlockArticle } from '@/scripts/ArticleLocker'
+import { View } from "@element-plus/icons-vue";
 import UserMessageDisplay from "@/components/article/UserMessageDisplay.vue";
+import LikeBroken from "@/components/common/SnakeIcons/LikeBroken.vue";
+import LikeBold from "@/components/common/SnakeIcons/LikeBold.vue";
 
 // 该页面没有锁
 const router = useRouter()
@@ -136,8 +138,6 @@ const articleDetail = reactive<AttributeAddableObject>({
   reason: '',
 })
 
-const displaySize = ref("default")
-
 const isLocked = ref(false)
 
 const delArticleDialogVisible = ref(false)
@@ -147,8 +147,20 @@ const currentLikeCount = ref(0)
 const currentViewCount = ref(0)
 
 let isUp = ref(false)
-function handleClick () {
+function handleClick() {
   isUp.value = !isUp.value
+}
+
+function handleDiscriptionSmall() {
+  $('.article-description').css('font-size', '16px')
+}
+
+function handleDiscriptionMedium() {
+  $('.article-description').css('font-size', '18px')
+}
+
+function handleDiscriptionLarge() {
+  $('.article-description').css('font-size', '20px')
 }
 
 async function getTextBy() {
@@ -165,9 +177,9 @@ async function getTextBy() {
 }
 
 async function getLikeStatus() {
-  if(store.getters.getUserInfo.identity === '未登录'){
-      isUp.value = false
-      return
+  if (store.getters.getUserInfo.identity === '未登录') {
+    isUp.value = false
+    return
   }
   await SYNC_GET('/like/getLikeStatus', {
     articleId: route.query.id,
@@ -176,9 +188,9 @@ async function getLikeStatus() {
     if (response.status === 200 && response.data.code === 2001) {
       currentStatus.value = response.data.data.currentStatus
       // console.log(currentStatus.value)
-      if(currentStatus.value === 'like'){
+      if (currentStatus.value === 'like') {
         isUp.value = true
-      } else{
+      } else {
         isUp.value = false
       }
     }
@@ -202,14 +214,14 @@ async function getViewCount() {
     if (response.status === 200 && response.data.code === 2001) {
       currentViewCount.value = response.data.data.currentViewCount
     }
-    else{
-        errorCallback(response)
+    else {
+      errorCallback(response)
     }
   })
 }
 
 const like = async () => {
-  if(store.getters.getUserInfo.identity === '未登录'){
+  if (store.getters.getUserInfo.identity === '未登录') {
     ElMessage({
       showClose: true,
       message: '请先登录',
@@ -224,17 +236,19 @@ const like = async () => {
     userId: store.getters.getUserInfo.id
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
-      if(response.data.data.currentStatus === 'like'){
+      if (response.data.data.currentStatus === 'like') {
         isUp.value = true
         currentLikeCount.value += 1
+        $('.like-container').addClass('liked')
         ElMessage({
           showClose: true,
           message: '点赞成功',
           type: 'success'
         })
-      } else{
+      } else {
         isUp.value = false
         currentLikeCount.value -= 1
+        $('.like-container').removeClass('liked')
         ElMessage({
           showClose: true,
           message: '取消点赞成功',
@@ -262,23 +276,23 @@ const addViewCount = async () => {
 
 
 onMounted(() => {
-    // 设置5秒后执行跳转操作
-    setTimeout(() => {
-        addViewCount()
-    }, 5000); // 5000毫秒即5秒
+  // 设置5秒后执行跳转操作
+  setTimeout(() => {
+    addViewCount()
+  }, 5000); // 5000毫秒即5秒
 });
 
 async function getRaw(articleId: String) {
   axios({
     url: '/article/getArticleFileById',
     method: 'GET',
-    headers: {'Content-Type': 'multipart/form-data'},
-    params: {article_id: articleId},
+    headers: { 'Content-Type': 'multipart/form-data' },
+    params: { article_id: articleId },
     responseType: 'arraybuffer'
 
   }).then(response => {
-    const blob = new Blob([response.data], {type: articleDetail.file_type})
-    articleDetail.raw = new File([blob], articleDetail.title, {type: articleDetail.file_type})
+    const blob = new Blob([response.data], { type: articleDetail.file_type })
+    articleDetail.raw = new File([blob], articleDetail.title, { type: articleDetail.file_type })
 
   }).catch(error => {
     console.error(error);
@@ -301,7 +315,7 @@ async function handleUnlock() {
   // 如果非公开且已刊登，无法手动解锁
   if (articleDetail.status === 'PUBLISHED' && articleDetail.received_by !== '' && !articleDetail.public) {
     let expire = 0;
-    await SYNC_GET("/article/getArticleLockExpire", {articleId: articleDetail.id}, (response) => {
+    await SYNC_GET("/article/getArticleLockExpire", { articleId: articleDetail.id }, (response) => {
       if (response.status === 200 && response.data.code === 2001) {
         expire = response.data.data
       } else {
@@ -351,7 +365,7 @@ const handleAuthorClicked = () => {
     // router.push('/user/'+articleDetail.text_by_id)
     toUserPage(articleDetail.text_by_id)
   } else {
-    router.push({path: '/userNotFound'})
+    router.push({ path: '/userNotFound' })
   }
 }
 const handleDelArticleClicked = async () => {
@@ -374,9 +388,9 @@ const handleDelArticleClicked = async () => {
 }
 const handleUpdateArticleClicked = () => {
   if (articleDetail.id !== '' && articleDetail.id !== undefined) {
-    router.push({path: '/articleEditor', query: {id: articleDetail.id}})
+    router.push({ path: '/articleEditor', query: { id: articleDetail.id } })
   } else {
-    router.push({path: '/articleNotFound'})
+    router.push({ path: '/articleNotFound' })
   }
   getIsLocked()
 }
@@ -409,6 +423,32 @@ const handleUpdateArticleClicked = () => {
 })()
 </script>
 <style scoped>
+.operation-afffix {
+  position: fixed;
+  right: 30px;
+  bottom: 20px;
+  z-index: 999;
+}
+
+.like-container {
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 10px;
+  width: 45px;
+  height: 45px;
+}
+
+.like-container:hover {
+  cursor: pointer;
+  color: #409eff;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.liked {
+  color: #409eff;
+}
+
 .article-card {
   margin-bottom: 20px;
 }
@@ -444,6 +484,7 @@ const handleUpdateArticleClicked = () => {
 }
 
 .article-description {
+  font-size: 16px;
   display: flex;
   white-space: pre-wrap;
   text-align: start !important;
@@ -461,6 +502,7 @@ const handleUpdateArticleClicked = () => {
   margin-right: 10px;
 }
 
+/*
 .circle {
   width: 20px;
   height: 20px;
@@ -468,6 +510,7 @@ const handleUpdateArticleClicked = () => {
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0px 0px 0px 0px rgba(223, 46, 58, 0.5);
+
   .img-box {
     width: 20px;
     height: 20px;
@@ -475,13 +518,16 @@ const handleUpdateArticleClicked = () => {
     -webkit-user-select: none;
     -ms-user-select: none;
     -khtml-user-select: none;
-    user-select: none; /* 防止快速点击图片被选中，可不加，为提高体验，博主加上了这几行代码。*/
-    & img {
+    user-select: none; */
+
+/* 防止快速点击图片被选中*/
+/* & img {
       width: 100%;
       height: 100%;
     }
   }
-}
+} */
+/*
 .check {
   -webkit-transition: box-shadow 0.5s;
   -moz-transition: box-shadow 0.5s;
@@ -489,43 +535,49 @@ const handleUpdateArticleClicked = () => {
   transition: box-shadow 0.5s;
   box-shadow: 0px 0px 0px 1em rgba(226, 32, 44, 0);
 }
+
 .img-box-check {
   animation: anm 0.5s;
   -moz-animation: anm 0.5s;
   -webkit-animation: anm 0.5s;
   -o-animation: anm 0.5s;
 }
+
 @keyframes anm {
   0% {
     transform: scale(0);
     -webkit-transform: scale(0);
     -moz-transform: scale(0);
   }
+
   50% {
     transform: scale(1.3);
     -webkit-transform: scale(1.3);
     -moz-transform: scale(1.3);
   }
+
   100% {
     transform: scale(1);
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
   }
-}
+} */
 
 /* 以下为处理兼容代码，可不看。*/
-
+/*
 @-moz-keyframes anm {
   0% {
     transform: scale(0);
     -webkit-transform: scale(0);
     -moz-transform: scale(0);
   }
+
   50% {
     transform: scale(1.3);
     -webkit-transform: scale(1.3);
     -moz-transform: scale(1.3);
   }
+
   100% {
     transform: scale(1);
     -webkit-transform: scale(1);
@@ -539,11 +591,13 @@ const handleUpdateArticleClicked = () => {
     -webkit-transform: scale(0);
     -moz-transform: scale(0);
   }
+
   50% {
     transform: scale(1.3);
     -webkit-transform: scale(1.3);
     -moz-transform: scale(1.3);
   }
+
   100% {
     transform: scale(1);
     -webkit-transform: scale(1);
@@ -557,19 +611,17 @@ const handleUpdateArticleClicked = () => {
     -webkit-transform: scale(0);
     -moz-transform: scale(0);
   }
+
   50% {
     transform: scale(1.3);
     -webkit-transform: scale(1.3);
     -moz-transform: scale(1.3);
   }
+
   100% {
     transform: scale(1);
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
   }
-}
-
-.likeCount {
-  text-align: left;
-}
+} */
 </style>
