@@ -122,8 +122,8 @@
                 </template>
               </el-select>
             </div>
-            <div class="more-option-head"><span>审核方式</span></div>
-            <div class="contribute-way-container">
+            <div class="more-option-head" v-if="articleDetail.audited_by === ''"><span>审核方式</span></div>
+            <div class="contribute-way-container" v-if="articleDetail.audited_by === ''">
               <el-radio-group v-model="contributeManager.sameAuditor" class="contribute-way-radio"
                               @change="handleAuditWayChange">
                 <el-radio label="true" value="true">请相同审核员提建议</el-radio>

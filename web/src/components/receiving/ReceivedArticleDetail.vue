@@ -309,10 +309,12 @@ const handleRecommendArticleClicked = async () => {
   router.back()
 }
 const addMessage = async () => {
+  let userInfo = store.getters.getUserInfo
   await SYNC_POST('/message/addMessage', {
     from: userInfo.id,
     to: articleDetail.text_by_id,
-    message: rejectManager.rejectInfo
+    message: rejectManager.rejectInfo,
+    token: store.getters.getToken
   }, async response => {
     if (response.status === 200 && response.data.code === 2001) {
       await (async () => {
@@ -329,7 +331,6 @@ const addMessage = async () => {
   })
 }
 const handleRejectArticleClicked = async () => {
-  let userInfo = store.getters.getUserInfo
   await SYNC_POST('/article/changeArticleReceivedBy', {
     articleId: articleDetail.id,
     receivedBy: '',
