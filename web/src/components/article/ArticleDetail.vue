@@ -37,6 +37,7 @@
               <el-divider/>
               <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false" :article-id="articleDetail.id"></ArticleDisplayCard>
               <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
+<!--              点赞-->
               <div class="circle flex-h" @click="like()" :class="isUp?'check':''">
                 <div class="img-box" :class="isUp?'img-box-check':''">
                   <img v-if="isUp" src="@/assets/images/like.svg" alt="" />
