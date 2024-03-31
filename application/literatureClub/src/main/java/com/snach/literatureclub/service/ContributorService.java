@@ -1,7 +1,7 @@
 package com.snach.literatureclub.service;
 
 import com.snach.literatureclub.bean.Article;
-import com.snach.literatureclub.common.ArticleStatus;
+import com.snach.literatureclub.common.ArticleAuditStatus;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.common.exception.NullFileException;
 import com.snach.literatureclub.dao.ArticleDao;
@@ -49,7 +49,7 @@ class ContributorServiceImpl implements ContributorService {
         if (!tokenVerify(token)) {
             throw new InvalidTokenException();
         }
-        if(article.getStatus() != ArticleStatus.ROUGH && mulArticle == null){
+        if(article.getAuditStatus() != ArticleAuditStatus.ROUGH && mulArticle == null){
             throw new NullFileException("发布操作文件不能为空。");
         }
         // 获取作者id

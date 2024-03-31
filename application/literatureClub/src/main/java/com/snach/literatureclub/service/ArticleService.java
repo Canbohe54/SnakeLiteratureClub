@@ -3,7 +3,7 @@ package com.snach.literatureclub.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
-import com.snach.literatureclub.common.ArticleStatus;
+import com.snach.literatureclub.common.ArticleAuditStatus;
 import com.snach.literatureclub.common.exception.InsufficientPermissionException;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.dao.ArticleDao;
@@ -27,7 +27,7 @@ import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
 
 @Service
 public interface ArticleService {
-    boolean changeArticleStatus(String articleId, ArticleStatus status, String token);
+    boolean changeArticleStatus(String articleId, ArticleAuditStatus status, String token);
     boolean changeArticleReceivedBy(String articleId, String receivedBy, String token);
     Article getArticleById(String articleId);
 
@@ -39,7 +39,7 @@ public interface ArticleService {
      * @param statusList the status of the article
      * @return PageInfo object containing article list
      */
-    PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleStatus> statusList);
+    PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleAuditStatus> statusList);
 
     Article getArticleFileById(String articleId);
 
@@ -64,7 +64,7 @@ public interface ArticleService {
      * @param statusList the status of the article
      * @return PageInfo object containing article list
      */
-    PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleStatus> statusList);
+    PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleAuditStatus> statusList);
 
     /**
      * Delete article by article id
@@ -111,7 +111,7 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public boolean changeArticleStatus(String articleId, ArticleStatus status, String token) {
+    public boolean changeArticleStatus(String articleId, ArticleAuditStatus status, String token) {
         if (!tokenVerify(token)) {
             throw new InvalidTokenException();
         }
@@ -119,7 +119,7 @@ class ArticleServiceImpl implements ArticleService {
         if (articleDao.belong(userId, articleId) == 0) {
             throw new InsufficientPermissionException();
         }
-        articleDao.updateStatus(status, articleId);
+        articleDao.updateAuditStatus(articleId, status);
         return true;
     }
 
@@ -138,7 +138,7 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleStatus> statusList) {
+    public PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleAuditStatus> statusList) {
         PageHelper.startPage(pageNum, pageSize);
         return new PageInfo<>(articleDao.getArticleByContributorId(contributorId, statusList));
     }
@@ -166,7 +166,7 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleStatus> statusList) {
+    public PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleAuditStatus> statusList) {
         PageHelper.startPage(pageNum, pageSize);
         if (tag == null) {
             return new PageInfo<>(articleDao.getArticlesByKeyword(keyword, statusList));

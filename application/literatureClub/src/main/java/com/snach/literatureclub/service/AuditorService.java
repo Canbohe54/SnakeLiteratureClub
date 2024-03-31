@@ -2,7 +2,7 @@ package com.snach.literatureclub.service;
 
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.bean.User;
-import com.snach.literatureclub.common.ArticleStatus;
+import com.snach.literatureclub.common.ArticleAuditStatus;
 import com.snach.literatureclub.common.Identity;
 import com.snach.literatureclub.common.exception.InsufficientPermissionException;
 import com.snach.literatureclub.common.exception.NoUnauditedArticleException;
@@ -80,15 +80,15 @@ class AuditorServiceImpl implements AuditorService {
             throw new InsufficientPermissionException();
         }
         Article article;
-        article = articleDao.getArticleByStatusAndAuditedBy(ArticleStatus.SUBMITTED, auditor.getId());
+        article = articleDao.getArticleByStatusAndAuditedBy(ArticleAuditStatus.SUBMITTED, auditor.getId());
         if(article == null){
-            article = articleDao.getArticleByStatus(ArticleStatus.SUBMITTED);
+            article = articleDao.getArticleByAuditStatus(ArticleAuditStatus.SUBMITTED);
             if (article == null) {
                 article = new Article();
                 article.setId("null");
             }
         }
-        articleDao.updateStatus(ArticleStatus.BEING_AUDITED, article.getId());
+        articleDao.updateAuditStatus(article.getId(), ArticleAuditStatus.BEING_AUDITED);
         return article;
     }
 
@@ -99,9 +99,9 @@ class AuditorServiceImpl implements AuditorService {
         }
         articleDao.updateAuditedBy(articleId, auditor.getId());
         if (auditResult) {
-            articleDao.audit(articleId, ArticleStatus.PUBLISHED, reason);
+            articleDao.audit(articleId, ArticleAuditStatus.AUDITED, reason);
         }else {
-            articleDao.audit(articleId, ArticleStatus.FAIL_AUDITED, reason);
+            articleDao.audit(articleId, ArticleAuditStatus.FAIL_AUDITED, reason);
         }
         return true;
     }
@@ -111,7 +111,7 @@ class AuditorServiceImpl implements AuditorService {
         if (!auditor.checkIdentity(Identity.AUDITOR) && !auditor.checkIdentity(Identity.ADMINISTRATOR)) {
             throw new InsufficientPermissionException();
         }
-        articleDao.updateStatus(ArticleStatus.SUBMITTED, articleId);
+        articleDao.updateAuditStatus(articleId, ArticleAuditStatus.SUBMITTED);
         return true;
     }
 

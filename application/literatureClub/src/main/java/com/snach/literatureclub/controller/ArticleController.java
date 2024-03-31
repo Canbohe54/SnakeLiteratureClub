@@ -3,7 +3,7 @@ package com.snach.literatureclub.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
-import com.snach.literatureclub.common.ArticleStatus;
+import com.snach.literatureclub.common.ArticleAuditStatus;
 import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.utils.MediaTypeConverter;
@@ -61,7 +61,7 @@ public class ArticleController {
                                            @RequestParam(value = "tag", required = false) String tag,
                                            @RequestParam(name = "page_num") int pageNum,
                                            @RequestParam(name = "page_size") int pageSize,
-                                           @RequestParam(name = "status_list") List<ArticleStatus> statusList) {
+                                           @RequestParam(name = "status_list") List<ArticleAuditStatus> statusList) {
         return articleService.searchArticle(keyword, tag, pageNum, pageSize, statusList);
     }
 
@@ -179,7 +179,7 @@ public class ArticleController {
     }
 
     @RequestMapping(value = "changeArticleStatus", method = RequestMethod.POST)
-    public boolean changeArticleStatus(String articleId, ArticleStatus status, String token) {
+    public boolean changeArticleStatus(String articleId, ArticleAuditStatus status, String token) {
         return articleService.changeArticleStatus(articleId, status, token);
     }
     @RequestMapping(value = "changeArticleReceivedBy", method = RequestMethod.POST)

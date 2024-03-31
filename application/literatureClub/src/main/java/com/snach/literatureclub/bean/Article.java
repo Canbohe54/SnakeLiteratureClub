@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.snach.literatureclub.common.ArticleStatus;
+import com.snach.literatureclub.common.ArticleAuditStatus;
+import com.snach.literatureclub.common.ArticlePublishStatus;
 import jakarta.annotation.Nullable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,7 +45,8 @@ public class Article {
     String authorGrade;
 
     // Article status info
-    ArticleStatus status;
+    ArticleAuditStatus auditStatus;
+    ArticlePublishStatus publishStatus;
     boolean isPublic;
 
     // Article raw file info
