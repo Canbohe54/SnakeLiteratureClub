@@ -62,21 +62,21 @@ const currentUser = reactive({
 
 const props = defineProps({
     articleInfo: {
-        articleId: String, //文章ID
-        title: String, //标题
+        articleId: String, //文章ID **必须**
+        title: String, //标题 **必须**
         userId: String, //用户ID
-        contributor: String, //作者
-        organization: String, //单位
-        grade: String, //年级
+        contributor: String, //作者 **必须**
+        organization: String, //单位 **必须**
+        grade: String, //年级 **必须**
         mentor: String, //导师
-        description: String, //描述
-        status: String, //稿件
-        isPublic: Boolean, //是否公开
-        time: String, //时间
-        tags: Array, //标签
-        received_by: String, //刊登报刊
-        audit_by: String, //审核员
-        audit_suggestion: String, //审核意见
+        description: String, //描述 **必须**
+        status: String, //稿件 **依mode决定**
+        isPublic: Boolean, //是否公开 **依mode决定**
+        time: String, //时间 **必须**
+        tags: Array, //标签 **必须** TODO: 改成map
+        received_by: String, //刊登报刊 **依mode决定**
+        audit_by: String, //审核员 **依mode决定**
+        audit_suggestion: String, //审核意见 **依mode决定**
     },
     statusVisible: {
         type: Boolean,

@@ -1,20 +1,25 @@
 <template>
-  <el-tooltip v-if="store.getters.getUserInfo.identity === 'EXPERT' || store.getters.getUserInfo.identity === 'HUNTER' || store.getters.getUserInfo.identity === 'ADMINISTRATOR'"
-      class="box-item"
-      effect="light"
-      content="解除锁定并退出"
-      placement="top"
-  >
+  <el-tooltip
+    v-if="store.getters.getUserInfo.identity === 'EXPERT' || store.getters.getUserInfo.identity === 'HUNTER' || store.getters.getUserInfo.identity === 'ADMINISTRATOR'"
+    class="box-item" effect="light" content="解除锁定并退出" placement="top">
     <el-button class="exit-button" type="primary" @click="handleExitClicked" circle plain>
-      <svg width="24" height="24" viewBox="0 0 48 48" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M31 4a1 1 0 011 1v2a1 1 0 01-1 1H8v32h23a1 1 0 011 1v2a1 1 0 01-1 1H6a2 2 0 01-2-2V6a2 2 0 012-2h25zm4.846 10.658l7.778 7.778a2 2 0 010 2.828l-7.778 7.778a1 1 0 01-1.415 0l-1.414-1.414a1 1 0 010-1.414l4.235-4.235-18.206-.08a1 1 0 01-.996-.996l-.008-1.894a1 1 0 01.88-.997l.125-.007 18.572.082-4.602-4.601a1 1 0 010-1.414l1.414-1.414a1 1 0 011.415 0z" fill="currentColor"/></svg>
+      <svg width="24" height="24" viewBox="0 0 48 48" fill="currentColor">
+        <path fill-rule="evenodd" clip-rule="evenodd"
+          d="M31 4a1 1 0 011 1v2a1 1 0 01-1 1H8v32h23a1 1 0 011 1v2a1 1 0 01-1 1H6a2 2 0 01-2-2V6a2 2 0 012-2h25zm4.846 10.658l7.778 7.778a2 2 0 010 2.828l-7.778 7.778a1 1 0 01-1.415 0l-1.414-1.414a1 1 0 010-1.414l4.235-4.235-18.206-.08a1 1 0 01-.996-.996l-.008-1.894a1 1 0 01.88-.997l.125-.007 18.572.082-4.602-4.601a1 1 0 010-1.414l1.414-1.414a1 1 0 011.415 0z"
+          fill="currentColor" />
+      </svg>
     </el-button>
   </el-tooltip>
   <div class="operation-afffix">
     <div class="like-container" @click="like()">
-      <el-icon :size="24"><LikeBroken v-if="!isUp" /><LikeBold v-else/></el-icon>
+      <el-icon :size="24">
+        <LikeBroken v-if="!isUp" />
+        <LikeBold v-else />
+      </el-icon>
       <div>{{ currentLikeCount }}</div>
     </div>
   </div>
+
   <el-row>
     <el-col :lg="18" :md="20" :sm="24" style="margin: auto;">
       <div>
@@ -25,10 +30,14 @@
                 <el-text class="article-detail-title">{{ articleDetail.title }}</el-text>
               </el-row>
               <el-row class="article-box-card">
-                <el-text class="article-detail-author">（
+                <el-text class="article-detail-author">
                   <el-button link :onclick="handleAuthorClicked">{{ articleDetail.text_by }}</el-button>
-                  ） {{ articleDetail.time }}
+                  （五年级） 下北泽中学 指导老师：野兽先辈
                 </el-text>
+              </el-row>
+              <el-row class="article-box-card">
+                <el-text class="article-detail-author">发布时间：{{ articleDetail.time }}</el-text>&nbsp;&nbsp;
+                <el-text class="article-detail-author">&nbsp;<el-icon><View /></el-icon>&nbsp;{{ currentViewCount }}</el-text>
               </el-row>
               <div style="display: flex; justify-content:center;align-items: flex-end;">
                 <el-button type="primary" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
@@ -54,44 +63,33 @@
                 <div class="contain-head"><span>文章内容</span></div>
                 <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
                   :article-id="articleDetail.id"></ArticleDisplayCard>
-                <div>
-                  <el-icon>
-                    <View />
-                  </el-icon>
-                  <div>{{ currentViewCount }}</div>
-                </div>
               </el-collapse>
 
             </el-card>
 
-          <el-card v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
-            <div class="contain-head">
-              <span>专家/报社反馈</span>
-            </div>
-            <UserMessageDisplay :article-id="route.query.id" />
+            <el-card v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
+              <div class="contain-head">
+                <span>专家/报社反馈</span>
+              </div>
+              <UserMessageDisplay :article-id="route.query.id" />
 
-            <div class="contain-head">
-              <span>审核建议</span>
-            </div>
-            <el-text class="article-reason" :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' : articleDetail.reason }}</el-text>
-          </el-card>
+              <div class="contain-head">
+                <span>审核建议</span>
+              </div>
+              <el-text class="article-reason" :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' :
+      articleDetail.reason }}</el-text>
+            </el-card>
 
-          <el-card v-if="JSON.parse(getCookie('userInfo'))['identity'] === 'EXPERT'">
-            <el-text class="MessageInputTag">反馈:</el-text>
-            <el-input
-              class="MessageInputBox"
-              v-model="messageInputText"
-              :disabled="store.getters.getToken === ''"
-              :placeholder="store.getters.getToken === '' ? '请先登录后评论! ' : ''"
-              type="textarea"
-              :autosize="{ maxRows: 3, minRows: 3 }"/>
-            <div class="MessageAddSubmit">
-              <el-button
-                @click="addMessage(route.query.id, messageInputText)"
-                :disabled="store.getters.getToken === ''"
-              >反馈</el-button>
-            </div>
-          </el-card>
+            <el-card v-if="JSON.parse(getCookie('userInfo'))['identity'] === 'EXPERT'">
+              <el-text class="MessageInputTag">反馈:</el-text>
+              <el-input class="MessageInputBox" v-model="messageInputText" :disabled="store.getters.getToken === ''"
+                :placeholder="store.getters.getToken === '' ? '请先登录后评论! ' : ''" type="textarea"
+                :autosize="{ maxRows: 3, minRows: 3 }" />
+              <div class="MessageAddSubmit">
+                <el-button @click="addMessage(route.query.id, messageInputText)"
+                  :disabled="store.getters.getToken === ''">反馈</el-button>
+              </div>
+            </el-card>
 
           </el-main>
           <el-footer>
@@ -133,8 +131,8 @@ import { View } from "@element-plus/icons-vue";
 import UserMessageDisplay from "@/components/article/UserMessageDisplay.vue";
 import LikeBroken from "@/components/common/SnakeIcons/LikeBroken.vue";
 import LikeBold from "@/components/common/SnakeIcons/LikeBold.vue";
-import {getCookie} from "@/scripts/cookie";
-import {SnachResponse} from "@/scripts/types/ResponseObject";
+import { getCookie } from "@/scripts/cookie";
+import { SnachResponse } from "@/scripts/types/ResponseObject";
 
 const router = useRouter()
 const route = useRoute()
@@ -323,7 +321,7 @@ function addMessage(articleId: string, message: string) {
 
 onMounted(async () => {
   await getLikeStatus()
-    if(isUp.value){
+  if (isUp.value) {
     $('.like-container').addClass('liked')
   }
   // 设置5秒后执行跳转操作
@@ -401,17 +399,17 @@ async function handleLock() {
 }
 
 async function handleExitClicked() {
-  await SYNC_POST('/article/checkLocked',{
+  await SYNC_POST('/article/checkLocked', {
     articleId: route.query.id,
     // requester: store.getters.getUserInfo.id,
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
-      if(response.data.data === true){
-        await SYNC_POST('/article/getPermissions',{
+      if (response.data.data === true) {
+        await SYNC_POST('/article/getPermissions', {
           articleId: route.query.id,
           requester: store.getters.getUserInfo.id,
         }, async (response) => {
-          if(response.status === 200 && response.data.code === 2001){
+          if (response.status === 200 && response.data.code === 2001) {
             await unlockArticle(articleDetail.id, store.getters.getUserInfo.id)
           }
         })
@@ -496,19 +494,21 @@ const handleUpdateArticleClicked = () => {
 </script>
 <style scoped>
 .exit-button {
-  width: 50px;
-  height: 50px;
+  width: 65px;
+  height: 65px;
   position: absolute;
   bottom: 100px;
-  right: 40px;
+  right: 30px;
   z-index: 100;
 }
+
 .operation-afffix {
   position: fixed;
   right: 30px;
   bottom: 20px;
   z-index: 999;
 }
+
 .like-container {
   border-radius: 50%;
   border: 1px solid #ccc;
@@ -517,6 +517,7 @@ const handleUpdateArticleClicked = () => {
   width: 45px;
   height: 45px;
 }
+
 .like-container:hover {
   cursor: pointer;
   color: #409eff;
@@ -526,6 +527,7 @@ const handleUpdateArticleClicked = () => {
 .liked {
   color: #409eff;
 }
+
 .article-card {
   margin-bottom: 20px;
 }
