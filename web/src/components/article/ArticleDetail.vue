@@ -64,19 +64,35 @@
 
             </el-card>
 
-            <el-card v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
-              <div class="contain-head">
-                <span>专家/报社反馈</span>
-                <UserMessageDisplay :article-id="route.query.id" />
-              </div>
+          <el-card v-if="articleDetail.text_by_id === store.getters.getUserInfo.id">
+            <div class="contain-head">
+              <span>专家/报社反馈</span>
+            </div>
+            <UserMessageDisplay :article-id="route.query.id" />
 
-              <div class="contain-head">
-                <span>审核建议</span>
-              </div>
-              <el-text class="article-reason" :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' :
-      articleDetail.reason }}
-              </el-text>
-            </el-card>
+            <div class="contain-head">
+              <span>审核建议</span>
+            </div>
+            <el-text class="article-reason" :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' : articleDetail.reason }}</el-text>
+          </el-card>
+
+          <el-card v-if="JSON.parse(getCookie('userInfo'))['identity'] === 'EXPERT'">
+            <el-text class="MessageInputTag">反馈:</el-text>
+            <el-input
+              class="MessageInputBox"
+              v-model="messageInputText"
+              :disabled="store.getters.getToken === ''"
+              :placeholder="store.getters.getToken === '' ? '请先登录后评论! ' : ''"
+              type="textarea"
+              :autosize="{ maxRows: 3, minRows: 3 }"/>
+            <div class="MessageAddSubmit">
+              <el-button
+                @click="addMessage(route.query.id, messageInputText)"
+                :disabled="store.getters.getToken === ''"
+              >反馈</el-button>
+            </div>
+          </el-card>
+
           </el-main>
           <el-footer>
             <suspense>
@@ -117,6 +133,8 @@ import { View } from "@element-plus/icons-vue";
 import UserMessageDisplay from "@/components/article/UserMessageDisplay.vue";
 import LikeBroken from "@/components/common/SnakeIcons/LikeBroken.vue";
 import LikeBold from "@/components/common/SnakeIcons/LikeBold.vue";
+import {getCookie} from "@/scripts/cookie";
+import {SnachResponse} from "@/scripts/types/ResponseObject";
 
 const router = useRouter()
 const route = useRoute()
@@ -147,6 +165,8 @@ const currentLikeCount = ref(0)
 const currentViewCount = ref(0)
 
 let isUp = ref(false)
+
+const messageInputText = ref('')
 
 function handleDiscriptionSmall() {
   $('.article-description').css('font-size', '16px')
@@ -273,6 +293,33 @@ const addViewCount = async () => {
   })
 }
 
+function addMessage(articleId: string, message: string) {
+  $.post({
+    url: 'http://localhost:19198/message/addMessage',
+    enctype: 'multipart/form-data',
+    async: false,
+    data: {
+      token: getCookie('token'),
+      from: JSON.parse(getCookie('userInfo'))['id'],
+      to: articleId,
+      message: message
+    },
+    success: (data: SnachResponse<boolean>) => {
+      if (data.code === 2001) {
+        ElMessage({
+          message: '添加成功',
+          type: 'success'
+        })
+        loadMessageList()
+      } else {
+        ElMessage({
+          message: data.message,
+          type: 'error'
+        })
+      }
+    }
+  })
+}
 
 onMounted(async () => {
   await getLikeStatus()
@@ -530,6 +577,24 @@ const handleUpdateArticleClicked = () => {
   margin-bottom: 20px;
   margin-left: 10px;
   margin-right: 10px;
+}
+
+.MessageInputTag {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0 0 10px 5px;
+  font-size: 20px;
+}
+
+.MessageInputBox {
+  font-size: 15px;
+}
+
+.MessageAddSubmit {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+  margin-right: 15px;
 }
 
 /*
