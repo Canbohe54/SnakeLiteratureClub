@@ -305,7 +305,7 @@ onMounted(() => { // setup语法糖下渲染时周期函数
 })
 
 function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师，直接进入阅读界面
-    if (menuVisible.value && currentUser.userId) {
+    if (menuVisible.value && currentUser.userId && !(currentUser.identity =='CONTRIBUTOR' || currentUser.identity == 'TEACHER')) {
         isArticleMenuOpen.value = !isArticleMenuOpen.value
     } else {
         router.push({
