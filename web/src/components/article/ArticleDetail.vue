@@ -80,7 +80,7 @@
       articleDetail.reason }}</el-text>
             </el-card>
 
-            <el-card v-if="JSON.parse(getCookie('userInfo'))['identity'] === 'EXPERT'">
+            <el-card v-if="JSON.parse(getCookie('userInfo'))?.identity === 'EXPERT'">
               <el-text class="MessageInputTag">反馈:</el-text>
               <el-input class="MessageInputBox" v-model="messageInputText" :disabled="store.getters.getToken === ''"
                 :placeholder="store.getters.getToken === '' ? '请先登录后评论! ' : ''" type="textarea"
@@ -156,7 +156,6 @@ const articleDetail = reactive<AttributeAddableObject>({
 })
 
 const isLocked = ref(false)
-
 const delArticleDialogVisible = ref(false)
 
 const currentStatus = ref('')
@@ -309,7 +308,6 @@ function addMessage(articleId: string, message: string) {
           message: '添加成功',
           type: 'success'
         })
-        loadMessageList()
       } else {
         ElMessage({
           message: data.message,
@@ -351,7 +349,7 @@ async function getRaw(articleId: String) {
 
 async function getIsLocked() {
   await SYNC_GET('/article/checkLocked', {
-    articleId: articleDetail.id
+    articleId: route.query.id
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
       isLocked.value = response.data.data
