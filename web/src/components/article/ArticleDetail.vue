@@ -80,7 +80,7 @@
       articleDetail.reason }}</el-text>
             </el-card>
 
-            <el-card v-if="JSON.parse(getCookie('userInfo'))?.identity === 'EXPERT'">
+            <el-card v-if="displayMessage">
               <el-text class="MessageInputTag">反馈:</el-text>
               <el-input class="MessageInputBox" v-model="messageInputText" :disabled="store.getters.getToken === ''"
                 :placeholder="store.getters.getToken === '' ? '请先登录后评论! ' : ''" type="textarea"
@@ -157,7 +157,7 @@ const articleDetail = reactive<AttributeAddableObject>({
 
 const isLocked = ref(false)
 const delArticleDialogVisible = ref(false)
-
+const displayMessage = ref(false)
 const currentStatus = ref('')
 const currentLikeCount = ref(0)
 const currentViewCount = ref(0)
@@ -466,8 +466,10 @@ const handleUpdateArticleClicked = () => {
 
 // 有article_id时初始化ArticleDetail
 (async () => {
-  let articleRaw: ArrayBuffer
   if (route.query.id === '' || route.query.id === undefined) return
+  if(getCookie('userInfo') !== '' && (JSON.parse(getCookie('userInfo'))?.identity === 'EXPERT'|| JSON.parse(getCookie('userInfo'))?.identity === 'HUNTER')){
+    displayMessage.value = true
+  }
   await SYNC_GET('/article/articleDetail', {
     article_id: route.query.id
   }, async (response) => {
