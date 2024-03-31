@@ -247,7 +247,7 @@ const like = async () => {
   }
   await SYNC_POST('/like/like', {
     token: store.getters.getToken,
-    articleId: articleDetail.id,
+    articleId: route.query.id,
     userId: store.getters.getUserInfo.id
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
@@ -280,8 +280,7 @@ const like = async () => {
 
 const addViewCount = async () => {
   await SYNC_POST('/view/addViewCount', {
-    token: store.getters.getToken,
-    articleId: articleDetail.id,
+    articleId: route.query.id,
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
       currentViewCount.value = response.data.data.currentViewCount
@@ -482,7 +481,7 @@ const handleUpdateArticleClicked = () => {
       }
       await getIsLocked()
       await getTextBy()
-      await getRaw(articleDetail.id)
+      await getRaw(route.query.id)
       await getLikeStatus()
       await getLikeCount()
       await getViewCount()
