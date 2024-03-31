@@ -24,7 +24,7 @@ public interface ArticleDao {
 
     @Insert("INSERT INTO article(id, title, description, text, time, audit_status, publish_status, tags, text_by, mentor, received_by) " +
             "VALUES (#{a.id}, #{a.title},#{a.description}, #{a.text}, #{a.time}, #{a.auditStatus}, #{a.publishStatus}, #{a.tags}, #{a.textBy}, #{a.mentor}, #{a.receivedBy})")
-    void insertArticle(@Param("a") Article article, int ignore);
+    void newInsertArticle(@Param("a") Article article, int ignore);
 
     // ======================================SELECT==========================================
 
