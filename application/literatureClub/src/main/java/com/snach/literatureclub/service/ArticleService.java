@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleAuditStatus;
+import com.snach.literatureclub.common.ArticlePublishStatus;
 import com.snach.literatureclub.common.exception.InsufficientPermissionException;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.dao.ArticleDao;
@@ -64,7 +65,7 @@ public interface ArticleService {
      * @param statusList the status of the article
      * @return PageInfo object containing article list
      */
-    PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleAuditStatus> statusList);
+    PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticlePublishStatus> statusList);
 
     /**
      * Delete article by article id
@@ -166,7 +167,7 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticleAuditStatus> statusList) {
+    public PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticlePublishStatus> statusList) {
         PageHelper.startPage(pageNum, pageSize);
         if (tag == null) {
             return new PageInfo<>(articleDao.getArticlesByKeyword(keyword, statusList));

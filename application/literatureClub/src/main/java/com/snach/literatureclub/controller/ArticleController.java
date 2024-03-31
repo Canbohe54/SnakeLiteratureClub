@@ -4,6 +4,7 @@ package com.snach.literatureclub.controller;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleAuditStatus;
+import com.snach.literatureclub.common.ArticlePublishStatus;
 import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.utils.MediaTypeConverter;
@@ -61,7 +62,7 @@ public class ArticleController {
                                            @RequestParam(value = "tag", required = false) String tag,
                                            @RequestParam(name = "page_num") int pageNum,
                                            @RequestParam(name = "page_size") int pageSize,
-                                           @RequestParam(name = "status_list") List<ArticleAuditStatus> statusList) {
+                                           @RequestParam(name = "status_list") List<ArticlePublishStatus> statusList) {
         return articleService.searchArticle(keyword, tag, pageNum, pageSize, statusList);
     }
 

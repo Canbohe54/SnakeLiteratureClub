@@ -55,9 +55,6 @@
         <el-button class="3" type="warning" @click="handleRejectClicked">
           打回
         </el-button>
-        <el-button class="3" type="warning" @click="handleTestClicked">
-          Test
-        </el-button>
       </div>
       <el-dialog
           draggable

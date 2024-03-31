@@ -47,7 +47,6 @@ public class Article {
     // Article status info
     ArticleAuditStatus auditStatus;
     ArticlePublishStatus publishStatus;
-    boolean isPublic;
 
     // Article raw file info
     @JsonIgnore

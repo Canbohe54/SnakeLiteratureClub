@@ -109,14 +109,14 @@ public interface ArticleDao {
      */
     @Select({"<script>",
             "SELECT ",
-            "id, time, text_by as textBy, title, description, status, tags ",
-            "FROM article WHERE title LIKE '%${keyword}%' AND status in",
+            "id, time, text_by as textBy, title, description, tags, publish_status as publishStatus ",
+            "FROM article WHERE audit_status='AUDITED' AND title LIKE '%${keyword}%' AND publish_status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
             "#{item}",
             "</foreach>",
             "</script>"
     })
-    List<Article> getArticlesByKeyword(String keyword, @Param("items") List<ArticleAuditStatus> statusList);
+    List<Article> getArticlesByKeyword(String keyword, @Param("items") List<ArticlePublishStatus> statusList);
 
     @Select("SELECT id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags" +
             " FROM article WHERE received_by = #{userId}")

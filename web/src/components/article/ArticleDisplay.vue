@@ -15,11 +15,11 @@
                   </div>
                 </div>
 
-                <div style="margin: 10px 0 0 0;">
-                  <el-text v-if="avgGradeMap.get(articleInfo.id) != ''" class="result-rate-text">评分：{{
-                    avgGradeMap.get(articleInfo.id) }}/15</el-text>
-                  <el-text v-else class="result-rate-text">暂无评分</el-text>
-                </div>
+<!--                <div style="margin: 10px 0 0 0;">-->
+<!--                  <el-text v-if="avgGradeMap.get(articleInfo.id) != ''" class="result-rate-text">评分：{{-->
+<!--                    avgGradeMap.get(articleInfo.id) }}/15</el-text>-->
+<!--                  <el-text v-else class="result-rate-text">暂无评分</el-text>-->
+<!--                </div>-->
               </el-card>
             </el-col>
           </el-row>
@@ -59,7 +59,7 @@ const pageInfo = {
 //   { 'id': 'a1', 'text_by': '田所 浩二', 'time': '1919-8-10-11:45', 'title': '关于生物制沼的若干研究', 'description': '生物制沼', 'attr': '{"tags": {}}' }]
 // })
 const articleList = reactive({artList: [], originalArticleList: []})
-const articleStatus = ['PUBLISHED']
+const articleStatus = ['PUBLIC','POSTED']
 getArticleList()
 
 watch(() => route.query.wd, () => {
@@ -112,8 +112,6 @@ async function getArticleList() {
   }
   await (SYNC_GET('/article/search', params, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
-      console.log(response)
-      await getAvgGrade(response.data.data.list)
       pageInfo.total = response.data.data.total
       await getTextBy(response.data.data.list)
     } else {
