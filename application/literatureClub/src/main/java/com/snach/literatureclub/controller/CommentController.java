@@ -4,7 +4,8 @@ import com.snach.literatureclub.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -18,11 +19,14 @@ public class CommentController {
     }
 
     @RequestMapping(value = "load", method = RequestMethod.POST)
-    public List<?> loadComment(@RequestParam("id") String id,
-                               @RequestParam(value = "recursive", defaultValue = "false") Boolean recursive,
-                               @RequestParam(value = "startAt", defaultValue = "0") int startAt,
-                               @RequestParam(value = "limit", defaultValue = "10") int limit) {
-        return commentService.loadComment(id, recursive, startAt, limit);
+    public Map<String, Object> loadComment(@RequestParam("id") String id,
+                                           @RequestParam(value = "recursive", defaultValue = "false") Boolean recursive,
+                                           @RequestParam(value = "startAt", defaultValue = "0") int startAt,
+                                           @RequestParam(value = "limit", defaultValue = "10") int limit) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("res", commentService.loadComment(id, recursive, startAt, limit));
+        response.put("rowsNum", commentService.getRootCommentCount(id));
+        return response;
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)

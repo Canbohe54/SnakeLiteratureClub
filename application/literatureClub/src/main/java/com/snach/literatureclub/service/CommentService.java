@@ -29,6 +29,8 @@ public interface CommentService {
      */
     List<?> loadComment(String articleId, Boolean recursive, int startAt, int limit);
 
+    int getRootCommentCount(String articleId);
+
     /**
      * 添加评论
      *
@@ -75,6 +77,11 @@ class CommentServiceImpl implements CommentService {
             resultList.add(onComment);
         }
         return resultList;
+    }
+
+    @Override
+    public int getRootCommentCount(String articleId) {
+        return commentDao.getRootCommentCount(articleId);
     }
 
     @Override

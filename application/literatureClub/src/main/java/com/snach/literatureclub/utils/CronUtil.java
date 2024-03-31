@@ -6,11 +6,13 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Slf4j
+@Component
 public class CronUtil extends QuartzJobBean {
     @Autowired
     private DBService dbService;

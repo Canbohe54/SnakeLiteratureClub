@@ -13,10 +13,10 @@ public interface FeedbackMessageDao {
     @Select("SELECT id, `from`, message, `to` FROM message WHERE `from`=#{from} AND `to`=#{to}")
     Message getMessage(String from, String to);
 
-    @Select("SELECT id, `from`, message, `to` FROM message WHERE `to`=#{to}")
+    @Select("SELECT id, `from`, message, `to` FROM message WHERE `from`=#{from}")
     List<Message> getMessageByUserId(String to);
 
-    @Select("SELECT id, `from`, message, `to` FROM message WHERE `from`=#{from}")
+    @Select("SELECT id, `from`, message, `to` FROM message WHERE `to`=#{to}")
     List<Message> getMessageByArticleId(String from);
 
     @Select("SELECT id, `from`, message, `to` FROM message WHERE id=#{id}")
