@@ -230,16 +230,16 @@ const articleDetail: AttributeAddableObject = reactive({
   textBy: '',
   title: '',
   description: '',
-  status: 'ROUGH',
+  auditStatus: 'ROUGH',
   tags: '{}',
   raw: {},
-  file_type: '',
-  received_by: '',
+  fileType: '',
+  receivedBy: '',
   mentor: '',
   authorName: '',
   authorOrganization: '',
   authorGrade: '',
-  audited_by: '',
+  auditedBy: '',
 })
 const editFormRef = ref<FormInstance>()
 const basicInfoFormRef = ref<FormInstance>()
@@ -282,11 +282,11 @@ const getArticleDetail = async () => {
       }
       SearchFilterRef.value.loadSelection(articleDetail.tags)
       articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
-      if (articleDetail.received_by !== '') {
+      if (articleDetail.receivedBy !== '') {
         contributeManager.contributeWay = 'PUBLISHED'
-        contributeManager.contributeTo = articleDetail.received_by
+        contributeManager.contributeTo = articleDetail.receivedBy
       }
-      if (articleDetail.audited_by !== '') {
+      if (articleDetail.auditedBy !== '') {
         contributeManager.sameAuditor = true
       }
       await getRaw(articleDetail.id)
@@ -305,8 +305,8 @@ async function getRaw(articleId: String) {
     responseType: 'arraybuffer'
 
   }).then(response => {
-    const blob = new Blob([response.data], {type: articleDetail.file_type})
-    articleDetail.raw = new File([blob], articleDetail.title, {type: articleDetail.file_type})
+    const blob = new Blob([response.data], {type: articleDetail.fileType})
+    articleDetail.raw = new File([blob], articleDetail.title, {type: articleDetail.fileType})
     if (articleDetail.raw.size == 0) {
       previewType.value = 'info'
     } else {
@@ -341,14 +341,14 @@ const save = async () => {
   param.append("textBy", '')
   param.append("title", articleDetail.title)
   param.append("description", articleDetail.description)
-  param.append("status", 'ROUGH')
+  param.append("auditStatus", 'ROUGH')
   param.append("tags", articleDetail.tags)
-  param.append("fileType", articleDetail.file_type)
+  param.append("fileType", articleDetail.fileType)
   if (contributeManager.contributeWay == 'PUBLISHED') {
     param.append("receivedBy", contributeManager.contributeTo)
   }
   if (contributeManager.sameAuditor) {
-    param.append('auditedBy', articleDetail.audited_by)
+    param.append('auditedBy', articleDetail.auditedBy)
   }
   await SYNC_POST('/contributor/contribute', param, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
@@ -376,14 +376,14 @@ const release = async () => {
   param.append("textBy", '')
   param.append("title", articleDetail.title)
   param.append("description", articleDetail.description)
-  param.append("status", 'SUBMITTED')
+  param.append("auditStatus", 'SUBMITTED')
   param.append("tags", articleDetail.tags)
-  param.append("fileType", articleDetail.file_type)
+  param.append("fileType", articleDetail.fileType)
   if (contributeManager.contributeWay == 'PUBLISHED') {
     param.append("receivedBy", contributeManager.contributeTo)
   }
   if (contributeManager.sameAuditor) {
-    param.append('auditedBy', articleDetail.audited_by)
+    param.append('auditedBy', articleDetail.auditedBy)
   }
 
 
@@ -402,53 +402,7 @@ const release = async () => {
     }
   )
 }
-const analyzeTXT = (file: any) => {
-  const fileReader = new FileReader()
-  fileReader.onload = async (e) => {
-    articleDetail.text = e.target?.result as string
-  }
-  fileReader.readAsText(file.raw)
-}
-const analyzeDOCX = (file: any) => {
-  const fileReader = new FileReader()
-  fileReader.onload = async (event) => {
-    const arrayBuffer = event.target?.result as ArrayBuffer
-    mammoth.convertToHtml({arrayBuffer: arrayBuffer})
-      .then(async function (result) {
-        let html = result.value; // The generated HTML
-        let match = html.match(/<img(.|\n)*?\/>/mg)
 
-        //提取src="后的base64图片
-        const base64List = (match?.map((item: any) => {
-          return item.toString().match(/src=".*"/mg)[0].toString().slice(5, -1)
-        })) as Array<string>
-
-        imageFileList.value = base64List.map((item: any, index: any) => {
-          let file: File = base64ToFile(item, index)
-          const newImageName = generateImageName(file.name)
-
-          let upLoadFile: UploadFile = {
-            name: newImageName,
-            uid: file.uid,
-            status: 'ready',
-            size: file.size,
-            url: URL.createObjectURL(file),
-            percentage: 0,
-            raw: file
-          }
-          return upLoadFile
-        })
-
-        let content = (await mammoth.extractRawText({arrayBuffer: arrayBuffer})).value
-        articleDetail.text = content.replace(/(\n\n)/gm, '\n')
-        let messages = result.messages; // Any messages, such as warnings during conversion
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
-  }
-  fileReader.readAsArrayBuffer(file.raw);
-}
 // 上传文件后显示到inputBox
 const changeInputBox = (file: any) => {
   let subFileNames = file.name.split('.')
@@ -457,7 +411,7 @@ const changeInputBox = (file: any) => {
     errorMessage('仅能支持.docx和.txt结尾的文件喔')
     return
   }
-  articleDetail.file_type = acceptFileType.get(suffix)
+  articleDetail.fileType = acceptFileType.get(suffix)
   upload.value!.clearFiles()
   articleDetail.raw = file.raw
 

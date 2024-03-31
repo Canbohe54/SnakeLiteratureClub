@@ -362,7 +362,7 @@ async function getIsLocked() {
 
 async function handleUnlock() {
   // 如果非公开且已刊登，无法手动解锁
-  if (articleDetail.status === 'PUBLISHED' && articleDetail.received_by !== '' && !articleDetail.public) {
+  if (articleDetail.publishStatus === 'POSTED') {
     let expire = 0;
     await SYNC_GET("/article/getArticleLockExpire", { articleId: articleDetail.id }, (response) => {
       if (response.status === 200 && response.data.code === 2001) {

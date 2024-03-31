@@ -10,7 +10,7 @@
               </el-row>
               <el-row class="article-box-card">
                 <el-text class="article-detail-author">（
-                  <el-button link :onclick="handleAuthorClicked">{{ articleDetail.text_by }}</el-button>
+                  <el-button link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
                   ） {{ articleDetail.time }}
                 </el-text>
               </el-row>
@@ -175,14 +175,14 @@ const articleDetail = reactive<AttributeAddableObject>({
   id: null,
   text: '',
   time: '',
-  text_by: '',
+  textBy: '',
   text_by_id: '',
   title: '',
   description: '',
   status: '',
   tags: '{}',
   raw: {},
-  file_type: ''
+  fileType: ''
 })
 const displaySize = ref("default")
 const identity = ref('')
@@ -207,12 +207,12 @@ const searchFilterChange = () => {
 }
 
 async function getTextBy() {
-  articleDetail.text_by_id = articleDetail.text_by
+  articleDetail.text_by_id = articleDetail.textBy
   await SYNC_GET('/usr/getUserBasicInfo', {
-    user_id: articleDetail.text_by
+    user_id: articleDetail.textBy
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
-      articleDetail.text_by = response.data.data.user_info.name
+      articleDetail.textBy = response.data.data.user_info.name
     } else {
       console.log(response)
     }
@@ -233,8 +233,8 @@ async function getPDF(articleId: String) {
     responseType: 'arraybuffer'
 
   }).then(response => {
-    const blob = new Blob([response.data], {type: articleDetail.file_type})
-    articlePDF.raw = new File([blob], articleDetail.title, {type: articleDetail.file_type})
+    const blob = new Blob([response.data], {type: articleDetail.fileType})
+    articlePDF.raw = new File([blob], articleDetail.title, {type: articleDetail.fileType})
 
   }).catch(error => {
     console.error(error);
@@ -250,8 +250,8 @@ async function getRaw(articleId: String) {
     responseType: 'arraybuffer'
 
   }).then(response => {
-    const blob = new Blob([response.data], {type: articleDetail.file_type})
-    articleDetail.raw = new File([blob], articleDetail.title, {type: articleDetail.file_type})
+    const blob = new Blob([response.data], {type: articleDetail.fileType})
+    articleDetail.raw = new File([blob], articleDetail.title, {type: articleDetail.fileType})
 
   }).catch(error => {
     console.error(error);
@@ -277,7 +277,7 @@ const getHunterByName = async (userName: string) => {
 }
 
 const handleAuthorClicked = () => {
-  if (articleDetail.text_by !== '' && articleDetail.text_by !== undefined) {
+  if (articleDetail.textBy !== '' && articleDetail.textBy !== undefined) {
     // router.push('/user/'+articleDetail.text_by_id)
     toUserPage(articleDetail.text_by_id)
   } else {

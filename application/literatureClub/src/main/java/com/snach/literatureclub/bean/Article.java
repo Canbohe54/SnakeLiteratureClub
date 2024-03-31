@@ -31,7 +31,6 @@ public class Article {
     // Article basic info
     String id;
     Date time;
-    @JsonProperty("text_by")
     String textBy;
 
     String title;
@@ -51,9 +50,7 @@ public class Article {
     // Article raw file info
     @JsonIgnore
     byte[] raw;
-    @JsonProperty("file_type")
     String fileType;
-    @JsonProperty("latest_approval_article_url")
     String latestApprovalArticleUrl;
 
     // Article attribute
@@ -66,9 +63,7 @@ public class Article {
     @Nullable
     String mentor;
     @Nullable
-    @JsonProperty("received_by")
     String receivedBy;
-    @JsonProperty("audited_by")
     String auditedBy;
 
     String reason;

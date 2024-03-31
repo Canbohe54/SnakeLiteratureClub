@@ -92,7 +92,7 @@ public interface ArticleDao {
      */
     @Select({"<script>",
             "SELECT ",
-            "id, text, time, text_by as textBy, title, description, status, tags ",
+            "id, text, time, text_by as textBy, title, description, publish_status as publishStatus, tags ",
             "FROM article WHERE title LIKE '%${keyword}%' AND tags LIKE '%\"tags\":%\"${tag}\"%]%' AND status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
             "#{item}",
@@ -192,20 +192,20 @@ public interface ArticleDao {
             "a.description = #{a.description}, " +
             "a.text = #{a.text}, " +
             "a.time = #{a.time}, " +
-            "a.audit_status = #{a.audit_status}, " +
-            "a.publish_status = #{a.publish_status}, " +
+            "a.audit_status = #{a.auditStatus}, " +
+            "a.publish_status = #{a.publishStatus}, " +
             "a.tags = #{a.tags}, " +
-            "a.text_by = #{a.text_by}, " +
-            "a.file_type = #{a.file_type}, " +
+            "a.text_by = #{a.textBy}, " +
+            "a.file_type = #{a.fileType}, " +
             "a.raw = #{a.raw}, " +
             "a.mentor = #{a.mentor}, " +
-            "a.latest_approval_article_url = #{a.latest_approval_article_url}, " +
-            "a.received_by = #{a.received_by}, " +
-            "a.author_name = #{a.author_name}, " +
-            "a.author_org = #{a.author_org}, " +
-            "a.author_grade = #{a.author_grade}, " +
+            "a.latest_approval_article_url = #{a.latestApprovalArticleUrl}, " +
+            "a.received_by = #{a.receivedBy}, " +
+            "a.author_name = #{a.authorName}, " +
+            "a.author_org = #{a.authorOrganization}, " +
+            "a.author_grade = #{a.authorGrade}, " +
             "a.reason = #{a.reason}, " +
-            "a.audited_by = #{a.audited_by} " +
+            "a.audited_by = #{a.auditedBy} " +
             "WHERE a.id = #{a.id}")
     int updateArticleDetail(@Param("a") Article article);
 
