@@ -80,7 +80,8 @@ public interface ArticleDao {
      *
      * @return 所有的稿件信息的Article对象List
      */
-    @Select("SELECT id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags FROM article WHERE audit_status = 'PUBLISHED'")
+    @Select("SELECT id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags " +
+            "FROM article WHERE audit_status = 'AUDITED' AND publish_status in ('POSTED','PUBLIC')")
     List<Article> getAllArticles();
 
     /**
