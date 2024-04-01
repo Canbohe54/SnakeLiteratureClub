@@ -41,4 +41,7 @@ public interface UserDao {
 
     @Insert("UPDATE user SET name = #{user.name}, phone = #{user.phone}, introduction = #{user.introduction}, organization = #{user.organization}, attrs = #{user.attrs} WHERE id = #{user.id}")
     void updateUserInfo(@Param("user") User user);
+
+    @Update("UPDATE user SET password = #{newPassword} WHERE id = #{id}")
+    void updateUserPassword(String id, String newPassword);
 }

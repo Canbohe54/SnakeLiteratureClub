@@ -64,7 +64,12 @@ public class UserController {
     }
 
     @RequestMapping(value = "updateUserInfo", method = RequestMethod.POST)
-    public boolean updateUserInfo(String token, User user) {
+    public boolean updateUserInfo(String token, @RequestParam("user") User user) {
         return userService.updateUserBasicInfo(token, user);
+    }
+
+    @RequestMapping(value = "updateUserPassword", method = RequestMethod.POST)
+    public boolean updateUserPassword(String token, String oldPassword, String newPassword) {
+        return userService.updateUserPassword(token, oldPassword, newPassword);
     }
 }

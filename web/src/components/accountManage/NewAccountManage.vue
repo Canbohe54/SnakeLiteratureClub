@@ -93,6 +93,8 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import AvatarSelection from '../user/AvatarSelection.vue';
+import { SnachResponse } from '@/scripts/types/ResponseObject';
+import { getCookie } from '@/scripts/cookie';
 
 const router = useRouter()
 const store = useStore()
@@ -190,7 +192,9 @@ const onChangeInfo = async (formEl: FormInstance | undefined) => { // 提交表�
     if (formEl) {
         formEl.validate(async (valid: boolean) => {
             if (valid) {
-                const data = {
+                const requestData = {
+                    token: getCookie('token'),
+                    id: store.getters.getUserInfo.id,
                     name: changeForm.username,
                     organization: changeForm.organization,
                     attribute: changeForm.attribute,
@@ -198,7 +202,16 @@ const onChangeInfo = async (formEl: FormInstance | undefined) => { // 提交表�
                     phone: changeForm.phone,
                     pictureUrl: JSON.stringify(changeForm.avatar)
                 }
-                // TODO: 这里写Ajax请求 @aZu-sa
+                $.post({
+                    url: 'http://localhost:19198/usr/updateUserInfo',
+                    async: false,
+                    enctype: 'multipart/form-data',
+                    data: requestData,
+                    success: (data: SnachResponse<boolean>) => {
+                        console.log(data)
+                        // TODO: success @Canbohe54
+                    }
+                })
             } else {
                 return false
             }
@@ -254,11 +267,21 @@ const onChangePasswd = async (formEl: FormInstance | undefined) => { // 提交�
     if (formEl) {
         formEl.validate(async (valid: boolean) => {
             if (valid) {
-                const data = {
+                const requestData = {
+                    token: getCookie('token'),
                     oldPassword: passwdForm.oldPassword,
                     newPassword: passwdForm.newPassword
                 }
-                // TODO: 这里写Ajax请求 @aZu-sa
+                $.post({
+                    url: 'http://localhost:19198/usr/updateUserPassword',
+                    async: false,
+                    enctype: 'multipart/form-data',
+                    data: requestData,
+                    success: (data: SnachResponse<boolean>) => {
+                        console.log(data)
+                        // TODO: success @Canbohe54
+                    }
+                })
             } else {
                 return false
             }

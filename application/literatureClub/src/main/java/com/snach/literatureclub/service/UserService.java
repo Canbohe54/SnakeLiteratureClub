@@ -14,9 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.snach.literatureclub.utils.TokenTools.tokenGen;
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
+import static com.snach.literatureclub.utils.TokenTools.getPayload;
 
 
 @Service
@@ -31,6 +33,8 @@ public interface UserService {
 
     List<User> getUserBasicInfoByNameNoPagination(String name, List<String> identity);
     boolean updateUserBasicInfo(String token, User user);
+
+    boolean updateUserPassword(String token, String oldPassword, String newPassword);
 }
 @Transactional(rollbackFor = Exception.class)
 @Mapper
@@ -90,7 +94,7 @@ class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUserBasicInfoByNameNoPagination(String name, List<String> identity) {
-        if(identity != null && !identity.isEmpty()){
+        if(identity != null && !identity.isEmpty()) {
             return userDao.getUserByNameAndIdentity(name, identity);
         }
         return userDao.getUserByName(name);
@@ -102,6 +106,19 @@ class UserServiceImpl implements UserService {
             throw new InvalidTokenException();
         }
         userDao.updateUserInfo(user);
+        return true;
+    }
+
+    @Override
+    public boolean updateUserPassword(String token, String oldPassword, String newPassword) {
+        if (!tokenVerify(token)) {
+            throw new InvalidTokenException();
+        }
+        String id = getPayload(token, "id");
+        if (!Objects.equals(userDao.loginById(id, oldPassword), id)) {
+            throw new WrongIdOrPasswordException("Wrong old password.");
+        }
+        userDao.updateUserPassword(id, newPassword);
         return true;
     }
 }
