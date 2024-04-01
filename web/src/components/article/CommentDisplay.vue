@@ -17,9 +17,9 @@
   </el-card>
   <el-card>
     <ul class="CommentList" v-if="commentDisplayConf.maxCommentRowsNum > 0" v-infinite-scroll="loadCommentList">
-      <li v-for="(item) in commentList">
+      <li v-for="(item, index) in commentList" >
         <el-row class="CommentDisplay">
-          <SnakeAvatar :src="item.commenterAvatar" @click="toUserPage(item.commenterId)" class="CommenterAvatar"/>
+          <SnakeAvatar :kKey="index" :pictureUrl="item.commenterAvatar" @click="toUserPage(item.commenterId)" class="CommenterAvatar"/>
           <div class="blank"></div>
           <el-text class="CommenterName" @click="toUserPage(item.commenterId)">{{ item.commenter }}</el-text>
           <div class="e"></div>
@@ -104,6 +104,8 @@ async function loadCommentList () {
         if (commenter === null) {
           ElMessage({
             message: '获取评论用户信息失败!',
+            showClose: true,
+            grouping: true,
             type: 'error'
           })
           continue
