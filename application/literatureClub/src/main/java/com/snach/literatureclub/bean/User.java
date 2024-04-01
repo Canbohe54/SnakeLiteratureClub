@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.snach.literatureclub.bean.attribute.UserAttribute;
 import com.snach.literatureclub.bean.attribute.UserAttributeFactory;
 import com.snach.literatureclub.common.Identity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
