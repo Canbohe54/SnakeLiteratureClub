@@ -29,6 +29,7 @@
 import { Options, Vue } from 'vue-class-component'
 import NavBar from '@/components/NavBarResponsive.vue'
 import NewUserCenter from '@/components/user/NewUserCenter.vue'
+import { ref } from 'vue'
 
 @Options({
   components: {
@@ -43,5 +44,6 @@ import NewUserCenter from '@/components/user/NewUserCenter.vue'
     }
   }
 })
+
 export default class UserCenterView extends Vue {}
 </script>

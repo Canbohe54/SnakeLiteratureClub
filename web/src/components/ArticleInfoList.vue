@@ -8,7 +8,7 @@
         </el-col>
         <el-col :span="24" v-if="!is_card" v-for="articleInfo in articleList">
             <ArticleInfo :articleInfo="articleInfo" :statusVisible="currentSettings.statusVisible"
-                :iconVisible="currentSettings.iconVisible" :tagsVisible="currentSettings.tagsVisible"
+                :iconVisible="currentSettings.iconVisible" :tagsVisible="currentSettings.tagsVisible" :viewcountVisible="currentSettings.viewcountVisible"
                 class="not-card-info" />
         </el-col>
         <el-col :span="24" v-if="articleList.length === 0">
@@ -131,29 +131,46 @@ const { mode, is_card, articleList } = toRefs(props)
 const currentSettings = reactive({
     statusVisible: true,
     iconVisible: true,
-    tagsVisible: true
+    tagsVisible: true,
+    viewcountVisible: true,
+    is_card: true
 })
 
 const modeSettings = {
-    USER_OWN: {
+    USER_PUBLIC_LIST: {
         statusVisible: true,
         iconVisible: true,
-        tagsVisible: true
+        tagsVisible: true,
+        viewcountVisible: true,
+        is_card: true
     },
-    AUDIT: {
+    USER_PRIVATE_LIST: {
+        statusVisible: true,
+        iconVisible: true,
+        tagsVisible: true,
+        viewcountVisible: false,
+        is_card: false
+    },
+    AUDIT_LIST: {
         statusVisible: true,
         iconVisible: false,
-        tagsVisible: true
+        tagsVisible: true,
+        viewcountVisible: false,
+        is_card: false
     },
     LOBBY: {
         statusVisible: true,
         iconVisible: false,
-        tagsVisible: true
+        tagsVisible: true,
+        viewcountVisible: true,
+        is_card: true
     },
     RECEIVED: {
         statusVisible: false,
         iconVisible: false,
-        tagsVisible: true
+        tagsVisible: true,
+        viewcountVisible: false,
+        is_card: false
     }
 }
 
@@ -173,6 +190,10 @@ const pageInfo = reactive({
     margin: 10px;
     border-radius: 10px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.article-el-card:hover {
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
 }
 
 .not-card-info {

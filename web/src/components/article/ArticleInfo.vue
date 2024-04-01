@@ -365,16 +365,6 @@ function handleArticlePublic() {
     z-index: 1;
 }
 
-.article-el-card {
-    margin: 10px;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
-.article-el-card:hover {
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
-}
-
 .article-status-container {
     display: flex;
     justify-content: flex-end;

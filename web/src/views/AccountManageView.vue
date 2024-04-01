@@ -1,7 +1,7 @@
 <template>
     <el-scrollbar height="100vh">
         <div class="container">
-            <div class="acc-manage-nav-bar">
+            <div>
                 <NavBar />
             </div>
             <div class="acc-manage">
@@ -9,10 +9,13 @@
                     <el-col :span="3" class="acc-manage-bar hidden-md-and-down">
                         <AccManageBar />
                     </el-col>
-                    <el-col :span="21" class="acc-manage-center"> <!--非常完美，不要改了-->
+                    <el-col :span="21" class="acc-manage-center">
                         <router-view />
                     </el-col>
                 </el-row>
+            </div>
+            <div>
+                <NewAccountManage />
             </div>
         </div>
     </el-scrollbar>
@@ -39,11 +42,11 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import NavBar from "@/components/NavBarResponsive.vue";
-import AccManageBar from '@/components/accountManage/AccManageBar.vue'
+import NewAccountManage from "@/components/accountManage/NewAccountManage.vue";
 @Options({
     components: {
         NavBar,
-        AccManageBar
+        NewAccountManage,
     }
 })
 export default class UserCenterView extends Vue { }
