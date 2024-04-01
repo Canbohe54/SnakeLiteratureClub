@@ -18,25 +18,25 @@ public interface ArticleDao {
      *
      * @param article 封装有稿件信息的Article对象
      */
-    @Insert("INSERT INTO article(id, title, description, text, time, audit_status, publish_status, tags, text_by, file_type, raw, mentor, latest_approval_article_url, received_by, author_name, author_org, author_grade, reason, audited_by) " +
-            "VALUES(#{a.id}, #{a.title}, #{a.description}, #{a.text}, #{a.time}, #{a.auditStatus}, #{a.publishStatus}, #{a.tags}, #{a.textBy}, #{a.fileType}, #{a.raw}, #{a.mentor}, #{a.latestApprovalArticleUrl}, #{a.receivedBy}, #{a.authorName}, #{a.authorOrganization}, #{a.authorGrade}, #{a.reason}, #{a.auditedBy})")
+    @Insert("INSERT INTO article(id, title, description, time, audit_status, publish_status, tags, text_by, file_type, raw, mentor, latest_approval_article_url, received_by, author_name, author_org, author_grade, reason, audited_by) " +
+            "VALUES(#{a.id}, #{a.title}, #{a.description}, #{a.time}, #{a.auditStatus}, #{a.publishStatus}, #{a.tags}, #{a.textBy}, #{a.fileType}, #{a.raw}, #{a.mentor}, #{a.latestApprovalArticleUrl}, #{a.receivedBy}, #{a.authorName}, #{a.authorOrganization}, #{a.authorGrade}, #{a.reason}, #{a.auditedBy})")
     void insertArticle(@Param("a") Article article);
 
-    @Insert("INSERT INTO article(id, title, description, text, time, audit_status, publish_status, tags, text_by, mentor, received_by) " +
-            "VALUES (#{a.id}, #{a.title},#{a.description}, #{a.text}, #{a.time}, #{a.auditStatus}, #{a.publishStatus}, #{a.tags}, #{a.textBy}, #{a.mentor}, #{a.receivedBy})")
+    @Insert("INSERT INTO article(id, title, description, time, audit_status, publish_status, tags, text_by, mentor, received_by) " +
+            "VALUES (#{a.id}, #{a.title},#{a.description}, #{a.time}, #{a.auditStatus}, #{a.publishStatus}, #{a.tags}, #{a.textBy}, #{a.mentor}, #{a.receivedBy})")
     void newInsertArticle(@Param("a") Article article, int ignore);
 
     // ======================================SELECT==========================================
 
-    @Select("SELECT id, title, description, text, time, audit_status AS auditStatus, publish_status AS publishStatus, tags, text_by as textBy, mentor, file_type as fileType " +
+    @Select("SELECT id, title, description, time, audit_status AS auditStatus, publish_status AS publishStatus, tags, text_by as textBy, mentor, file_type as fileType " +
             "FROM article WHERE audit_status = #{status} LIMIT 1 FOR UPDATE")
     Article getArticleByAuditStatus(ArticleAuditStatus status);
 
-    @Select("SELECT id, title, description, text, time, audit_status AS auditStatus, publish_status AS publishStatus, tags, text_by as textBy, mentor, file_type as fileType " +
+    @Select("SELECT id, title, description, time, audit_status AS auditStatus, publish_status AS publishStatus, tags, text_by as textBy, mentor, file_type as fileType " +
             "FROM article WHERE audit_status=#{status} LIMIT 1 FOR UPDATE")
     Article getArticleByPublishStatus(ArticlePublishStatus status);
 
-    @Select("SELECT id, title, description, text, time, audit_status AS auditStatus, publish_status AS publishStatus, tags, text_by as textBy, mentor, file_type as fileType " +
+    @Select("SELECT id, title, description, time, audit_status AS auditStatus, publish_status AS publishStatus, tags, text_by as textBy, mentor, file_type as fileType " +
             "FROM article WHERE audit_status=#{status} AND audited_by=#{auditedBy} LIMIT 1 FOR UPDATE")
     Article getArticleByStatusAndAuditedBy(ArticleAuditStatus status, String auditedBy);
     /**
@@ -72,7 +72,7 @@ public interface ArticleDao {
      * @param id 稿件id
      * @return id对应的稿件信息的Article对象
      */
-    @Select("SELECT id, text, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags, `file_type` as fileType, author_name as authorName, author_org as authorOrganization, author_grade as authorGrade, reason, audited_by as auditedBy FROM article WHERE id = #{id}")
+    @Select("SELECT id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags, `file_type` as fileType, author_name as authorName, author_org as authorOrganization, author_grade as authorGrade, reason, audited_by as auditedBy FROM article WHERE id = #{id}")
     Article getArticleById(@Param("id") String id);
 
     /**
@@ -92,7 +92,7 @@ public interface ArticleDao {
      */
     @Select({"<script>",
             "SELECT ",
-            "id, text, time, text_by as textBy, title, description, publish_status as publishStatus, tags ",
+            "id, time, text_by as textBy, title, description, publish_status as publishStatus, tags ",
             "FROM article WHERE title LIKE '%${keyword}%' AND tags LIKE '%\"tags\":%\"${tag}\"%]%' AND status in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
             "#{item}",
@@ -190,7 +190,6 @@ public interface ArticleDao {
     @Update("UPDATE article AS a SET " +
             "a.title = #{a.title}, " +
             "a.description = #{a.description}, " +
-            "a.text = #{a.text}, " +
             "a.time = #{a.time}, " +
             "a.audit_status = #{a.auditStatus}, " +
             "a.publish_status = #{a.publishStatus}, " +
