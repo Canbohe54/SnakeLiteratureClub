@@ -37,7 +37,7 @@ function articleTagCheck (articleAttr: AttributeAddableObject, filterSelection: 
 export function articleTagFilter (articleList: ArticleInfo[], filterSelection: AttributeAddableObject) {
   let conformArticle: ArticleInfo[] = []
   for (const article of articleList) {
-    let tags = JSON.parse(article.attr)['tags']
+    let tags = article.tags
     if (articleTagCheck(tags, filterSelection)) {
       conformArticle.push(article)
     }

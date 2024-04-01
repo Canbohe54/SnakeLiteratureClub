@@ -8,7 +8,7 @@
             <el-col v-for="(articleInfo, index) in articleList.artList" :key="index" :span="12">
               <el-card class="box-card result-card-body" @click='gotoDetail(articleInfo.id)' shadow="hover">
                 <div>
-                  {{ articleInfo['text_by'] }} - {{ articleInfo.time }}
+                  {{ articleInfo['textBy'] }} - {{ articleInfo.time }}
                   <h2>{{ articleInfo.title }}</h2>
                   <div style="min-height: 40px;">
                       {{ articleInfo.description.length > 20 ? articleInfo.description.slice(0, 20) + '...' : articleInfo.description }}
@@ -84,10 +84,10 @@ async function getTextBy(artList: any) {
   await Promise.all(
     artList.map(async (item: any) => {
       await SYNC_GET('/usr/getUserBasicInfo', {
-        user_id: item.text_by
+        user_id: item.textBy
       }, response => {
         if (response.status === 200 && (response.data.message=== 'Success.' || response.data.message === 'Nonexistent')) {
-          item.text_by = response.data.data.user_info.name
+          item.textBy = response.data.data.user_info.name
         } else {
           console.log(response)
         }
@@ -113,6 +113,7 @@ async function getArticleList() {
   await (SYNC_GET('/article/search', params, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
       pageInfo.total = response.data.data.total
+      console.log(response)
       await getTextBy(response.data.data.list)
     } else {
       console.log(response)
@@ -127,25 +128,6 @@ function gotoDetail(articleId: any) {
   }
 }
 
-async function getAvgGrade(artList: any) {
-  await Promise.all(
-    artList.map(async (item: any) => {
-      await SYNC_POST('/grade/getAvgGrade', {
-        article_id: item.id
-      }, response => {
-        if (response.status === 200 && response.data.statusMsg === 'success') {
-          if(Math.round(response.data.avg_grade) == response.data.avg_grade){
-            avgGradeMap.set(response.data.article_id, response.data.avg_grade)
-          }else{
-            avgGradeMap.set(response.data.article_id, response.data.avg_grade.toFixed(2))
-          }
-        } else {
-          console.log(response)
-        }
-      })
-    })
-  )
-}
 
 defineExpose({ articleList })
 </script>

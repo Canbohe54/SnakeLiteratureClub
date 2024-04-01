@@ -129,7 +129,6 @@ const avatar = reactive(pictureUrl.value? JSON.parse(pictureUrl.value) : null)
 function init(){
 
     if (avatar){
-      console.log(avatar)
         $("#avatar_"+avatar.avatar+"_"+avatar.color.split('#')[1]+kKey.value).css("background-color", `${avatar.color}`)
         $("#avatar-img_"+avatar.avatar+"_"+avatar.color.split('#')[1]+kKey.value).attr("src", 'avatars/'+`${avatar.avatar}`+'.png')
     }
