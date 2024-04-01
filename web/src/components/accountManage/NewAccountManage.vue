@@ -95,7 +95,6 @@ import { useStore } from 'vuex';
 import AvatarSelection from '../user/AvatarSelection.vue';
 import { SnachResponse } from '@/scripts/types/ResponseObject';
 import { getCookie } from '@/scripts/cookie';
-import { User } from "@/scripts/types/models";
 
 const router = useRouter()
 const store = useStore()
