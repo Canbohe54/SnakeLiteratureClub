@@ -7,11 +7,13 @@
 </template>
 <script lang="ts" setup>
 // import { getAssetsFile } from "@/scripts/ImageUtil";
-import snake from '@/assets/snake.png'
+import bridge_1 from '@/assets/carousel/bridge_1.png'
+import bridge_2 from '@/assets/carousel/bridge_2.png'
+import bridge_3 from '@/assets/carousel/bridge_3.png'
 const imageList = [
-  { url: snake , description: 'snakeliteratureclub'},
-  { url: snake, description: 'snake'},
-  { url: snake, description: 'snake' },
+  { url: bridge_1, description: 'The_bridge_of_youth'},
+  { url: bridge_2, description: 'The_bridge_of_youth' },
+  { url: bridge_3, description: 'The_bridge_of_youth' },
 ];
 
 </script>
