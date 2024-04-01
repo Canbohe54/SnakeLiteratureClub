@@ -31,7 +31,7 @@
               </el-row>
               <el-row class="article-box-card">
                 <el-text class="article-detail-author">
-                  <el-button link :onclick="handleAuthorClicked">{{ articleDetail.text_by }}</el-button>
+                  <el-button link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
                   （五年级） 下北泽中学 指导老师：野兽先辈
                 </el-text>
               </el-row>
@@ -80,7 +80,7 @@
       articleDetail.reason }}</el-text>
             </el-card>
 
-            <el-card v-if="JSON.parse(getCookie('userInfo'))['identity'] === 'EXPERT'">
+            <el-card v-if="displayMessage">
               <el-text class="MessageInputTag">反馈:</el-text>
               <el-input class="MessageInputBox" v-model="messageInputText" :disabled="store.getters.getToken === ''"
                 :placeholder="store.getters.getToken === '' ? '请先登录后评论! ' : ''" type="textarea"
@@ -142,22 +142,22 @@ const articleDetail = reactive<AttributeAddableObject>({
   id: null,
   text: '',
   time: '',
-  text_by: '',
+  textBy: '',
   text_by_id: '',
   title: '',
   description: '',
-  status: '',
+  auditStatus: '',
+  publishStatus: '',
   tags: '{}',
   raw: {},
-  file_type: '',
-  received_by: '',
+  fileType: '',
+  receivedBy: '',
   reason: '',
 })
 
 const isLocked = ref(false)
-
 const delArticleDialogVisible = ref(false)
-
+const displayMessage = ref(false)
 const currentStatus = ref('')
 const currentLikeCount = ref(0)
 const currentViewCount = ref(0)
@@ -179,12 +179,12 @@ function handleDiscriptionLarge() {
 }
 
 async function getTextBy() {
-  articleDetail.text_by_id = articleDetail.text_by
+  articleDetail.text_by_id = articleDetail.textBy
   await SYNC_GET('/usr/getUserBasicInfo', {
-    user_id: articleDetail.text_by
+    user_id: articleDetail.textBy
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
-      articleDetail.text_by = response.data.data.user_info.name
+      articleDetail.textBy = response.data.data.user_info.name
     } else {
       console.log(response)
     }
@@ -247,7 +247,7 @@ const like = async () => {
   }
   await SYNC_POST('/like/like', {
     token: store.getters.getToken,
-    articleId: articleDetail.id,
+    articleId: route.query.id,
     userId: store.getters.getUserInfo.id
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
@@ -280,8 +280,7 @@ const like = async () => {
 
 const addViewCount = async () => {
   await SYNC_POST('/view/addViewCount', {
-    token: store.getters.getToken,
-    articleId: articleDetail.id,
+    articleId: route.query.id,
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
       currentViewCount.value = response.data.data.currentViewCount
@@ -308,7 +307,6 @@ function addMessage(articleId: string, message: string) {
           message: '添加成功',
           type: 'success'
         })
-        loadMessageList()
       } else {
         ElMessage({
           message: data.message,
@@ -340,8 +338,8 @@ async function getRaw(articleId: String) {
     responseType: 'arraybuffer'
 
   }).then(response => {
-    const blob = new Blob([response.data], { type: articleDetail.file_type })
-    articleDetail.raw = new File([blob], articleDetail.title, { type: articleDetail.file_type })
+    const blob = new Blob([response.data], { type: articleDetail.fileType })
+    articleDetail.raw = new File([blob], articleDetail.title, { type: articleDetail.fileType })
 
   }).catch(error => {
     console.error(error);
@@ -350,7 +348,7 @@ async function getRaw(articleId: String) {
 
 async function getIsLocked() {
   await SYNC_GET('/article/checkLocked', {
-    articleId: articleDetail.id
+    articleId: route.query.id
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
       isLocked.value = response.data.data
@@ -431,7 +429,7 @@ async function handleLockClicked() {
 }
 
 const handleAuthorClicked = () => {
-  if (articleDetail.text_by !== '' && articleDetail.text_by !== undefined) {
+  if (articleDetail.textBy !== '' && articleDetail.textBy !== undefined) {
     // router.push('/user/'+articleDetail.text_by_id)
     toUserPage(articleDetail.text_by_id)
   } else {
@@ -467,8 +465,10 @@ const handleUpdateArticleClicked = () => {
 
 // 有article_id时初始化ArticleDetail
 (async () => {
-  let articleRaw: ArrayBuffer
   if (route.query.id === '' || route.query.id === undefined) return
+  if(getCookie('userInfo') !== '' && (JSON.parse(getCookie('userInfo'))?.identity === 'EXPERT'|| JSON.parse(getCookie('userInfo'))?.identity === 'HUNTER')){
+    displayMessage.value = true
+  }
   await SYNC_GET('/article/articleDetail', {
     article_id: route.query.id
   }, async (response) => {
@@ -481,7 +481,7 @@ const handleUpdateArticleClicked = () => {
       }
       await getIsLocked()
       await getTextBy()
-      await getRaw(articleDetail.id)
+      await getRaw(route.query.id)
       await getLikeStatus()
       await getLikeCount()
       await getViewCount()
