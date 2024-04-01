@@ -136,7 +136,7 @@ async function deleteComment (commentId: string) {
     token: store.getters.getToken,
     id: commentId
   }, async (response) => {
-    if (response.data.statusMsg === 'Success.') {
+    if (response.data.message === 'Success.') {
       ElMessage({
         message: '评论删除成功! ',
         type: 'success'
