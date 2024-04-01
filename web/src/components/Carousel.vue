@@ -1,7 +1,7 @@
 <template>
-  <el-carousel :interval="4000" type="card">
+  <el-carousel :interval="4000" height="350px" type="card">
     <el-carousel-item v-for="item in imageList" :key="item">
-      <img :src="item.url" no-repeat style="object-fit: fill;height:100%; width:100%;" :alt="item.description"/>
+      <img :src="item.url" no-repeat style="object-fit: cover;height:100%; width:100%;" :alt="item.description"/>
     </el-carousel-item>
   </el-carousel>
 </template>

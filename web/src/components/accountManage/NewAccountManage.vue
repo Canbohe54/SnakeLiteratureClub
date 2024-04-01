@@ -95,6 +95,7 @@ import { useStore } from 'vuex';
 import AvatarSelection from '../user/AvatarSelection.vue';
 import { SnachResponse } from '@/scripts/types/ResponseObject';
 import { getCookie } from '@/scripts/cookie';
+import { ChineseLanguageMap } from '@/scripts/common/ChineseLanguageMap';
 
 const router = useRouter()
 const store = useStore()
@@ -115,10 +116,12 @@ const changeForm = reactive<ChangeForm>({
     avatar: { avatar: '1', color: '#e9f3e2' },
     identity: store.getters.getUserInfo.identity,
     organization: store.getters.getUserInfo.organization,
-    attribute: store.getters.getUserInfo.attribute,
+    attribute: '',
     information: store.getters.getUserInfo.information,
     phone: store.getters.getUserInfo.phone
 });
+
+const pageAttr = ref('年级');
 
 onMounted(() => {
     handleIdentityChange(changeForm.identity)
@@ -126,9 +129,11 @@ onMounted(() => {
     if (avatarJson) {
         changeForm.avatar = JSON.parse(avatarJson)
     }
+    let attrsJson :Object = store.getters.getUserInfo.attrs
+    if (attrsJson) {
+        changeForm.attribute = attrsJson[ChineseLanguageMap.get(pageAttr.value) as string]
+    }
 })
-
-const pageAttr = ref('年级');
 
 const avatarSelectionVisible = ref(false)
 
@@ -188,6 +193,8 @@ const changeButton = reactive<any>({ // 修改信息按钮
     timer: null
 })
 
+console.log(store.getters.getUserInfo.attrs)
+
 const onChangeInfo = async (formEl: FormInstance | undefined) => { // 提交表单
     if (formEl) {
         formEl.validate(async (valid: boolean) => {
@@ -197,10 +204,10 @@ const onChangeInfo = async (formEl: FormInstance | undefined) => { // 提交表�
                     id: store.getters.getUserInfo.id,
                     name: changeForm.username,
                     organization: changeForm.organization,
-                    attribute: changeForm.attribute,
                     information: changeForm.information,
                     phone: changeForm.phone,
-                    pictureUrl: JSON.stringify(changeForm.avatar)
+                    pictureUrl: JSON.stringify(changeForm.avatar),
+                    attrs: `{ "${ChineseLanguageMap.get(pageAttr.value)}": "${changeForm.attribute}" }`
                 }
                 $.post({
                     url: 'http://localhost:19198/usr/updateUserInfo',
@@ -209,7 +216,16 @@ const onChangeInfo = async (formEl: FormInstance | undefined) => { // 提交表�
                     data: requestData,
                     success: (data: SnachResponse<boolean>) => {
                         console.log(data)
-                        // TODO: success @Canbohe54
+                        if(data.code===2001){
+                            ElMessage.success('修改成功')
+                            router.push('/user')
+                        }else{
+                            if(data.message==='Invalid token.'){
+                                // TODO: 调用token失效函数
+                            }else{
+                                ElMessage.error('修改失败，请稍后再试')
+                            }
+                        }
                     }
                 })
             } else {
@@ -280,6 +296,19 @@ const onChangePasswd = async (formEl: FormInstance | undefined) => { // 提交�
                     success: (data: SnachResponse<boolean>) => {
                         console.log(data)
                         // TODO: success @Canbohe54
+                        if(data.code===2001){
+                            ElMessage.success('修改成功')
+                            store.commit('clear')
+                            router.push('/login')
+                        }else{
+                            if(data.message==='Wrong old password.'){
+                                ElMessage.error('原密码错误')
+                            }else if(data.message==='Invalid token.'){
+                                // TODO: 调用token失效函数
+                            }else{
+                                ElMessage.error('修改失败，请稍后再试')
+                            }
+                        }
                     }
                 })
             } else {

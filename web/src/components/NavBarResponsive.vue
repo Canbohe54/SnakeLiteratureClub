@@ -4,7 +4,7 @@
             <div>
                 <router-link to="/">
                     <span class="nav-logo"></span>
-                    <span class="nav-title-link hidden-sm-and-down">蛇拾文学社</span>
+                    <span class="nav-title-link hidden-sm-and-down">青春的桥梁</span>
                 </router-link>
             </div>
         </el-col>

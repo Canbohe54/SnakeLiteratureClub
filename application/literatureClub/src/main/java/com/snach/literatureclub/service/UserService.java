@@ -94,10 +94,7 @@ class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUserBasicInfoByNameNoPagination(String name, List<String> identity) {
-        if(identity != null && !identity.isEmpty()) {
             return userDao.getUserByNameAndIdentity(name, identity);
-        }
-        return userDao.getUserByName(name);
     }
 
     @Override
