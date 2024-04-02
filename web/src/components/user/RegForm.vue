@@ -51,6 +51,21 @@
             </el-row>
         </section>
         <AvatarSelection :visible="avatarSelectionVisible" @close="handleAvatarSelectionClose" @selection="handleAvatarSelection" />
+        <el-dialog v-model="regSuccessDialogVisible" title="注册成功！">
+            <el-text>用户ID和密码是您用于登录系统的唯一凭证，请妥善保管（点击信息可以复制到剪切板）</el-text>
+            <el-form>
+                <el-form-item label="用户ID">
+                    <el-input v-model="regForm.username" readonly></el-input>
+                </el-form-item>
+                <el-form-item label="密码">
+                    <el-input v-model="regForm.password" readonly>
+                        <template #append>
+                            <el-button type="primary" @click="copyPassword"><el-icon><View /><Hide /></el-icon></el-button>
+                        </template>
+                    </el-input>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 
@@ -61,6 +76,7 @@ import { POST } from '@/scripts/Axios';
 import { useRouter } from 'vue-router';
 import AvatarSelection from './AvatarSelection.vue';
 import {ChineseLanguageMap} from "@/scripts/common/ChineseLanguageMap";
+import { View, Hide } from "@element-plus/icons-vue";
 
 const router = useRouter()
 
@@ -92,6 +108,8 @@ const regForm = reactive<RegForm>({
 const pageAttr = ref('年级');
 
 const avatarSelectionVisible = ref(false)
+
+const regSuccessDialogVisible = ref(false)
 
 function showAvatarSelection() {
     avatarSelectionVisible.value = true

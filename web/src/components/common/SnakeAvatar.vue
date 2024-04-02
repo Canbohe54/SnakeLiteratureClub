@@ -20,9 +20,9 @@
         :onDragOver="onDragOver"
         :onDragStart="onDragStart"
         :onDrop="onDrop"
-        :id="'avatar_'+(avatar!=null?(avatar.avatar+'_'+avatar.color.split('#')[1]):'')+kKey"
+        :id="'avatar_'+(avatar!=null?(avatar.avatar+'_'+avatar.color.split('#')[1]):'')+'_'+kKey"
     >
-        <img :id="'avatar-img_'+(avatar!=null?(avatar.avatar+'_'+avatar.color.split('#')[1]):'')+kKey" />
+        <img :id="'avatar-img_'+(avatar!=null?(avatar.avatar+'_'+avatar.color.split('#')[1]):'')+'_'+kKey" />
     </el-avatar>
 </template>
 
@@ -30,7 +30,10 @@
 import { ref, reactive, onMounted, toRefs, defineProps } from 'vue';
 
 const props = defineProps({
-    kKey:String,
+    kKey: {
+        type: String,
+        default: '',
+    },
     pictureUrl: String,
     size: {
         type: Number,
@@ -124,13 +127,15 @@ const props = defineProps({
 
 const { kKey, pictureUrl } = toRefs(props)
 
+console.log(kKey.value)
+
 const avatar = reactive(pictureUrl.value? JSON.parse(pictureUrl.value) : null)
 
 function init(){
 
     if (avatar){
-        $("#avatar_"+avatar.avatar+"_"+avatar.color.split('#')[1]+kKey.value).css("background-color", `${avatar.color}`)
-        $("#avatar-img_"+avatar.avatar+"_"+avatar.color.split('#')[1]+kKey.value).attr("src", 'avatars/'+`${avatar.avatar}`+'.png')
+        $("#avatar_"+avatar.avatar+"_"+avatar.color.split('#')[1]+'_'+kKey.value).css("background-color", `${avatar.color}`)
+        $("#avatar-img_"+avatar.avatar+"_"+avatar.color.split('#')[1]+'_'+kKey.value).attr("src", 'avatars/'+`${avatar.avatar}`+'.png')
     }
 
 }

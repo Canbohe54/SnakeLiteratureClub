@@ -6,6 +6,11 @@
                     style="font: bold 20px 'Microsoft YaHei'; margin-bottom: 20px; display: inline-block;">个人信息</el-text>
                 <el-form :model="changeForm" label-width="auto" ref="changeFormRef" :rules="changeRules"
                     class="regForm">
+                    <el-form-item label="用户ID" class="info-input">
+                        <el-tooltip effect="dark" content="用户ID是您除手机号外登录的唯一凭证，请妥善保管" placement="top" trigger="hover">
+                            <el-input v-model="store.getters.getUserInfo.id" disabled></el-input>
+                        </el-tooltip>
+                    </el-form-item>
                     <el-form-item label="头像">
                         <el-avatar :size="64" @click="showAvatarSelection" class="changeAvatar"><img
                                 :src="'avatars/' + changeForm.avatar.avatar + '.png'" /></el-avatar>

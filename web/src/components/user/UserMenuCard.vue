@@ -1,10 +1,11 @@
 <template>
     <div class="user-simp-info" v-if="getToken() != ''">
         <!-- <el-avatar :size="64" id="avatar"><img id="avatar-img"/></el-avatar> -->
-        <SnakeAvatar :pictureUrl="userInfo.pictureUrl" :size="64"/>
+        <SnakeAvatar :pictureUrl="userInfo.pictureUrl" :size="64" :kKey="kKey"/>
         <div class="user-simp-info-disp">
             <div class="user-simp-name">{{ userInfo.name }}</div>
             <div><IdentityTag :identity="userInfo.identity"></IdentityTag></div>
+            <div class="user-id-disp">用户ID：{{ userInfo.id }}</div>
         </div>
         <div class="user-simp-option">
             <router-link class="user-simp-item" to="/user">个人中心</router-link>
@@ -26,9 +27,18 @@ import router from '@/router';
 import { clearCookie, removeCookie } from '@/scripts/cookie';
 import { getToken } from '@/scripts/token';
 import { useStore } from 'vuex';
-import { onMounted, onUpdated, reactive, ref } from 'vue';
+import { onMounted, onUpdated, reactive, ref, toRefs } from 'vue';
 import IdentityTag from '@/components/common/IdentityTag.vue';
 import SnakeAvatar from '@/components/common/SnakeAvatar.vue';
+
+const props = defineProps({
+    kKey: {
+        type: String,
+        default: '',
+    },
+})
+
+const { kKey } = toRefs(props)
 
 // console.log(getToken())
 const store = useStore()
@@ -64,11 +74,19 @@ function handleLogout(){
 
 .user-simp-info-disp {
     margin: 10px 0;
+    text-align: center;
 }
 
 .user-simp-name {
     text-align: center;
     font: bold 18px 'Microsoft YaHei';
+    margin-bottom: 8px;
+}
+
+.user-id-disp {
+    font: 12px 'Microsoft YaHei';
+    color: #606266;
+    margin-top: 8px;
 }
 
 .user-simp-option {

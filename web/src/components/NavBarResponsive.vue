@@ -29,7 +29,7 @@
                     </el-avatar>
                     <!-- @click="router.push('/login') " -->
                 </template>
-                <UserMenuCard />
+                <UserMenuCard kKey="md_card"/>
             </el-popover>
         </el-col>
         <el-col :span="4" class="hidden-md-and-up flex-center"
@@ -62,7 +62,7 @@
         <el-col :span="24">
             <el-collapse-transition>
                 <div v-show="user_bar_expand">
-                    <UserMenuCard />
+                    <UserMenuCard kKey="sm_card"/>
                 </div>
             </el-collapse-transition>
         </el-col>
