@@ -21,14 +21,22 @@
     </el-pagination>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ArticleInfo from '@/components/article/ArticleInfo.vue';
-import { reactive, toRefs, ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import {SYNC_GET} from "@/scripts/Axios";
-import {useRoute} from "vue-router";
+import { onMounted, reactive, ref, toRefs } from 'vue';
+import { SYNC_GET } from "@/scripts/Axios";
+import { useRoute } from "vue-router";
+import { SnachResponse } from "@/scripts/types/ResponseObject";
+
+type Option = 'LOBBY' | 'USER'
+type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
+type PublishStatus = 'PUBLIC' | 'UNDER_REVIEW' | 'UNDER_RECORD' | 'POST_RECORD' | 'POSTED' | 'FAILED_REVIEW' | 'FAIL_RECORD'
 
 const props = defineProps({
+    option: {
+        type: Object as () => Option,
+        default: 'LOBBY'
+    },
     mode: {
         type: String,
         default: 'USER_OWN'
@@ -129,8 +137,9 @@ const props = defineProps({
     }
 })
 
-const { mode, is_card, articleList } = toRefs(props)
+const { option, mode, is_card, articleList } = toRefs(props)
 const route = useRoute()
+const _articleList = ref({});
 
 async function getRank() {
   let params = {
@@ -205,7 +214,84 @@ const pageInfo = reactive({
     total: 0
 })
 
+interface ArticleInfoRequest {
+    idList: string[],
+    authorList: string[],
+    keyword: string,
+    tags: string,
+    auditStatusList: AuditStatus[],
+    publishStatusList: PublishStatus[]
+}
+
+interface UrlDecodedArticleInfoRequest {
+    idList: string,
+    authorList: string,
+    keyword: string,
+    tags: string,
+    auditStatusList: string,
+    publishStatusList: string
+}
+
+function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArticleInfoRequest {
+    option = (option == undefined ? props.option : option)
+    let articleInfoRequest: ArticleInfoRequest
+    switch (option) {
+        case 'LOBBY': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [],
+                keyword: '',
+                tags: '',
+                auditStatusList: ['AUDITED'],
+                publishStatusList: []
+            }
+            break
+        }
+        case 'USER': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: ['114514'],
+                keyword: 'Article',
+                tags: '',
+                auditStatusList: [],
+                publishStatusList: ['UNDER_RECORD']
+            }
+        }
+    }
+    return requestParamsDecode(articleInfoRequest)
+}
+
+function requestParamsDecode(requestParam: ArticleInfoRequest): UrlDecodedArticleInfoRequest {
+    return {
+        idList: requestParam.idList + '',
+        authorList: requestParam.authorList + '',
+        keyword: requestParam.keyword + '',
+        tags: requestParam.tags + '',
+        auditStatusList: requestParam.auditStatusList + '',
+        publishStatusList: requestParam.publishStatusList + '',
+    }
+}
+
+function getArticles() {
+    let params = formRequestParams()
+    Object.assign(params, {
+        pageNum: pageInfo.currentPage,
+        pageSize: pageInfo.pageSize
+    })
+    console.log(params)
+    $.post({
+        url: 'http://localhost:19198/article/getArticles',
+        async: false,
+        enctype: 'multipart/form-data',
+        data: params,
+        success: (data: SnachResponse<object>) => {
+            // TODO: on success
+        }
+    })
+}
+
 await getRank()
+getArticles()
 </script>
 
 <style scoped>
