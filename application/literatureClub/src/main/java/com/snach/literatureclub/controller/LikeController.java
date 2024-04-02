@@ -29,9 +29,9 @@ public class LikeController {
         return likeService.getCurrentLikeStatus(articleId, userId);
     }
 
-    @RequestMapping(value = "getAllLikeAndViewCount", method = RequestMethod.GET)
-    public Map<String, Object> getAllLikeAndViewCount(@RequestParam(name = "page_num") int pageNum,
-                                                      @RequestParam(name = "page_size") int pageSize) {
+    @RequestMapping(value = "getRank", method = RequestMethod.GET)
+    public Map<String, Object> getRank(@RequestParam(name = "page_num") int pageNum,
+                                       @RequestParam(name = "page_size") int pageSize) {
         return likeService.getAllLikeAndViewCount(pageNum, pageSize);
     }
 }
