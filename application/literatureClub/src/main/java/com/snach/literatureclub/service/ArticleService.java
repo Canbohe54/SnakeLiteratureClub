@@ -25,20 +25,33 @@ import java.util.List;
 
 import static com.snach.literatureclub.utils.TokenTools.getPayload;
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
+import static com.snach.literatureclub.utils.SqlQueryStatement.toSelectString;
 
 @Service
 public interface ArticleService {
     boolean changeArticleStatus(String articleId, ArticleAuditStatus status, String token);
     boolean changeArticlePublishStatus(String articleId, ArticlePublishStatus status, String token);
+
     boolean changeArticleReceivedBy(String articleId, String receivedBy, String token);
+
     Article getArticleById(String articleId);
+
+    PageInfo<Article> getArticles(List<String> idList,
+                                  List<String> authorList,
+                                  String keyword,
+                                  String tags,
+                                  List<ArticleAuditStatus> auditStatusList,
+                                  List<ArticlePublishStatus> publishStatusList,
+                                  int pageNum,
+                                  int pageSize);
 
     /**
      * Get article list by author id
+     *
      * @param contributorId author id
-     * @param pageNum page number for query
-     * @param pageSize page size for query
-     * @param statusList the status of the article
+     * @param pageNum       page number for query
+     * @param pageSize      page size for query
+     * @param statusList    the status of the article
      * @return PageInfo object containing article list
      */
     PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleAuditStatus> statusList, List<ArticlePublishStatus> publishStatusList);
@@ -51,7 +64,8 @@ public interface ArticleService {
 
     /**
      * Get article list by page
-     * @param pageNum page number for query
+     *
+     * @param pageNum  page number for query
      * @param pageSize page size for query
      * @return PageInfo object containing article list
      */
@@ -59,10 +73,11 @@ public interface ArticleService {
 
     /**
      * Search article list by keyword
-     * @param keyword keyword
-     * @param tag tag filter
-     * @param pageNum page number for query
-     * @param pageSize page size for query
+     *
+     * @param keyword    keyword
+     * @param tag        tag filter
+     * @param pageNum    page number for query
+     * @param pageSize   page size for query
      * @param statusList the status of the article
      * @return PageInfo object containing article list
      */
@@ -70,7 +85,8 @@ public interface ArticleService {
 
     /**
      * Delete article by article id
-     * @param token verify and check is the author of the article
+     *
+     * @param token     verify and check is the author of the article
      * @param articleId the article id
      * @return true if successfully deleted
      */
@@ -78,7 +94,8 @@ public interface ArticleService {
 
     /**
      * Audit an article by sensitive words (sensitive words check)
-     * @param token user token
+     *
+     * @param token     user token
      * @param articleId the article id
      * @param useStrict true if you use the strict mode
      * @return 返回文章的敏感词审核结果
@@ -142,6 +159,48 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public Article getArticleById(String articleId) {
         return articleDao.getArticleById(articleId);
+    }
+
+    @Override
+    public PageInfo<Article> getArticles(List<String> idList,
+                                         List<String> authorList,
+                                         String keyword,
+                                         String tags,
+                                         List<ArticleAuditStatus> auditStatusList,
+                                         List<ArticlePublishStatus> publishStatusList,
+                                         int pageNum,
+                                         int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        StringBuilder whereStatement = new StringBuilder();
+
+        if (idList != null && !idList.isEmpty()) {
+            whereStatement.append("id IN ").append(toSelectString(idList));
+        }
+        if (authorList != null && !authorList.isEmpty()) {
+            if (!whereStatement.isEmpty()) {
+                whereStatement.append(" AND ");
+            }
+            whereStatement.append("text_by IN ").append(toSelectString(authorList));
+        }
+        if (keyword != null && !keyword.isEmpty()) {
+            if (!whereStatement.isEmpty()) {
+                whereStatement.append(" AND ");
+            }
+            whereStatement.append("title LIKE '%").append(keyword).append("%'");
+        }
+        if (auditStatusList != null && !auditStatusList.isEmpty()) {
+            if (!whereStatement.isEmpty()) {
+                whereStatement.append(" AND ");
+            }
+            whereStatement.append("audit_status IN ").append(toSelectString(auditStatusList));
+        }
+        if (publishStatusList != null && !publishStatusList.isEmpty()) {
+            if (!whereStatement.isEmpty()) {
+                whereStatement.append(" AND ");
+            }
+            whereStatement.append("publish_status IN ").append(toSelectString(publishStatusList));
+        }
+        return new PageInfo<>(articleDao.getArticleByPersonalOptions(whereStatement.toString()));
     }
 
     @Override

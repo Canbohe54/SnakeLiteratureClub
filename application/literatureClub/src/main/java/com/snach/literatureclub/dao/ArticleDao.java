@@ -28,6 +28,10 @@ public interface ArticleDao {
     void newInsertArticle(@Param("a") Article article, int ignore);
 
     // ======================================SELECT==========================================
+    @Select("SELECT id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags, `file_type` as fileType, author_name as authorName, author_org as authorOrganization, author_grade as authorGrade, reason, audited_by as auditedBy " +
+            "FROM article " +
+            "WHERE ${whereStatement}")
+    List<Article> getArticleByPersonalOptions(String whereStatement);
 
     @Select("SELECT id, title, description, time, audit_status AS auditStatus, publish_status AS publishStatus, tags, text_by as textBy, mentor, file_type as fileType " +
             "FROM article WHERE audit_status = #{status} LIMIT 1 FOR UPDATE")
