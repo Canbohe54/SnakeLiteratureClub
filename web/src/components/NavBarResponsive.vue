@@ -140,7 +140,7 @@ function setIdentityDepedOption(identity: string) {
         case 'TEACHER':
             menu_option.push(identityDepedOption[1]);
             break;
-        case 'VOLUNTEER':
+        case 'AUDITOR':
             menu_option.push(identityDepedOption[2]);
             break;
         case 'EXPERT':

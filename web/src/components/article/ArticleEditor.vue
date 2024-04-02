@@ -119,8 +119,8 @@
                 </template>
               </el-select>
             </div>
-            <div class="more-option-head" v-if="articleDetail.audited_by !== ''"><span>审核方式</span></div>
-            <div class="contribute-way-container" v-if="articleDetail.audited_by !== ''">
+            <div class="more-option-head" v-if="articleDetail.auditedBy !== ''"><span>审核方式</span></div>
+            <div class="contribute-way-container" v-if="articleDetail.auditedBy !== ''">
               <el-radio-group v-model="contributeManager.sameAuditor" class="contribute-way-radio"
                               @change="handleAuditWayChange">
                 <el-radio :label="true" :value="true">请相同审核员提建议</el-radio>
@@ -250,6 +250,15 @@ const editRules = reactive<FormRules>({
   description: [
     {required: true, message: '请输入文章描述', trigger: 'blur'},
   ],
+  authorName: [
+    {required: true, message: '请输入作者姓名', trigger: 'blur'}
+  ],
+  authorOrganization: [
+    {required: true, message: '请输入作者所在学校', trigger: 'blur'}
+  ],
+  authorGrade: [
+    {required: true, message: '请输入作者所在年级', trigger: 'blur'}
+  ],
 })
 watch(articleDetail, () => {
   saveBtnType.value = 'success'
@@ -322,7 +331,7 @@ const handleReleaseClicked = () => {
     if (!valid) {
       ElMessage({
         showClose: true,
-        message: '请填写文章标题和文章描述',
+        message: '请填写必要的信息哦',
         type: 'error'
       })
       return false

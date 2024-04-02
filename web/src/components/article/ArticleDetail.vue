@@ -32,6 +32,7 @@
               <el-row class="article-box-card">
                 <el-text class="article-detail-author">
                   <el-button link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
+                  <!-- TODO: 作者信息-->
                   （五年级） 下北泽中学 指导老师：野兽先辈
                 </el-text>
               </el-row>

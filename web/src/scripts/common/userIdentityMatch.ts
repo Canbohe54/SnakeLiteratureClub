@@ -5,7 +5,7 @@ export function getIdentityChinese(identity: string){
         ['ADMINISTRATOR','学校管理员'],
         ['EXPERT','专家'],
         ['HUNTER','报刊专员'],
-        ['VOLUNTEER','审稿志愿者']
+        ['AUDITOR','审稿志愿者']
     ])
     return identityMap.get(identity)
 }
@@ -23,7 +23,7 @@ export function getIndentityTagType(userIdentity: string) {
             return 'warning'
         case 'HUNTER':
             return 'danger'
-        case 'VOLUNTEER':
+        case 'AUDITOR':
             return 'warning'
         default:
             return 'info'
@@ -42,7 +42,7 @@ export function getIndentityTagEffect(userIdentity: string) {
             return 'light'
         case 'HUNTER':
             return 'light'
-        case 'VOLUTEER':
+        case 'AUDITOR':
             return 'plain'
         default:
             return 'light'
@@ -61,7 +61,7 @@ export function getIdentityAttrName(userIdentity: string) {
             return 'professional_title'
         case 'HUNTER':
             return 'position'
-        case 'VOLUNTEER':
+        case 'AUDITOR':
             return 'occupation'
         default:
             return 'info'

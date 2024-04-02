@@ -1,6 +1,7 @@
 package com.snach.literatureclub.dao;
 
 import com.snach.literatureclub.bean.Article;
+import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.common.ArticleAuditStatus;
 import com.snach.literatureclub.common.ArticlePublishStatus;
 import org.apache.ibatis.annotations.*;
@@ -139,6 +140,24 @@ public interface ArticleDao {
     @Select("SELECT latest_approval_article_url FROM article WHERE id=#{article_id}")
     String getLatestApprovalArticleUrlById(@Param("article_id") String articleId);
 
+    @Select("SELECT id FROM article WHERE audit_status = 'AUDITED' AND publish_status in ('POSTED','PUBLIC')")
+    List<String> getAllArticleId();
+
+    // 根据文章id列表查询列表中文章详细信息
+    @Select({"<script>",
+            "SELECT ",
+            "id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags",
+            "FROM article WHERE id in",
+            "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
+            "#{item}",
+            "</foreach>",
+            "</script>"
+    })
+    List<Article> getArticlesRanking(@Param("items") List<String> idList);
+
+    @Select("SELECT u.identity FROM article a LEFT JOIN user u ON a.received_by=u.id WHERE a.id = #{article_id}")
+    User getReceivedBy(@Param("article_id") String articleId);
+
     // ======================================UPDATE==========================================
     @Insert("UPDATE article SET file_type = #{a.fileType}, raw = #{a.raw}, latest_approval_article_url = #{a.latestApprovalArticleUrl} WHERE id = #{a.id}")
     void updateArticleFile(@Param("a") Article article, boolean ignore);
@@ -221,18 +240,4 @@ public interface ArticleDao {
     @Delete("DELETE FROM article WHERE id = #{id}")
     void deleteArticleById(@Param("id") String id);
 
-    @Select("SELECT id FROM article WHERE audit_status = 'AUDITED' AND publish_status in ('POSTED','PUBLIC')")
-    List<String> getAllArticleId();
-
-    // 根据文章id列表查询列表中文章详细信息
-    @Select({"<script>",
-            "SELECT ",
-            "id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags",
-            "FROM article WHERE id in",
-            "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
-            "#{item}",
-            "</foreach>",
-            "</script>"
-    })
-    List<Article> getArticlesRanking(@Param("items") List<String> idList);
 }

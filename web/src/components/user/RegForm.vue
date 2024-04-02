@@ -17,7 +17,7 @@
                         <el-radio label="ADMINISTRATOR" value="ADMINISTRATOR">学校管理员</el-radio>
                         <el-radio label="EXPERT" value="EXPERT">专家</el-radio>
                         <el-radio label="HUNTER" value="HUNTER">报刊专员</el-radio>
-                        <el-radio label="VOLUNTEER" value="VOLUNTEER">审稿志愿者</el-radio>
+                        <el-radio label="AUDITOR" value="AUDITOR">审稿志愿者</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="单位" prop="organization">
@@ -51,7 +51,7 @@
             </el-row>
         </section>
         <AvatarSelection :visible="avatarSelectionVisible" @close="handleAvatarSelectionClose" @selection="handleAvatarSelection" />
-        <el-dialog 
+        <el-dialog
         v-model="regSuccessDialogVisible" title="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注册成功！" style="max-width: 500px; border-radius: 10px;"
         @close="handleRegSuccessClose" :close-on-click-modal="false">
             <div style="margin-bottom: 10px;"><el-text>已为您生成唯一用户ID，是用于登录的凭证，请妥善保管</el-text></div>
@@ -162,7 +162,7 @@ function handleIdentityChange(val: string) {
         case 'HUNTER':
             pageAttr.value = '职位';
             break;
-        case 'VOLUNTEER':
+        case 'AUDITOR':
             pageAttr.value = '职业';
             break;
     }

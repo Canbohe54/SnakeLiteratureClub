@@ -111,12 +111,14 @@ const handleDocumentPreView = async (file: any) => {
 
 <style>
 .preview_file {
-  margin-right: 15px;
+  /*margin-right: 15px;*/
+  text-align: center;
 }
 
 .txtPreview {
   display: flex;
   white-space: pre-wrap;
   margin: 20px 20px;
+  text-align: start !important;
 }
 </style>
