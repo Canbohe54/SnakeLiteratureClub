@@ -10,9 +10,14 @@
               </el-row>
               <el-row class="article-box-card">
                 <el-text class="article-detail-author">（
-                  <el-button link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
-                  ） {{ articleDetail.time }}
+                  <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
+                  <span v-else>{{articleDetail.authorName}}</span>
+                  （{{articleDetail.authorGrade}}） {{articleDetail.authorOrganization}}
+                  <span v-if="articleDetail.mentor !== ''">指导老师：{{articleDetail.mentor}}</span>
                 </el-text>
+              </el-row>
+              <el-row class="article-box-card">
+                <el-text class="article-detail-author">发布时间：{{ articleDetail.time }}</el-text>&nbsp;&nbsp;
               </el-row>
               <div style="display: flex; justify-content:center;align-items: flex-end;">
                 <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小
@@ -166,11 +171,13 @@ import axios from 'axios'
 import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 import {lockArticleById} from '@/scripts/ArticleLocker'
+import {View} from "@element-plus/icons-vue";
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
 const SearchFilterRef = ref()
+const textByIdentity = ref('CONTRIBUTOR')
 const articleDetail = reactive<AttributeAddableObject>({
   id: null,
   text: '',

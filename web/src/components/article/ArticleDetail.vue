@@ -31,9 +31,10 @@
               </el-row>
               <el-row class="article-box-card">
                 <el-text class="article-detail-author">
-                  <el-button link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
-                  <!-- TODO: 作者信息-->
-                  （五年级） 下北泽中学 指导老师：野兽先辈
+                  <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
+                  <span v-else>{{articleDetail.authorName}}</span>
+                  （{{articleDetail.authorGrade}}） {{articleDetail.authorOrganization}}
+                  <span v-if="articleDetail.mentor !== ''">指导老师：{{articleDetail.mentor}}</span>
                 </el-text>
               </el-row>
               <el-row class="article-box-card">
@@ -162,7 +163,7 @@ const displayMessage = ref(false)
 const currentStatus = ref('')
 const currentLikeCount = ref(0)
 const currentViewCount = ref(0)
-
+const textByIdentity = ref('CONTRIBUTOR')
 let isUp = ref(false)
 
 const messageInputText = ref('')
@@ -186,6 +187,7 @@ async function getTextBy() {
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
       articleDetail.textBy = response.data.data.user_info.name
+      textByIdentity.value = response.data.data.user_info.identity
     } else {
       console.log(response)
     }

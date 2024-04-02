@@ -10,10 +10,15 @@
                 <el-text class="article-detail-title">{{ articleDetail.title }}</el-text>
               </el-row>
               <el-row class="article-box-card">
-                <el-text class="article-detail-author">（
-                  <el-button link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
-                  ） {{ articleDetail.time }}
+                <el-text class="article-detail-author">
+                  <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
+                  <span v-else>{{articleDetail.authorName}}</span>
+                  （{{articleDetail.authorGrade}}） {{articleDetail.authorOrganization}}
+                  <span v-if="articleDetail.mentor !== ''">指导老师：{{articleDetail.mentor}}</span>
                 </el-text>
+              </el-row>
+              <el-row class="article-box-card">
+                <el-text class="article-detail-author">发布时间：{{ articleDetail.time }}</el-text>&nbsp;&nbsp;
               </el-row>
               <div style="display: flex; justify-content:center;align-items: flex-end;margin-bottom: 10px;">
 
@@ -92,6 +97,7 @@ import {errorCallback} from '@/scripts/ErrorCallBack'
 import axios from 'axios'
 import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
 import SearchFilter from '@/components/search/SearchFilter.vue'
+import {View} from "@element-plus/icons-vue";
 
 // 该页面没有锁
 const router = useRouter()
@@ -115,8 +121,7 @@ const displaySize = ref("default")
 const SearchFilterRef = ref()
 const isFavorited = ref(false)
 const showArticle = ref(false)
-const delArticleDialogVisible = ref(false)
-
+const textByIdentity = ref('CONTRIBUTOR')
 
 const searchFilterChange = () => {
   articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
@@ -129,6 +134,7 @@ async function getTextBy() {
   }, async (response) => {
     if (response.status === 200 && response.data.code === 2001) {
       articleDetail.textBy = response.data.data.user_info.name
+      textByIdentity.value = response.data.data.user_info.identity
     } else {
       console.log(response)
     }

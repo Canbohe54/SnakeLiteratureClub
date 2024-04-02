@@ -353,6 +353,10 @@ const save = async () => {
   param.append("auditStatus", 'ROUGH')
   param.append("tags", articleDetail.tags)
   param.append("fileType", articleDetail.fileType)
+  param.append("mentor",articleDetail.mentor)
+  param.append("authorName", articleDetail.authorName)
+  param.append("authorOrganization", articleDetail.authorOrganization)
+  param.append("authorGrade", articleDetail.authorGrade)
   if (contributeManager.contributeWay == 'PUBLISHED') {
     param.append("receivedBy", contributeManager.contributeTo)
   }
@@ -388,6 +392,10 @@ const release = async () => {
   param.append("auditStatus", 'SUBMITTED')
   param.append("tags", articleDetail.tags)
   param.append("fileType", articleDetail.fileType)
+  param.append("mentor",articleDetail.mentor)
+  param.append("authorName", articleDetail.authorName)
+  param.append("authorOrganization", articleDetail.authorOrganization)
+  param.append("authorGrade", articleDetail.authorGrade)
   if (contributeManager.contributeWay == 'PUBLISHED') {
     param.append("receivedBy", contributeManager.contributeTo)
   }
