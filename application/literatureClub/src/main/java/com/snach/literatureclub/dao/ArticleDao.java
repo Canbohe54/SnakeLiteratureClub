@@ -221,6 +221,6 @@ public interface ArticleDao {
     @Delete("DELETE FROM article WHERE id = #{id}")
     void deleteArticleById(@Param("id") String id);
 
-    @Select("SELECT id FROM article")
+    @Select("SELECT id FROM article WHERE audit_status = 'AUDITED' AND publish_status in ('POSTED','PUBLIC')")
     List<String> getAllArticleId();
 }

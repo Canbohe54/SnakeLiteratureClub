@@ -72,7 +72,7 @@ class ViewServiceImpl implements ViewService {
             }
             else{
                 redisService.saveViews2Redis(articleId, 0);
-                res.put("currentViewCount", "0");
+                res.put("currentViewCount", 0);
             }
         }
         return res;

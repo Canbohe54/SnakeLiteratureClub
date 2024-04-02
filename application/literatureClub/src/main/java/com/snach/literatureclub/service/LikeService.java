@@ -22,7 +22,7 @@ public interface LikeService {
     Map<String, Object> cancelLike(String token, String articleId, String userId);
     Map<String, Object> getCurrentLikeStatus(String articleId, String userId);
     Map<String, Object> getCurrentLikeCount(String articleId);
-    Map<String, Object> getAllLikeCount();
+    Map<String, Object> getAllLikeAndViewCount();
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -38,6 +38,9 @@ class LikeServiceImpl implements LikeService {
 
     @Autowired
     ArticleLikeAndViewCountDao articleLikeAndViewCountDao;
+
+    @Autowired
+    ViewService viewService;
 
     @Autowired
     DBService dbService;
@@ -168,31 +171,56 @@ class LikeServiceImpl implements LikeService {
             }
             else{
                 redisService.saveLikedCount2Redis(articleId, 0);
-                res.put("currentLikeCount", "0");
+                res.put("currentLikeCount", 0);
             }
         }
         return res;
     }
 
     @Override
-    public Map<String, Object> getAllLikeCount() {
+    public Map<String, Object> getAllLikeAndViewCount() {
         Map<String, Object> res = new HashMap<>();
+        Map<String, Map<String, Integer>> articleLikeAndViewCountMap = new HashMap<>();
         Map<String, Integer> articleLikeCountMap = new HashMap<>();
+        Map<String, Integer> articleViewCountMap = new HashMap<>();
         // 先获取文章id列表
         List<String> articleIdList = articleDao.getAllArticleId();
         // 遍历文章id列表，获取每个文章的点赞数
         for(String articleId: articleIdList){
+            Map<String, Integer> detail = new HashMap<>();
             // 获取文章点赞数
-            int count = (int) getCurrentLikeCount(articleId).get("currentLikeCount");
-            articleLikeCountMap.put(articleId, count);
+            Integer likeCount = (Integer) getCurrentLikeCount(articleId).get("currentLikeCount");
+            articleLikeCountMap.put(articleId, likeCount);
+            detail.put("likeCount", likeCount);
+            // 获取文章阅读数
+            Integer viewCount = (Integer) viewService.getViewCount(articleId).get("currentViewCount");
+            articleViewCountMap.put(articleId, viewCount);
+            detail.put("viewCount", viewCount);
+            articleLikeAndViewCountMap.put(articleId, detail);
         }
-        res.put("articleLikeCountMap", articleLikeCountMap);
+        res.put("articleLikeAndViewCountMap", articleLikeAndViewCountMap);
         // 根据articleLikeCountMap中的value从大到小对key进行排序，存到列表中
-        List<String> articleRanking = articleLikeCountMap.entrySet().stream()
+        List<String> RankingByLikeCount = articleLikeCountMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        res.put("articleRanking", articleRanking);
+        res.put("RankingByLikeCount", RankingByLikeCount);
+        // 根据articleViewCountMap中的value从大到小对key进行排序，存到列表中
+        List<String> RankingByViewCount = articleViewCountMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        res.put("RankingByViewCount", RankingByViewCount);
+        // 根据likeCount 和 viewCount 9 : 1 的比例进行排序
+        // 计算得分并排序
+        List<String> RankingByLikeAndViewCount = articleLikeAndViewCountMap.entrySet().stream()
+                .sorted(Comparator.comparingDouble(entry ->
+                        entry.getValue().getOrDefault("likeCount",0) * 0.9 +
+                        entry.getValue().getOrDefault("viewCount",0) * 0.1))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        Collections.reverse(RankingByLikeAndViewCount);
+        res.put("RankingByLikeAndViewCount", RankingByLikeAndViewCount);
         return res;
     }
 }

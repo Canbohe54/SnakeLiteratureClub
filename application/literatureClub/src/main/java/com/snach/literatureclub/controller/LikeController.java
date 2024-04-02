@@ -32,8 +32,8 @@ public class LikeController {
         return likeService.getCurrentLikeStatus(articleId, userId);
     }
 
-    @RequestMapping(value = "getAllLikeCount", method = RequestMethod.GET)
-    public Map<String, Object> getAllLikeCount() {
-        return likeService.getAllLikeCount();
+    @RequestMapping(value = "getAllLikeAndViewCount", method = RequestMethod.GET)
+    public Map<String, Object> getAllLikeAndViewCount() {
+        return likeService.getAllLikeAndViewCount();
     }
 }
