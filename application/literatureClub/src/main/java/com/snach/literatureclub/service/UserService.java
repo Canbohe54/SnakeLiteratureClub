@@ -25,7 +25,7 @@ import static com.snach.literatureclub.utils.TokenTools.getPayload;
 public interface UserService {
     // Account
     String login(String id, String password);
-    boolean register(User user);
+    String register(User user);
 
     // User Info
     User getUserBasicInfo(String id);
@@ -66,10 +66,11 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean register(User user) {
-        user.setId(idManager.generateUserId());
+    public String register(User user) {
+        String newUserId = idManager.generateUserId();
+        user.setId(newUserId);
         userDao.insertUser(user);
-        return true;
+        return newUserId;
     }
 
     // User Info

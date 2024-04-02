@@ -36,8 +36,11 @@ public class UserController {
     }
 
     @RequestMapping(value = "reg", method = RequestMethod.POST)
-    public boolean register(User user) {
-        return userService.register(user);
+    public Map<String, Object> register(User user) {
+        String newUserId = userService.register(user);
+        Map<String, Object> response = new HashMap<>();
+        response.put("newUserId", newUserId);
+        return response;
     }
 
     // User Info
