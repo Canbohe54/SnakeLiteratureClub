@@ -25,6 +25,9 @@
 import ArticleInfo from '@/components/article/ArticleInfo.vue';
 import { reactive, toRefs, ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
+import {SYNC_GET} from "@/scripts/Axios";
+import {useRoute} from "vue-router";
+
 const props = defineProps({
     mode: {
         type: String,
@@ -127,6 +130,24 @@ const props = defineProps({
 })
 
 const { mode, is_card, articleList } = toRefs(props)
+const route = useRoute()
+
+async function getRank() {
+  let params = {
+    page_num: pageInfo.currentPage,
+    page_size: pageInfo.pageSize,
+  }
+  await (SYNC_GET('/like/getRank', params, async (response) => {
+    if (response.status === 200 && response.data.message === 'Success.') {
+      console.log(response.data.data.RankingByLikeAndViewCount.list)
+      pageInfo.total = response.data.data.total
+      // todo
+      articleList.value = response.data.data.RankingByLikeAndViewCount.list
+    } else {
+      console.log(response)
+    }
+  }))
+}
 
 const currentSettings = reactive({
     statusVisible: true,
@@ -183,6 +204,8 @@ const pageInfo = reactive({
     pageSize: 10,
     total: 0
 })
+
+await getRank()
 </script>
 
 <style scoped>
