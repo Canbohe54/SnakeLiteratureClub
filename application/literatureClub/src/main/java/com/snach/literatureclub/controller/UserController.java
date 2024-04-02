@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.snach.literatureclub.utils.TokenTools.getPayload;
+
 @CrossOrigin
 @RestController
 @RequestMapping("usr")
@@ -27,7 +29,7 @@ public class UserController {
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public Map<String, Object> login(@RequestParam("id") String id, @RequestParam("password") String password) {
         String token = userService.login(id, password);
-        User user = userService.getUserBasicInfo(id);
+        User user = userService.getUserBasicInfo(getPayload(token, "id"));
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);

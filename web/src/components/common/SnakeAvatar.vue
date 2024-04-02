@@ -22,12 +22,12 @@
         :onDrop="onDrop"
         :id="'avatar_'+(avatar!=null?(avatar.avatar+'_'+avatar.color.split('#')[1]):'')+'_'+kKey"
     >
-        <img :id="'avatar-img_'+(avatar!=null?(avatar.avatar+'_'+avatar.color.split('#')[1]):'')+'_'+kKey" />
+        <img :id="'avatar-img_'+(avatar!=null?(avatar.avatar+'_'+avatar.color.split('#')[1]):'')+'_'+kKey"/>
     </el-avatar>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, toRefs, defineProps } from 'vue';
+import { ref, reactive, onMounted, toRefs, defineProps, watch } from 'vue';
 
 const props = defineProps({
     kKey: {
@@ -127,12 +127,10 @@ const props = defineProps({
 
 const { kKey, pictureUrl } = toRefs(props)
 
-console.log(kKey.value)
 
 const avatar = reactive(pictureUrl.value? JSON.parse(pictureUrl.value) : null)
 
-function init(){
-
+async function init(){
     if (avatar){
         $("#avatar_"+avatar.avatar+"_"+avatar.color.split('#')[1]+'_'+kKey.value).css("background-color", `${avatar.color}`)
         $("#avatar-img_"+avatar.avatar+"_"+avatar.color.split('#')[1]+'_'+kKey.value).attr("src", 'avatars/'+`${avatar.avatar}`+'.png')
@@ -141,6 +139,24 @@ function init(){
 }
 onMounted(() => {
     init()
+})
+
+watch(async () => pictureUrl, (newVal, oldVal) => {
+    avatar.value = newVal? JSON.parse(newVal) : null
+    init()
+})
+
+function updateAvatar(newAvatar){
+    let newavatar = newAvatar?JSON.parse(newAvatar):null
+    $("#avatar_"+avatar.avatar+"_"+avatar.color.split('#')[1]+'_'+kKey.value).attr("id", "avatar_"+newavatar.avatar+"_"+newavatar.color.split('#')[1]+'_'+kKey.value)
+    $("#avatar-img_"+avatar.avatar+"_"+avatar.color.split('#')[1]+'_'+kKey.value).attr("id", "avatar-img_"+newavatar.avatar+"_"+newavatar.color.split('#')[1]+'_'+kKey.value)
+    avatar.value = newavatar
+    $("#avatar_"+newavatar.avatar+"_"+newavatar.color.split('#')[1]+'_'+kKey.value).css("background-color", `${newavatar.color}`)
+    $("#avatar-img_"+newavatar.avatar+"_"+newavatar.color.split('#')[1]+'_'+kKey.value).attr("src", 'avatars/'+`${newavatar.avatar}`+'.png')
+}
+
+defineExpose({
+    updateAvatar
 })
 // init()
 </script>

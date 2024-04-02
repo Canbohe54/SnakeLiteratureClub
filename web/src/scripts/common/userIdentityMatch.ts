@@ -48,3 +48,22 @@ export function getIndentityTagEffect(userIdentity: string) {
             return 'light'
     }
 }
+
+export function getIdentityAttrName(userIdentity: string) {
+    switch (userIdentity) {
+        case 'CONTRIBUTOR':
+            return 'grade'
+        case 'TEACHER':
+            return 'professional_title'
+        case 'ADMINISTRATOR':
+            return 'duties'
+        case 'EXPERT':
+            return 'professional_title'
+        case 'HUNTER':
+            return 'position'
+        case 'VOLUNTEER':
+            return 'occupation'
+        default:
+            return 'info'
+    }
+}

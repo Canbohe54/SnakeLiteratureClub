@@ -49,12 +49,10 @@ async function onSubmit() {
     // console.log(response)
     // console.log('id:' + loginForm.userid)
     if (response.status === 200 && response.data.message === 'Success.') {
-      console.log(response.data)
       store.commit('setToken', response.data.data.token)
       store.commit('setUserInfo', response.data.data.userInfo)
       ElMessage.success('登录成功')
-      console.log(document.cookie)
-      console.log('push')
+
       await router.push('/')
       location.reload()
     } else {
