@@ -1,6 +1,7 @@
 package com.snach.literatureclub.service;
 
 import com.snach.literatureclub.bean.User;
+import com.snach.literatureclub.common.ArticlePublishStatus;
 import com.snach.literatureclub.common.Identity;
 import com.snach.literatureclub.common.exception.InsufficientPermissionException;
 import com.snach.literatureclub.dao.ArticleDao;
@@ -36,6 +37,7 @@ class ExpertServiceImpl implements ExpertService {
         if (!expert.checkIdentity(Identity.EXPERT) && !expert.checkIdentity(Identity.ADMINISTRATOR)) {
             throw new InsufficientPermissionException();
         }
+        articleDao.updatePublishStatus(articleId, ArticlePublishStatus.UNDER_RECORD);
         articleDao.updateReceivedBy(articleId, recommendTo);
         return true;
     }

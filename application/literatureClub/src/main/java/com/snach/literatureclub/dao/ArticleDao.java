@@ -125,7 +125,7 @@ public interface ArticleDao {
     List<Article> getArticlesByKeyword(String keyword, @Param("items") List<ArticlePublishStatus> statusList);
 
     @Select("SELECT id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags" +
-            " FROM article WHERE received_by = #{userId}")
+            " FROM article WHERE received_by = #{userId} AND audit_status='AUDITED'")
     List<Article> getArticleByReceivedBy(String userId);
 
     /**

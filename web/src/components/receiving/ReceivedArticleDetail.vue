@@ -334,27 +334,39 @@ const addMessage = async () => {
     rejectManager.rejectDialogVisible = false
   })
 }
+
 const handleRejectArticleClicked = async () => {
-  await SYNC_POST('/article/changeArticleReceivedBy', {
+  let newPublishStatus = articleDetail.publishStatus === 'UNDER_REVIEW'? 'FAILED_REVIEW' : 'FAILED_RECORD'
+  await SYNC_POST('/article/changeArticlePublishStatus', {
     articleId: articleDetail.id,
-    receivedBy: '',
+    status: newPublishStatus,
     token: store.getters.getToken
-  }, async (response: any) => {
+  }, async (response) => {
+
     if (response.status !== 200 || response.data.code !== 2001) {
       errorCallback(response)
     } else {
-      await addMessage()
+      await SYNC_POST('/article/changeArticleReceivedBy', {
+        articleId: articleDetail.id,
+        receivedBy: '',
+        token: store.getters.getToken
+      }, async (response: any) => {
+        if (response.status !== 200 || response.data.code !== 2001) {
+          errorCallback(response)
+        } else {
+          await addMessage()
+        }
+      })
     }
+
   })
-
 }
-
-const handleAcceptArticleClicked = async () => {
+const handleAccept = async () => {
   let userInfo = store.getters.getUserInfo
   await SYNC_POST('/message/addMessage', {
     from: userInfo.id,
     to: articleDetail.text_by_id,
-    message: rejectManager.rejectInfo
+    message: acceptManager.acceptInfo
   }, async response => {
     if (response.status === 200 && response.data.code === 2001) {
       ElMessage({
@@ -369,6 +381,22 @@ const handleAcceptArticleClicked = async () => {
     await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 43200)
     router.back()
   })
+}
+const handleAcceptArticleClicked = async () => {
+  let newPublishStatus = 'POST_RECORD'
+
+  await SYNC_POST('/article/changeArticlePublishStatus', {
+    articleId: articleDetail.id,
+    status: newPublishStatus,
+    token: store.getters.getToken
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      await handleAccept()
+    }else {
+      errorCallback(response)
+    }
+  })
+
 }
 
 const handleRecommendClicked = () => {

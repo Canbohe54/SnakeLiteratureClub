@@ -183,6 +183,10 @@ public class ArticleController {
     public boolean changeArticleStatus(String articleId, ArticleAuditStatus status, String token) {
         return articleService.changeArticleStatus(articleId, status, token);
     }
+    @RequestMapping(value = "changeArticlePublishStatus", method = RequestMethod.POST)
+    public boolean changeArticlePublishStatus(String articleId, ArticlePublishStatus status, String token) {
+        return articleService.changeArticlePublishStatus(articleId, status, token);
+    }
     @RequestMapping(value = "changeArticleReceivedBy", method = RequestMethod.POST)
     public boolean changeArticleReceivedBy(String articleId, String receivedBy, String token) {
         return articleService.changeArticleReceivedBy(articleId, receivedBy, token);

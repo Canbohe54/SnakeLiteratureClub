@@ -29,6 +29,7 @@ import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
 @Service
 public interface ArticleService {
     boolean changeArticleStatus(String articleId, ArticleAuditStatus status, String token);
+    boolean changeArticlePublishStatus(String articleId, ArticlePublishStatus status, String token);
     boolean changeArticleReceivedBy(String articleId, String receivedBy, String token);
     Article getArticleById(String articleId);
 
@@ -116,11 +117,16 @@ class ArticleServiceImpl implements ArticleService {
         if (!tokenVerify(token)) {
             throw new InvalidTokenException();
         }
-        String userId = getPayload(token, "id");
-        if (articleDao.belong(userId, articleId) == 0) {
-            throw new InsufficientPermissionException();
-        }
         articleDao.updateAuditStatus(articleId, status);
+        return true;
+    }
+
+    @Override
+    public boolean changeArticlePublishStatus(String articleId, ArticlePublishStatus status, String token) {
+        if (!tokenVerify(token)) {
+            throw new InvalidTokenException();
+        }
+        articleDao.updatePublishStatus(articleId, status);
         return true;
     }
 
