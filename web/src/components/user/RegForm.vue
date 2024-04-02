@@ -51,20 +51,23 @@
             </el-row>
         </section>
         <AvatarSelection :visible="avatarSelectionVisible" @close="handleAvatarSelectionClose" @selection="handleAvatarSelection" />
-        <el-dialog v-model="regSuccessDialogVisible" title="注册成功！">
-            <el-text>用户ID和密码是您用于登录系统的唯一凭证，请妥善保管（点击信息可以复制到剪切板）</el-text>
-            <el-form>
+        <el-dialog 
+        v-model="regSuccessDialogVisible" title="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注册成功！" style="max-width: 500px; border-radius: 10px;"
+        @close="handleRegSuccessClose" :close-on-click-modal="false">
+            <div style="margin-bottom: 10px;"><el-text>已为您生成唯一用户ID，是用于登录的凭证，请妥善保管</el-text></div>
+            <el-form label-width="auto">
                 <el-form-item label="用户ID">
-                    <el-input v-model="regForm.username" readonly></el-input>
+                    <el-input v-model="gettedNewUserId" readonly></el-input>
                 </el-form-item>
                 <el-form-item label="密码">
-                    <el-input v-model="regForm.password" readonly>
+                    <el-input v-model="regForm.password" type="password" readonly id="newUserPasswd">
                         <template #append>
-                            <el-button type="primary" @click="copyPassword"><el-icon><View /><Hide /></el-icon></el-button>
+                            <el-button type="primary" @click="changePasswdHidden"><el-icon><View v-if="isPasswordHidden" /><Hide v-else /></el-icon></el-button>
                         </template>
                     </el-input>
                 </el-form-item>
             </el-form>
+            <el-button @click="copyUserIDPasswd">复制到剪切板</el-button>
         </el-dialog>
     </div>
 </template>
@@ -107,9 +110,26 @@ const regForm = reactive<RegForm>({
 
 const pageAttr = ref('年级');
 
-const avatarSelectionVisible = ref(false)
+const gettedNewUserId = ref('')
 
+const avatarSelectionVisible = ref(false)
 const regSuccessDialogVisible = ref(false)
+const isPasswordHidden = ref(true)
+
+const changePasswdHidden = () => {
+    if (isPasswordHidden.value) {
+        isPasswordHidden.value = false
+        $('#newUserPasswd').attr('type', 'text')
+    } else {
+        isPasswordHidden.value = true
+        $('#newUserPasswd').attr('type', 'password')
+    }
+}
+
+const copyUserIDPasswd = () => {
+    navigator.clipboard.writeText("用户ID："+gettedNewUserId.value+"\n密码："+regForm.password)
+    ElMessage.success('用户ID及密码已复制到剪切板')
+}
 
 function showAvatarSelection() {
     avatarSelectionVisible.value = true
@@ -212,16 +232,17 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
             type: 'success',
             duration: 2000
           })
-          router.push('/login')
-          isPosted = true
+          gettedNewUserId.value = response.data.data.newUserId
+          regSuccessDialogVisible.value = true
+
         } else if (response.status === 200 && response.data.message === 'Email already exists.') { //
           ElMessage.error('邮箱已存在')
         } else if (response.status === 200 && response.data.message === 'Wrong Verifying Code.') { // 验证码错误
           ElMessage.error('验证码错误')
         } else {
-          ElMessage.error('注册失败，请检查网络连接')
+          ElMessage.error('注册失败，请稍后再试')
         }
-        attrs: `{ "${pageAttr.value}": "${regForm.attribute}" }`
+        isPosted = true
     })
       regButton.timer && clearInterval(regButton.timer)
       regButton.timer = setInterval(() => {
@@ -243,6 +264,11 @@ const onSubmit = async (formEl: FormInstance | undefined) => { // 提交表单
       console.log('error submit!', fields)
     }
   })
+}
+
+const handleRegSuccessClose = () => {
+    regSuccessDialogVisible.value = false
+    router.push('/login')
 }
 
 </script>
