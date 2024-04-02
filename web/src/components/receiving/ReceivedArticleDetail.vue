@@ -408,13 +408,7 @@ const handleAcceptClicked = () => {
 const handleRejectClicked = () => {
   rejectManager.rejectDialogVisible = true
 }
-const handleTestClicked = () => {
-  ElMessage({
-    showClose: true,
-    message: '受理完成!',
-    type: 'success'
-  })
-}
+
 const handleUpdateArticleClicked = () => {
   if (articleDetail.id !== '' && articleDetail.id !== undefined) {
     router.push({path: '/articleEditor', query: {id: articleDetail.id}})

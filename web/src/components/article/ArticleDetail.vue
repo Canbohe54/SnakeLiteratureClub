@@ -51,6 +51,12 @@
                 <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
                   :onclick="handleLockClicked">{{ isLocked ? '取消锁定' : '锁定' }}
                 </el-button>
+                <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id && articleDetail.publishStatus === 'POST_RECORD'"
+                           :onclick="handlePOSTEDClicked">刊登
+                </el-button>
+                <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id && articleDetail.publishStatus === 'POST_RECORD'"
+                           :onclick="handleUnPOSTEDClicked">不刊登
+                </el-button>
                 <el-button link type="primary" :onclick="handleDiscriptionSmall" style="font-size: 16px;">小
                 </el-button>
                 <el-button link type="primary" :onclick="handleDiscriptionMedium" style="font-size: 18px;">中
@@ -363,7 +369,7 @@ async function getIsLocked() {
 
 async function handleUnlock() {
   // 如果非公开且已刊登，无法手动解锁
-  if (articleDetail.publishStatus === 'POSTED') {
+  if (articleDetail.publishStatus === 'POSTED' && articleDetail.audioStatus === 'LOCKED') {
     let expire = 0;
     await SYNC_GET("/article/getArticleLockExpire", { articleId: articleDetail.id }, (response) => {
       if (response.status === 200 && response.data.code === 2001) {
@@ -457,6 +463,35 @@ const handleDelArticleClicked = async () => {
   delArticleDialogVisible.value = false
   router.back()
 }
+const changeArticlePublishStatus = async () => {
+  await SYNC_POST('/article/changeArticlePublishStatus', {
+    articleId: articleDetail.id,
+    status: 'POSTED',
+    token: store.getters.getToken
+  }, async (response) => {
+    if (response.status !== 200 || response.data.code !== 2001) {
+      errorCallback(response)
+    }
+  })
+}
+const changeArticleAuditStatus = async () => {
+  await SYNC_POST('/article/changeArticleAuditStatus', {
+    articleId: articleDetail.id,
+    status: 'LOCKED',
+    token: store.getters.getToken
+  }, async (response) => {
+    if (response.status !== 200 || response.data.code !== 2001) {
+      errorCallback(response)
+    }
+  })
+}
+
+const handlePOSTEDClicked = async () => {
+  await changeArticlePublishStatus()
+  await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 5184000)
+  isLocked.value = true
+  await changeArticleAuditStatus()
+}
 const handleUpdateArticleClicked = () => {
   if (articleDetail.id !== '' && articleDetail.id !== undefined) {
     router.push({ path: '/articleEditor', query: { id: articleDetail.id } })
@@ -465,7 +500,9 @@ const handleUpdateArticleClicked = () => {
   }
   getIsLocked()
 }
-
+const handleUnPOSTEDClicked = async () => {
+  // todo: 不接受收录
+}
 // 有article_id时初始化ArticleDetail
 (async () => {
   if (route.query.id === '' || route.query.id === undefined) return
