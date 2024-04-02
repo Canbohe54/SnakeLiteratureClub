@@ -8,6 +8,7 @@ import com.snach.literatureclub.common.ArticlePublishStatus;
 import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.utils.MediaTypeConverter;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -55,6 +56,18 @@ public class ArticleController {
         Map<String, Object> response = new HashMap<>();
         response.put("article", articleService.getArticleById(article_id));
         return response;
+    }
+
+    @RequestMapping(value = "getArticles", method = RequestMethod.POST)
+    public PageInfo<Article> getArticles(@RequestParam(required = false) List<String> idList,
+                                         @RequestParam(required = false) List<String> authorList,
+                                         @RequestParam(required = false) String keyword,
+                                         @RequestParam(required = false) String tags,
+                                         @RequestParam(required = false) List<ArticleAuditStatus> auditStatusList,
+                                         @RequestParam(required = false) List<ArticlePublishStatus> publishStatusList,
+                                         @RequestParam int pageNum,
+                                         @RequestParam int pageSize) {
+        return articleService.getArticles(idList, authorList, keyword, tags, auditStatusList, publishStatusList, pageNum, pageSize);
     }
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
@@ -113,7 +126,7 @@ public class ArticleController {
      * @param requester 请求者id
      */
     @RequestMapping(value = "getPermissions", method = RequestMethod.GET)
-    public boolean getPermissions(String articleId,  String requester) {
+    public boolean getPermissions(String articleId, String requester) {
         return articleService.getPermissions(articleId, requester);
     }
 
@@ -124,6 +137,7 @@ public class ArticleController {
 
     /**
      * 获取文章锁的剩余过期时间
+     *
      * @param articleId 文章id
      * @return 剩余过期时间
      */
@@ -131,6 +145,7 @@ public class ArticleController {
     public long getArticleLockExpire(String articleId) {
         return articleService.getArticleLockExpire(articleId);
     }
+
     /**
      * 通过id对文章进行敏感词审核
      *
@@ -187,6 +202,7 @@ public class ArticleController {
     public boolean changeArticlePublishStatus(String articleId, ArticlePublishStatus status, String token) {
         return articleService.changeArticlePublishStatus(articleId, status, token);
     }
+
     @RequestMapping(value = "changeArticleReceivedBy", method = RequestMethod.POST)
     public boolean changeArticleReceivedBy(String articleId, String receivedBy, String token) {
         return articleService.changeArticleReceivedBy(articleId, receivedBy, token);
