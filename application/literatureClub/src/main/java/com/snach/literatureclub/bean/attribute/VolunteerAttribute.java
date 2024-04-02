@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@AttributeType(Identity.TEACHER)
-public class VolunteerAttribute extends UserAttribute{
-    @JsonProperty("volunteer") private String volunteer;
-}
+//@Data
+//@EqualsAndHashCode(callSuper = true)
+//@NoArgsConstructor
+//@AttributeType(Identity.VOLUNTEER)
+//public class VolunteerAttribute extends UserAttribute{
+//    @JsonProperty("volunteer") private String volunteer;
+//}
