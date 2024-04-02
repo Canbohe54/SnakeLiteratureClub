@@ -39,6 +39,9 @@ public interface UserDao {
     })
     List<User> getUserByNameAndIdentity(String name,@Param("items") List<String> identity);
 
+    @Select("SELECT identity FROM user WHERE id = #{id}")
+    String getUserIdentity(String id);
+
     @Insert("UPDATE user SET name = #{user.name}, phone = #{user.phone}, introduction = #{user.introduction}, organization = #{user.organization}, attrs = #{user.attrs} WHERE id = #{user.id}")
     void updateUserInfo(@Param("user") User user);
 

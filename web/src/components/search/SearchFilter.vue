@@ -1,5 +1,5 @@
 <template>
-  <div class="filterBox filterBox-shadow">
+  <div>
     <el-row class="filterGroup" v-for="(group, groupKey) in filterTagGroups">
       <el-col :span="3">
         <el-text class="checkboxGroupName">{{ groupKey }}</el-text>
@@ -49,16 +49,6 @@ defineExpose({ filterSelection, loadSelection })
 </script>
 
 <style scoped>
-.filterBox {
-  border: 1px solid var(--el-card-border-color);
-  border-radius: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  margin-bottom: 10px;
-}
-.filterBox-shadow {
-  box-shadow: var(--el-box-shadow-light);
-}
 .filterGroup {
   margin-top: 5px;
   margin-bottom: 5px;

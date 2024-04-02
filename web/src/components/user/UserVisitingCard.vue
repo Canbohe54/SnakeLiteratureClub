@@ -56,7 +56,9 @@ function getUserInfo(){
         }
     })
 }
-getUserInfo();
+onMounted(() => {
+    getUserInfo();
+})
 </script>
 
 <style scoped>

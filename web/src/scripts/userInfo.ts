@@ -1,7 +1,5 @@
 import { ElMessage } from "element-plus"
-import { useRouter } from "vue-router"
 import { SYNC_GET } from "./Axios"
-const router = useRouter()
 
 export async function toUserPage (id: string) {
     if (id === '' || id === undefined) {
@@ -12,7 +10,7 @@ export async function toUserPage (id: string) {
         user_id: id
       }, response => {
         if(response.status === 200 && response.data.code === 2001){
-            router.push(`/user/${id}`)
+            window.location.href = '/#/user/' + id
         }else {
             ElMessage.error('用户不存在')
         }

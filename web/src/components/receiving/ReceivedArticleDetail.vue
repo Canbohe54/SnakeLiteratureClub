@@ -9,10 +9,10 @@
                 <el-text class="article-detail-title">{{ articleDetail.title }}</el-text>
               </el-row>
               <el-row class="article-box-card">
-                <el-text class="article-detail-author">（
+                <el-text class="article-detail-author">
                   <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
                   <span v-else>{{articleDetail.authorName}}</span>
-                  （{{articleDetail.authorGrade}}） {{articleDetail.authorOrganization}}
+                  {{articleDetail.authorGrade?"（"+articleDetail.authorGrade+"）":""}} {{articleDetail.authorOrganization}}
                   <span v-if="articleDetail.mentor !== ''">指导老师：{{articleDetail.mentor}}</span>
                 </el-text>
               </el-row>
