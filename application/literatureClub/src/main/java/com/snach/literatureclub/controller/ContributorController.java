@@ -3,6 +3,7 @@ package com.snach.literatureclub.controller;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.common.ArticleAuditStatus;
+import com.snach.literatureclub.common.ArticlePublishStatus;
 import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.service.ContributorService;
 import jakarta.annotation.Nullable;
@@ -64,8 +65,9 @@ public class ContributorController {
     public PageInfo<Article> contributorArticles(@RequestParam("contributor_id") String contributor_id,
                                                  @RequestParam(name = "page_num") int pageNum,
                                                  @RequestParam(name = "page_size") int pageSize,
-                                                 @RequestParam(name = "status_list") List<ArticleAuditStatus> statusList) {
-        return articleService.getContributorArticles(contributor_id, pageNum, pageSize, statusList);
+                                                 @RequestParam(name = "audit_status_list") List<ArticleAuditStatus> auditStatusList,
+                                                 @RequestParam(name = "publish_status_list") List<ArticlePublishStatus> publishStatusList) {
+        return articleService.getContributorArticles(contributor_id, pageNum, pageSize, auditStatusList, publishStatusList);
     }
 
 }

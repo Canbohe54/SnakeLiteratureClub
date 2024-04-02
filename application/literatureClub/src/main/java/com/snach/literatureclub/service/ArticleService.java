@@ -40,7 +40,7 @@ public interface ArticleService {
      * @param statusList the status of the article
      * @return PageInfo object containing article list
      */
-    PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleAuditStatus> statusList);
+    PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleAuditStatus> statusList, List<ArticlePublishStatus> publishStatusList);
 
     Article getArticleFileById(String articleId);
 
@@ -139,9 +139,9 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleAuditStatus> statusList) {
+    public PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleAuditStatus> auditStatusList, List<ArticlePublishStatus> publishStatusList) {
         PageHelper.startPage(pageNum, pageSize);
-        return new PageInfo<>(articleDao.getArticleByContributorId(contributorId, statusList));
+        return new PageInfo<>(articleDao.getArticleByContributorId(contributorId, auditStatusList, publishStatusList));
     }
 
     @Override

@@ -51,12 +51,16 @@ public interface ArticleDao {
             "a.id id,a.title title,a.description description,a.time time,a.audit_status auditStatus, a.publish_status publishStatus, a.tags tags ",
             "FROM article a ",
             "WHERE a.text_by = #{contributor_id} AND a.audit_status in",
-            "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
+            "<foreach collection='audit_status' item='item' open='(' separator=',' close=')'>",
+            "#{item}",
+            "</foreach>",
+            " AND a.publish_status in",
+            "<foreach collection='publish_status' item='item' open='(' separator=',' close=')'>",
             "#{item}",
             "</foreach>",
             "</script>"
     })
-    List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id, @Param("items") List<ArticleAuditStatus> statusList);
+    List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id, @Param("audit_status") List<ArticleAuditStatus> auditStatusList, @Param("publish_status") List<ArticlePublishStatus> publishStatusList);
 
     /**
      * 根据稿件id获取单个稿件的基础信息
