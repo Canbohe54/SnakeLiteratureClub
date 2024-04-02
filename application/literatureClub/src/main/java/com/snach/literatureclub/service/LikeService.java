@@ -1,5 +1,8 @@
 package com.snach.literatureclub.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.bean.like.ArticleLike;
 import com.snach.literatureclub.bean.like.LikesAndViewCount;
 import com.snach.literatureclub.common.CONSTANT;
@@ -22,7 +25,7 @@ public interface LikeService {
     Map<String, Object> cancelLike(String token, String articleId, String userId);
     Map<String, Object> getCurrentLikeStatus(String articleId, String userId);
     Map<String, Object> getCurrentLikeCount(String articleId);
-    Map<String, Object> getAllLikeAndViewCount();
+    Map<String, Object> getAllLikeAndViewCount(int pageNum, int pageSize);
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -178,7 +181,7 @@ class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public Map<String, Object> getAllLikeAndViewCount() {
+    public Map<String, Object> getAllLikeAndViewCount(int pageNum, int pageSize) {
         Map<String, Object> res = new HashMap<>();
         Map<String, Map<String, Integer>> articleLikeAndViewCountMap = new HashMap<>();
         Map<String, Integer> articleLikeCountMap = new HashMap<>();
@@ -204,13 +207,19 @@ class LikeServiceImpl implements LikeService {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        res.put("RankingByLikeCount", RankingByLikeCount);
+        List<Article> articlesRankingByLikeCount = articleDao.getArticlesRanking(RankingByLikeCount);
+        PageHelper.startPage(pageNum, pageSize);
+        res.put("RankingByLikeCount", new PageInfo<>(articlesRankingByLikeCount));
+
         // 根据articleViewCountMap中的value从大到小对key进行排序，存到列表中
         List<String> RankingByViewCount = articleViewCountMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        res.put("RankingByViewCount", RankingByViewCount);
+        List<Article> articlesRankingByViewCount = articleDao.getArticlesRanking(RankingByViewCount);
+        PageHelper.startPage(pageNum, pageSize);
+        res.put("RankingByViewCount", new PageInfo<>(articlesRankingByViewCount));
+
         // 根据likeCount 和 viewCount 9 : 1 的比例进行排序
         // 计算得分并排序
         List<String> RankingByLikeAndViewCount = articleLikeAndViewCountMap.entrySet().stream()
@@ -220,7 +229,9 @@ class LikeServiceImpl implements LikeService {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
         Collections.reverse(RankingByLikeAndViewCount);
-        res.put("RankingByLikeAndViewCount", RankingByLikeAndViewCount);
+        List<Article> articlesRankingByLikeAndViewCount = articleDao.getArticlesRanking(RankingByLikeAndViewCount);
+        PageHelper.startPage(pageNum, pageSize);
+        res.put("RankingByLikeAndViewCount", new PageInfo<>(articlesRankingByLikeAndViewCount));
         return res;
     }
 }

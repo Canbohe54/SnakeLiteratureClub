@@ -223,4 +223,16 @@ public interface ArticleDao {
 
     @Select("SELECT id FROM article WHERE audit_status = 'AUDITED' AND publish_status in ('POSTED','PUBLIC')")
     List<String> getAllArticleId();
+
+    // 根据文章id列表查询列表中文章详细信息
+    @Select({"<script>",
+            "SELECT ",
+            "id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags",
+            "FROM article WHERE id in",
+            "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
+            "#{item}",
+            "</foreach>",
+            "</script>"
+    })
+    List<Article> getArticlesRanking(@Param("items") List<String> idList);
 }

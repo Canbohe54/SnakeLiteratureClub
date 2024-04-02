@@ -3,10 +3,7 @@ package com.snach.literatureclub.controller;
 
 import com.snach.literatureclub.service.LikeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -33,7 +30,8 @@ public class LikeController {
     }
 
     @RequestMapping(value = "getAllLikeAndViewCount", method = RequestMethod.GET)
-    public Map<String, Object> getAllLikeAndViewCount() {
-        return likeService.getAllLikeAndViewCount();
+    public Map<String, Object> getAllLikeAndViewCount(@RequestParam(name = "page_num") int pageNum,
+                                                      @RequestParam(name = "page_size") int pageSize) {
+        return likeService.getAllLikeAndViewCount(pageNum, pageSize);
     }
 }
