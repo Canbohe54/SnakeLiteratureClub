@@ -34,4 +34,9 @@ public class LikeController {
                                        @RequestParam(name = "page_size") int pageSize) {
         return likeService.getAllLikeAndViewCount(pageNum, pageSize);
     }
+
+    @RequestMapping(value = "getAllLikeCountByContributorID", method = RequestMethod.GET)
+    public Map<String, Object> getAllLikeCountByContributorId(String contributorId) {
+        return likeService.getAllLikeCountByContributorId(contributorId);
+    }
 }

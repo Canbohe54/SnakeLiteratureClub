@@ -26,6 +26,7 @@ public interface LikeService {
     Map<String, Object> getCurrentLikeStatus(String articleId, String userId);
     Map<String, Object> getCurrentLikeCount(String articleId);
     Map<String, Object> getAllLikeAndViewCount(int pageNum, int pageSize);
+    Map<String, Object> getAllLikeCountByContributorId(String userId);
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -232,6 +233,18 @@ class LikeServiceImpl implements LikeService {
         List<Article> articlesRankingByLikeAndViewCount = articleDao.getArticlesRanking(RankingByLikeAndViewCount);
         PageHelper.startPage(pageNum, pageSize);
         res.put("RankingByLikeAndViewCount", new PageInfo<>(articlesRankingByLikeAndViewCount));
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> getAllLikeCountByContributorId(String contributorId) {
+        List<String> articleIdList = articleDao.getAllArticleIdByContributorId(contributorId);
+        int count = 0;
+        for(String articleId: articleIdList){
+            count += (Integer) getCurrentLikeCount(articleId).get("currentLikeCount");
+        }
+        Map<String, Object> res = new HashMap<>();
+        res.put("allLikeCount", count);
         return res;
     }
 }

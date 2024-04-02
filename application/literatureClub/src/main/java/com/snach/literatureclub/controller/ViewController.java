@@ -26,4 +26,9 @@ public class ViewController {
     public Map<String, Object> getViewCount(String articleId) {
         return viewService.getViewCount(articleId);
     }
+
+    @RequestMapping(value = "getAllViewCountByContributorID", method = RequestMethod.GET)
+    public Map<String, Object> getAllViewCountByContributorId(String contributorId) {
+        return viewService.getAllViewCountByContributorId(contributorId);
+    }
 }

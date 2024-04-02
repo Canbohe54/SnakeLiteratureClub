@@ -207,4 +207,9 @@ public class ArticleController {
     public boolean changeArticleReceivedBy(String articleId, String receivedBy, String token) {
         return articleService.changeArticleReceivedBy(articleId, receivedBy, token);
     }
+
+    @RequestMapping(value = "getRecievedAndPublishedCount", method = RequestMethod.GET)
+    public Map<String, Object> getRecievedAndPublishedCount(String contributorId) {
+        return articleService.getRecievedAndPublishedCount(contributorId);
+    }
 }

@@ -66,6 +66,14 @@ public interface ArticleDao {
     })
     List<Article> getArticleByContributorId(@Param("contributor_id") String contributor_id, @Param("audit_status") List<ArticleAuditStatus> auditStatusList, @Param("publish_status") List<ArticlePublishStatus> publishStatusList);
 
+    @Select("SELECT id FROM article where text_by = #{contributor_id}")
+    List<String> getAllArticleIdByContributorId(String contributor_id);
+
+    @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND publish_status = 'POST'")
+    int getReceivedCount(String contributor_id);
+
+    @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND publish_status = 'PUBLIC'")
+    int getPublishedCount(String contributor_id);
     /**
      * 根据稿件id获取单个稿件的基础信息
      *
