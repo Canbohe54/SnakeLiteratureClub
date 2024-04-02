@@ -42,6 +42,9 @@
 
 <script setup>
 import { reactive } from 'vue';
+import {SYNC_GET} from "@/scripts/Axios";
+import {errorCallback} from "@/scripts/ErrorCallBack";
+import {useStore} from "vuex";
 
 const userStatistics = reactive({
     publishedArticles: 268500,
@@ -49,9 +52,52 @@ const userStatistics = reactive({
     totalReads: 328900,
     totalLikes: 112893
 })
+const store = useStore()
 
 // TODO:这里直接写Ajax
+async function getAllViewCount() {
+  await SYNC_GET('/view/getAllViewCountByContributorID', {
+    contributorId: store.getters.getUserInfo.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      userStatistics.totalReads = response.data.data.allViewCount
+    }
+    else {
+      errorCallback(response)
+    }
+  })
+}
 
+async function getAllLikeCount() {
+  await SYNC_GET('/like/getAllLikeCountByContributorID', {
+    contributorId: store.getters.getUserInfo.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      userStatistics.totalLikes = response.data.data.allLikeCount
+    }
+    else {
+      errorCallback(response)
+    }
+  })
+}
+
+async function getRecievedAndPublishedCount() {
+  await SYNC_GET('/article/getRecievedAndPublishedCount', {
+    contributorId: store.getters.getUserInfo.id
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      userStatistics.publishedArticles = response.data.data.publishedCount
+      userStatistics.recievedArticles = response.data.data.recievedCount
+    }
+    else {
+      errorCallback(response)
+    }
+  })
+}
+
+getAllLikeCount()
+getAllViewCount()
+getRecievedAndPublishedCount()
 </script>
 
 <style scoped>

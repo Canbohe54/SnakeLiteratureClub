@@ -4,12 +4,14 @@ import com.snach.literatureclub.bean.like.ArticleLike;
 import com.snach.literatureclub.bean.like.LikesAndViewCount;
 import com.snach.literatureclub.common.CONSTANT;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
+import com.snach.literatureclub.dao.ArticleDao;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
@@ -17,6 +19,7 @@ import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
 public interface ViewService {
     Map<String, Object> addViewCount(String articleId);
     Map<String, Object> getViewCount(String articleId);
+    Map<String, Object> getAllViewCountByContributorId(String contributorId);
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -25,9 +28,11 @@ public interface ViewService {
 class ViewServiceImpl implements ViewService {
 
     @Autowired
-    RedisService redisService;
+    private RedisService redisService;
     @Autowired
-    DBService dbService;
+    private DBService dbService;
+    @Autowired
+    private ArticleDao articleDao;
     public Map<String, Object> addViewCount(String articleId) {
         Map<String, Object> res = new HashMap<>();
         // 判断浏览量信息是否在redis中
@@ -75,6 +80,18 @@ class ViewServiceImpl implements ViewService {
                 res.put("currentViewCount", 0);
             }
         }
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> getAllViewCountByContributorId(String contributorId) {
+        List<String> articleIdList = articleDao.getAllArticleIdByContributorId(contributorId);
+        int count = 0;
+        for(String articleId: articleIdList){
+            count += (Integer) getViewCount(articleId).get("currentViewCount");
+        }
+        Map<String, Object> res = new HashMap<>();
+        res.put("allViewCount", count);
         return res;
     }
 }

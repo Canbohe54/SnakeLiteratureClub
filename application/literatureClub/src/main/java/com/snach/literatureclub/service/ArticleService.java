@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.snach.literatureclub.utils.TokenTools.getPayload;
 import static com.snach.literatureclub.utils.TokenTools.tokenVerify;
@@ -96,6 +98,8 @@ public interface ArticleService {
     boolean checkLock(String articleId);
 
     long getArticleLockExpire(String articleId);
+
+    Map<String, Object> getRecievedAndPublishedCount(String contributorId);
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -276,5 +280,15 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public long getArticleLockExpire(String articleId) {
         return articleLocker.getArticleLockExpire(articleId);
+    }
+
+    @Override
+    public Map<String, Object> getRecievedAndPublishedCount(String contributorId) {
+        int receivedCount = articleDao.getReceivedCount(contributorId);
+        int publishedCount = articleDao.getPublishedCount(contributorId);
+        Map<String, Object> res = new HashMap<>();
+        res.put("receivedCount", receivedCount);
+        res.put("publishedCount", publishedCount);
+        return res;
     }
 }
