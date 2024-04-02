@@ -28,8 +28,16 @@
 import UserVisitingCard from './UserVisitingCard.vue';
 import UserStatistics from './UserStatistics.vue';
 import MyPublicList from './CenterArticleList/MyPublicList.vue';
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 
-console.log($('my-private-list'));
+const route = useRoute();
+const store = useStore();
+
+console.log();
+const userId = ref(route.params.id?route.params.id:store.getters.getUserInfo.id);
+
 </script>
 
 <style scoped>

@@ -12,7 +12,7 @@ export async function toUserPage (id: string) {
         user_id: id
       }, response => {
         if(response.status === 200 && response.data.code === 2001){
-            router.push(`/user/${id}/article`)
+            router.push(`/user/${id}`)
         }else {
             ElMessage.error('用户不存在')
         }
