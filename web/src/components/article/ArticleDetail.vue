@@ -51,10 +51,10 @@
                 <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
                   :onclick="handleLockClicked">{{ isLocked ? '取消锁定' : '锁定' }}
                 </el-button>
-                <el-button type="success" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id && articleDetail.publishStatus === 'POST_RECORD'"
+                <el-button type="success" link v-if="postButtonVisible"
                            :onclick="handlePOSTEDClicked">刊登
                 </el-button>
-                <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id && articleDetail.publishStatus === 'POST_RECORD'"
+                <el-button type="warning" link v-if="postButtonVisible"
                            :onclick="handleUnPOSTEDClicked">不刊登
                 </el-button>
                 <el-button type="warning" link v-if="publicButtonVisible"
@@ -174,6 +174,7 @@ const currentLikeCount = ref(0)
 const currentViewCount = ref(0)
 const textByIdentity = ref('CONTRIBUTOR')
 const publicButtonVisible = ref(false)
+const postButtonVisible = ref(false)
 const onlyMyself = ref(false)
 let isUp = ref(false)
 
@@ -542,6 +543,23 @@ const handleViewableClicked = async () => {
 
   onlyMyself.value = !onlyMyself.value
 }
+const visibleInit = () => {
+  if (articleDetail.text_by_id === store.getters.getUserInfo.id) {
+    if (articleDetail.publishStatus === 'POST_RECORD') {
+      postButtonVisible.value = true
+    }
+    if (articleDetail.publishStatus === 'POSTED') {
+      publicButtonVisible.value = true
+    }
+    if (articleDetail.auditStatus === 'AUDITED') {
+      onlyMyself.value = false
+      publicButtonVisible.value = true
+    } else if (articleDetail.auditStatus === 'LOCKED'){
+      onlyMyself.value = true
+      publicButtonVisible.value = true
+    }
+  }
+}
 // 有article_id时初始化ArticleDetail
 (async () => {
   if (route.query.id === '' || route.query.id === undefined) return
@@ -559,16 +577,6 @@ const handleViewableClicked = async () => {
         }
         articleDetail[dataKey] = response.data.data.article[dataKey]
       }
-      if (articleDetail.text_by_id === store.getters.getUserInfo.id && articleDetail.publishStatus === 'POSTED') {
-        publicButtonVisible.value = true
-      }
-      if (articleDetail.auditStatus === 'AUDITED') {
-        onlyMyself.value = false
-        publicButtonVisible.value = true
-      } else if (articleDetail.auditStatus === 'LOCKED'){
-        onlyMyself.value = true
-        publicButtonVisible.value = true
-      }
 
       await getIsLocked()
       await getTextBy()
@@ -577,6 +585,7 @@ const handleViewableClicked = async () => {
       await getLikeCount()
       await getViewCount()
 
+      visibleInit();
     } else {
       errorCallback(response)
     }
