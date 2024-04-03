@@ -18,25 +18,51 @@
             <el-card class="user-center-main">
                 <el-text class="my-private-list">暂时充当private list</el-text>
             </el-card>
+            <el-card class="user-center-main" v-if="store.getters.getUserInfo.id === route.path.split('/')[2]">
+              <AuditList v-if="userIdentity === 'AUDITOR'"/>
+              <Received v-if="userIdentity === 'EXPERT' || userIdentity === 'HUNTER'"></Received>
+            </el-card>
             <el-divider border-style="dashed" style="margin: 24px 20px;width: auto;"><el-text
                     type="info">我也是有底线的~</el-text></el-divider>
         </el-col>
     </el-row>
 </template>
 
-<script setup>
-import UserVisitingCard from './UserVisitingCard.vue';
-import UserStatistics from './UserStatistics.vue';
-import MyPublicList from './CenterArticleList/MyPublicList.vue';
-import { ref } from 'vue';
-import { useRoute } from 'vue-router';
-import { useStore } from 'vuex';
+<script lang="ts" setup>
+import UserVisitingCard from './UserVisitingCard.vue'
+import UserStatistics from './UserStatistics.vue'
+import MyPublicList from './CenterArticleList/MyPublicList.vue'
+import {onMounted, ref} from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+import AuditList from '@/components/user/CenterArticleList/AuditList.vue'
+import {SYNC_GET} from '@/scripts/Axios'
+import {errorCallback} from '@/scripts/ErrorCallBack'
+import Received from "@/components/user/CenterArticleList/Received.vue";
 
 const route = useRoute();
 const store = useStore();
-
-console.log();
+const userIdentity = ref('')
 const userId = ref(route.params.id?route.params.id:store.getters.getUserInfo.id);
+
+async function getUserIdentity() {
+  await SYNC_GET('/usr/getUserIdentity', {
+    user_id: route.params.id ? route.params.id : store.getters.getUserInfo.id
+  }, async (response) => {
+    console.log(response.data)
+    if (response.status === 200 && response.data.code === 2001) {
+      userIdentity.value = response.data.data
+    }
+    else {
+      errorCallback(response)
+    }
+  })
+}
+
+onMounted(() => {
+  getUserIdentity()
+
+})
 
 </script>
 

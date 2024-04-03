@@ -27,6 +27,7 @@ import { onMounted, reactive, ref, toRefs } from 'vue';
 import { SYNC_GET } from "@/scripts/Axios";
 import { useRoute } from "vue-router";
 import { SnachResponse } from "@/scripts/types/ResponseObject";
+import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 
 type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'AUDIT_LIST' | 'RECEIVED'
 type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
@@ -158,7 +159,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
     option = (option == undefined ? props.option : option)
     let articleInfoRequest: ArticleInfoRequest
     switch (option) {
-        case 'STATIC': 
+        case 'STATIC':
             return
         case 'LOBBY': {
             articleInfoRequest = {
@@ -207,10 +208,22 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
                 auditorList: [route.params.id],
                 keyword: '',
                 tags: '',
-                auditStatusList: ['BEING_AUDITING', 'SUBMITTED'],
+                auditStatusList: ['BEING_AUDITED'],
                 publishStatusList: []
             }
             break
+        }
+        case 'RECEIVED': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [],
+                receiverList: [route.params.id],
+                auditorList: [],
+                keyword: '',
+                tags: '',
+                auditStatusList: ['AUDITED'],
+                publishStatusList: []
+              }
         }
     }
     return requestParamsDecode(articleInfoRequest)
@@ -252,6 +265,17 @@ function getArticles() {
     })
 }
 
+// 监听 page size 改变的事件
+function handleSizeChange(newSize: any) {
+  pageInfo.pageSize = newSize
+  getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
+}
+
+// 监听 页码值 改变的事件
+function handleCurrentChange(newPage: any) {
+  pageInfo.currentPage = newPage
+  getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
+}
 
 onMounted(() => {
     Object.assign(currentSettings, modeSettings[props.mode])
