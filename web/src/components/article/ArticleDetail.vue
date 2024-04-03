@@ -52,7 +52,7 @@
                   @click="handleDeleteClicked">删除文章
                 </el-button>
                 <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
-                  :onclick="handleLockClicked">{{ isLocked ? '取消锁定' : '锁定' }}
+                  :onclick="handleLockClicked">{{ isLocked ? '设置所有人可见' : '设置仅自己（和收稿者）可见' }}
                 </el-button>
                 <el-button type="success" link v-if="postButtonVisible"
                            :onclick="handlePOSTEDClicked">刊登

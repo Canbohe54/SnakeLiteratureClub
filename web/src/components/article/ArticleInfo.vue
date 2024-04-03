@@ -31,8 +31,8 @@
                 }}</span>
                 </div>
                 <div class="article-info-descrption">{{ articleInfo.description }}</div>
-                <div class="article-info-tags" v-if="tagsVisible">
-                    <ArticleTags :tagsJsons="articleInfo.tags" />
+                <div class="article-info-tags" >
+                    <ArticleTags v-if="tagsVisible" :tagsJsons="articleInfo.tags" />
                 </div>
                 <div class="article-info-bottom">
                     <div class="article-info-time">{{ articleInfo.time }}</div>
@@ -47,6 +47,17 @@
                 }}</el-button>
             <el-button @click="isArticleMenuOpen = false;" type="info">取消</el-button>
         </div>
+      <el-dialog draggable v-model="delArticleDialogVisible" title="删除文章" width="30%">
+        <span>确定删除文章？</span>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="delArticleDialogVisible = false">取消</el-button>
+            <el-button type="danger" @click="handleDelArticleClicked">
+              删除
+            </el-button>
+          </span>
+        </template>
+      </el-dialog>
     </div>
 </template>
 
@@ -55,13 +66,14 @@ import router from '@/router';
 import { reactive, toRefs, ref, onUpdated, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { Lock, Edit, Comment, View } from '@element-plus/icons-vue';
-import { SYNC_GET } from "@/scripts/Axios";
+import {SYNC_GET, SYNC_POST} from "@/scripts/Axios";
 import { lockArticleById } from "@/scripts/ArticleLocker";
 import ArticleTags from '@/components/common/ArticleTags.vue';
 import {ElMessage} from "element-plus";
+import {errorCallback} from "@/scripts/ErrorCallBack";
 
 const store = useStore();
-
+const delArticleDialogVisible = ref(false)
 const currentUser = reactive({
     userId: store.getters.getUserInfo.id,
     identity: store.getters.getUserInfo.identity,
@@ -81,8 +93,8 @@ const props = defineProps({
         publishStatus: String, //公开状态 **依mode决定**
         time: String, //时间 **必须**
         tags: Object, //标签 **必须** TODO: 改成map
-        received_by: String, //刊登报刊 **依mode决定**
-        audit_by: String, //审核员 **依mode决定**
+        receivedBy: String, //刊登报刊 **依mode决定**
+        auditBy: String, //审核员 **依mode决定**
         audit_suggestion: String, //审核意见 **依mode决定**
         viewcount: Number, //浏览量 **依mode决定**
     },
@@ -121,7 +133,7 @@ const menuOnStatus = reactive({
         },
         {
             text: '删除稿件',
-            onClick: handleArticleDeleate,
+            onClick: handleArticleDelete,
             type: 'danger'
         },
         {
@@ -133,7 +145,7 @@ const menuOnStatus = reactive({
     user_rough: [
         {
             text: '删除稿件',
-            onClick: handleArticleDeleate,
+            onClick: handleArticleDelete,
             type: 'danger'
         },
         {
@@ -155,11 +167,11 @@ const menuOnStatus = reactive({
             onClick: handleArticleDetail,
             type: 'primary'
         },
-        {
-            text: '设置仅自己（和收稿方）可见',
-            onClick: handleArticlePrivate,
-            type: 'danger'
-        }
+        // {
+        //     text: '设置仅自己（和收稿方）可见',
+        //     onClick: handleArticlePrivate,
+        //     type: 'warning'
+        // }
     ],
     user_audited_locked: [
         {
@@ -221,13 +233,13 @@ function handleStatusTag() {
     switch (articleInfo.value.auditStatus) {
         case 'AUDITED':
             if (articleInfo.value.publishStatus === 'POSTED') {
-                return '刊登作品：已刊登于 ' + articleInfo.value.received_by
+                return '刊登作品：已刊登于 ' + articleInfo.value.receivedBy
             } else if (articleInfo.value.publishStatus === 'PUBLIC') {
                 return '公开作品'
             }
             break
         case 'SUBMITTED':
-            if (articleInfo.value.audit_by == '' || articleInfo.value.audit_by == null) {
+            if (articleInfo.value.auditBy == '' || articleInfo.value.auditBy == null) {
                 return '初审稿件'
             } else {
                 return '复审稿件'
@@ -255,7 +267,7 @@ function handleStatus() {
         case 'ROUGH':
             break
         case 'SUBMITTED': // 给审核员标识的是否初审
-            if (articleInfo.value.audit_by == '' || articleInfo.value.audit_by == null) {
+            if (articleInfo.value.auditBy == '' || articleInfo.value.auditBy == null) {
                 $('#status' + articleInfo.value.id).css('border-top-color', 'var(--status-public)')
                 $('#status' + articleInfo.value.id).css('border-right-color', 'var(--status-public)')
                 $('#status' + articleInfo.value.id).css('border-left-color', 'var(--status-public)')
@@ -299,6 +311,14 @@ onMounted(() => { // setup语法糖下渲染时周期函数
     handleStatus()
 })
 
+const redirectToArticle = (subPath, articleId) => {
+  router.push({
+    path: subPath,
+    query: {
+      id: articleId
+    }
+  })
+}
 async function handleCardClicked() {
   await SYNC_GET('/article/getPermissions', {
       articleId: articleInfo.value.id,
@@ -310,12 +330,14 @@ async function handleCardClicked() {
         // 专家、报社专员、管理员可对文章进行锁定
         isArticleMenuOpen.value = !isArticleMenuOpen.value
       } else {
-        router.push({
-          path: '/articleDetail',
-          query: {
-            id: articleInfo.value.id
-          }
-        })
+        if ((articleInfo.auditStatus === 'BEING_AUDITED' || articleInfo.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
+          redirectToArticle('/auditArticleDetail', articleInfo.value.id)
+        } else if ((articleInfo.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
+                   (articleInfo.auditStatus === 'UNDER_RECODE' && currentUser.identity === 'HUNTER')) {
+          redirectToArticle('/receivedArticleDetail', articleInfo.value.id)
+        } else {
+          redirectToArticle('/articleDetail', articleInfo.value.id)
+        }
       }
     } else {
       // 当前用户没有阅读权限
@@ -353,13 +375,34 @@ async function handleArticleDetail() {
 function handleArticleSubmit() {
 
 }
-
-function handleArticleDeleate() {
-
+async function handleDelArticleClicked() {
+  await SYNC_POST('/contributor/delArticle', {
+    token: store.getters.getToken,
+    article_id: articleInfo.value.id,
+  }, async (response) => {
+    if (response.status === 200 && response.data.statusMsg === 'Success.') {
+      ElMessage({
+        showClose: true,
+        message: '删除文章成功',
+        type: 'warning'
+      })
+    } else {
+      errorCallback(response)
+    }
+  })
+  delArticleDialogVisible.value = false
+}
+async function handleArticleDelete() {
+  delArticleDialogVisible.value = true
 }
 
 function handleArticleEdit() {
-
+  router.push({
+    path: '/articleEditor',
+    query: {
+      id: articleInfo.value.id
+    }
+  })
 }
 
 function handleArticlePrivate() {
@@ -400,6 +443,7 @@ function handleArticlePublic() {
 .article-info-card {
     text-align: start;
     padding: 20px;
+  height: 180px;
 }
 
 .article-info-title {

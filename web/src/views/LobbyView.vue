@@ -36,4 +36,13 @@ export default class LobbyView extends Vue {}
   margin-bottom: 20px !important;
 }
 
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+body {
+  width: 100vw;
+  overflow: hidden;
+  padding-left: calc(100vw - 100%);
+}
 </style>
