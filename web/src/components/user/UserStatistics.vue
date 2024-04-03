@@ -17,7 +17,7 @@
         </el-col>
     </el-row>
     <el-divider border-style="dashed" v-if="userId == store.getters.getUserInfo.id&&(userIdentity==='CONTRIBUTOR' || userIdentity==='TEACHER')"/>
-    <el-row class="statistics-row" v-if="userId == store.getters.getUserInfo.id">
+    <el-row class="statistics-row" v-if="userId == store.getters.getUserInfo.id&&(userIdentity==='CONTRIBUTOR' || userIdentity==='TEACHER')">
         <el-col :span="8">
             <el-statistic title="草稿箱" class="statistics-number" id="draft" />
         </el-col>
@@ -28,7 +28,7 @@
             <el-statistic title="审核未通过" class="statistics-number" id="failed_audit" />
         </el-col>
     </el-row>
-    <el-row class="statistics-row" v-if="userId == store.getters.getUserInfo.id">
+    <el-row class="statistics-row" v-if="userId == store.getters.getUserInfo.id&&(userIdentity==='CONTRIBUTOR' || userIdentity==='TEACHER')">
         <el-col :span="8">
             <el-statistic title="有修改建议" class="statistics-number" id="audit_suggested" />
         </el-col>
