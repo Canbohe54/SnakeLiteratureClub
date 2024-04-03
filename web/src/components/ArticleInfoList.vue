@@ -190,10 +190,25 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
             articleInfoRequest = {
                 idList: [],
                 authorList: [],
+                receiverList: [],
+                auditorList: [],
                 keyword: wd.value,
                 tags: tags.value,
                 auditStatusList: ['AUDITED'],
                 publishStatusList: ['POSTED', 'PUBLIC']
+            }
+            break
+        }
+        case 'AUDIT_LIST': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [],
+                receiverList: [],
+                auditorList: [route.params.id],
+                keyword: '',
+                tags: '',
+                auditStatusList: ['BEING_AUDITING', 'SUBMITTED'],
+                publishStatusList: []
             }
             break
         }

@@ -1,7 +1,7 @@
 <template>
     <el-text class="list-title">{{( store.getters.getUserInfo.id === route.path.split('/')[2]
      ? '我' : 'Ta' )+ listName }}</el-text>
-    <ArticleInfoList option="USER_PUBLIC_LIST"  mode="USER_PUBLIC_LIST" :is_card="true" />
+    <ArticleInfoList option="USER_PUBLIC_LIST" mode="USER_PUBLIC_LIST" :is_card="true" />
 </template>
 
 <script setup>

@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-col :span="18" :offset="3">
+    <el-col :lg="18" :md="20" :sm="24" style="margin: auto;">
 
         <el-container>
           <el-main>
@@ -13,12 +13,15 @@
                 <el-text class="article-detail-author">
                   <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
                   <span v-else>{{articleDetail.authorName}}</span>
-                  （{{articleDetail.authorGrade}}） {{articleDetail.authorOrganization}}
-                  <span v-if="articleDetail.mentor !== ''">指导老师：{{articleDetail.mentor}}</span>
+                  {{articleDetail.authorGrade?"（"+articleDetail.authorGrade+"）":""}} {{articleDetail.authorOrganization}}
+                  <span v-if="articleDetail.mentor !== ''">指导老师：
+                    <el-button v-if="textByIdentity !== 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{articleDetail.mentor}}</el-button>
+                    <span v-else>{{articleDetail.mentor}}</span>
+                  </span>
                 </el-text>
               </el-row>
               <el-row class="article-box-card">
-                <el-text class="article-detail-author">发布时间：{{ articleDetail.time }}</el-text>&nbsp;&nbsp;
+                <el-text class="article-detail-author">发布时间：{{ articleDetail.time }}</el-text>
               </el-row>
               <div style="display: flex; justify-content:center;align-items: flex-end;margin-bottom: 10px;">
 
