@@ -331,10 +331,10 @@ async function handleCardClicked() {
         // 专家、报社专员、管理员可对文章进行锁定
         isArticleMenuOpen.value = !isArticleMenuOpen.value
       } else {
-        if ((articleInfo.auditStatus === 'BEING_AUDITED' || articleInfo.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
-          redirectToArticle('/auditArticleDetail', articleInfo.value.id)
-        } else if ((articleInfo.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
-                   (articleInfo.auditStatus === 'UNDER_RECODE' && currentUser.identity === 'HUNTER')) {
+        if ((articleInfo.value.auditStatus === 'BEING_AUDITED' || articleInfo.value.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
+          redirectToArticle('/articleAuditor', articleInfo.value.id)
+        } else if ((articleInfo.value.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
+                   (articleInfo.value.auditStatus === 'UNDER_RECODE' && currentUser.identity === 'HUNTER')) {
           redirectToArticle('/receivedArticleDetail', articleInfo.value.id)
         } else {
           redirectToArticle('/articleDetail', articleInfo.value.id)

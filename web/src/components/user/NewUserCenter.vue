@@ -9,24 +9,38 @@
             </el-card>
         </el-col>
         <el-col :lg="18" :md="17" :sm="24">
-            <el-card class="user-center-main">
+            <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
                 <UserStatistics />
             </el-card>
-            <el-card class="user-center-main">
+            <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER' || userIdentity === 'HUNTER'">
                 <MyPublicList />
             </el-card>
 <!--            <el-card class="user-center-main">-->
 <!--                <el-text class="my-private-list">暂时充当private list</el-text>-->
 <!--            </el-card>-->
-            <el-card class="user-center-main" v-if="store.getters.getUserInfo.id === route.path.split('/')[2]">
-              <AuditList v-if="userIdentity === 'AUDITOR'"/>
-              <Received v-if="userIdentity === 'EXPERT' || userIdentity === 'HUNTER'"></Received>
-              <MyPrivateList v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'"></MyPrivateList>
-              <BeingAudited v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'"></BeingAudited>
-              <FailAudited v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'"></FailAudited>
-              <UnderReview v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'"></UnderReview>
-              <PostRecord v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'"></PostRecord>
-            </el-card>
+            <div v-if="store.getters.getUserInfo.id === route.path.split('/')[2]">
+              <el-card class="user-center-main" v-if="userIdentity === 'AUDITOR'">
+                <AuditList/>
+              </el-card>
+                <el-card class="user-center-main" v-if="userIdentity === 'EXPERT' || userIdentity === 'HUNTER'">
+                <Received></Received>
+                </el-card>
+              <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
+                <MyPrivateList></MyPrivateList>
+              </el-card>
+              <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
+                <BeingAudited></BeingAudited>
+              </el-card>
+              <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
+                <FailAudited></FailAudited>
+              </el-card>
+              <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
+                <UnderReview></UnderReview>
+              </el-card>
+              <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
+                <PostRecord></PostRecord>
+              </el-card>
+            </div>
             <el-divider border-style="dashed" style="margin: 24px 20px;width: auto;"><el-text
                     type="info">我也是有底线的~</el-text></el-divider>
         </el-col>

@@ -361,6 +361,7 @@ function getArticles() {
             pageInfo.currentPage = data.data.pageNum
             pageInfo.pageSize = data.data.pageSize
             _articleList.value = data.data.list
+            console.log(_articleList.value)
         }
     })
 }
