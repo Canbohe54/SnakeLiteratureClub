@@ -58,6 +58,7 @@ import { Lock, Edit, Comment, View } from '@element-plus/icons-vue';
 import { SYNC_GET } from "@/scripts/Axios";
 import { lockArticleById } from "@/scripts/ArticleLocker";
 import ArticleTags from '@/components/common/ArticleTags.vue';
+import {ElMessage} from "element-plus";
 
 const store = useStore();
 
@@ -155,7 +156,7 @@ const menuOnStatus = reactive({
             type: 'primary'
         },
         {
-            text: '不再公开稿件',
+            text: '设置仅自己（和收稿方）可见',
             onClick: handleArticlePrivate,
             type: 'danger'
         }
@@ -191,7 +192,7 @@ function getMenu() {
         switch (articleInfo.value.auditStatus) {
             case 'AUDITED':
                 return menuOnStatus.user_audited_public
-            case 'LOCK':
+            case 'LOCKED':
                 return menuOnStatus.user_audited_locked
             case 'FAIL_AUDITED':
                 return menuOnStatus.user_failed_audited
@@ -302,21 +303,31 @@ async function handleCardClicked() {
   await SYNC_GET('/article/getPermissions', {
       articleId: articleInfo.value.id,
       requester: currentUser.userId
-  },() => {
+  },(response) => {
+    if (response.status === 200 && response.data.code === 2001) {
       // 当前用户有阅读权限
       if (menuVisible.value && currentUser.userId && !(currentUser.identity === 'CONTRIBUTOR' || currentUser.identity === 'TEACHER' || currentUser.identity === 'AUDITOR')) {
         // 专家、报社专员、管理员可对文章进行锁定
         isArticleMenuOpen.value = !isArticleMenuOpen.value
       } else {
-          router.push({
-            path: '/articleDetail',
-            query: {
-              id: articleInfo.value.id
-            }
-          })
+        router.push({
+          path: '/articleDetail',
+          query: {
+            id: articleInfo.value.id
+          }
+        })
       }
-  })
+    } else {
+      // 当前用户没有阅读权限
+      ElMessage({
+        showClose: true,
+        message: '文章已被锁定，暂时无法查看',
+        type: 'warning',
+        grouping: true,
+      })
 
+    }
+  })
 }
 
 
