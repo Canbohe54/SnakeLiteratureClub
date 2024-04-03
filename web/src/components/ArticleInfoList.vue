@@ -268,13 +268,14 @@ function getArticles() {
 // 监听 page size 改变的事件
 function handleSizeChange(newSize: any) {
   pageInfo.pageSize = newSize
-  getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
+  getArticles()
 }
 
 // 监听 页码值 改变的事件
 function handleCurrentChange(newPage: any) {
   pageInfo.currentPage = newPage
-  getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
+  // getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
+  getArticles()
 }
 
 onMounted(() => {
