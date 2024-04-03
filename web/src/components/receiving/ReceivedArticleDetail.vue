@@ -20,7 +20,7 @@
                 </el-text>
               </el-row>
               <el-row class="article-box-card">
-                <el-text class="article-detail-author">发布时间：{{ articleDetail.time }}</el-text>&nbsp;&nbsp;
+                <el-text class="article-detail-author">发布时间：{{ articleDetail.time }}</el-text>
               </el-row>
 
                 <el-button link type="primary" :onclick="handleDiscriptionSmall" style="font-size: 16px;">小
