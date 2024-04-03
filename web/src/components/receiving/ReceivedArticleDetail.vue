@@ -13,7 +13,10 @@
                   <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
                   <span v-else>{{articleDetail.authorName}}</span>
                   {{articleDetail.authorGrade?"（"+articleDetail.authorGrade+"）":""}} {{articleDetail.authorOrganization}}
-                  <span v-if="articleDetail.mentor !== ''">指导老师：<el-button link :onclick="handleAuthorClicked">{{articleDetail.mentor}}</el-button></span>
+                  <span v-if="articleDetail.mentor !== ''">指导老师：
+                    <el-button v-if="textByIdentity !== 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{articleDetail.mentor}}</el-button>
+                    <span v-else>{{articleDetail.mentor}}</span>
+                  </span>
                 </el-text>
               </el-row>
               <el-row class="article-box-card">
@@ -34,7 +37,8 @@
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
                 <div class="filter-head"><span>文章标签</span></div>
                 <SearchFilter style="display:none;" ref="SearchFilterRef" @change="searchFilterChange"/>
-                <ArticleTags ref="articleTags" :tagsJsons="articleDetail.tags==='{}'?'{}':JSON.parse(articleDetail.tags)"></ArticleTags>
+                <ArticleTags v-if="articleDetail.tags!=='{}' && JSON.parse(articleDetail.tags).length > 0" ref="articleTags" :tagsJsons="articleDetail.tags==='{}'?'':JSON.parse(articleDetail.tags)"></ArticleTags>
+                <span v-else>无</span>
                 <div class="contain-head"><span>文章内容</span></div>
                 <!-- 待弃用 -->
                 <ArticleDisplayCard class="article-contain-card" :articleRaw="articleDetail.raw"
@@ -455,7 +459,9 @@ onMounted(async () => {
           SearchFilterRef.value.loadSelection(articleDetail.tags)
           articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
           await getTextBy()
-          articleTags.value.setTags(JSON.parse(articleDetail.tags))
+          if (JSON.parse(articleDetail.tags).length > 0) {
+            articleTags.value.setTags(JSON.parse(articleDetail.tags))
+          }
           await getRaw(articleDetail.id)
 
         } else {

@@ -34,7 +34,10 @@
                   <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
                   <span v-else>{{articleDetail.authorName}}</span>
                   {{articleDetail.authorGrade?"（"+articleDetail.authorGrade+"）":""}} {{articleDetail.authorOrganization}}
-                  <span v-if="articleDetail.mentor !== ''">指导老师：<el-button link :onclick="handleAuthorClicked">{{articleDetail.mentor}}</el-button></span>
+                  <span v-if="articleDetail.mentor !== ''">指导老师：
+                    <el-button v-if="textByIdentity !== 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{articleDetail.mentor}}</el-button>
+                    <span v-else>{{articleDetail.mentor}}</span>
+                  </span>
                 </el-text>
               </el-row>
               <el-row class="article-box-card">

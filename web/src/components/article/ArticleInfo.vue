@@ -410,7 +410,7 @@ function handleArticlePublic() {
     -webkit-line-clamp: 2;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: 48px;
+    height: 46px;
 }
 
 .article-info-tags {
