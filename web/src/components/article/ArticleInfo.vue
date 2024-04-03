@@ -36,7 +36,8 @@
                 </div>
                 <div class="article-info-bottom">
                     <div class="article-info-time">{{ articleInfo.time }}</div>
-                    <div class="article-info-view-count" v-if="viewcountVisible"><el-icon>
+                    <div class="article-info-view-count" v-if="viewcountVisible">
+                      <el-icon>
                             <View />
                         </el-icon>&nbsp;{{ articleInfo.viewcount }}</div>
                 </div>
@@ -469,17 +470,19 @@ function handleArticlePublic() {
 }
 
 .article-info-descrption {
+  height: 46px;
     margin-top: 10px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: 46px;
 }
 
 .article-info-tags {
     margin-top: 10px;
+    height: 20px;
+    overflow: hidden;
 }
 
 .article-info-bottom {
