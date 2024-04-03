@@ -240,7 +240,7 @@ function handleStatusTag() {
             }
             break
         case 'SUBMITTED':
-            if (articleInfo.value.auditBy == '' || articleInfo.value.auditBy == null) {
+            if (articleInfo.value.auditBy === '' || articleInfo.value.auditBy == null) {
                 return '初审稿件'
             } else {
                 return '复审稿件'
@@ -334,33 +334,33 @@ async function handleCardClicked() {
   await SYNC_GET('/article/getPermissions', {
       articleId: articleInfo.value.id,
       requester: currentUser.userId
-  },(response) => {
-    if (response.status === 200 && response.data.code === 2001) {
-      // 当前用户有阅读权限
-      if (menuVisible.value && currentUser.userId && !(currentUser.identity === 'CONTRIBUTOR' || currentUser.identity === 'TEACHER' || currentUser.identity === 'AUDITOR')) {
-        // 专家、报社专员、管理员可对文章进行锁定
-        isArticleMenuOpen.value = !isArticleMenuOpen.value
+  },async (response) => {
+      if (response.status === 200 && response.data.code === 2001) {
+          // 当前用户有阅读权限
+          if (menuVisible.value && currentUser.userId && !(currentUser.identity === 'CONTRIBUTOR' || currentUser.identity === 'TEACHER' || currentUser.identity === 'AUDITOR')) {
+              // 专家、报社专员、管理员可对文章进行锁定
+              isArticleMenuOpen.value = !isArticleMenuOpen.value
+          } else {
+              if ((articleInfo.value.auditStatus === 'BEING_AUDITED' || articleInfo.value.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
+                  await changeArticleAuditStatus(articleInfo.value.id, 'SUBMITTED')
+                  redirectToArticle('/articleAuditor', articleInfo.value.id)
+              } else if ((articleInfo.value.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
+                  (articleInfo.value.auditStatus === 'UNDER_RECODE' && currentUser.identity === 'HUNTER')) {
+                  redirectToArticle('/receivedArticleDetail', articleInfo.value.id)
+              } else {
+                  redirectToArticle('/articleDetail', articleInfo.value.id)
+              }
+          }
       } else {
-        if ((articleInfo.value.auditStatus === 'BEING_AUDITED' || articleInfo.value.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
-          changeArticleAuditStatus(articleInfo.value.id, 'SUBMITTED')
-          redirectToArticle('/articleAuditor', articleInfo.value.id)
-        } else if ((articleInfo.value.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
-                   (articleInfo.value.auditStatus === 'UNDER_RECODE' && currentUser.identity === 'HUNTER')) {
-          redirectToArticle('/receivedArticleDetail', articleInfo.value.id)
-        } else {
-          redirectToArticle('/articleDetail', articleInfo.value.id)
-        }
-      }
-    } else {
-      // 当前用户没有阅读权限
-      ElMessage({
-        showClose: true,
-        message: '文章已被锁定，暂时无法查看',
-        type: 'warning',
-        grouping: true,
-      })
+          // 当前用户没有阅读权限
+          ElMessage({
+              showClose: true,
+              message: '文章已被锁定，暂时无法查看',
+              type: 'warning',
+              grouping: true,
+          })
 
-    }
+      }
   })
 }
 

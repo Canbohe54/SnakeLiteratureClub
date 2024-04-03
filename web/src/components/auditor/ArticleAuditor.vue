@@ -39,7 +39,7 @@
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
                 <div class="filter-head"><span>文章标签</span></div>
                 <SearchFilter style="display:none;"  ref="SearchFilterRef" @change="searchFilterChange" :disabled="true"/>
-                <ArticleTags v-if="articleDetail.tags !== '{}' && JSON.stringify(articleDetail.tags).length > 0" ref="articleTags" :tagsJsons="articleDetail.tags==='{}'?'':articleDetail.tags"></ArticleTags>
+                <ArticleTags v-if="articleTagsVisible" ref="articleTags" :tagsJsons="articleDetail.tags"></ArticleTags>
                 <span v-else>无</span>
                 <div class="contain-head"><span>文章内容</span></div>
                 <!-- 待弃用 -->
@@ -107,7 +107,7 @@ import ArticleTags from "@/components/common/ArticleTags.vue";
 // 该页面没有锁
 const router = useRouter()
 const store = useStore()
-
+const articleTagsVisible = ref(false)
 const articleDetail = reactive<AttributeAddableObject>({
   id: 'null',
   text: '',
@@ -117,7 +117,7 @@ const articleDetail = reactive<AttributeAddableObject>({
   title: '',
   description: '',
   status: '',
-  tags: '{}',
+  tags: {},
   raw: {},
   fileType: ''
 })
@@ -129,7 +129,7 @@ const showArticle = ref(false)
 const textByIdentity = ref('CONTRIBUTOR')
 
 const searchFilterChange = () => {
-  articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
+  articleDetail.tags = SearchFilterRef.value.filterSelection
 }
 
 async function getTextBy() {
@@ -274,7 +274,9 @@ const getAuditedArticle = async () => {
         articleDetail[dataKey] = response.data.data[dataKey]
       }
       SearchFilterRef.value.loadSelection(articleDetail.tags)
-      articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
+      if(JSON.stringify(articleDetail.tags).length > 0){
+          articleTagsVisible.value = true
+      }
       await getTextBy()
       await getRaw(articleDetail.id)
     } else {

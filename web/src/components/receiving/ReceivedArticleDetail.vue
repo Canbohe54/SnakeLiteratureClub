@@ -37,7 +37,7 @@
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
                 <div class="filter-head"><span>文章标签</span></div>
                 <SearchFilter style="display:none;" ref="SearchFilterRef" @change="searchFilterChange"/>
-                <ArticleTags v-if="articleDetail.tags!=='{}' && JSON.parse(articleDetail.tags).length > 0" ref="articleTags" :tagsJsons="articleDetail.tags==='{}' ? '':JSON.stringify(articleDetail.tags)"></ArticleTags>
+                <ArticleTags v-if="articleTagsVisible" ref="articleTags" :tagsJsons="articleDetail.tags"></ArticleTags>
                 <span v-else>无</span>
                 <div class="contain-head"><span>文章内容</span></div>
                 <!-- 待弃用 -->
@@ -182,6 +182,7 @@ const router = useRouter()
 const route = useRoute()
 const store = useStore()
 const SearchFilterRef = ref()
+const articleTagsVisible = ref(false)
 const textByIdentity = ref('CONTRIBUTOR')
 const articleDetail = reactive<AttributeAddableObject>({
   id: null,
@@ -218,7 +219,7 @@ const rejectManager = reactive({
 const articleTags = ref()
 
 const searchFilterChange = () => {
-  articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
+  articleDetail.tags = SearchFilterRef.value.filterSelection
 }
 
 async function getTextBy() {
@@ -457,11 +458,10 @@ onMounted(async () => {
             articleDetail[dataKey] = response.data.data.article[dataKey]
           }
           SearchFilterRef.value.loadSelection(articleDetail.tags)
-          articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
-          await getTextBy()
-          if (JSON.parse(articleDetail.tags).length > 0) {
-            articleTags.value.setTags(JSON.parse(articleDetail.tags))
+          if(JSON.stringify(articleDetail.tags).length > 0){
+              articleTagsVisible.value = true
           }
+          await getTextBy()
           await getRaw(articleDetail.id)
 
         } else {
