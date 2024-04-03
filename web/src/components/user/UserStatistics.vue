@@ -50,7 +50,7 @@ import { useRoute } from "vue-router";
 
 const userStatistics = reactive({
     publishedArticles: 0,
-    recievedArticles: 0,
+    recievedArticles: 1,
     totalReads: 0,
     totalLikes: 0
 })
@@ -105,9 +105,8 @@ async function getRecievedAndPublishedCount() {
         contributorId: userId
     }, async (response) => {
         if (response.status === 200 && response.data.code === 2001) {
-            console.log(response.data.data)
             userStatistics.publishedArticles = response.data.data.publishedCount
-            userStatistics.recievedArticles = response.data.data.recievedCount
+            userStatistics.recievedArticles = response.data.data.receivedCount 
         }
         else {
             errorCallback(response)

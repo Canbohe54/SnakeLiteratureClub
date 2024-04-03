@@ -28,7 +28,7 @@ import { SYNC_GET } from "@/scripts/Axios";
 import { useRoute } from "vue-router";
 import { SnachResponse } from "@/scripts/types/ResponseObject";
 
-type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_POSTED_LIST' | 'AUDIT_LIST' | 'RECEIVED'
+type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'AUDIT_LIST' | 'RECEIVED'
 type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
 type PublishStatus = 'PUBLIC' | 'UNDER_REVIEW' | 'UNDER_RECORD' | 'POST_RECORD' | 'POSTED' | 'FAILED_REVIEW' | 'FAIL_RECORD'
 
@@ -51,99 +51,13 @@ const props = defineProps({
     },
     articleList: {
         type: Array,
-        default: [
-            {
-                articleId: 'a3F8c0krY3df',
-                title: '关于沼气动力学的研究',
-                contributor: '田所浩二',
-                userId: '114514',
-                organization: '下北泽中学',
-                grade: '五年级',
-                mentor: '野兽先辈',
-                description: '这是一篇关于沼气动力学的研究论文，主要研究了沼气的产生、利用和储存等方面的问题。这世间有关沼气动力学的资料少之又少，为了填补这方面的空缺，作者田所浩二潜心研究，不断付出实践，终于完成了这一篇大作。在这篇论文中，作者详细介绍了沼气的产生原理、利用方法和储存技术，为沼气动力学的研究提供了新的思路和方法。',
-                auditStatus: 'AUDITED',
-                publishStatus: 'POSTED',
-                time: '1919年8月10日',
-                received_by: '下北泽日报',
-                tags: {'体裁': ['生物制沼'], '题材': ['沼气动力学']}
-            },
-            {
-                articleId: 'a3',
-                title: '关于沼气动力学的研究',
-                contributor: '田所浩二',
-                userId: '114514',
-                organization: '下北泽中学',
-                grade: '五年级',
-                mentor: '野兽先辈',
-                description: '这是一篇关于沼气动力学的研究论文，主要研究了沼气的产生、利用和储存等方面的问题。这世间有关沼气动力学的资料少之又少，为了填补这方面的空缺，作者田所浩二潜心研究，不断付出实践，终于完成了这一篇大作。在这篇论文中，作者详细介绍了沼气的产生原理、利用方法和储存技术，为沼气动力学的研究提供了新的思路和方法。',
-                auditStatus: 'AUDITED',
-                publishStatus: 'PUBLIC',
-                time: '1919年8月10日',
-                tags: {'体裁': ['生物制沼'], '题材': ['沼气动力学']}
-            },
-            {
-                articleId: 'a4',
-                title: '关于沼气动力学的研究',
-                contributor: '田所浩二',
-                userId: '114514',
-                organization: '下北泽中学',
-                grade: '五年级',
-                mentor: '野兽先辈',
-                description: '这是一篇关于沼气动力学的研究论文，主要研究了沼气的产生、利用和储存等方面的问题。这世间有关沼气动力学的资料少之又少，为了填补这方面的空缺，作者田所浩二潜心研究，不断付出实践，终于完成了这一篇大作。在这篇论文中，作者详细介绍了沼气的产生原理、利用方法和储存技术，为沼气动力学的研究提供了新的思路和方法。',
-                auditStatus: 'AUDITED',
-                publishStatus: 'UNDER_REVIEW',
-                time: '1919年8月10日',
-                tags: {'体裁': ['生物制沼'], '题材': ['沼气动力学']}
-            },
-            {
-                articleId: 'a5',
-                title: '关于沼气动力学的研究',
-                contributor: '田所浩二',
-                userId: '114514',
-                organization: '下北泽中学',
-                grade: '五年级',
-                mentor: '野兽先辈',
-                description: '这是一篇关于沼气动力学的研究论文，主要研究了沼气的产生、利用和储存等方面的问题。这世间有关沼气动力学的资料少之又少，为了填补这方面的空缺，作者田所浩二潜心研究，不断付出实践，终于完成了这一篇大作。在这篇论文中，作者详细介绍了沼气的产生原理、利用方法和储存技术，为沼气动力学的研究提供了新的思路和方法。',
-                auditStatus: 'LOCK',
-                publishStatus: 'UNDER_REVIEW',
-                time: '1919年8月10日',
-                tags: {'体裁': ['生物制沼'], '题材': ['沼气动力学']}
-            },
-            {
-                articleId: 'a6',
-                title: '关于沼气动力学的研究',
-                contributor: '田所浩二',
-                userId: '114514',
-                organization: '下北泽中学',
-                grade: '五年级',
-                mentor: '野兽先辈',
-                description: '这是一篇关于沼气动力学的研究论文，主要研究了沼气的产生、利用和储存等方面的问题。这世间有关沼气动力学的资料少之又少，为了填补这方面的空缺，作者田所浩二潜心研究，不断付出实践，终于完成了这一篇大作。在这篇论文中，作者详细介绍了沼气的产生原理、利用方法和储存技术，为沼气动力学的研究提供了新的思路和方法。',
-                auditStatus: 'SUBMITTED',
-                time: '1919年8月10日',
-                audit_by: '',
-                tags: {'体裁': ['生物制沼'], '题材': ['沼气动力学']}
-            },
-            {
-                articleId: 'a7',
-                title: '关于沼气动力学的研究',
-                contributor: '田所浩二',
-                userId: '114514',
-                organization: '下北泽中学',
-                grade: '五年级',
-                mentor: '野兽先辈',
-                description: '这是一篇关于沼气动力学的研究论文，主要研究了沼气的产生、利用和储存等方面的问题。这世间有关沼气动力学的资料少之又少，为了填补这方面的空缺，作者田所浩二潜心研究，不断付出实践，终于完成了这一篇大作。在这篇论文中，作者详细介绍了沼气的产生原理、利用方法和储存技术，为沼气动力学的研究提供了新的思路和方法。',
-                auditStatus: 'FAIL_AUDITED',
-                time: '1919年8月10日',
-                audit_by: '114514',
-                tags: {'体裁': ['生物制沼'], '题材': ['沼气动力学']}
-            },
-        ]
+        default: []
     }
 })
 
 const { option, wd, mode, is_card, articleList } = toRefs(props)
 const route = useRoute()
-const _articleList = ref(articleList);
+const _articleList = ref([]);
 
 async function getRank() {
   let params = {
@@ -221,7 +135,7 @@ const pageInfo = reactive({
 interface ArticleInfoRequest {
     idList: string[],
     authorList: string[],
-    recieverList: string[],
+    receiverList: string[],
     auditorList: string[],
     keyword: string,
     tags: string,
@@ -232,7 +146,7 @@ interface ArticleInfoRequest {
 interface UrlDecodedArticleInfoRequest {
     idList: string,
     authorList: string,
-    recieverList: string,
+    receiverList: string,
     auditorList: string,
     keyword: string,
     tags: string,
@@ -250,7 +164,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
             articleInfoRequest = {
                 idList: [],
                 authorList: [],
-                recieverList: [],
+                receiverList: [],
                 auditorList: [],
                 keyword: '',
                 tags: '',
@@ -263,25 +177,12 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
             articleInfoRequest = {
                 idList: [],
                 authorList: [route.params.id],
-                recieverList: [],
+                receiverList: [],
                 auditorList: [],
                 keyword: '',
                 tags: '',
                 auditStatusList: ['AUDITED'],
-                publishStatusList: ['PUBLIC']
-            }
-            break
-        }
-        case 'USER_POSTED_LIST': {
-            articleInfoRequest = {
-                idList: [],
-                authorList: [route.params.id],
-                recieverList: [],
-                auditorList: [],
-                keyword: '',
-                tags: '',
-                auditStatusList: ['AUDITED'],
-                publishStatusList: ['POSTED']
+                publishStatusList: ['PUBLIC', 'POSTED']
             }
             break
         }
@@ -304,7 +205,7 @@ function requestParamsDecode(requestParam: ArticleInfoRequest): UrlDecodedArticl
     return {
         idList: requestParam.idList + '',
         authorList: requestParam.authorList + '',
-        recieverList: requestParam.recieverList + '',
+        receiverList: requestParam.receiverList + '',
         auditerList: requestParam.auditorList + '',
         keyword: requestParam.keyword + '',
         tags: requestParam.tags + '',
@@ -328,7 +229,10 @@ function getArticles() {
         success: (data: SnachResponse<object>) => {
             // TODO: on success
             console.log(data)
-
+            pageInfo.total = data.data.total
+            pageInfo.currentPage = data.data.pageNum
+            pageInfo.pageSize = data.data.pageSize
+            _articleList.value = data.data.list
         }
     })
 }
