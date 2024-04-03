@@ -40,6 +40,8 @@ public interface ArticleService {
 
     PageInfo<Article> getArticles(List<String> idList,
                                   List<String> authorList,
+                                  List<String> recieverList,
+                                  List<String> auditorList,
                                   String keyword,
                                   String tags,
                                   List<ArticleAuditStatus> auditStatusList,
@@ -168,6 +170,8 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public PageInfo<Article> getArticles(List<String> idList,
                                          List<String> authorList,
+                                         List<String> recieverList,
+                                         List<String> auditorList,
                                          String keyword,
                                          String tags,
                                          List<ArticleAuditStatus> auditStatusList,
@@ -185,6 +189,18 @@ class ArticleServiceImpl implements ArticleService {
                 whereStatement.append(" AND ");
             }
             whereStatement.append("text_by IN ").append(toSelectString(authorList));
+        }
+        if (recieverList != null && !recieverList.isEmpty()) {
+            if (!whereStatement.isEmpty()) {
+                whereStatement.append(" AND ");
+            }
+            whereStatement.append("received_by IN ").append(toSelectString(recieverList));
+        }
+        if (auditorList != null && !auditorList.isEmpty()) {
+            if (!whereStatement.isEmpty()) {
+                whereStatement.append(" AND ");
+            }
+            whereStatement.append("audited_by IN ").append(toSelectString(auditorList));
         }
         if (keyword != null && !keyword.isEmpty()) {
             if (!whereStatement.isEmpty()) {

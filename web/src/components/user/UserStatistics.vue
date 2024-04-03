@@ -64,7 +64,6 @@ async function getUserIdentity() {
     await SYNC_GET('/usr/getUserIdentity', {
         user_id: userId
     }, async (response) => {
-        console.log(response)
         if (response.status === 200 && response.data.code === 2001) {
             userIdentity.value = response.data.data
         }
@@ -106,6 +105,7 @@ async function getRecievedAndPublishedCount() {
         contributorId: userId
     }, async (response) => {
         if (response.status === 200 && response.data.code === 2001) {
+            console.log(response.data.data)
             userStatistics.publishedArticles = response.data.data.publishedCount
             userStatistics.recievedArticles = response.data.data.recievedCount
         }

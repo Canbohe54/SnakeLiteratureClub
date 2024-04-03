@@ -61,13 +61,15 @@ public class ArticleController {
     @RequestMapping(value = "getArticles", method = RequestMethod.POST)
     public PageInfo<Article> getArticles(@RequestParam(required = false) List<String> idList,
                                          @RequestParam(required = false) List<String> authorList,
+                                         @RequestParam(required = false) List<String> receiverList,
+                                         @RequestParam(required = false) List<String> auditorList,
                                          @RequestParam(required = false) String keyword,
                                          @RequestParam(required = false) String tags,
                                          @RequestParam(required = false) List<ArticleAuditStatus> auditStatusList,
                                          @RequestParam(required = false) List<ArticlePublishStatus> publishStatusList,
                                          @RequestParam int pageNum,
                                          @RequestParam int pageSize) {
-        return articleService.getArticles(idList, authorList, keyword, tags, auditStatusList, publishStatusList, pageNum, pageSize);
+        return articleService.getArticles(idList, authorList, receiverList, auditorList, keyword, tags, auditStatusList, publishStatusList, pageNum, pageSize);
     }
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
