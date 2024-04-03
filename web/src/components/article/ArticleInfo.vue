@@ -32,14 +32,7 @@
                 </div>
                 <div class="article-info-descrption">{{ articleInfo.description }}</div>
                 <div class="article-info-tags" v-if="tagsVisible">
-                    <span v-for= "tagValue,tagGroup in articleInfo.tags">
-                        <el-tooltip :content="tagGroup+'：'+tag" placement="bottom" effect="light"  v-for="(tag) in articleInfo.tags[tagGroup]">
-                            <el-tag class="article-info-tag" effect="light" :type="handleTagType(tagGroup)"
-                                disable-transitions round>{{ tag }}</el-tag>
-                        </el-tooltip>
-                    </span>
-                    
-                    
+                    <ArticleTags :tagsJsons="articleInfo.tags" />
                 </div>
                 <div class="article-info-bottom">
                     <div class="article-info-time">{{ articleInfo.time }}</div>
@@ -64,6 +57,7 @@ import { useStore } from 'vuex';
 import { Lock, Edit, Comment, View } from '@element-plus/icons-vue';
 import { SYNC_GET } from "@/scripts/Axios";
 import { lockArticleById } from "@/scripts/ArticleLocker";
+import ArticleTags from '@/components/common/ArticleTags.vue';
 
 const store = useStore();
 
@@ -420,10 +414,6 @@ function handleArticlePublic() {
 
 .article-info-tags {
     margin-top: 10px;
-}
-
-.article-info-tag {
-    margin-right: 5px;
 }
 
 .article-info-bottom {

@@ -290,8 +290,8 @@ function getArticles() {
     })
 }
 
-await getRank()
-getArticles()
+// await getRank()
+// getArticles()
 </script>
 
 <style scoped>

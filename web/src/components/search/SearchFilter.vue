@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-row class="filterGroup" v-for="(group, groupKey) in filterTagGroups">
-      <el-col :span="3">
+      <el-col :span="2">
         <el-text class="checkboxGroupName">{{ groupKey }}</el-text>
       </el-col>
-      <el-col :span="21">
+      <el-col :span="22">
         <el-checkbox-group class="checkboxGroup" tag="span" v-model="filterSelection[groupKey]" :label="groupKey">
           <el-checkbox border v-for="key in group" :label="key" :disabled="props.disabled">{{ key }}</el-checkbox>
         </el-checkbox-group>
