@@ -35,7 +35,7 @@
                 <FailAudited></FailAudited>
               </el-card>
               <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
-                <UnderReview></UnderReview>
+                <FailedReview></FailedReview>
               </el-card>
               <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
                 <PostRecord></PostRecord>
@@ -60,9 +60,9 @@ import {errorCallback} from '@/scripts/ErrorCallBack'
 import Received from "@/components/user/CenterArticleList/Received.vue";
 import BeingAudited from "@/components/user/CenterArticleList/BeingAudited.vue";
 import MyPrivateList from "@/components/user/CenterArticleList/MyPrivateList.vue";
-import UnderReview from "@/components/user/CenterArticleList/FailedReview.vue";
 import PostRecord from "@/components/user/CenterArticleList/PostRecord.vue";
 import FailAudited from "@/components/user/CenterArticleList/FailAudited.vue";
+import FailedReview from "@/components/user/CenterArticleList/FailedReview.vue";
 
 const route = useRoute();
 const store = useStore();

@@ -1,6 +1,5 @@
 <template>
-  <el-text class="list-title">{{( store.getters.getUserInfo.id === route.path.split('/')[2]
-    ? '我' : 'Ta' )+ listName }}</el-text>
+  <el-text class="list-title">{{ listName }}</el-text>
   <ArticleInfoList option="POST_RECORD"  mode="POST_RECORD" :is_card="true" />
 
 </template>
