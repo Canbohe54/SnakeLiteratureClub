@@ -72,10 +72,10 @@ async function getRank() {
   }
   await (SYNC_GET('/like/getRank', params, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
-      // console.log(response.data.data.RankingByLikeAndViewCount.list)
-      pageInfo.total = response.data.data.total
-      // todo
-      articleList.value = response.data.data.RankingByLikeAndViewCount.list
+      pageInfo.currentPage = response.data.data.RankingByLikeAndViewCount.pageNum
+      pageInfo.pageSize = response.data.data.RankingByLikeAndViewCount.pageSize
+      pageInfo.total = response.data.data.RankingByLikeAndViewCount.total
+      _articleList.value = response.data.data.RankingByLikeAndViewCount.list
     } else {
       console.log(response)
     }
@@ -256,7 +256,7 @@ function getArticles() {
         data: params,
         success: (data: SnachResponse<PageInfo<Article>>) => {
             // TODO: on success
-            // console.log(data)
+            console.log(data)
             pageInfo.total = data.data.total
             pageInfo.currentPage = data.data.pageNum
             pageInfo.pageSize = data.data.pageSize
@@ -284,6 +284,7 @@ onMounted(() => {
         _articleList.value = articleList.value
     } else {
         getArticles()
+      // getRank()
     }
 })
 </script>
