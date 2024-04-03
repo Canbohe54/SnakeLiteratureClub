@@ -37,7 +37,7 @@
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
                 <div class="filter-head"><span>文章标签</span></div>
                 <SearchFilter style="display:none;" ref="SearchFilterRef" @change="searchFilterChange"/>
-                <ArticleTags v-if="articleDetail.tags!=='{}' && JSON.parse(articleDetail.tags).length > 0" ref="articleTags" :tagsJsons="articleDetail.tags==='{}'?'':JSON.parse(articleDetail.tags)"></ArticleTags>
+                <ArticleTags v-if="articleDetail.tags!=='{}' && JSON.parse(articleDetail.tags).length > 0" ref="articleTags" :tagsJsons="articleDetail.tags==='{}' ? '':JSON.stringify(articleDetail.tags)"></ArticleTags>
                 <span v-else>无</span>
                 <div class="contain-head"><span>文章内容</span></div>
                 <!-- 待弃用 -->

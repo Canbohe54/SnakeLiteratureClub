@@ -33,7 +33,7 @@
             <el-statistic title="有修改建议" class="statistics-number" id="audit_suggested" />
         </el-col>
         <el-col :span="8">
-            <el-statistic title="待推荐录用" class="statistics-number" id="receiving" />
+            <el-statistic title="推荐未通过" class="statistics-number" id="failed_review" />
         </el-col>
         <el-col :span="8">
             <el-statistic title="需确认录用" class="statistics-number" id="recieve_confirm" />
@@ -106,7 +106,7 @@ async function getRecievedAndPublishedCount() {
     }, async (response) => {
         if (response.status === 200 && response.data.code === 2001) {
             userStatistics.publishedArticles = response.data.data.publishedCount
-            userStatistics.recievedArticles = response.data.data.receivedCount 
+            userStatistics.recievedArticles = response.data.data.receivedCount
         }
         else {
             errorCallback(response)

@@ -311,7 +311,17 @@ function handleTagType(tagGroup) {
 onMounted(() => { // setup语法糖下渲染时周期函数
     handleStatus()
 })
-
+const changeArticleAuditStatus = async (articleId, auditStatus) => {
+  await SYNC_POST('/article/changeArticleStatus', {
+    articleId: articleId,
+    status: auditStatus,
+    token: store.getters.getToken
+  }, async (response) => {
+    if (response.status !== 200 || response.data.code !== 2001) {
+      errorCallback(response)
+    }
+  })
+}
 const redirectToArticle = (subPath, articleId) => {
   router.push({
     path: subPath,
@@ -332,6 +342,7 @@ async function handleCardClicked() {
         isArticleMenuOpen.value = !isArticleMenuOpen.value
       } else {
         if ((articleInfo.value.auditStatus === 'BEING_AUDITED' || articleInfo.value.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
+          changeArticleAuditStatus(articleInfo.value.id, 'SUBMITTED')
           redirectToArticle('/articleAuditor', articleInfo.value.id)
         } else if ((articleInfo.value.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
                    (articleInfo.value.auditStatus === 'UNDER_RECODE' && currentUser.identity === 'HUNTER')) {

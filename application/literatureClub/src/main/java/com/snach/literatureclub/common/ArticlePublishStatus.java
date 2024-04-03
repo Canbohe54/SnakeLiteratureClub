@@ -16,9 +16,9 @@ public enum ArticlePublishStatus {
     // 用户同意收录
     POSTED,
 
-    // 未被推荐
+    // 推荐未通过
     FAILED_REVIEW,
 
-    // 未被收录
+    // 不收录
     FAILED_RECORD
 }

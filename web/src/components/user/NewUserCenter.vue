@@ -60,7 +60,7 @@ import {errorCallback} from '@/scripts/ErrorCallBack'
 import Received from "@/components/user/CenterArticleList/Received.vue";
 import BeingAudited from "@/components/user/CenterArticleList/BeingAudited.vue";
 import MyPrivateList from "@/components/user/CenterArticleList/MyPrivateList.vue";
-import UnderReview from "@/components/user/CenterArticleList/UnderReview.vue";
+import UnderReview from "@/components/user/CenterArticleList/FailedReview.vue";
 import PostRecord from "@/components/user/CenterArticleList/PostRecord.vue";
 import FailAudited from "@/components/user/CenterArticleList/FailAudited.vue";
 
@@ -73,7 +73,6 @@ async function getUserIdentity() {
   await SYNC_GET('/usr/getUserIdentity', {
     user_id: route.params.id ? route.params.id : store.getters.getUserInfo.id
   }, async (response) => {
-    console.log(response.data)
     if (response.status === 200 && response.data.code === 2001) {
       userIdentity.value = response.data.data
     }
@@ -85,7 +84,6 @@ async function getUserIdentity() {
 
 onMounted(() => {
   getUserIdentity()
-
 })
 
 </script>

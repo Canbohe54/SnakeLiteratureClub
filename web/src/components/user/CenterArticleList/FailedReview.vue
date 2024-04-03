@@ -1,7 +1,7 @@
 <template>
   <el-text class="list-title">{{( store.getters.getUserInfo.id === route.path.split('/')[2]
     ? '我' : 'Ta' )+ listName }}</el-text>
-  <ArticleInfoList option="UNDER_REVIEW"  mode="UNDER_REVIEW" :is_card="true" />
+  <ArticleInfoList option="FAILED_REVIEW"  mode="FAILED_REVIEW" :is_card="true" />
 
 </template>
 <script lang="ts" setup>
@@ -13,7 +13,7 @@ import ArticleInfoList from "@/components/ArticleInfoList.vue";
 const store = useStore()
 const route = useRoute()
 
-const listName = ref('待推荐录用的文章')
+const listName = ref('推荐未通过的文章')
 
 </script>
 <style scoped>

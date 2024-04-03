@@ -31,7 +31,7 @@ import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
 import { Article } from "@/scripts/types/models";
 import {errorCallback} from "@/scripts/ErrorCallBack";
 
-type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_PRIVATE_LIST' | 'AUDIT_LIST' | 'RECEIVED' | 'UNDER_REVIEW' | 'POST_RECORD' | 'BEING_AUDITED' | 'FAIL_AUDITED'
+type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_PRIVATE_LIST' | 'AUDIT_LIST' | 'RECEIVED' | 'FAILED_REVIEW' | 'POST_RECORD' | 'BEING_AUDITED' | 'FAIL_AUDITED'
 type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
 type PublishStatus = 'PUBLIC' | 'UNDER_REVIEW' | 'UNDER_RECORD' | 'POST_RECORD' | 'POSTED' | 'FAILED_REVIEW' | 'FAILED_RECORD'
 
@@ -132,7 +132,7 @@ const modeSettings: AttributeAddableObject = {
         is_card: false
     }
     ,
-    UNDER_REVIEW: {
+    FAILED_REVIEW: {
         statusVisible: true,
         iconVisible: true,
         tagsVisible: true,
@@ -274,7 +274,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
             }
             break
         }
-        case 'UNDER_REVIEW': {
+        case 'FAILED_REVIEW': {
             articleInfoRequest = {
                 idList: [],
                 authorList: [route.params.id],
@@ -283,7 +283,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
                 keyword: '',
                 tags: '',
                 auditStatusList: [],
-                publishStatusList: ['UNDER_REVIEW']
+                publishStatusList: ['FAILED_REVIEW']
             }
             break
         }

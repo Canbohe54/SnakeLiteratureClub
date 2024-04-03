@@ -38,8 +38,9 @@
                 <div class="description-head"><span>文章描述</span></div>
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
                 <div class="filter-head"><span>文章标签</span></div>
-                <SearchFilter ref="SearchFilterRef" @change="searchFilterChange" :disabled="true"/>
-
+                <SearchFilter style="display:none;"  ref="SearchFilterRef" @change="searchFilterChange" :disabled="true"/>
+                <ArticleTags v-if="articleDetail.tags !== '{}' && JSON.stringify(articleDetail.tags).length > 0" ref="articleTags" :tagsJsons="articleDetail.tags==='{}'?'':articleDetail.tags"></ArticleTags>
+                <span v-else>无</span>
                 <div class="contain-head"><span>文章内容</span></div>
                 <!-- 待弃用 -->
                 <ArticleDisplayCard class="article-contain-card" :articleRaw="articleDetail.raw"
@@ -101,6 +102,7 @@ import axios from 'axios'
 import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 import {View} from "@element-plus/icons-vue";
+import ArticleTags from "@/components/common/ArticleTags.vue";
 
 // 该页面没有锁
 const router = useRouter()
@@ -115,7 +117,7 @@ const articleDetail = reactive<AttributeAddableObject>({
   title: '',
   description: '',
   status: '',
-  tags: {},
+  tags: '{}',
   raw: {},
   fileType: ''
 })
@@ -272,6 +274,7 @@ const getAuditedArticle = async () => {
         articleDetail[dataKey] = response.data.data[dataKey]
       }
       SearchFilterRef.value.loadSelection(articleDetail.tags)
+      articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
       await getTextBy()
       await getRaw(articleDetail.id)
     } else {
