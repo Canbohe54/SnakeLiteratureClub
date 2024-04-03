@@ -36,7 +36,7 @@ async function getUserIdentity() {
 
 function setListName () {
     if (userIdentity.value === 'CONTRIBUTOR') {
-        listName.value = '的作品'
+        listName.value = '发布的作品'
     }
     else if (userIdentity.value === 'TEACHER') {
         listName.value = '指导的作品'

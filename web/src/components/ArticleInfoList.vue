@@ -31,9 +31,9 @@ import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
 import { Article } from "@/scripts/types/models";
 import {errorCallback} from "@/scripts/ErrorCallBack";
 
-type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'AUDIT_LIST' | 'RECEIVED'
+type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_PRIVATE_LIST' | 'AUDIT_LIST' | 'RECEIVED' | 'UNDER_REVIEW' | 'POST_RECORD' | 'BEING_AUDITED' | 'FAIL_AUDITED'
 type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
-type PublishStatus = 'PUBLIC' | 'UNDER_REVIEW' | 'UNDER_RECORD' | 'POST_RECORD' | 'POSTED' | 'FAILED_REVIEW' | 'FAIL_RECORD'
+type PublishStatus = 'PUBLIC' | 'UNDER_REVIEW' | 'UNDER_RECORD' | 'POST_RECORD' | 'POSTED' | 'FAILED_REVIEW' | 'FAILED_RECORD'
 
 const props = defineProps({
     option: {
@@ -130,6 +130,35 @@ const modeSettings: AttributeAddableObject = {
         tagsVisible: true,
         viewcountVisible: false,
         is_card: false
+    }
+    ,
+    UNDER_REVIEW: {
+        statusVisible: true,
+        iconVisible: true,
+        tagsVisible: true,
+        viewcountVisible: true,
+        is_card: true
+    },
+    POST_RECORD: {
+        statusVisible: true,
+        iconVisible: true,
+        tagsVisible: true,
+        viewcountVisible: true,
+        is_card: true
+    },
+    BEING_AUDITED: {
+        statusVisible: true,
+        iconVisible: true,
+        tagsVisible: true,
+        viewcountVisible: true,
+        is_card: true
+    },
+    FAIL_AUDITED: {
+        statusVisible: true,
+        iconVisible: true,
+        tagsVisible: true,
+        viewcountVisible: true,
+        is_card: true
     }
 }
 
@@ -230,6 +259,72 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
                 auditStatusList: ['AUDITED'],
                 publishStatusList: []
               }
+              break
+        }
+        case 'USER_PRIVATE_LIST': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [route.params.id],
+                receiverList: [],
+                auditorList: [],
+                keyword: '',
+                tags: '',
+                auditStatusList: ['ROUGH'],
+                publishStatusList: []
+            }
+            break
+        }
+        case 'UNDER_REVIEW': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [route.params.id],
+                receiverList: [],
+                auditorList: [],
+                keyword: '',
+                tags: '',
+                auditStatusList: [],
+                publishStatusList: ['UNDER_REVIEW']
+            }
+            break
+        }
+        case 'POST_RECORD': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [route.params.id],
+                receiverList: [],
+                auditorList: [],
+                keyword: '',
+                tags: '',
+                auditStatusList: [],
+                publishStatusList: ['POST_RECORD']
+              }
+              break
+        }
+        case 'BEING_AUDITED': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [route.params.id],
+                receiverList: [],
+                auditorList: [],
+                keyword: '',
+                tags: '',
+                auditStatusList: ['BEING_AUDITED','SUBMITTED'],
+                publishStatusList: []
+            }
+            break
+        }
+        case 'FAIL_AUDITED': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [route.params.id],
+                receiverList: [],
+                auditorList: [],
+                keyword: '',
+                tags: '',
+                auditStatusList: ['FAIL_AUDITED'],
+                publishStatusList: []
+            }
+            break
         }
     }
     return requestParamsDecode(articleInfoRequest)

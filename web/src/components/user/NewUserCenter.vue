@@ -15,12 +15,17 @@
             <el-card class="user-center-main">
                 <MyPublicList />
             </el-card>
-            <el-card class="user-center-main">
-                <el-text class="my-private-list">暂时充当private list</el-text>
-            </el-card>
+<!--            <el-card class="user-center-main">-->
+<!--                <el-text class="my-private-list">暂时充当private list</el-text>-->
+<!--            </el-card>-->
             <el-card class="user-center-main" v-if="store.getters.getUserInfo.id === route.path.split('/')[2]">
               <AuditList v-if="userIdentity === 'AUDITOR'"/>
               <Received v-if="userIdentity === 'EXPERT' || userIdentity === 'HUNTER'"></Received>
+              <MyPrivateList v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'"></MyPrivateList>
+              <BeingAudited v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'"></BeingAudited>
+              <FailAudited v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'"></FailAudited>
+              <UnderReview v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'"></UnderReview>
+              <PostRecord v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'"></PostRecord>
             </el-card>
             <el-divider border-style="dashed" style="margin: 24px 20px;width: auto;"><el-text
                     type="info">我也是有底线的~</el-text></el-divider>
@@ -39,6 +44,11 @@ import AuditList from '@/components/user/CenterArticleList/AuditList.vue'
 import {SYNC_GET} from '@/scripts/Axios'
 import {errorCallback} from '@/scripts/ErrorCallBack'
 import Received from "@/components/user/CenterArticleList/Received.vue";
+import BeingAudited from "@/components/user/CenterArticleList/BeingAudited.vue";
+import MyPrivateList from "@/components/user/CenterArticleList/MyPrivateList.vue";
+import UnderReview from "@/components/user/CenterArticleList/UnderReview.vue";
+import PostRecord from "@/components/user/CenterArticleList/PostRecord.vue";
+import FailAudited from "@/components/user/CenterArticleList/FailAudited.vue";
 
 const route = useRoute();
 const store = useStore();
