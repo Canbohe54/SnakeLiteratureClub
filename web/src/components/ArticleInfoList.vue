@@ -1,17 +1,17 @@
 <template>
     <el-row>
-        <el-col :md="12" :sm="24" v-for="articleInfo in articleList" v-if="is_card">
+        <el-col :md="12" :sm="24" v-for="articleInfo in _articleList" v-if="is_card">
             <el-card class="article-el-card" body-style="padding:0;">
                 <ArticleInfo :articleInfo="articleInfo" :statusVisible="currentSettings.statusVisible"
                     :iconVisible="currentSettings.iconVisible" :tagsVisible="currentSettings.tagsVisible" />
             </el-card>
         </el-col>
-        <el-col :span="24" v-if="!is_card" v-for="articleInfo in articleList">
+        <el-col :span="24" v-if="!is_card" v-for="articleInfo in _articleList">
             <ArticleInfo :articleInfo="articleInfo" :statusVisible="currentSettings.statusVisible"
                 :iconVisible="currentSettings.iconVisible" :tagsVisible="currentSettings.tagsVisible" :viewcountVisible="currentSettings.viewcountVisible"
                 class="not-card-info" />
         </el-col>
-        <el-col :span="24" v-if="articleList.length === 0">
+        <el-col :span="24" v-if="_articleList.length === 0">
             <el-empty description="暂无文章" />
         </el-col>
     </el-row>
@@ -28,7 +28,7 @@ import { SYNC_GET } from "@/scripts/Axios";
 import { useRoute } from "vue-router";
 import { SnachResponse } from "@/scripts/types/ResponseObject";
 
-type Option = 'LOBBY' | 'USER'
+type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_POSTED_LIST' | 'AUDIT_LIST' | 'RECEIVED'
 type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
 type PublishStatus = 'PUBLIC' | 'UNDER_REVIEW' | 'UNDER_RECORD' | 'POST_RECORD' | 'POSTED' | 'FAILED_REVIEW' | 'FAIL_RECORD'
 
@@ -36,6 +36,10 @@ const props = defineProps({
     option: {
         type: Object as () => Option,
         default: 'LOBBY'
+    },
+    wd: {
+        type: String,
+        default: ''
     },
     mode: {
         type: String,
@@ -137,9 +141,9 @@ const props = defineProps({
     }
 })
 
-const { option, mode, is_card, articleList } = toRefs(props)
+const { option, wd, mode, is_card, articleList } = toRefs(props)
 const route = useRoute()
-const _articleList = ref({});
+const _articleList = ref(articleList);
 
 async function getRank() {
   let params = {
@@ -217,6 +221,8 @@ const pageInfo = reactive({
 interface ArticleInfoRequest {
     idList: string[],
     authorList: string[],
+    recieverList: string[],
+    auditorList: string[],
     keyword: string,
     tags: string,
     auditStatusList: AuditStatus[],
@@ -226,6 +232,8 @@ interface ArticleInfoRequest {
 interface UrlDecodedArticleInfoRequest {
     idList: string,
     authorList: string,
+    recieverList: string,
+    auditorList: string,
     keyword: string,
     tags: string,
     auditStatusList: string,
@@ -236,10 +244,14 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
     option = (option == undefined ? props.option : option)
     let articleInfoRequest: ArticleInfoRequest
     switch (option) {
+        case 'STATIC': 
+            return
         case 'LOBBY': {
             articleInfoRequest = {
                 idList: [],
                 authorList: [],
+                recieverList: [],
+                auditorList: [],
                 keyword: '',
                 tags: '',
                 auditStatusList: ['AUDITED'],
@@ -247,15 +259,42 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
             }
             break
         }
-        case 'USER': {
+        case 'USER_PUBLIC_LIST': {
             articleInfoRequest = {
                 idList: [],
-                authorList: ['114514'],
-                keyword: 'Article',
+                authorList: [route.params.id],
+                recieverList: [],
+                auditorList: [],
+                keyword: '',
                 tags: '',
-                auditStatusList: [],
-                publishStatusList: ['UNDER_RECORD']
+                auditStatusList: ['AUDITED'],
+                publishStatusList: ['PUBLIC']
             }
+            break
+        }
+        case 'USER_POSTED_LIST': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [route.params.id],
+                recieverList: [],
+                auditorList: [],
+                keyword: '',
+                tags: '',
+                auditStatusList: ['AUDITED'],
+                publishStatusList: ['POSTED']
+            }
+            break
+        }
+        case 'SEARCH': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [],
+                keyword: wd,
+                tags: '',
+                auditStatusList: ['AUDITED'],
+                publishStatusList: ['POSTED', 'PUBLIC']
+            }
+            break
         }
     }
     return requestParamsDecode(articleInfoRequest)
@@ -265,6 +304,8 @@ function requestParamsDecode(requestParam: ArticleInfoRequest): UrlDecodedArticl
     return {
         idList: requestParam.idList + '',
         authorList: requestParam.authorList + '',
+        recieverList: requestParam.recieverList + '',
+        auditerList: requestParam.auditorList + '',
         keyword: requestParam.keyword + '',
         tags: requestParam.tags + '',
         auditStatusList: requestParam.auditStatusList + '',
@@ -286,11 +327,13 @@ function getArticles() {
         data: params,
         success: (data: SnachResponse<object>) => {
             // TODO: on success
+            console.log(data)
+
         }
     })
 }
 
-await getRank()
+// await getRank()
 getArticles()
 </script>
 

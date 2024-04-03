@@ -55,6 +55,11 @@ public class UserController {
         return response;
     }
 
+    @RequestMapping(value = "getUserIdentity", method = RequestMethod.GET)
+    public String getUserIdentity(@RequestParam("user_id") @Nonnull String id) {
+        return userService.getUserIdentity(id);
+    }
+
     @RequestMapping(value = "getUserBasicInfoByName", method = RequestMethod.GET)
     public PageInfo<User> getUserBasicInfoByName(String name,
                                                  @Nullable @RequestParam(name = "identity", required = false) List<String> identity,

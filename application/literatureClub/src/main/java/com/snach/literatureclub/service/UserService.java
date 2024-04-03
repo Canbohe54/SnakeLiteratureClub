@@ -31,6 +31,8 @@ public interface UserService {
     User getUserBasicInfo(String id);
     PageInfo<User> getUserBasicInfoByName(String name, List<String> identity, int pageNum, int pageSize);
 
+    String getUserIdentity(String id);
+
     List<User> getUserBasicInfoByNameNoPagination(String name, List<String> identity);
     boolean updateUserBasicInfo(String token, User user);
 
@@ -91,6 +93,11 @@ class UserServiceImpl implements UserService {
             return new PageInfo<>(userDao.getUserByNameAndIdentity(name, identity));
         }
         return new PageInfo<>(userDao.getUserByName(name));
+    }
+
+    @Override
+    public String getUserIdentity(String id) {
+        return userDao.getUserIdentity(id);
     }
 
     @Override

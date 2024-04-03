@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-col :span="18" :offset="3">
+    <el-col :lg="18" :md="20" :sm="24" style="margin: auto;">
       <div>
         <el-container>
           <el-main>
@@ -9,32 +9,32 @@
                 <el-text class="article-detail-title">{{ articleDetail.title }}</el-text>
               </el-row>
               <el-row class="article-box-card">
-                <el-text class="article-detail-author">（
+                <el-text class="article-detail-author">
                   <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
                   <span v-else>{{articleDetail.authorName}}</span>
-                  （{{articleDetail.authorGrade}}） {{articleDetail.authorOrganization}}
-                  <span v-if="articleDetail.mentor !== ''">指导老师：{{articleDetail.mentor}}</span>
+                  {{articleDetail.authorGrade?"（"+articleDetail.authorGrade+"）":""}} {{articleDetail.authorOrganization}}
+                  <span v-if="articleDetail.mentor !== ''">指导老师：<el-button link :onclick="handleAuthorClicked">{{articleDetail.mentor}}</el-button></span>
                 </el-text>
               </el-row>
               <el-row class="article-box-card">
                 <el-text class="article-detail-author">发布时间：{{ articleDetail.time }}</el-text>&nbsp;&nbsp;
               </el-row>
-              <div style="display: flex; justify-content:center;align-items: flex-end;">
-                <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小
+
+                <el-button link type="primary" :onclick="handleDiscriptionSmall" style="font-size: 16px;">小
                 </el-button>
-                <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中
+                <el-button link type="primary" :onclick="handleDiscriptionMedium" style="font-size: 18px;">中
                 </el-button>
-                <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大
+                <el-button link type="primary" :onclick="handleDiscriptionLarge" style="font-size: 20px;">大
                 </el-button>
-              </div>
+
 
               <el-collapse style="padding-top: 10px">
 
                 <div class="description-head"><span>文章描述</span></div>
                 <el-text class="article-description" :size="displaySize">{{ articleDetail.description }}</el-text>
                 <div class="filter-head"><span>文章标签</span></div>
-                <SearchFilter ref="SearchFilterRef" @change="searchFilterChange"/>
-
+                <SearchFilter style="display:none;" ref="SearchFilterRef" @change="searchFilterChange"/>
+                <ArticleTags ref="articleTags" :tagsJsons="articleDetail.tags==='{}'?'{}':JSON.parse(articleDetail.tags)"></ArticleTags>
                 <div class="contain-head"><span>文章内容</span></div>
                 <!-- 待弃用 -->
                 <ArticleDisplayCard class="article-contain-card" :articleRaw="articleDetail.raw"
@@ -159,7 +159,7 @@
 </template>
 
 <script lang="ts" setup>
-import {getCurrentInstance, reactive, ref} from 'vue'
+import {getCurrentInstance, reactive, ref, onMounted} from 'vue'
 import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
@@ -172,6 +172,7 @@ import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 import {lockArticleById} from '@/scripts/ArticleLocker'
 import {View} from "@element-plus/icons-vue";
+import ArticleTags from '@/components/common/ArticleTags.vue';
 
 const router = useRouter()
 const route = useRoute()
@@ -209,6 +210,9 @@ const rejectManager = reactive({
   rejectDialogVisible: false,
   rejectInfo: '感谢您的投稿，但很遗憾，'
 })
+
+const articleTags = ref()
+
 const searchFilterChange = () => {
   articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
 }
@@ -226,6 +230,8 @@ async function getTextBy() {
   })
 }
 
+
+console.log(articleDetail)
 
 const articlePDF = reactive({
   raw: {}
@@ -282,6 +288,19 @@ const getHunterByName = async (userName: string) => {
     recommendManager.loading = false
   })
 }
+
+function handleDiscriptionSmall() {
+  $('.article-description').css('font-size', '16px')
+}
+
+function handleDiscriptionMedium() {
+  $('.article-description').css('font-size', '18px')
+}
+
+function handleDiscriptionLarge() {
+  $('.article-description').css('font-size', '20px')
+}
+
 
 const handleAuthorClicked = () => {
   if (articleDetail.textBy !== '' && articleDetail.textBy !== undefined) {
@@ -417,7 +436,7 @@ const handleUpdateArticleClicked = () => {
   }
 }
 // 有article_id时初始化ArticleDetail
-(async () => {
+onMounted(async () => {
   let articleRaw: ArrayBuffer
   identity.value = store.getters.getUserInfo.identity
   if (route.query.id === '' || route.query.id === undefined) return
@@ -436,6 +455,7 @@ const handleUpdateArticleClicked = () => {
           SearchFilterRef.value.loadSelection(articleDetail.tags)
           articleDetail.tags = JSON.stringify(SearchFilterRef.value.filterSelection)
           await getTextBy()
+          articleTags.value.setTags(JSON.parse(articleDetail.tags))
           await getRaw(articleDetail.id)
 
         } else {
@@ -447,7 +467,9 @@ const handleUpdateArticleClicked = () => {
     }
   })
 
-})()
+})
+
+
 </script>
 <style scoped>
 .article-box-card {
@@ -483,6 +505,7 @@ const handleUpdateArticleClicked = () => {
 }
 
 .article-description {
+  font-size: 16px;
   display: flex;
   white-space: pre-wrap;
   text-align: start !important;

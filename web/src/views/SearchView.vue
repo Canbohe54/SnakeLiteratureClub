@@ -10,11 +10,12 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="18" :offset="3">
-          <SearchFilter ref="SearchFilterRef" @change="() => articleFiltrate()" />
+        <el-col :lg="18" :md="20" :sm="24" style="margin: auto;">
+          <el-card class="article-el-card">
+            <SearchFilter ref="SearchFilterRef" @change="() => articleFiltrate()" />
+          </el-card>
         </el-col>
       </el-row>
-      <ArticleDisplay ref="ArticleDisplayRef"/>
     </div>
   </el-scrollbar>
 </template>
@@ -44,8 +45,15 @@ function articleFiltrate() {
   margin: 0 0;
 }
 
+
 .search-bar {
   margin: 20px 0 10px 0;
   padding: 5px 0 5px 3px;
+}
+
+.article-el-card {
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 </style>

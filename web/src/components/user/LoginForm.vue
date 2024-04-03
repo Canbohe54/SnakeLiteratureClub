@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus';
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { POST } from '@/scripts/Axios';
 import { useRouter } from 'vue-router';
 import store from "@/store";
@@ -66,6 +66,16 @@ async function onSubmit() {
     }
   })
 }
+
+const keyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+        onSubmit()
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('keydown', keyDown)
+})
 
 </script>
 <style lang="scss">
