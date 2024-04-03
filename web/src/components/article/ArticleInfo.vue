@@ -22,7 +22,7 @@
                 </div>
                 <div class="article-author-info" v-if="authorInfoVisible">
                     <span>{{ articleInfo.authorName }}</span>
-                    <span>（{{ articleInfo.authorGrade }}）</span>
+                    <span>{{ articleInfo.authorGrade?('（' + articleInfo.authorGrade + '）'):'' }}</span>
                     <span>{{ articleInfo.authorOrganization }}</span>
                 </div>
                 <div class="article-author-info" v-if="authorInfoVisible">

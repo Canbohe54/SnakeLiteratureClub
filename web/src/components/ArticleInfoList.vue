@@ -81,6 +81,8 @@ async function getRank() {
       for (let article in _articleList.value) {
         _articleList.value[article].viewcount = articleLikeAndViewCountMap[_articleList.value[article].id].viewCount
       }
+        console.log(response.data.data.RankingByLikeAndViewCount.list)
+      console.log(_articleList.value)
     } else {
       errorCallback(response)
     }
@@ -361,7 +363,6 @@ function getArticles() {
             pageInfo.currentPage = data.data.pageNum
             pageInfo.pageSize = data.data.pageSize
             _articleList.value = data.data.list
-            console.log(_articleList.value)
         }
     })
 }
@@ -383,7 +384,6 @@ onMounted(() => {
     Object.assign(currentSettings, modeSettings[props.mode])
     if ( props.mode === 'STATIC' ){
       getRank()
-      console.log('rank')
       return
     }
     if (articleList.value.length > 0) {
