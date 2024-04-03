@@ -360,8 +360,8 @@ function getArticles() {
             // TODO: on success
             // console.log(data)
             pageInfo.total = data.data.total
-            pageInfo.currentPage = data.data.pageNum
-            pageInfo.pageSize = data.data.pageSize
+            // pageInfo.currentPage = data.data.pageNum
+            // pageInfo.pageSize = data.data.pageSize
             _articleList.value = data.data.list
         }
     })
