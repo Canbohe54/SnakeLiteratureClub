@@ -58,7 +58,8 @@ const userInfo = reactive(store.getters.getUserInfo)
 
 function handleLogout(){
     store.commit('clear')
-    router.push('/login')
+    window.location.reload()
+    window.location.href = '/#/login'
 }
 
 </script>
