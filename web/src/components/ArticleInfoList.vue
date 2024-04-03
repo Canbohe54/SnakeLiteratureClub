@@ -59,7 +59,7 @@ const props = defineProps({
     }
 })
 
-const { option, wd, mode, is_card, articleList } = toRefs(props)
+const { option, tags, wd, mode, is_card, articleList } = toRefs(props)
 const route = useRoute()
 const _articleList = ref([]);
 
@@ -126,10 +126,6 @@ const modeSettings = {
     }
 }
 
-onMounted(() => {
-    Object.assign(currentSettings, modeSettings[props.mode])
-})
-
 const pageInfo = reactive({
     currentPage: 1,
     pageSize: 10,
@@ -194,8 +190,8 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
             articleInfoRequest = {
                 idList: [],
                 authorList: [],
-                keyword: wd,
-                tags: tags,
+                keyword: wd.value,
+                tags: tags.value,
                 auditStatusList: ['AUDITED'],
                 publishStatusList: ['POSTED', 'PUBLIC']
             }
@@ -210,7 +206,7 @@ function requestParamsDecode(requestParam: ArticleInfoRequest): UrlDecodedArticl
         idList: requestParam.idList + '',
         authorList: requestParam.authorList + '',
         receiverList: requestParam.receiverList + '',
-        auditerList: requestParam.auditorList + '',
+        auditorList: requestParam.auditorList + '',
         keyword: requestParam.keyword + '',
         tags: requestParam.tags + '',
         auditStatusList: requestParam.auditStatusList + '',
@@ -241,8 +237,15 @@ function getArticles() {
     })
 }
 
-// await getRank()
-getArticles()
+
+onMounted(() => {
+    Object.assign(currentSettings, modeSettings[props.mode])
+    if (articleList.value.length > 0) {
+        _articleList.value = articleList.value
+    } else {
+        getArticles()
+    }
+})
 </script>
 
 <style scoped>

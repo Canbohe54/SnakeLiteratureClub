@@ -16,6 +16,13 @@
           </el-card>
         </el-col>
       </el-row>
+      <el-row>
+        <el-col :lg="18" :md="20" :sm="24" style="margin: auto;">
+          <el-card class="article-el-card">
+            <ArticleInfoList />
+          </el-card>
+        </el-col>
+      </el-row>
     </div>
   </el-scrollbar>
 </template>
@@ -32,7 +39,6 @@ const route = useRoute()
 
 const SearchFilterRef = ref()
 const ArticleDisplayRef = ref()
-let filtratedArticleList = ref<ArticleInfo[]>()
 
 function articleFiltrate() {
   const articleList = ArticleDisplayRef.value.articleList
