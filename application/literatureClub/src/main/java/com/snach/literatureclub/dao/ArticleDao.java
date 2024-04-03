@@ -162,7 +162,7 @@ public interface ArticleDao {
     // 根据文章id列表查询列表中文章详细信息
     @Select({"<script>",
             "SELECT ",
-            "id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags",
+            " id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags, `file_type` as fileType, author_name as authorName, author_org as authorOrganization, author_grade as authorGrade, reason, audited_by as auditedBy ",
             "FROM article WHERE id in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
             "#{item}",
