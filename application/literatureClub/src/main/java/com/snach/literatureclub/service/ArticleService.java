@@ -170,7 +170,7 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public PageInfo<Article> getArticles(List<String> idList,
                                          List<String> authorList,
-                                         List<String> recieverList,
+                                         List<String> receiverList,
                                          List<String> auditorList,
                                          String keyword,
                                          String tags,
@@ -190,11 +190,11 @@ class ArticleServiceImpl implements ArticleService {
             }
             whereStatement.append("text_by IN ").append(toSelectString(authorList));
         }
-        if (recieverList != null && !recieverList.isEmpty()) {
+        if (receiverList != null && !receiverList.isEmpty()) {
             if (!whereStatement.isEmpty()) {
                 whereStatement.append(" AND ");
             }
-            whereStatement.append("received_by IN ").append(toSelectString(recieverList));
+            whereStatement.append("received_by IN ").append(toSelectString(receiverList));
         }
         if (auditorList != null && !auditorList.isEmpty()) {
             if (!whereStatement.isEmpty()) {

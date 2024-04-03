@@ -69,7 +69,7 @@ public interface ArticleDao {
     @Select("SELECT id FROM article where text_by = #{contributor_id}")
     List<String> getAllArticleIdByContributorId(String contributor_id);
 
-    @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND publish_status = 'POST'")
+    @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND publish_status = 'POSTED'")
     int getReceivedCount(String contributor_id);
 
     @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND publish_status = 'PUBLIC'")

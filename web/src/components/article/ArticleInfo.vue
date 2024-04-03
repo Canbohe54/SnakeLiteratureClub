@@ -4,16 +4,16 @@
             <div class="article-status-container"
                 v-if="statusVisible && (articleInfo.auditStatus == 'SUBMITTED' || (articleInfo.auditStatus == 'AUDITED' && (articleInfo.publishStatus == 'POSTED' || articleInfo.publishStatus == 'PUBLIC')))">
                 <el-tooltip :content="handleStatusTag()" placement="bottom" effect="light">
-                    <div class="article-status-div" :id="'status' + articleInfo.articleId"></div>
+                    <div class="article-status-div" :id="'status' + articleInfo.id"></div>
                 </el-tooltip>
             </div>
             <div class="article-info-card">
-                <div class="article-info-title"><span :id="'title' + articleInfo.articleId" class="article-title-span"
+                <div class="article-info-title"><span :id="'title' + articleInfo.id" class="article-title-span"
                         @click="handleCardClicked">
                         {{ articleInfo.title }}</span>
                     <el-tooltip :content="handleStatusIconTip()" placement="bottom" effect="light"
                         v-if="iconVisible && !(articleInfo.auditStatus == 'AUDITED' && (articleInfo.publishStatus == 'PUBLIC' || articleInfo.publishStatus == 'POSTED'))">
-                        <el-icon :id="'statusIcon' + articleInfo.articleId" @click="handleCardClicked">
+                        <el-icon :id="'statusIcon' + articleInfo.id" @click="handleCardClicked">
                             <Edit v-if="articleInfo.auditStatus == 'ROUGH'" />
                             <Lock v-else />
 
@@ -21,9 +21,9 @@
                     </el-tooltip>
                 </div>
                 <div class="article-author-info" v-if="authorInfoVisible">
-                    <span>{{ articleInfo.contributor }}</span>
-                    <span>（{{ articleInfo.grade }}）</span>
-                    <span>{{ articleInfo.organization }}</span>
+                    <span>{{ articleInfo.authorName }}</span>
+                    <span>（{{ articleInfo.authorGrade }}）</span>
+                    <span>{{ articleInfo.authorOrganization }}</span>
                 </div>
                 <div class="article-author-info" v-if="authorInfoVisible">
                     <span class="article-info-mentor">{{ articleInfo.mentor === '' ? '' : '指导老师：' }}{{
@@ -68,12 +68,12 @@ const currentUser = reactive({
 
 const props = defineProps({
     articleInfo: {
-        articleId: String, //文章ID **必须**
+        id: String, //文章ID **必须**
         title: String, //标题 **必须**
-        userId: String, //用户ID
-        contributor: String, //作者 **必须**
-        organization: String, //单位 **必须**
-        grade: String, //年级 **必须**
+        textBy: String, //用户ID
+        authorName: String, //作者 **必须**
+        authorOrganization: String, //单位 **必须**
+        authorGrade: String, //年级 **必须**
         mentor: String, //导师
         description: String, //描述 **必须**
         auditStatus: String, //审核状态 **依mode决定**
@@ -255,30 +255,30 @@ function handleStatus() {
             break
         case 'SUBMITTED': // 给审核员标识的是否初审
             if (articleInfo.value.audit_by == '' || articleInfo.value.audit_by == null) {
-                $('#status' + articleInfo.value.articleId).css('border-top-color', 'var(--status-public)')
-                $('#status' + articleInfo.value.articleId).css('border-right-color', 'var(--status-public)')
-                $('#status' + articleInfo.value.articleId).css('border-left-color', 'var(--status-public)')
+                $('#status' + articleInfo.value.id).css('border-top-color', 'var(--status-public)')
+                $('#status' + articleInfo.value.id).css('border-right-color', 'var(--status-public)')
+                $('#status' + articleInfo.value.id).css('border-left-color', 'var(--status-public)')
             } else {
-                $('#status' + articleInfo.value.articleId).css('border-top-color', 'var(--status-published)')
-                $('#status' + articleInfo.value.articleId).css('border-right-color', 'var(--status-published)')
-                $('#status' + articleInfo.value.articleId).css('border-left-color', 'var(--status-published)')
+                $('#status' + articleInfo.value.id).css('border-top-color', 'var(--status-published)')
+                $('#status' + articleInfo.value.id).css('border-right-color', 'var(--status-published)')
+                $('#status' + articleInfo.value.id).css('border-left-color', 'var(--status-published)')
             }
             break
         case 'BEING_AUDITED':
             break
         case 'FAIL_AUDITED':
-            $('#title' + articleInfo.value.articleId).css('color', '#f56c6c')
-            $('#statusIcon' + articleInfo.value.articleId).css('color', '#f56c6c')
+            $('#title' + articleInfo.value.id).css('color', '#f56c6c')
+            $('#statusIcon' + articleInfo.value.id).css('color', '#f56c6c')
             break
         case 'AUDITED':
             if (articleInfo.value.publishStatus === 'POSTED') {
-                $('#status' + articleInfo.value.articleId).css('border-top-color', 'var(--status-published)')
-                $('#status' + articleInfo.value.articleId).css('border-right-color', 'var(--status-published)')
-                $('#status' + articleInfo.value.articleId).css('border-left-color', 'var(--status-published)')
+                $('#status' + articleInfo.value.id).css('border-top-color', 'var(--status-published)')
+                $('#status' + articleInfo.value.id).css('border-right-color', 'var(--status-published)')
+                $('#status' + articleInfo.value.id).css('border-left-color', 'var(--status-published)')
             } else if (articleInfo.value.publishStatus === 'PUBLIC') {
-                $('#status' + articleInfo.value.articleId).css('border-top-color', 'var(--status-public)')
-                $('#status' + articleInfo.value.articleId).css('border-right-color', 'var(--status-public)')
-                $('#status' + articleInfo.value.articleId).css('border-left-color', 'var(--status-public)')
+                $('#status' + articleInfo.value.id).css('border-top-color', 'var(--status-public)')
+                $('#status' + articleInfo.value.id).css('border-right-color', 'var(--status-public)')
+                $('#status' + articleInfo.value.id).css('border-left-color', 'var(--status-public)')
             }
             break
     }
@@ -305,7 +305,7 @@ function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师�
         router.push({
             path: '/articleDetail',
             query: {
-                id: articleInfo.value.articleId
+                id: articleInfo.value.id
             }
         })
     }
@@ -315,16 +315,16 @@ function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师�
 
 async function handleArticleDetail() {
     await SYNC_GET('/article/getPermissions', {
-        articleId: articleInfo.value.articleId,
+        articleId: articleInfo.value.id,
         requester: currentUser.userId
     }, async (response) => {
         if (response.status === 200 && response.data.code === 2001) {
             // 锁2小时
-            await lockArticleById(articleInfo.value.articleId, currentUser.userId, 7200)
+            await lockArticleById(articleInfo.value.id, currentUser.userId, 7200)
             router.push({
                 path: '/articleDetail',
                 query: {
-                    id: articleInfo.value.articleId
+                    id: articleInfo.value.id
                 }
             })
         }
@@ -410,6 +410,7 @@ function handleArticlePublic() {
     -webkit-line-clamp: 2;
     overflow: hidden;
     text-overflow: ellipsis;
+    height: 48px;
 }
 
 .article-info-tags {
