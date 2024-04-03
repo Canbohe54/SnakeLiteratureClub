@@ -19,7 +19,7 @@
       <el-row>
         <el-col :lg="18" :md="20" :sm="24" style="margin: auto;">
           <el-card class="article-el-card">
-            <ArticleInfoList />
+            <ArticleInfoList option="SEARCH" :wd="route.query.wd"/>
           </el-card>
         </el-col>
       </el-row>
@@ -34,6 +34,7 @@ import ArticleDisplay from '@/components/article/ArticleDisplay.vue'
 import SearchFilter from '@/components/search/SearchFilter.vue'
 import { ArticleInfo, articleTagFilter } from "@/scripts/ArticleTagFilter";
 import { useRoute } from "vue-router";
+import ArticleInfoList from "@/components/ArticleInfoList.vue";
 
 const route = useRoute()
 

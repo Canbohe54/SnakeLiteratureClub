@@ -26,8 +26,9 @@ import ArticleInfo from '@/components/article/ArticleInfo.vue';
 import { onMounted, reactive, ref, toRefs } from 'vue';
 import { SYNC_GET } from "@/scripts/Axios";
 import { useRoute } from "vue-router";
-import { SnachResponse } from "@/scripts/types/ResponseObject";
-import {AttributeAddableObject} from '@/scripts/ArticleTagFilter'
+import { PageInfo, SnachResponse } from "@/scripts/types/ResponseObject";
+import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
+import { Article } from "@/scripts/types/models";
 
 type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'AUDIT_LIST' | 'RECEIVED'
 type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
@@ -55,14 +56,14 @@ const props = defineProps({
         default: true
     },
     articleList: {
-        type: Array,
+        type: Array<Article>,
         default: []
     }
 })
 
 const { option, tags, wd, mode, is_card, articleList } = toRefs(props)
 const route = useRoute()
-const _articleList = ref([]);
+const _articleList = ref<Article[]>([]);
 
 async function getRank() {
   let params = {
@@ -89,7 +90,7 @@ const currentSettings = reactive({
     is_card: true
 })
 
-const modeSettings = {
+const modeSettings: AttributeAddableObject = {
     USER_PUBLIC_LIST: {
         statusVisible: true,
         iconVisible: true,
@@ -254,7 +255,7 @@ function getArticles() {
         async: false,
         enctype: 'multipart/form-data',
         data: params,
-        success: (data: SnachResponse<object>) => {
+        success: (data: SnachResponse<PageInfo<Article>>) => {
             // TODO: on success
             console.log(data)
             pageInfo.total = data.data.total
