@@ -46,16 +46,19 @@
                   @click="handleUpdateArticleClicked">修改文章
                 </el-button>
                 <el-button type="danger" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
-                  @click="delArticleDialogVisible = true">删除文章
+                  @click="handleDeleteClicked">删除文章
                 </el-button>
                 <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
                   :onclick="handleLockClicked">{{ isLocked ? '取消锁定' : '锁定' }}
                 </el-button>
-                <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id && articleDetail.publishStatus === 'POST_RECORD'"
+                <el-button type="success" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id && articleDetail.publishStatus === 'POST_RECORD'"
                            :onclick="handlePOSTEDClicked">刊登
                 </el-button>
                 <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id && articleDetail.publishStatus === 'POST_RECORD'"
                            :onclick="handleUnPOSTEDClicked">不刊登
+                </el-button>
+                <el-button type="warning" link v-if="publicButtonVisible"
+                           :onclick="handleViewableClicked">{{!onlyMyself ? '设置仅自己可见': '设置所有人可见'}}
                 </el-button>
                 <el-button link type="primary" :onclick="handleDiscriptionSmall" style="font-size: 16px;">小
                 </el-button>
@@ -145,7 +148,7 @@ import { SnachResponse } from "@/scripts/types/ResponseObject";
 const router = useRouter()
 const route = useRoute()
 const store = useStore()
-
+const displaySize = ref("default")
 const articleDetail = reactive<AttributeAddableObject>({
   id: null,
   text: '',
@@ -170,6 +173,8 @@ const currentStatus = ref('')
 const currentLikeCount = ref(0)
 const currentViewCount = ref(0)
 const textByIdentity = ref('CONTRIBUTOR')
+const publicButtonVisible = ref(false)
+const onlyMyself = ref(false)
 let isUp = ref(false)
 
 const messageInputText = ref('')
@@ -288,6 +293,9 @@ const like = async () => {
 }
 
 const addViewCount = async () => {
+  if(route.query.id === undefined || ( route.query.id === null || route.query.id === '')) {
+    return
+  }
   await SYNC_POST('/view/addViewCount', {
     articleId: route.query.id,
   }, async (response) => {
@@ -463,10 +471,10 @@ const handleDelArticleClicked = async () => {
   delArticleDialogVisible.value = false
   router.back()
 }
-const changeArticlePublishStatus = async () => {
+const changeArticlePublishStatus = async (publishStatus :string) => {
   await SYNC_POST('/article/changeArticlePublishStatus', {
     articleId: articleDetail.id,
-    status: 'POSTED',
+    status: publishStatus,
     token: store.getters.getToken
   }, async (response) => {
     if (response.status !== 200 || response.data.code !== 2001) {
@@ -474,10 +482,10 @@ const changeArticlePublishStatus = async () => {
     }
   })
 }
-const changeArticleAuditStatus = async () => {
-  await SYNC_POST('/article/changeArticleAuditStatus', {
+const changeArticleAuditStatus = async (auditStatus: string) => {
+  await SYNC_POST('/article/changeArticleStatus', {
     articleId: articleDetail.id,
-    status: 'LOCKED',
+    status: auditStatus,
     token: store.getters.getToken
   }, async (response) => {
     if (response.status !== 200 || response.data.code !== 2001) {
@@ -487,21 +495,51 @@ const changeArticleAuditStatus = async () => {
 }
 
 const handlePOSTEDClicked = async () => {
-  await changeArticlePublishStatus()
+  await changeArticlePublishStatus('POSTED')
   await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 5184000)
   isLocked.value = true
-  await changeArticleAuditStatus()
+  await changeArticleAuditStatus('LOCKED')
 }
 const handleUpdateArticleClicked = () => {
+  if (articleDetail.publishStatus === 'POSTED'){
+    ElMessage({
+      type: 'warning',
+      message: '已刊登文章无法修改',
+      grouping: true,
+      showClose: true
+    })
+    return
+  }
   if (articleDetail.id !== '' && articleDetail.id !== undefined) {
     router.push({ path: '/articleEditor', query: { id: articleDetail.id } })
   } else {
     router.push({ path: '/articleNotFound' })
   }
-  getIsLocked()
+  // getIsLocked()
+}
+const handleDeleteClicked = () => {
+  if (articleDetail.publishStatus === 'POSTED'){
+    ElMessage({
+      type: 'warning',
+      message: '已刊登文章无法删除',
+      grouping: true,
+      showClose: true
+    })
+    return
+  }
+  delArticleDialogVisible.value = true
 }
 const handleUnPOSTEDClicked = async () => {
-  // todo: 不接受收录
+  await changeArticlePublishStatus('PUBLIC')
+}
+const handleViewableClicked = async () => {
+  if (onlyMyself) {
+    await changeArticleAuditStatus('LOCKED')
+  } else {
+    await changeArticleAuditStatus('AUDITED')
+  }
+
+  onlyMyself.value = !onlyMyself.value
 }
 // 有article_id时初始化ArticleDetail
 (async () => {
@@ -509,6 +547,7 @@ const handleUnPOSTEDClicked = async () => {
   if(getCookie('userInfo') !== '' && (JSON.parse(getCookie('userInfo'))?.identity === 'EXPERT'|| JSON.parse(getCookie('userInfo'))?.identity === 'HUNTER')){
     displayMessage.value = true
   }
+
   await SYNC_GET('/article/articleDetail', {
     article_id: route.query.id
   }, async (response) => {
@@ -519,6 +558,17 @@ const handleUnPOSTEDClicked = async () => {
         }
         articleDetail[dataKey] = response.data.data.article[dataKey]
       }
+      if (articleDetail.text_by_id === store.getters.getUserInfo.id && articleDetail.publishStatus === 'POSTED') {
+        publicButtonVisible.value = true
+      }
+      if (articleDetail.auditStatus === 'AUDITED') {
+        onlyMyself.value = false
+        publicButtonVisible.value = true
+      } else if (articleDetail.auditStatus === 'LOCKED'){
+        onlyMyself.value = true
+        publicButtonVisible.value = true
+      }
+
       await getIsLocked()
       await getTextBy()
       await getRaw(route.query.id)
