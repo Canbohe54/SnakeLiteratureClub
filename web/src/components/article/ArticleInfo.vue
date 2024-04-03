@@ -92,7 +92,7 @@ const props = defineProps({
         auditStatus: String, //审核状态 **依mode决定**
         publishStatus: String, //公开状态 **依mode决定**
         time: String, //时间 **必须**
-        tags: Object, //标签 **必须** TODO: 改成map
+        tags: Object, //标签 **必须**
         receivedBy: String, //刊登报刊 **依mode决定**
         auditBy: String, //审核员 **依mode决定**
         audit_suggestion: String, //审核意见 **依mode决定**
@@ -362,12 +362,14 @@ async function handleArticleDetail() {
         if (response.status === 200 && response.data.code === 2001) {
             // 锁2小时
             await lockArticleById(articleInfo.value.id, currentUser.userId, 7200)
-            router.push({
-                path: '/articleDetail',
-                query: {
-                    id: articleInfo.value.id
-                }
-            })
+          if ((articleInfo.auditStatus === 'BEING_AUDITED' || articleInfo.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
+            redirectToArticle('/auditArticleDetail', articleInfo.value.id)
+          } else if ((articleInfo.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
+            (articleInfo.auditStatus === 'UNDER_RECODE' && currentUser.identity === 'HUNTER')) {
+            redirectToArticle('/receivedArticleDetail', articleInfo.value.id)
+          } else {
+            redirectToArticle('/articleDetail', articleInfo.value.id)
+          }
         }
     })
 }
