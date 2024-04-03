@@ -60,9 +60,9 @@
                 <el-button type="warning" link v-if="postButtonVisible"
                            :onclick="handleUnPOSTEDClicked">不刊登
                 </el-button>
-                <el-button type="warning" link v-if="publicButtonVisible"
-                           :onclick="handleViewableClicked">{{!onlyMyself ? '设置仅自己可见': '设置所有人可见'}}
-                </el-button>
+<!--                <el-button type="warning" link v-if="publicButtonVisible"-->
+<!--                           :onclick="handleViewableClicked">{{!onlyMyself ? '设置仅自己可见': '设置所有人可见'}}-->
+<!--                </el-button>-->
                 <el-button link type="primary" :onclick="handleDiscriptionSmall" style="font-size: 16px;">小
                 </el-button>
                 <el-button link type="primary" :onclick="handleDiscriptionMedium" style="font-size: 18px;">中
@@ -537,15 +537,15 @@ const handleDeleteClicked = () => {
 const handleUnPOSTEDClicked = async () => {
   await changeArticlePublishStatus('PUBLIC')
 }
-const handleViewableClicked = async () => {
-  if (onlyMyself) {
-    await changeArticleAuditStatus('LOCKED')
-  } else {
-    await changeArticleAuditStatus('AUDITED')
-  }
-
-  onlyMyself.value = !onlyMyself.value
-}
+// const handleViewableClicked = async () => {
+//   if (onlyMyself) {
+//     await changeArticleAuditStatus('LOCKED')
+//   } else {
+//     await changeArticleAuditStatus('AUDITED')
+//   }
+//
+//   onlyMyself.value = !onlyMyself.value
+// }
 const visibleInit = () => {
   if (articleDetail.text_by_id === store.getters.getUserInfo.id) {
     if (articleDetail.publishStatus === 'POST_RECORD') {

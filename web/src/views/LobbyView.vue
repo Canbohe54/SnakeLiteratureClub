@@ -33,7 +33,7 @@ export default class LobbyView extends Vue {}
 }
 
 .lobby_article {
-  margin: 20px 0;
+  margin-bottom: 20px !important;
 }
 
 </style>

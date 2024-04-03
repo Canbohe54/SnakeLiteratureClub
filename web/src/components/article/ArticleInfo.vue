@@ -298,17 +298,25 @@ onMounted(() => { // setup语法糖下渲染时周期函数
     handleStatus()
 })
 
-function handleCardClicked() { //TODO: 验证用户身份，若为学生/老师，直接进入阅读界面
-    if (menuVisible.value && currentUser.userId && !(currentUser.identity =='CONTRIBUTOR' || currentUser.identity == 'TEACHER')) {
+async function handleCardClicked() {
+  await SYNC_GET('/article/getPermissions', {
+      articleId: articleInfo.value.id,
+      requester: currentUser.userId
+  },() => {
+      // 当前用户有阅读权限
+      if (menuVisible.value && currentUser.userId && !(currentUser.identity === 'CONTRIBUTOR' || currentUser.identity === 'TEACHER' || currentUser.identity === 'AUDITOR')) {
+        // 专家、报社专员、管理员可对文章进行锁定
         isArticleMenuOpen.value = !isArticleMenuOpen.value
-    } else {
-        router.push({
+      } else {
+          router.push({
             path: '/articleDetail',
             query: {
-                id: articleInfo.value.id
+              id: articleInfo.value.id
             }
-        })
-    }
+          })
+      }
+  })
+
 }
 
 

@@ -72,7 +72,7 @@ async function getRank() {
   }
   await (SYNC_GET('/like/getRank', params, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
-      console.log(response.data.data.RankingByLikeAndViewCount.list)
+      // console.log(response.data.data.RankingByLikeAndViewCount.list)
       pageInfo.total = response.data.data.total
       // todo
       articleList.value = response.data.data.RankingByLikeAndViewCount.list
@@ -249,7 +249,6 @@ function getArticles() {
         pageNum: pageInfo.currentPage,
         pageSize: pageInfo.pageSize
     })
-    console.log(params)
     $.post({
         url: 'http://localhost:19198/article/getArticles',
         async: false,
@@ -257,7 +256,7 @@ function getArticles() {
         data: params,
         success: (data: SnachResponse<PageInfo<Article>>) => {
             // TODO: on success
-            console.log(data)
+            // console.log(data)
             pageInfo.total = data.data.total
             pageInfo.currentPage = data.data.pageNum
             pageInfo.pageSize = data.data.pageSize
