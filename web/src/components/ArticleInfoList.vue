@@ -37,6 +37,10 @@ const props = defineProps({
         type: Object as () => Option,
         default: 'LOBBY'
     },
+    tags: {
+        type: Object as () => AttributeAddableObject,
+        default: ''
+    },
     wd: {
         type: String,
         default: ''
@@ -191,7 +195,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
                 idList: [],
                 authorList: [],
                 keyword: wd,
-                tags: '',
+                tags: tags,
                 auditStatusList: ['AUDITED'],
                 publishStatusList: ['POSTED', 'PUBLIC']
             }
