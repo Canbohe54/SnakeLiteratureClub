@@ -29,6 +29,7 @@ import { useRoute } from "vue-router";
 import { PageInfo, SnachResponse } from "@/scripts/types/ResponseObject";
 import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
 import { Article } from "@/scripts/types/models";
+import {errorCallback} from "@/scripts/ErrorCallBack";
 
 type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'AUDIT_LIST' | 'RECEIVED'
 type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
@@ -70,16 +71,20 @@ async function getRank() {
     page_num: pageInfo.currentPage,
     page_size: pageInfo.pageSize,
   }
-  await (SYNC_GET('/like/getRank', params, async (response) => {
+  await SYNC_GET('/like/getRank', params, async (response) => {
     if (response.status === 200 && response.data.message === 'Success.') {
       pageInfo.currentPage = response.data.data.RankingByLikeAndViewCount.pageNum
       pageInfo.pageSize = response.data.data.RankingByLikeAndViewCount.pageSize
       pageInfo.total = response.data.data.RankingByLikeAndViewCount.total
       _articleList.value = response.data.data.RankingByLikeAndViewCount.list
+      let articleLikeAndViewCountMap = response.data.data.articleLikeAndViewCountMap
+      for (let article in _articleList.value) {
+        _articleList.value[article].viewcount = articleLikeAndViewCountMap[_articleList.value[article].id].viewCount
+      }
     } else {
-      console.log(response)
+      errorCallback(response)
     }
-  }))
+  })
 }
 
 const currentSettings = reactive({
@@ -256,7 +261,7 @@ function getArticles() {
         data: params,
         success: (data: SnachResponse<PageInfo<Article>>) => {
             // TODO: on success
-            console.log(data)
+            // console.log(data)
             pageInfo.total = data.data.total
             pageInfo.currentPage = data.data.pageNum
             pageInfo.pageSize = data.data.pageSize
@@ -280,11 +285,15 @@ function handleCurrentChange(newPage: any) {
 
 onMounted(() => {
     Object.assign(currentSettings, modeSettings[props.mode])
+    if ( props.mode === 'STATIC' ){
+      getRank()
+      console.log('rank')
+      return
+    }
     if (articleList.value.length > 0) {
         _articleList.value = articleList.value
     } else {
         getArticles()
-      // getRank()
     }
 })
 </script>

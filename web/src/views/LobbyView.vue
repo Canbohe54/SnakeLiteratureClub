@@ -6,7 +6,7 @@
       <Carousel/>
       <!-- <LobbyArticle class="lobby_article"/> -->
       <!-- <ArticleInfo></ArticleInfo> -->
-      <ArticleInfoList  :is_card="true"/>
+      <ArticleInfoList mode="STATIC" :is_card="true"/>
     </div>
   </el-scrollbar>
 </template>

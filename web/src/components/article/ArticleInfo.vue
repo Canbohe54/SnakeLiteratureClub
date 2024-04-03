@@ -481,7 +481,7 @@ function handleArticlePublic() {
 
 .article-info-tags {
     margin-top: 10px;
-    height: 20px;
+    height: 24px;
     overflow: hidden;
 }
 
