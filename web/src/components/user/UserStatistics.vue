@@ -19,24 +19,24 @@
     <el-divider border-style="dashed" v-if="userId == store.getters.getUserInfo.id&&(userIdentity==='CONTRIBUTOR' || userIdentity==='TEACHER')"/>
     <el-row class="statistics-row" v-if="userId == store.getters.getUserInfo.id&&(userIdentity==='CONTRIBUTOR' || userIdentity==='TEACHER')">
         <el-col :span="8">
-            <el-statistic title="草稿箱" class="statistics-number" id="draft" />
+            <el-statistic title="草稿箱" :value="userStatistics.roughCount" class="statistics-number" id="draft" />
         </el-col>
         <el-col :span="8">
-            <el-statistic title="审核中" class="statistics-number" id="under_review" />
+            <el-statistic title="审核中" :value="userStatistics.beingAuditedCount" class="statistics-number" id="under_review" />
         </el-col>
         <el-col :span="8">
-            <el-statistic title="审核未通过" class="statistics-number" id="failed_audit" />
+            <el-statistic title="审核未通过" :value="userStatistics.failAuditedCount" class="statistics-number" id="failed_audit" />
         </el-col>
     </el-row>
     <el-row class="statistics-row" v-if="userId == store.getters.getUserInfo.id&&(userIdentity==='CONTRIBUTOR' || userIdentity==='TEACHER')">
         <el-col :span="8">
-            <el-statistic title="有修改建议" class="statistics-number" id="audit_suggested" />
+            <el-statistic title="有修改建议" :value="userStatistics.reasonCount" class="statistics-number" id="audit_suggested" />
         </el-col>
         <el-col :span="8">
-            <el-statistic title="推荐未通过" class="statistics-number" id="failed_review" />
+            <el-statistic title="推荐未通过" :value="userStatistics.failedReviewCount" class="statistics-number" id="failed_review" />
         </el-col>
         <el-col :span="8">
-            <el-statistic title="需确认录用" class="statistics-number" id="recieve_confirm" />
+            <el-statistic title="需确认录用" :value="userStatistics.postRecordCount" class="statistics-number" id="recieve_confirm" />
         </el-col>
     </el-row>
 </template>
@@ -52,7 +52,13 @@ const userStatistics = reactive({
     publishedArticles: 0,
     recievedArticles: 1,
     totalReads: 0,
-    totalLikes: 0
+    totalLikes: 0,
+    roughCount: 0,
+    beingAuditedCount: 0,
+    failAuditedCount: 0,
+    reasonCount: 0,
+    failedReviewCount: 0,
+    postRecordCount: 0
 })
 const store = useStore()
 const route = useRoute()
@@ -114,11 +120,30 @@ async function getRecievedAndPublishedCount() {
     })
 }
 
+async function getContributorCenterInformation() {
+  await SYNC_GET('/article/getContributorCenterInformation', {
+    contributorId: userId
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      userStatistics.roughCount = response.data.data.roughCount
+      userStatistics.beingAuditedCount = response.data.data.beingAuditedCount
+      userStatistics.failAuditedCount = response.data.data.failAuditedCount
+      userStatistics.reasonCount = response.data.data.reasonCount
+      userStatistics.failedReviewCount = response.data.data.failedReviewCount
+      userStatistics.postRecordCount = response.data.data.postRecordCount
+    }
+    else {
+      errorCallback(response)
+    }
+  })
+}
+
 onMounted(() => {
     getUserIdentity()
     getAllLikeCount()
     getAllViewCount()
     getRecievedAndPublishedCount()
+    getContributorCenterInformation()
 })
 </script>
 

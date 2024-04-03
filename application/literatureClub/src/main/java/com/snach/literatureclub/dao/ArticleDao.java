@@ -74,6 +74,25 @@ public interface ArticleDao {
 
     @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND publish_status in ('PUBLIC','POSTED')")
     int getPublishedCount(String contributor_id);
+
+    @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND audit_status = 'ROUGH'")
+    int getRoughCount(String contributor_id);
+
+    @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND audit_status = 'BEING_AUDITED'")
+    int getBeingAuditedCount(String contributor_id);
+
+    @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND audit_status = 'FAIL_AUDITED'")
+    int getFailAuditedCount(String contributor_id);
+
+    @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND ( reason IS NOT NULL AND LENGTH(trim(reason))>0 ) ")
+    int getReasonCount(String contributor_id);
+
+    @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND publish_status = 'FAILED_REVIEW'")
+    int getFailedReviewCount(String contributor_id);
+
+    @Select("SELECT COUNT(*) FROM article WHERE text_by = #{contributor_id} AND publish_status = 'POST_RECORD'")
+    int getPostRecordCount(String contributor_id);
+
     /**
      * 根据稿件id获取单个稿件的基础信息
      *

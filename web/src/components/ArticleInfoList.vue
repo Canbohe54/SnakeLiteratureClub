@@ -370,6 +370,10 @@ function getArticles() {
 // 监听 page size 改变的事件
 function handleSizeChange(newSize: any) {
   pageInfo.pageSize = newSize
+  if ( props.mode === 'STATIC' ){
+    getRank()
+    return
+  }
   getArticles()
 }
 
@@ -377,6 +381,10 @@ function handleSizeChange(newSize: any) {
 function handleCurrentChange(newPage: any) {
   pageInfo.currentPage = newPage
   // getReceivedArticle(pageInfo.currentPage, pageInfo.pageSize)
+  if ( props.mode === 'STATIC' ){
+    getRank()
+    return
+  }
   getArticles()
 }
 

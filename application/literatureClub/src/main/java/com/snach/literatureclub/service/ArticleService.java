@@ -119,6 +119,8 @@ public interface ArticleService {
     long getArticleLockExpire(String articleId);
 
     Map<String, Object> getRecievedAndPublishedCount(String contributorId);
+
+    Map<String, Object> getContributorCenterInformation(String contributorId);
 }
 
 @Transactional(rollbackFor = Exception.class)
@@ -366,4 +368,23 @@ class ArticleServiceImpl implements ArticleService {
         res.put("publishedCount", publishedCount);
         return res;
     }
+
+    @Override
+    public Map<String, Object> getContributorCenterInformation(String contributorId) {
+        int roughCount = articleDao.getRoughCount(contributorId);
+        int beingAuditedCount = articleDao.getBeingAuditedCount(contributorId);
+        int failAuditedCount = articleDao.getFailAuditedCount(contributorId);
+        int reasonCount = articleDao.getReasonCount(contributorId);
+        int failedReviewCount = articleDao.getFailedReviewCount(contributorId);
+        int postRecordCount = articleDao.getPostRecordCount(contributorId);
+        Map<String, Object> res = new HashMap<>();
+        res.put("roughCount", roughCount);
+        res.put("beingAuditedCount", beingAuditedCount);
+        res.put("failAuditedCount", failAuditedCount);
+        res.put("reasonCount", reasonCount);
+        res.put("failedReviewCount", failedReviewCount);
+        res.put("postRecordCount", postRecordCount);
+        return res;
+    }
+
 }

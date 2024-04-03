@@ -214,4 +214,9 @@ public class ArticleController {
     public Map<String, Object> getRecievedAndPublishedCount(String contributorId) {
         return articleService.getRecievedAndPublishedCount(contributorId);
     }
+
+    @RequestMapping(value = "getContributorCenterInformation", method = RequestMethod.GET)
+    public Map<String, Object> getContributorCenterInformation(String contributorId) {
+        return articleService.getContributorCenterInformation(contributorId);
+    }
 }
