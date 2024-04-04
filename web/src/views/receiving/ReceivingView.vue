@@ -3,7 +3,7 @@
     <div class="container">
       <NavBar class="navbar" /><!--导航栏-->
       <div style="margin-top: 20px;">
-        <ArticleInfoList mode="RECEIVING" option="RECEIVING" is_card="false" />
+        <ArticleInfoList mode="RECEIVING" option="RECEIVING" :is_card="false" />
       </div>
     </div>
   </el-scrollbar>

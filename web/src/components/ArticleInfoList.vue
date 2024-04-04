@@ -32,7 +32,7 @@ import { Article } from "@/scripts/types/models";
 import {errorCallback} from "@/scripts/ErrorCallBack";
 
 type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_PRIVATE_LIST' | 'AUDIT_LIST'  | 'PUBLIC' |
-    'RECEIVING' | 'RECEIVED' | 'FAILED_REVIEW' | 'POST_RECORD' | 'BEING_AUDITED' | 'FAIL_AUDITED' | 'POSTED'
+    'RECEIVING' | 'RECEIVED' | 'RECEIVINGANDRECEIVED' | 'FAILED_REVIEW' | 'POST_RECORD' | 'BEING_AUDITED' | 'FAIL_AUDITED' | 'POSTED'
 type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
 type PublishStatus = 'PUBLIC' | 'UNDER_REVIEW' | 'UNDER_RECORD' | 'POST_RECORD' | 'POSTED' | 'FAILED_REVIEW' | 'FAILED_RECORD'
 
@@ -301,10 +301,23 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
                 keyword: '',
                 tags: '',
                 auditStatusList: ['AUDITED'],
-                publishStatusList: ['UNDER_RECORD','UNDER_REVIEW','POST_RECORD']
+                publishStatusList: ['UNDER_RECORD','UNDER_REVIEW']
               }
               break
         }
+      case 'RECEIVINGANDRECEIVED': {
+        articleInfoRequest = {
+          idList: [],
+          authorList: [],
+          receiverList: [route.params.id],
+          auditorList: [],
+          keyword: '',
+          tags: '',
+          auditStatusList: ['AUDITED'],
+          publishStatusList: ['UNDER_RECORD','UNDER_REVIEW','POST_RECORD']
+        }
+        break
+      }
         case 'RECEIVED': {
             articleInfoRequest = {
                 idList: [],
