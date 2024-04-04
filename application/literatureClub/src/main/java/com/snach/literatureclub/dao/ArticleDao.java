@@ -189,6 +189,8 @@ public interface ArticleDao {
             "</script>"
     })
     List<Article> getArticlesRanking(@Param("items") List<String> idList);
+    @Select("SELECT id, time, text_by as textBy, title, description, audit_status as auditStatus, publish_status as publishStatus, tags, `file_type` as fileType, author_name as authorName, author_org as authorOrganization, author_grade as authorGrade, reason, audited_by as auditedBy FROM article WHERE id = #{id}")
+    Article getArticleByIdToRank(@Param("id") String id);
 
     @Select("SELECT u.identity FROM article a LEFT JOIN user u ON a.received_by=u.id WHERE a.id = #{article_id}")
     User getReceivedBy(@Param("article_id") String articleId);

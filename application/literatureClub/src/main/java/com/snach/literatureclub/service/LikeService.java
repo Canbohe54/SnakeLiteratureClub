@@ -208,7 +208,10 @@ class LikeServiceImpl implements LikeService {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        List<Article> articlesRankingByLikeCount = articleDao.getArticlesRanking(RankingByLikeCount);
+        List<Article> articlesRankingByLikeCount = new ArrayList<>();
+        for(String articleId: RankingByLikeCount){
+            articlesRankingByLikeCount.add(articleDao.getArticleByIdToRank(articleId));
+        }
         PageHelper.startPage(pageNum, pageSize);
         res.put("RankingByLikeCount", new PageInfo<>(articlesRankingByLikeCount));
 
@@ -217,7 +220,10 @@ class LikeServiceImpl implements LikeService {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        List<Article> articlesRankingByViewCount = articleDao.getArticlesRanking(RankingByViewCount);
+        List<Article> articlesRankingByViewCount = new ArrayList<>();
+        for(String articleId: RankingByViewCount){
+            articlesRankingByViewCount.add(articleDao.getArticleByIdToRank(articleId));
+        }
         PageHelper.startPage(pageNum, pageSize);
         res.put("RankingByViewCount", new PageInfo<>(articlesRankingByViewCount));
 
@@ -230,7 +236,10 @@ class LikeServiceImpl implements LikeService {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
         Collections.reverse(RankingByLikeAndViewCount);
-        List<Article> articlesRankingByLikeAndViewCount = articleDao.getArticlesRanking(RankingByLikeAndViewCount);
+        List<Article> articlesRankingByLikeAndViewCount = new ArrayList<>();
+        for(String articleId: RankingByLikeAndViewCount){
+            articlesRankingByLikeAndViewCount.add(articleDao.getArticleByIdToRank(articleId));
+        }
         PageHelper.startPage(pageNum, pageSize);
         res.put("RankingByLikeAndViewCount", new PageInfo<>(articlesRankingByLikeAndViewCount));
         return res;
