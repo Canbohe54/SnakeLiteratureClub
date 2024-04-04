@@ -102,7 +102,7 @@ class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUserBasicInfoByNameNoPagination(String name, List<String> identity) {
-            return userDao.getUserByNameAndIdentity(name, identity);
+        return userDao.getUserByNameAndIdentity(name, identity);
     }
 
     @Override

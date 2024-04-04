@@ -49,7 +49,7 @@
               </el-row>
               <el-row class="article-box-card">
                 <el-text class="article-detail-author">
-                  <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{
+                  <el-button v-if="textByIdentity === 'CONTRIBUTOR' && articleDetail.authorName === ''" link :onclick="handleAuthorClicked">{{
       articleDetail.textBy }}</el-button>
                   <span v-else>{{ articleDetail.authorName }}</span>
                   {{ articleDetail.authorGrade ? "（" + articleDetail.authorGrade + "）" : "" }}
