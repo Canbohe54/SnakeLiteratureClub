@@ -29,8 +29,8 @@ export const lockArticleById = async (articleId: String, lockedBy: String, expir
    })
 }
 
-export const unlockArticle = async (articleId: String, unlockedBy: String) => {
-  await SYNC_POST('/article/unlockArticleById', { article_id: articleId, unlocked_by: unlockedBy }, (response: any) =>{
+export const unlockArticle = async (articleId: String, unlockedByToken: String) => {
+  await SYNC_POST('/article/unlockArticleById', { article_id: articleId, unlocked_by: unlockedByToken }, (response: any) =>{
     if (response.status === 200 && response.data.code === 2001) {
       ElMessage({
         showClose: true,

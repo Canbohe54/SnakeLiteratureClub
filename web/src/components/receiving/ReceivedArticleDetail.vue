@@ -176,7 +176,7 @@ import {errorCallback} from '@/scripts/ErrorCallBack'
 import axios from 'axios'
 import ArticleDisplayCard from '@/components/article/ArticleDisplayCard.vue'
 import SearchFilter from '@/components/search/SearchFilter.vue'
-import {lockArticleById} from '@/scripts/ArticleLocker'
+import {lockArticleById, unlockArticle} from '@/scripts/ArticleLocker'
 import {View} from "@element-plus/icons-vue";
 import ArticleTags from '@/components/common/ArticleTags.vue';
 
@@ -344,6 +344,7 @@ const handleRecommendArticleClicked = async () => {
         message: '成功推荐文章',
         type: 'success'
       })
+      await unlockArticle(articleDetail.id, store.getters.getToken)
     } else {
       errorCallback(response)
     }
@@ -396,6 +397,7 @@ const handleRejectArticleClicked = async () => {
           await addMessage()
         }
       })
+      await unlockArticle(articleDetail.id, store.getters.getToken)
     }
 
   })
