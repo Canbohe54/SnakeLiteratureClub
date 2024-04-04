@@ -669,7 +669,7 @@ const handlePOSTEDClicked = async () => {
   await changeArticlePublishStatus('POSTED')
   await lockArticleById(articleDetail.id, store.getters.getToken, 5184000)
   isLocked.value = true
-  // await changeArticleAuditStatus('LOCKED')
+  postButtonVisible.value = false
 }
 const handleUpdateArticleClicked = () => {
   if (articleDetail.publishStatus === 'POSTED') {
@@ -703,6 +703,9 @@ const handleDeleteClicked = () => {
 const handleUnPOSTEDClicked = async () => {
   await changeArticlePublishStatus('PUBLIC')
   notPostedVisible.value = false
+  await unlockArticle(articleDetail.id, store.getters.getToken)
+  await getIsLocked()
+  postButtonVisible.value = false
 }
 const handleAccept = async () => {
   let userInfo = store.getters.getUserInfo
