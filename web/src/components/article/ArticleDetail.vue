@@ -79,7 +79,7 @@
                 </el-button>
                 <el-button type="success" link v-if="postButtonVisible" :onclick="handlePOSTEDClicked">刊登
                 </el-button>
-                <el-button type="warning" link v-if="postButtonVisible" :onclick="handleUnPOSTEDClicked">不刊登
+                <el-button type="warning" link v-if="postButtonVisible" :onclick="handleNotPostClicked">不刊登
                 </el-button>
                 <!--                <el-button type="warning" link v-if="publicButtonVisible"-->
                 <!--                           :onclick="handleViewableClicked">{{!onlyMyself ? '设置仅自己可见': '设置所有人可见'}}-->
@@ -143,6 +143,17 @@
             <el-button @click="delArticleDialogVisible = false">取消</el-button>
             <el-button type="danger" @click="handleDelArticleClicked">
               删除
+            </el-button>
+          </span>
+        </template>
+      </el-dialog>
+      <el-dialog draggable v-model="notPostedVisible" title="删除文章" width="30%">
+        <span>确定拒绝收录邀请？(文章将被设置为公开)</span>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="notPostedVisible = false">取消</el-button>
+            <el-button type="warning" @click="handleUnPOSTEDClicked">
+              确定拒绝
             </el-button>
           </span>
         </template>
@@ -294,6 +305,7 @@ const textByIdentity = ref('CONTRIBUTOR')
 const publicButtonVisible = ref(false)
 const postButtonVisible = ref(false)
 const onlyMyself = ref(false)
+const notPostedVisible = ref(false)
 let isUp = ref(false)
 
 const messageInputText = ref('')
@@ -568,7 +580,9 @@ const handleAcceptClicked = async () => {
   await lockArticleById(articleDetail.id, store.getters.getToken, 7200)
   redirectToArticle('/receivedArticleDetail')
 }
-
+const handleNotPostClicked = () => {
+  notPostedVisible.value = true
+}
 async function handleExitClicked() {
   await SYNC_POST('/article/checkLocked', {
     articleId: route.query.id,
@@ -688,6 +702,7 @@ const handleDeleteClicked = () => {
 }
 const handleUnPOSTEDClicked = async () => {
   await changeArticlePublishStatus('PUBLIC')
+  notPostedVisible.value = false
 }
 const handleAccept = async () => {
   let userInfo = store.getters.getUserInfo
