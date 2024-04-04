@@ -1,8 +1,8 @@
 <template>
   <ul class="MessageList" v-if="messageList.length > 0">
-    <li v-for="(msg) in messageList">
+    <li v-for="(msg, index) in messageList">
       <el-row class="MessageDisplay">
-        <SnakeAvatar :picture-url="msg.from.avatar" @click="toUserPage(msg.from.id)" class="SenderAvatar"/>
+        <SnakeAvatar :picture-url="msg.from.avatar" @click="toUserPage(msg.from.id)" :kKey="index" class="SenderAvatar"/>
         <div class="blank"></div>
         <el-text class="SenderName" @click="toUserPage(msg.from.id)">{{ msg.from.name }}</el-text>
         <div class="e"></div>
