@@ -466,9 +466,6 @@ const handleDelArticleClicked = async () => {
   router.back()
 }
 const getExpertAndHunterByName = (userName: string) => {
-  if (userName == '') {
-    return
-  }
   contributeManager.loading = true
   SYNC_GET('/usr/getUserBasicInfoByNameNoPagination', {
     name: userName,

@@ -30,7 +30,7 @@
                     articleInfo.mentor
                 }}</span>
                 </div>
-                <div class="article-info-descrption">{{ articleInfo.description }}</div>
+              <div class="article-info-descrption"><span :id="'description' + articleInfo.id" class="article-title-span" @click="handleCardClicked">{{ articleInfo.description }}</span></div>
                 <div class="article-info-tags" >
                     <ArticleTags v-if="tagsVisible" :tagsJsons="articleInfo.tags" />
                 </div>
