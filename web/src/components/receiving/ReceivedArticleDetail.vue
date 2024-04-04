@@ -585,4 +585,6 @@ onMounted(async () => {
   box-shadow: var(--el-box-shadow-light);
   border-radius: 10px;
 }
+.contribute-to-selection {
+}
 </style>

@@ -1,5 +1,28 @@
 <template>
   <el-tooltip
+      v-if="store.getters.getUserInfo.identity === 'HUNTER'"
+      class="box-item" effect="light" content="收录文章" placement="top">
+    <el-button class="accept-button" type="success" @click="handleAcceptClicked" circle plain>
+<!--      <svg width="24" height="24" viewBox="0 0 48 48" fill="currentColor">-->
+<!--        <path fill-rule="evenodd" clip-rule="evenodd"-->
+<!--              d="M31 4a1 1 0 011 1v2a1 1 0 01-1 1H8v32h23a1 1 0 011 1v2a1 1 0 01-1 1H6a2 2 0 01-2-2V6a2 2 0 012-2h25zm4.846 10.658l7.778 7.778a2 2 0 010 2.828l-7.778 7.778a1 1 0 01-1.415 0l-1.414-1.414a1 1 0 010-1.414l4.235-4.235-18.206-.08a1 1 0 01-.996-.996l-.008-1.894a1 1 0 01.88-.997l.125-.007 18.572.082-4.602-4.601a1 1 0 010-1.414l1.414-1.414a1 1 0 011.415 0z"-->
+<!--              fill="currentColor" />-->
+<!--      </svg>-->
+      <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 6H22V42H32V6Z" fill="none" stroke="#333" stroke-width="4" stroke-linejoin="round"/><path d="M42 6H32V42H42V6Z" fill="none" stroke="#333" stroke-width="4" stroke-linejoin="round"/><path d="M10 6L18 7L14.5 42L6 41L10 6Z" fill="none" stroke="#333" stroke-width="4" stroke-linejoin="round"/><path d="M37 18V15" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 18V15" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </el-button>
+  </el-tooltip>
+  <el-tooltip
+      v-if="store.getters.getUserInfo.identity === 'EXPERT'"
+      class="box-item" effect="light" content="向报社推荐" placement="top">
+    <el-button class="recommend-button" type="success" @click="handleRecommendArticleClicked" circle plain>
+      <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40 4H8V44H40V4Z" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 12V36" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 36H24H8" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 4L14 12H34L40 4" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </el-button>
+  </el-tooltip>
+  <el-tooltip
     v-if="store.getters.getUserInfo.identity === 'EXPERT' || store.getters.getUserInfo.identity === 'HUNTER' || store.getters.getUserInfo.identity === 'ADMINISTRATOR'"
     class="box-item" effect="light" content="解除锁定并退出" placement="top">
     <el-button class="exit-button" type="primary" @click="handleExitClicked" circle plain>
@@ -129,6 +152,77 @@
           </span>
         </template>
       </el-dialog>
+      <el-dialog
+          draggable
+          v-model="acceptManager.acceptDialogVisible"
+          title="收录文章"
+          width="30%"
+      >
+        <div class="accept-head"><span>收录邀请</span></div>
+        <el-input v-model="acceptManager.acceptInfo"
+                  maxlength="200"
+                  show-word-limit
+                  class="accept-info-input"
+                  :autosize="{ minRows: 4, maxRows: 10}"
+                  type="textarea"
+                  placeholder="例如：我是xxx报社的xxx，对您的文章很有兴趣，是否可以收录和刊登您的文章？"></el-input>
+        <span class="accept-button-container">
+        <el-button type="primary" @click="handleAcceptArticleClicked">
+          收录
+        </el-button>
+        <el-button @click="acceptManager.acceptDialogVisible = false">取消</el-button>
+        </span>
+      </el-dialog>
+      <el-dialog
+          draggable
+          v-model="recommendManager.recommendDialogVisible"
+          title="向报社推荐"
+          width="30%"
+      >
+        <span class="recommend-to-head">收稿方</span>
+        <el-select
+            class="contribute-to-selection"
+            v-model="recommendManager.recommendTo"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入收稿方"
+            no-data-text="暂无匹配的收稿方"
+            no-match-text="暂无匹配的收稿方"
+            default-first-option
+            remote-show-suffix
+            :remote-method="getHunterByName"
+            :loading="recommendManager.loading"
+            style="width: 240px"
+        >
+          <el-option
+              v-for="item in recommendManager.options"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+          >
+            <span style="float: left">{{ item.name }}</span>
+            <span
+                style="float: right;color: var(--el-text-color-secondary);font-size: 13px;"
+            >{{ item.organization }}</span
+            >
+          </el-option>
+          <template #loading>
+            <svg class="circular" viewBox="0 0 50 50">
+              <circle class="path" cx="25" cy="25" r="20" fill="none"/>
+            </svg>
+          </template>
+        </el-select>
+        <template #footer>
+      <span class="accept-button-container">
+        <el-button type="primary" @click="handleRecommendArticleClicked">
+          推荐
+        </el-button>
+        <el-button @click="recommendManager.recommendDialogVisible = false">取消</el-button>
+
+      </span>
+        </template>
+      </el-dialog>
     </el-col>
   </el-row>
 </template>
@@ -172,6 +266,17 @@ const articleDetail = reactive<AttributeAddableObject>({
   fileType: '',
   receivedBy: '',
   reason: '',
+})
+const acceptManager = reactive({
+  acceptDialogVisible: false,
+  acceptInfo: '我是xxx报社的xxx，对您的文章很有兴趣，是否可以收录和刊登您的文章？',
+})
+
+const recommendManager = reactive({
+  recommendDialogVisible: false,
+  recommendTo: '',
+  options: [],
+  loading: false
 })
 
 const isLocked = ref(false)
@@ -412,7 +517,7 @@ async function getIsLocked() {
 
 async function handleUnlock() {
   // 如果非公开且已刊登，无法手动解锁
-  if (articleDetail.publishStatus === 'POSTED' && articleDetail.audioStatus === 'LOCKED') {
+  if (articleDetail.publishStatus === 'POSTED') {
     let expire = 0;
     await SYNC_GET("/article/getArticleLockExpire", { articleId: articleDetail.id }, (response) => {
       if (response.status === 200 && response.data.code === 2001) {
@@ -448,6 +553,12 @@ async function handleLock() {
   isLocked.value = !isLocked.value
 }
 
+const handleRecommendClicked = () => {
+  recommendManager.recommendDialogVisible = true
+}
+const handleAcceptClicked = () => {
+  acceptManager.acceptDialogVisible = true
+}
 async function handleExitClicked() {
   await SYNC_POST('/article/checkLocked', {
     articleId: route.query.id,
@@ -534,7 +645,7 @@ const handlePOSTEDClicked = async () => {
   await changeArticlePublishStatus('POSTED')
   await lockArticleById(articleDetail.id, store.getters.getToken, 5184000)
   isLocked.value = true
-  await changeArticleAuditStatus('LOCKED')
+  // await changeArticleAuditStatus('LOCKED')
 }
 const handleUpdateArticleClicked = () => {
   if (articleDetail.publishStatus === 'POSTED') {
@@ -568,15 +679,83 @@ const handleDeleteClicked = () => {
 const handleUnPOSTEDClicked = async () => {
   await changeArticlePublishStatus('PUBLIC')
 }
-// const handleViewableClicked = async () => {
-//   if (onlyMyself) {
-//     await changeArticleAuditStatus('LOCKED')
-//   } else {
-//     await changeArticleAuditStatus('AUDITED')
-//   }
-//
-//   onlyMyself.value = !onlyMyself.value
-// }
+const handleAccept = async () => {
+  let userInfo = store.getters.getUserInfo
+  await SYNC_POST('/message/addMessage', {
+    from: userInfo.id,
+    to: articleDetail.text_by_id,
+    message: acceptManager.acceptInfo
+  }, async response => {
+    if (response.status === 200 && response.data.code === 2001) {
+      ElMessage({
+        showClose: true,
+        message: '受理完成!',
+        type: 'success'
+      })
+    } else {
+      errorCallback(response)
+    }
+    // 被收录，继续锁12小时，等待作者锁定文章
+    await lockArticleById(articleDetail.id, store.getters.getToken, 43200)
+    router.back()
+  })
+}
+const handleAcceptArticleClicked = async () => {
+  let newPublishStatus = 'POST_RECORD'
+
+  await SYNC_POST('/article/changeArticlePublishStatus', {
+    articleId: articleDetail.id,
+    status: newPublishStatus,
+    token: store.getters.getToken
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      await handleAccept()
+    }else {
+      errorCallback(response)
+    }
+  })
+
+}
+
+const handleRecommendArticleClicked = async () => {
+  let userInfo = store.getters.getUserInfo
+  await SYNC_POST('/expert/recommendArticle', {
+    id: userInfo.id,
+    identity: userInfo.identity,
+    article_id: articleDetail.id,
+    recommend_to: recommendManager.recommendTo
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      ElMessage({
+        showClose: true,
+        message: '成功推荐文章',
+        type: 'success'
+      })
+      await unlockArticle(articleDetail.id, store.getters.getToken)
+    } else {
+      errorCallback(response)
+    }
+  })
+  recommendManager.recommendDialogVisible = false
+  router.back()
+}
+const getHunterByName = async (userName: string) => {
+  if (userName == '') {
+    return
+  }
+  recommendManager.loading = true
+  await SYNC_GET('/usr/getUserBasicInfoByNameNoPagination', {
+    name: userName,
+    identity: ['HUNTER']
+  }, async (response) => {
+    if (response.status === 200 && response.data.code === 2001) {
+      recommendManager.options = response.data.data
+    } else {
+      errorCallback(response)
+    }
+    recommendManager.loading = false
+  })
+}
 const visibleInit = () => {
   if (articleDetail.text_by_id === store.getters.getUserInfo.id) {
     if (articleDetail.publishStatus === 'POST_RECORD') {
@@ -627,6 +806,24 @@ const visibleInit = () => {
 })()
 </script>
 <style scoped>
+.accept-button {
+  width: 65px;
+  height: 65px;
+  position: absolute;
+  bottom: 180px;
+  right: 30px;
+  z-index: 100;
+}
+
+.recommend-button {
+  width: 65px;
+  height: 65px;
+  position: absolute;
+  bottom: 180px;
+  right: 30px;
+  z-index: 100;
+}
+
 .exit-button {
   width: 65px;
   height: 65px;
@@ -735,5 +932,24 @@ const visibleInit = () => {
   justify-content: flex-end;
   margin-top: 15px;
   margin-right: 15px;
+}
+.accept-info-input {
+  margin-bottom: 10px;
+  box-shadow: var(--el-box-shadow-light);
+  border-radius: 10px;
+}
+.recommend-to-head {
+  margin-right: 15px;
+}
+.accept-button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+.accept-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 15px;
 }
 </style>
