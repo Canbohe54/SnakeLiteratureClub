@@ -1,22 +1,17 @@
 <template>
   <el-tooltip
-      v-if="store.getters.getUserInfo.identity === 'HUNTER'"
+      v-if="acceptManager.showAcceptButton"
       class="box-item" effect="light" content="收录文章" placement="top">
     <el-button class="accept-button" type="success" @click="handleAcceptClicked" circle plain>
-<!--      <svg width="24" height="24" viewBox="0 0 48 48" fill="currentColor">-->
-<!--        <path fill-rule="evenodd" clip-rule="evenodd"-->
-<!--              d="M31 4a1 1 0 011 1v2a1 1 0 01-1 1H8v32h23a1 1 0 011 1v2a1 1 0 01-1 1H6a2 2 0 01-2-2V6a2 2 0 012-2h25zm4.846 10.658l7.778 7.778a2 2 0 010 2.828l-7.778 7.778a1 1 0 01-1.415 0l-1.414-1.414a1 1 0 010-1.414l4.235-4.235-18.206-.08a1 1 0 01-.996-.996l-.008-1.894a1 1 0 01.88-.997l.125-.007 18.572.082-4.602-4.601a1 1 0 010-1.414l1.414-1.414a1 1 0 011.415 0z"-->
-<!--              fill="currentColor" />-->
-<!--      </svg>-->
       <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M32 6H22V42H32V6Z" fill="none" stroke="#333" stroke-width="4" stroke-linejoin="round"/><path d="M42 6H32V42H42V6Z" fill="none" stroke="#333" stroke-width="4" stroke-linejoin="round"/><path d="M10 6L18 7L14.5 42L6 41L10 6Z" fill="none" stroke="#333" stroke-width="4" stroke-linejoin="round"/><path d="M37 18V15" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 18V15" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </el-button>
   </el-tooltip>
   <el-tooltip
-      v-if="store.getters.getUserInfo.identity === 'EXPERT'"
+      v-if="recommendManager.showRecommendButton"
       class="box-item" effect="light" content="向报社推荐" placement="top">
-    <el-button class="recommend-button" type="success" @click="handleRecommendArticleClicked" circle plain>
+    <el-button class="recommend-button" type="success" @click="handleRecommendClicked" circle plain>
       <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M40 4H8V44H40V4Z" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 12V36" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 36H24H8" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 4L14 12H34L40 4" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -270,14 +265,24 @@ const articleDetail = reactive<AttributeAddableObject>({
 const acceptManager = reactive({
   acceptDialogVisible: false,
   acceptInfo: '我是xxx报社的xxx，对您的文章很有兴趣，是否可以收录和刊登您的文章？',
+  showAcceptButton: false,
 })
 
 const recommendManager = reactive({
   recommendDialogVisible: false,
   recommendTo: '',
   options: [],
-  loading: false
+  loading: false,
+  showRecommendButton: false,
 })
+const redirectToArticle = (subPath: string) => {
+  router.push({
+    path: subPath,
+    query: {
+      id: articleDetail.id
+    }
+  })
+}
 
 const isLocked = ref(false)
 const delArticleDialogVisible = ref(false)
@@ -553,12 +558,17 @@ async function handleLock() {
   isLocked.value = !isLocked.value
 }
 
-const handleRecommendClicked = () => {
-  recommendManager.recommendDialogVisible = true
+const handleRecommendClicked = async () => {
+  // recommendManager.recommendDialogVisible = true
+  await lockArticleById(articleDetail.id, store.getters.getToken, 7200)
+  redirectToArticle('/receivedArticleDetail')
 }
-const handleAcceptClicked = () => {
-  acceptManager.acceptDialogVisible = true
+const handleAcceptClicked = async () => {
+  // acceptManager.acceptDialogVisible = true
+  await lockArticleById(articleDetail.id, store.getters.getToken, 7200)
+  redirectToArticle('/receivedArticleDetail')
 }
+
 async function handleExitClicked() {
   await SYNC_POST('/article/checkLocked', {
     articleId: route.query.id,
@@ -758,6 +768,7 @@ const getHunterByName = async (userName: string) => {
   })
 }
 const visibleInit = () => {
+  // 作者看自己文章
   if (articleDetail.text_by_id === store.getters.getUserInfo.id) {
     if (articleDetail.publishStatus === 'POST_RECORD') {
       postButtonVisible.value = true
@@ -771,6 +782,14 @@ const visibleInit = () => {
     } else if (articleDetail.auditStatus === 'LOCKED') {
       onlyMyself.value = true
       publicButtonVisible.value = true
+    }
+  }
+  // 其他人看公开文章
+  if(articleDetail.pulishStatus === 'PUBLIC') {
+    if (store.getters.getUserInfo.identity === 'HUNTER') {
+      acceptManager.showAcceptButton = true
+    } else if (store.getters.getUserInfo.identity === 'EXPERT') {
+      recommendManager.showRecommendButton = true
     }
   }
 }
