@@ -1,7 +1,8 @@
 import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
-// import HomeView from '../views/HomeView.vue'
 import LobbyView from '../views/LobbyView.vue'
 import store from '../store/index'
+import PostedView from '@/views/PostedView.vue'
+import PublicView from '@/views/PublicView.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -13,6 +14,16 @@ const routes: Array<RouteRecordRaw> = [
         path: '/lobby',
         name: 'lobby',
         component: LobbyView
+    },
+    {
+        path: '/posted',
+        name: 'posted',
+        component: PostedView
+    },
+    {
+        path: '/public',
+        name: 'public',
+        component: PublicView
     },
     {
         path: '/login',

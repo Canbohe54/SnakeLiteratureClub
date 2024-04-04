@@ -137,7 +137,7 @@ const menu_option = reactive([
     {
         index: 'published',
         title: '优秀作品',
-        route: '/published'
+        route: '/posted'
     }
 ])
 

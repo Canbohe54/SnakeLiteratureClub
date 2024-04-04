@@ -31,7 +31,8 @@ import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
 import { Article } from "@/scripts/types/models";
 import {errorCallback} from "@/scripts/ErrorCallBack";
 
-type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_PRIVATE_LIST' | 'AUDIT_LIST'  | 'RECEIVING' | 'RECEIVED' | 'FAILED_REVIEW' | 'POST_RECORD' | 'BEING_AUDITED' | 'FAIL_AUDITED'
+type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_PRIVATE_LIST' | 'AUDIT_LIST'  | 'PUBLIC' |
+    'RECEIVING' | 'RECEIVED' | 'FAILED_REVIEW' | 'POST_RECORD' | 'BEING_AUDITED' | 'FAIL_AUDITED' | 'POSTED'
 type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
 type PublishStatus = 'PUBLIC' | 'UNDER_REVIEW' | 'UNDER_RECORD' | 'POST_RECORD' | 'POSTED' | 'FAILED_REVIEW' | 'FAILED_RECORD'
 
@@ -162,7 +163,21 @@ const modeSettings: AttributeAddableObject = {
         tagsVisible: true,
         viewcountVisible: true,
         is_card: true
-    }
+    },
+    POSTED: {
+        statusVisible: true,
+        iconVisible: true,
+        tagsVisible: true,
+        viewcountVisible: true,
+        is_card: true
+    },
+    PUBLIC: {
+        statusVisible: true,
+        iconVisible: true,
+        tagsVisible: true,
+        viewcountVisible: true,
+        is_card: true
+    },
 }
 
 const pageInfo = reactive({
@@ -212,6 +227,32 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
             }
             break
         }
+        case 'PUBLIC': {
+          articleInfoRequest = {
+            idList: [],
+            authorList: [],
+            receiverList: [],
+            auditorList: [],
+            keyword: '',
+            tags: '',
+            auditStatusList: ['AUDITED'],
+            publishStatusList: ['PUBLIC']
+          }
+          break
+        }
+      case 'POSTED': {
+        articleInfoRequest = {
+          idList: [],
+          authorList: [],
+          receiverList: [],
+          auditorList: [],
+          keyword: '',
+          tags: '',
+          auditStatusList: ['AUDITED'],
+          publishStatusList: ['POSTED']
+        }
+        break
+      }
         case 'USER_PUBLIC_LIST': {
             articleInfoRequest = {
                 idList: [],
