@@ -121,4 +121,27 @@ const handleDocumentPreView = async (file: any) => {
   margin: 20px 20px;
   text-align: start !important;
 }
+
+#docxContainer {
+    max-width: 1000px;
+}
+
+#docxContainer .docx-wrapper {
+  background: #ecf9ef;
+  border-radius: 5px;
+}
+
+#docxContainer .docx {
+  width: 100%!important;
+  min-height: 100%!important;
+  display: table;
+  padding: 2em 2em!important;
+  text-align: start !important;
+  box-shadow: none;
+  background: none;
+}
+
+#docxContainer .docx p span {
+
+}
 </style>
