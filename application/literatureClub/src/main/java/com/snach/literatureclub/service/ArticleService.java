@@ -330,7 +330,7 @@ class ArticleServiceImpl implements ArticleService {
             throw new InsufficientPermissionException();
         } else {
             String authorId = articleDao.getArticleById(articleId).getTextBy();
-            articleLocker.lock(articleId, expire, authorId, lockedBy);
+            articleLocker.lock(articleId, expire, authorId, TokenTools.getPayload(lockedBy, "id"));
         }
         return true;
     }

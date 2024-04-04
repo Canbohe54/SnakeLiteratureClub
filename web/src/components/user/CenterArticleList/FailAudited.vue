@@ -1,6 +1,6 @@
 <template>
   <el-text class="list-title">{{ listName }}</el-text>
-  <ArticleInfoList option="POST_RECORD"  mode="POST_RECORD" :is_card="true" />
+  <ArticleInfoList option="FAIL_AUDITED"  mode="FAILED_AUDITED" :is_card="true" />
 
 </template>
 <script lang="ts" setup>
