@@ -65,7 +65,7 @@ const props = defineProps({
 const { option, tags, wd, mode, is_card, articleList } = toRefs(props)
 const route = useRoute()
 const _articleList = ref<Article[]>([]);
-watch(() => route.query.wd, () => {
+watch(wd, () => {
     getArticles()
 })
 async function getRank() {

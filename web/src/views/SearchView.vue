@@ -40,7 +40,7 @@ const route = useRoute()
 
 const SearchFilterRef = ref()
 const ArticleDisplayRef = ref()
-
+let filtratedArticleList = ref<ArticleInfo[]>()
 function articleFiltrate() {
   const articleList = ArticleDisplayRef.value.articleList
   articleList.artList = articleTagFilter(articleList.originalArticleList, SearchFilterRef.value.filterSelection)
