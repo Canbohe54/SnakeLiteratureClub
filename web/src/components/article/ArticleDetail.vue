@@ -683,7 +683,7 @@ const handleAccept = async () => {
   let userInfo = store.getters.getUserInfo
   await SYNC_POST('/message/addMessage', {
     from: userInfo.id,
-    to: articleDetail.text_by_id,
+    to: articleDetail.id,
     message: acceptManager.acceptInfo
   }, async response => {
     if (response.status === 200 && response.data.code === 2001) {

@@ -356,7 +356,7 @@ const addMessage = async () => {
   let userInfo = store.getters.getUserInfo
   await SYNC_POST('/message/addMessage', {
     from: userInfo.id,
-    to: articleDetail.text_by_id,
+    to: articleDetail.id,
     message: rejectManager.rejectInfo,
     token: store.getters.getToken
   }, async response => {
@@ -406,8 +406,9 @@ const handleAccept = async () => {
   let userInfo = store.getters.getUserInfo
   await SYNC_POST('/message/addMessage', {
     from: userInfo.id,
-    to: articleDetail.text_by_id,
-    message: acceptManager.acceptInfo
+    to: articleDetail.id,
+    message: acceptManager.acceptInfo,
+    token: store.getters.getToken
   }, async response => {
     if (response.status === 200 && response.data.code === 2001) {
       ElMessage({
