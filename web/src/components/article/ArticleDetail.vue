@@ -198,7 +198,7 @@ function handleDiscriptionSmall() {
   } else {
     $('.txtPreview').css('font-size', '16px')
   }
-  
+
 }
 
 function handleDiscriptionMedium() {
@@ -438,13 +438,13 @@ async function handleUnlock() {
       showClose: true
     })
   } else {
-    await unlockArticle(articleDetail.id, store.getters.getUserInfo.id)
+    await unlockArticle(articleDetail.id, store.getters.getToken)
     isLocked.value = !isLocked.value
   }
 }
 
 async function handleLock() {
-  await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 5184000)
+  await lockArticleById(articleDetail.id, store.getters.getToken, 5184000)
   isLocked.value = !isLocked.value
 }
 
@@ -460,7 +460,7 @@ async function handleExitClicked() {
           requester: store.getters.getUserInfo.id,
         }, async (response) => {
           if (response.status === 200 && response.data.code === 2001) {
-            await unlockArticle(articleDetail.id, store.getters.getUserInfo.id)
+            await unlockArticle(articleDetail.id, store.getters.getToken)
           }
         })
       }
@@ -532,7 +532,7 @@ const changeArticleAuditStatus = async (auditStatus: string) => {
 
 const handlePOSTEDClicked = async () => {
   await changeArticlePublishStatus('POSTED')
-  await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 5184000)
+  await lockArticleById(articleDetail.id, store.getters.getToken, 5184000)
   isLocked.value = true
   await changeArticleAuditStatus('LOCKED')
 }

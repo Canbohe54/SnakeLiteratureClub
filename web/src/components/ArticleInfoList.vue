@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import ArticleInfo from '@/components/article/ArticleInfo.vue';
-import { onMounted, reactive, ref, toRefs } from 'vue';
+import { onMounted, reactive, ref, toRefs, watch } from 'vue';
 import { SYNC_GET } from "@/scripts/Axios";
 import { useRoute } from "vue-router";
 import { PageInfo, SnachResponse } from "@/scripts/types/ResponseObject";
@@ -65,7 +65,9 @@ const props = defineProps({
 const { option, tags, wd, mode, is_card, articleList } = toRefs(props)
 const route = useRoute()
 const _articleList = ref<Article[]>([]);
-
+watch(() => route.query.wd, () => {
+    getArticles()
+})
 async function getRank() {
   let params = {
     page_num: pageInfo.currentPage,
@@ -81,8 +83,6 @@ async function getRank() {
       for (let article in _articleList.value) {
         _articleList.value[article].viewcount = articleLikeAndViewCountMap[_articleList.value[article].id].viewCount
       }
-        console.log(response.data.data.RankingByLikeAndViewCount.list)
-      console.log(_articleList.value)
     } else {
       errorCallback(response)
     }

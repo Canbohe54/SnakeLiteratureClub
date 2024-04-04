@@ -191,9 +191,15 @@ public class ArticleController {
         return articleService.lockArticleById(articleId, expire, lockedBy);
     }
 
+    /**
+     * 解锁文章
+     *
+     * @param articleId 文章id
+     * @param unlockedByToken 解锁者的token
+     */
     @RequestMapping(value = "unlockArticleById", method = RequestMethod.POST)
-    public boolean unlockArticleById(@RequestParam("article_id") String articleId, @RequestParam(name = "unlocked_by") String unlockedBy) {
-        return articleService.unLockArticleById(articleId, unlockedBy);
+    public boolean unlockArticleById(@RequestParam("article_id") String articleId, @RequestParam(name = "unlocked_by") String unlockedByToken) {
+        return articleService.unLockArticleById(articleId, unlockedByToken);
     }
 
     @RequestMapping(value = "changeArticleStatus", method = RequestMethod.POST)

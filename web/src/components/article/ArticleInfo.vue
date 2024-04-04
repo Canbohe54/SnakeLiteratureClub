@@ -378,7 +378,7 @@ async function handleArticleDetailWithLock() {
     }, async (response) => {
         if (response.status === 200 && response.data.code === 2001) {
             // 锁2小时
-            await lockArticleById(articleInfo.value.id, currentUser.userId, 7200)
+            await lockArticleById(articleInfo.value.id, store.getters.getToken, 7200)
           if ((articleInfo.auditStatus === 'BEING_AUDITED' || articleInfo.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
             redirectToArticle('/auditArticleDetail', articleInfo.value.id)
           } else if ((articleInfo.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||

@@ -417,7 +417,7 @@ const handleAccept = async () => {
       errorCallback(response)
     }
     // 被收录，继续锁12小时，等待作者锁定文章
-    await lockArticleById(articleDetail.id, store.getters.getUserInfo.id, 43200)
+    await lockArticleById(articleDetail.id, store.getters.getToken, 43200)
     router.back()
   })
 }

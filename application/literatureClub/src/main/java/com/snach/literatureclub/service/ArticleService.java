@@ -323,7 +323,10 @@ class ArticleServiceImpl implements ArticleService {
 
     @Override
     public boolean lockArticleById(String articleId, long expire, String lockedBy) {
-        if (articleLocker.checkLock(articleId) && !articleLocker.checkLockPermission(articleId, lockedBy)) {
+        if (!tokenVerify(lockedBy)) {
+            throw new InvalidTokenException();
+        }
+        if (articleLocker.checkLock(articleId) && !articleLocker.checkLockPermission(articleId, TokenTools.getPayload(lockedBy, "id"))) {
             throw new InsufficientPermissionException();
         } else {
             String authorId = articleDao.getArticleById(articleId).getTextBy();
@@ -334,7 +337,10 @@ class ArticleServiceImpl implements ArticleService {
 
     @Override
     public boolean unLockArticleById(String articleId, String unlockedBy) {
-        if (!getPermissions(articleId, TokenTools.getPayload(unlockedBy, "id"))) {
+        if (!tokenVerify(unlockedBy)) {
+            throw new InvalidTokenException();
+        }
+        if (articleLocker.checkLock(articleId) && !articleLocker.checkLockPermission(articleId, TokenTools.getPayload(unlockedBy, "id"))) {
             throw new InsufficientPermissionException();
         }
         articleLocker.unlock(articleId);
