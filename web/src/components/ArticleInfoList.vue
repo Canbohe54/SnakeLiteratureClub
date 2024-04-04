@@ -3,7 +3,7 @@
         <el-col :md="12" :sm="24" v-for="articleInfo in _articleList" v-if="is_card">
             <el-card class="article-el-card" body-style="padding:0;">
                 <ArticleInfo :articleInfo="articleInfo" :statusVisible="currentSettings.statusVisible"
-                    :iconVisible="currentSettings.iconVisible" :tagsVisible="currentSettings.tagsVisible" />
+                    :iconVisible="currentSettings.iconVisible" :tagsVisible="currentSettings.tagsVisible" :menuVisible="currentSettings.menuVisible" />
             </el-card>
         </el-col>
         <el-col :span="24" v-if="!is_card" v-for="articleInfo in _articleList">
@@ -31,7 +31,7 @@ import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
 import { Article } from "@/scripts/types/models";
 import {errorCallback} from "@/scripts/ErrorCallBack";
 
-type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_PRIVATE_LIST' | 'AUDIT_LIST' | 'RECEIVED' | 'FAILED_REVIEW' | 'POST_RECORD' | 'BEING_AUDITED' | 'FAIL_AUDITED'
+type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_PRIVATE_LIST' | 'AUDIT_LIST'  | 'RECEIVING' | 'RECEIVED' | 'FAILED_REVIEW' | 'POST_RECORD' | 'BEING_AUDITED' | 'FAIL_AUDITED'
 type AuditStatus = 'ROUGH' | 'SUBMITTED' | 'FAIL_AUDITED' | 'BEING_AUDITED' | 'AUDITED' | 'LOCKED'
 type PublishStatus = 'PUBLIC' | 'UNDER_REVIEW' | 'UNDER_RECORD' | 'POST_RECORD' | 'POSTED' | 'FAILED_REVIEW' | 'FAILED_RECORD'
 
@@ -94,7 +94,8 @@ const currentSettings = reactive({
     iconVisible: true,
     tagsVisible: true,
     viewcountVisible: true,
-    is_card: true
+    is_card: true,
+    menuVisible: true
 })
 
 const modeSettings: AttributeAddableObject = {
@@ -103,7 +104,8 @@ const modeSettings: AttributeAddableObject = {
         iconVisible: true,
         tagsVisible: true,
         viewcountVisible: true,
-        is_card: true
+        is_card: true,
+        menuVisible: false
     },
     USER_PRIVATE_LIST: {
         statusVisible: true,
@@ -126,14 +128,13 @@ const modeSettings: AttributeAddableObject = {
         viewcountVisible: true,
         is_card: true
     },
-    RECEIVED: {
+    RECEIVING: {
         statusVisible: false,
         iconVisible: false,
         tagsVisible: true,
         viewcountVisible: false,
         is_card: false
-    }
-    ,
+    },
     FAILED_REVIEW: {
         statusVisible: true,
         iconVisible: true,
@@ -250,6 +251,19 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
             }
             break
         }
+        case 'RECEIVING': {
+            articleInfoRequest = {
+                idList: [],
+                authorList: [],
+                receiverList: [route.params.id],
+                auditorList: [],
+                keyword: '',
+                tags: '',
+                auditStatusList: ['AUDITED'],
+                publishStatusList: ['UNDER_RECORD','UNDER_REVIEW','POST_RECORD']
+              }
+              break
+        }
         case 'RECEIVED': {
             articleInfoRequest = {
                 idList: [],
@@ -259,7 +273,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
                 keyword: '',
                 tags: '',
                 auditStatusList: ['AUDITED'],
-                publishStatusList: []
+                publishStatusList: ['POSTED']
               }
               break
         }
@@ -284,7 +298,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
                 auditorList: [],
                 keyword: '',
                 tags: '',
-                auditStatusList: [],
+                auditStatusList: ['AUDITED'],
                 publishStatusList: ['FAILED_REVIEW']
             }
             break
@@ -297,7 +311,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
                 auditorList: [],
                 keyword: '',
                 tags: '',
-                auditStatusList: [],
+                auditStatusList: ['AUDITED'],
                 publishStatusList: ['POST_RECORD']
               }
               break

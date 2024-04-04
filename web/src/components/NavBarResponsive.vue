@@ -9,7 +9,8 @@
             </div>
         </el-col>
         <el-col :lg="10" :md="10" class="hidden-sm-and-down"><!--md及以上时的菜单，horizontal，展开的-->
-            <el-menu :default-active="activeIndex" class="el-menu-demo nav-menu" mode="horizontal" router :ellipsis-icon="MoreFilled">
+            <el-menu :default-active="activeIndex" class="el-menu-demo nav-menu" mode="horizontal" router
+                :ellipsis-icon="MoreFilled">
                 <el-menu-item v-for="item in menu_option" :index="item.index" :route="item.route"
                     class="nav-menu-option">
                     {{ item.title }}
@@ -29,7 +30,7 @@
                     </el-avatar>
                     <!-- @click="router.push('/login') " -->
                 </template>
-                <UserMenuCard kKey="md_card"/>
+                <UserMenuCard kKey="md_card" />
             </el-popover>
         </el-col>
         <el-col :span="4" class="hidden-md-and-up flex-center"
@@ -49,8 +50,18 @@
         <el-col :span="24">
             <el-collapse-transition>
                 <div v-show="sm_menu_expand">
-                    <el-menu :default-active="activeIndex" class="el-menu-demo sm-menu-detail" mode="vertical">
-                        <el-menu-item v-for="item in menu_option" :index="item.index" class="sm-menu-items" :route="item.route">
+
+                    <!-- <el-menu :default-active="activeIndex" class="el-menu-demo nav-menu" mode="horizontal" router
+                        :ellipsis-icon="MoreFilled">
+                        <el-menu-item v-for="item in menu_option" :index="item.index" :route="item.route"
+                            class="nav-menu-option">
+                            {{ item.title }}
+                        </el-menu-item>
+                    </el-menu> -->
+
+                    <el-menu :default-active="activeIndex" class="el-menu-demo sm-menu-detail" mode="vertical" router>
+                        <el-menu-item v-for="item in menu_option" :index="item.index" class="sm-menu-items"
+                            :route="item.route">
                             {{ item.title }}
                         </el-menu-item>
                     </el-menu>
@@ -62,7 +73,7 @@
         <el-col :span="24">
             <el-collapse-transition>
                 <div v-show="user_bar_expand">
-                    <UserMenuCard kKey="sm_card"/>
+                    <UserMenuCard kKey="sm_card" />
                 </div>
             </el-collapse-transition>
         </el-col>

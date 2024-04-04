@@ -2,19 +2,20 @@
   <el-scrollbar height="100vh">
     <div class="container">
       <NavBar class="navbar" /><!--导航栏-->
-      <Receiving class="receiving"/>
-
+      <div style="margin-top: 20px;">
+        <ArticleInfoList mode="RECEIVING" option="RECEIVING" is_card="false" />
+      </div>
     </div>
   </el-scrollbar>
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import NavBar from '@/components/NavBarResponsive.vue'
-import Receiving from '@/components/receiving/Receiving.vue'
+import ArticleInfoList from "@/components/ArticleInfoList.vue";
 
 @Options({
   components: {
-    Receiving,
+    ArticleInfoList,
     NavBar,
   }
 })

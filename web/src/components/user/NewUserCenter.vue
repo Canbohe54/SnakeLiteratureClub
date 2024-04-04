@@ -12,8 +12,11 @@
             <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
                 <UserStatistics />
             </el-card>
-            <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER' || userIdentity === 'HUNTER'">
-                <MyPublicList />
+            <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
+                <ContributorList />
+            </el-card>
+            <el-card class="user-center-main" v-if="userIdentity === 'HUNTER'">
+                <HunterList />
             </el-card>
 <!--            <el-card class="user-center-main">-->
 <!--                <el-text class="my-private-list">暂时充当private list</el-text>-->
@@ -23,22 +26,22 @@
                 <AuditList/>
               </el-card>
                 <el-card class="user-center-main" v-if="userIdentity === 'EXPERT' || userIdentity === 'HUNTER'">
-                <Received></Received>
+                <ReceivingList />
                 </el-card>
               <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
-                <MyPrivateList></MyPrivateList>
+                <RoughList />
               </el-card>
               <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
-                <BeingAudited></BeingAudited>
+                <BeingAudited />
               </el-card>
               <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
-                <FailAudited></FailAudited>
+                <FailAudited />
               </el-card>
               <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
-                <FailedReview></FailedReview>
+                <FailedReview />
               </el-card>
               <el-card class="user-center-main" v-if="userIdentity === 'CONTRIBUTOR' || userIdentity === 'TEACHER'">
-                <PostRecord></PostRecord>
+                <PostRecord />
               </el-card>
             </div>
             <el-divider border-style="dashed" style="margin: 24px 20px;width: auto;"><el-text
@@ -50,19 +53,20 @@
 <script lang="ts" setup>
 import UserVisitingCard from './UserVisitingCard.vue'
 import UserStatistics from './UserStatistics.vue'
-import MyPublicList from './CenterArticleList/MyPublicList.vue'
+import ContributorList from './CenterArticleList/ContributorList.vue'
 import {onMounted, ref} from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import AuditList from '@/components/user/CenterArticleList/AuditList.vue'
 import {SYNC_GET} from '@/scripts/Axios'
 import {errorCallback} from '@/scripts/ErrorCallBack'
-import Received from "@/components/user/CenterArticleList/Received.vue";
+import ReceivingList from "@/components/user/CenterArticleList/ReceivingList.vue";
 import BeingAudited from "@/components/user/CenterArticleList/BeingAudited.vue";
-import MyPrivateList from "@/components/user/CenterArticleList/MyPrivateList.vue";
+import RoughList from "@/components/user/CenterArticleList/RoughList.vue";
 import PostRecord from "@/components/user/CenterArticleList/PostRecord.vue";
 import FailAudited from "@/components/user/CenterArticleList/FailAudited.vue";
 import FailedReview from "@/components/user/CenterArticleList/FailedReview.vue";
+import HunterList from "@/components/user/CenterArticleList/HunterList.vue";
 
 const route = useRoute();
 const store = useStore();

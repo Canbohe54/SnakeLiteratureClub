@@ -40,11 +40,6 @@ function setListName () {
     }
     else if (userIdentity.value === 'TEACHER') {
         listName.value = '指导的作品'
-    }
-    else if (userIdentity.value === 'EXPERT') {
-        listName.value = '的推荐'
-    }else if (userIdentity.value === 'HUNTER') {
-        listName.value = '的收录'
     } else {
         listName.value = '的作品'
     }

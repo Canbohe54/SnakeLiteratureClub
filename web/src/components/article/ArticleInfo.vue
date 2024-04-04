@@ -166,7 +166,7 @@ const menuOnStatus = reactive({
         {
             text: '查看稿件',
             onClick: handleArticleDetail,
-            type: 'primary'
+            type: 'success'
         },
         // {
         //     text: '设置仅自己（和收稿方）可见',
@@ -193,8 +193,8 @@ const menuOnStatus = reactive({
     ],
     expert_hunter: [
         {
-            text: '进入审阅（锁定稿件）',
-            onClick: handleArticleDetail,
+            text: '我感兴趣（锁定稿件）',
+            onClick: handleArticleDetailWithLock,
             type: 'primary'
         }
     ],
@@ -216,7 +216,12 @@ function getMenu() {
         }
     } else {
         if (currentUser.identity === 'EXPERT' || currentUser.identity === 'HUNTER' || currentUser.identity === 'ADMINISTRATOR') {
-            return menuOnStatus.expert_hunter
+            if( articleInfo.value.publishStatus === 'POSTED'){
+                return menuOnStatus.user_audited_public
+            } else {
+                return menuOnStatus.expert_hunter
+            }
+
         }
     }
 }
@@ -366,7 +371,7 @@ async function handleCardClicked() {
 
 
 
-async function handleArticleDetail() {
+async function handleArticleDetailWithLock() {
     await SYNC_GET('/article/getPermissions', {
         articleId: articleInfo.value.id,
         requester: currentUser.userId
@@ -374,6 +379,24 @@ async function handleArticleDetail() {
         if (response.status === 200 && response.data.code === 2001) {
             // 锁2小时
             await lockArticleById(articleInfo.value.id, currentUser.userId, 7200)
+          if ((articleInfo.auditStatus === 'BEING_AUDITED' || articleInfo.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
+            redirectToArticle('/auditArticleDetail', articleInfo.value.id)
+          } else if ((articleInfo.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
+            (articleInfo.auditStatus === 'UNDER_RECODE' && currentUser.identity === 'HUNTER')) {
+            redirectToArticle('/receivedArticleDetail', articleInfo.value.id)
+          } else {
+            redirectToArticle('/articleDetail', articleInfo.value.id)
+          }
+        }
+    })
+}
+
+async function handleArticleDetail() {
+    await SYNC_GET('/article/getPermissions', {
+        articleId: articleInfo.value.id,
+        requester: currentUser.userId
+    }, async (response) => {
+        if (response.status === 200 && response.data.code === 2001) {
           if ((articleInfo.auditStatus === 'BEING_AUDITED' || articleInfo.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
             redirectToArticle('/auditArticleDetail', articleInfo.value.id)
           } else if ((articleInfo.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
