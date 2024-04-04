@@ -379,10 +379,10 @@ async function handleArticleDetailWithLock() {
         if (response.status === 200 && response.data.code === 2001) {
             // 锁2小时
             await lockArticleById(articleInfo.value.id, store.getters.getToken, 7200)
-          if ((articleInfo.auditStatus === 'BEING_AUDITED' || articleInfo.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
+          if ((articleInfo.value.auditStatus === 'BEING_AUDITED' || articleInfo.value.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
             redirectToArticle('/auditArticleDetail', articleInfo.value.id)
-          } else if ((articleInfo.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
-            (articleInfo.auditStatus === 'UNDER_RECODE' && currentUser.identity === 'HUNTER')) {
+          } else if ((articleInfo.value.publishStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
+            (articleInfo.value.publishStatus === 'UNDER_RECORD' && currentUser.identity === 'HUNTER')) {
             redirectToArticle('/receivedArticleDetail', articleInfo.value.id)
           } else {
             redirectToArticle('/articleDetail', articleInfo.value.id)
@@ -397,10 +397,10 @@ async function handleArticleDetail() {
         requester: currentUser.userId
     }, async (response) => {
         if (response.status === 200 && response.data.code === 2001) {
-          if ((articleInfo.auditStatus === 'BEING_AUDITED' || articleInfo.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
+          if ((articleInfo.value.auditStatus === 'BEING_AUDITED' || articleInfo.value.auditStatus === 'SUBMITTED') && currentUser.identity === 'AUDITOR') {
             redirectToArticle('/auditArticleDetail', articleInfo.value.id)
-          } else if ((articleInfo.auditStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
-            (articleInfo.auditStatus === 'UNDER_RECODE' && currentUser.identity === 'HUNTER')) {
+          } else if ((articleInfo.value.publishStatus === 'UNDER_REVIEW' && currentUser.identity === 'EXPERT') ||
+              (articleInfo.value.publishStatus === 'UNDER_RECORD' && currentUser.identity === 'HUNTER')) {
             redirectToArticle('/receivedArticleDetail', articleInfo.value.id)
           } else {
             redirectToArticle('/articleDetail', articleInfo.value.id)
