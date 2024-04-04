@@ -529,11 +529,11 @@ async function handleUnlock() {
 
     let message = ''
     if (expire > 86400) {
-      message = `文章已发布，无法手动解锁，将于${Math.ceil(expire / 86400)}天后解锁。`
+      message = `文章已发布，无法手动解锁，将于${Math.ceil(expire / 86400)}天后解锁。如果误锁，请联系管理员。`
     } else if (expire > 3600) {
-      message = `该文章已发布，无法手动解锁，将于${Math.ceil(expire / 3600)}小时后解锁。`
+      message = `该文章已发布，无法手动解锁，将于${Math.ceil(expire / 3600)}小时后解锁。如果误锁，请联系管理员。`
     } else if (expire > 0) {
-      message = `该文章已发布，无法手动解锁，将于${Math.ceil(expire / 60)}分钟后解锁。`
+      message = `该文章已发布，无法手动解锁，将于${Math.ceil(expire / 60)}分钟后解锁。如果误锁，请联系管理员。`
     } else {
       isLocked.value = false
     }
