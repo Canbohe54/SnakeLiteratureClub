@@ -39,7 +39,9 @@
                 <SearchFilter style="display:none;" ref="SearchFilterRef" @change="searchFilterChange"/>
                 <ArticleTags v-if="articleTagsVisible" ref="articleTags" :tagsJsons="articleDetail.tags"></ArticleTags>
                 <span v-else>无</span>
-                <div class="contain-head"><span>文章内容</span></div>
+                <div class="contain-head"><span>文章内容</span> <el-button link v-if="isDetailCssChange" type="primary"
+                    :onclick="handleDetailRemoveCSS" >恢复默认字体大小
+                  </el-button></div>
                 <!-- 待弃用 -->
                 <ArticleDisplayCard class="article-contain-card" :articleRaw="articleDetail.raw"
                                     :lock-before-preview="false"
@@ -294,16 +296,29 @@ const getHunterByName = async (userName: string) => {
   })
 }
 
+const isDetailCssChange = ref(false)
+
 function handleDiscriptionSmall() {
   $('.article-description').css('font-size', '16px')
+  $('#docxContainer .docx p span').css('font-size', '16px')
+  isDetailCssChange.value = true
 }
 
 function handleDiscriptionMedium() {
   $('.article-description').css('font-size', '18px')
+  $('#docxContainer .docx p span').css('font-size', '18px')
+  isDetailCssChange.value = true
 }
 
 function handleDiscriptionLarge() {
   $('.article-description').css('font-size', '20px')
+  $('#docxContainer .docx p span').css('font-size', '20px')
+  isDetailCssChange.value = true
+}
+
+function handleDetailRemoveCSS() {
+  $('#docxContainer .docx p span').css('font-size', '')
+  isDetailCssChange.value = false
 }
 
 
@@ -515,9 +530,7 @@ onMounted(async () => {
   display: flex;
   white-space: pre-wrap;
   text-align: start !important;
-  margin-bottom: 20px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin: 0 20px 20px;
 }
 
 .description-head {

@@ -234,7 +234,7 @@ function handleStatusTag() {
     switch (articleInfo.value.auditStatus) {
         case 'AUDITED':
             if (articleInfo.value.publishStatus === 'POSTED') {
-                return '刊登作品：已刊登于 ' + articleInfo.value.receivedBy
+                return '刊登作品'
             } else if (articleInfo.value.publishStatus === 'PUBLIC') {
                 return '公开作品'
             }

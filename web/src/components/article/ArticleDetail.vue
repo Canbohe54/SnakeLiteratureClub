@@ -31,18 +31,23 @@
               </el-row>
               <el-row class="article-box-card">
                 <el-text class="article-detail-author">
-                  <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{ articleDetail.textBy }}</el-button>
-                  <span v-else>{{articleDetail.authorName}}</span>
-                  {{articleDetail.authorGrade?"（"+articleDetail.authorGrade+"）":""}} {{articleDetail.authorOrganization}}
+                  <el-button v-if="textByIdentity === 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{
+      articleDetail.textBy }}</el-button>
+                  <span v-else>{{ articleDetail.authorName }}</span>
+                  {{ articleDetail.authorGrade ? "（" + articleDetail.authorGrade + "）" : "" }}
+                  {{ articleDetail.authorOrganization }}
                   <span v-if="articleDetail.mentor !== ''">指导老师：
-                    <el-button v-if="textByIdentity !== 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{articleDetail.mentor}}</el-button>
-                    <span v-else>{{articleDetail.mentor}}</span>
+                    <el-button v-if="textByIdentity !== 'CONTRIBUTOR'" link :onclick="handleAuthorClicked">{{
+      articleDetail.mentor }}</el-button>
+                    <span v-else>{{ articleDetail.mentor }}</span>
                   </span>
                 </el-text>
               </el-row>
               <el-row class="article-box-card">
                 <el-text class="article-detail-author">发布时间：{{ articleDetail.time }}</el-text>&nbsp;&nbsp;
-                <el-text class="article-detail-author">&nbsp;<el-icon><View /></el-icon>&nbsp;{{ currentViewCount }}</el-text>
+                <el-text class="article-detail-author">&nbsp;<el-icon>
+                    <View />
+                  </el-icon>&nbsp;{{ currentViewCount }}</el-text>
               </el-row>
               <div style="display: flex; justify-content:center;align-items: flex-end;">
                 <el-button type="primary" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
@@ -54,15 +59,13 @@
                 <el-button type="warning" link v-if="articleDetail.text_by_id === store.getters.getUserInfo.id"
                   :onclick="handleLockClicked">{{ isLocked ? '设置所有人可见' : '设置仅自己（和收稿者）可见' }}
                 </el-button>
-                <el-button type="success" link v-if="postButtonVisible"
-                           :onclick="handlePOSTEDClicked">刊登
+                <el-button type="success" link v-if="postButtonVisible" :onclick="handlePOSTEDClicked">刊登
                 </el-button>
-                <el-button type="warning" link v-if="postButtonVisible"
-                           :onclick="handleUnPOSTEDClicked">不刊登
+                <el-button type="warning" link v-if="postButtonVisible" :onclick="handleUnPOSTEDClicked">不刊登
                 </el-button>
-<!--                <el-button type="warning" link v-if="publicButtonVisible"-->
-<!--                           :onclick="handleViewableClicked">{{!onlyMyself ? '设置仅自己可见': '设置所有人可见'}}-->
-<!--                </el-button>-->
+                <!--                <el-button type="warning" link v-if="publicButtonVisible"-->
+                <!--                           :onclick="handleViewableClicked">{{!onlyMyself ? '设置仅自己可见': '设置所有人可见'}}-->
+                <!--                </el-button>-->
                 <el-button link type="primary" :onclick="handleDiscriptionSmall" style="font-size: 16px;">小
                 </el-button>
                 <el-button link type="primary" :onclick="handleDiscriptionMedium" style="font-size: 18px;">中
@@ -74,9 +77,11 @@
               <el-collapse style="padding-top: 10px">
                 <div class="description-head"><span>文章描述</span></div>
                 <el-text class="article-description">{{ articleDetail.description }}</el-text>
-                <div class="contain-head"><span>文章内容</span></div>
-                <ArticleDisplayCard :articleRaw="articleDetail.raw" :lock-before-preview="false"
-                  :article-id="articleDetail.id"></ArticleDisplayCard>
+                <div class="contain-head"><span>文章内容</span> <el-button link v-if="isDetailCssChange" type="primary"
+                    :onclick="handleDetailRemoveCSS" >恢复默认字体大小
+                  </el-button></div>
+                <ArticleDisplayCard class="article-disp-card" :articleRaw="articleDetail.raw"
+                  :lock-before-preview="false" :article-id="articleDetail.id"></ArticleDisplayCard>
               </el-collapse>
 
             </el-card>
@@ -183,16 +188,42 @@ let isUp = ref(false)
 
 const messageInputText = ref('')
 
+const isDetailCssChange = ref(false)
+
 function handleDiscriptionSmall() {
   $('.article-description').css('font-size', '16px')
+  if($('#docxContainer .docx p span').length !== 0){
+    $('#docxContainer .docx p span').css('font-size', '16px')
+    isDetailCssChange.value = true
+  } else {
+    $('.txtPreview').css('font-size', '16px')
+  }
+  
 }
 
 function handleDiscriptionMedium() {
   $('.article-description').css('font-size', '18px')
+  if($('#docxContainer .docx p span').length !== 0){
+    $('#docxContainer .docx p span').css('font-size', '18px')
+    isDetailCssChange.value = true
+  }else {
+    $('.txtPreview').css('font-size', '18px')
+  }
 }
 
 function handleDiscriptionLarge() {
   $('.article-description').css('font-size', '20px')
+  if($('#docxContainer .docx p span').length !== 0){
+    $('#docxContainer .docx p span').css('font-size', '20px')
+    isDetailCssChange.value = true
+  }else {
+    $('.txtPreview').css('font-size', '20px')
+  }
+}
+
+function handleDetailRemoveCSS() {
+  $('#docxContainer .docx p span').css('font-size', '')
+  isDetailCssChange.value = false
 }
 
 async function getTextBy() {
@@ -297,7 +328,7 @@ const like = async () => {
 }
 
 const addViewCount = async () => {
-  if(route.query.id === undefined || ( route.query.id === null || route.query.id === '')) {
+  if (route.query.id === undefined || (route.query.id === null || route.query.id === '')) {
     return
   }
   await SYNC_POST('/view/addViewCount', {
@@ -476,7 +507,7 @@ const handleDelArticleClicked = async () => {
   delArticleDialogVisible.value = false
   router.back()
 }
-const changeArticlePublishStatus = async (publishStatus :string) => {
+const changeArticlePublishStatus = async (publishStatus: string) => {
   await SYNC_POST('/article/changeArticlePublishStatus', {
     articleId: articleDetail.id,
     status: publishStatus,
@@ -506,7 +537,7 @@ const handlePOSTEDClicked = async () => {
   await changeArticleAuditStatus('LOCKED')
 }
 const handleUpdateArticleClicked = () => {
-  if (articleDetail.publishStatus === 'POSTED'){
+  if (articleDetail.publishStatus === 'POSTED') {
     ElMessage({
       type: 'warning',
       message: '已刊登文章无法修改',
@@ -523,7 +554,7 @@ const handleUpdateArticleClicked = () => {
   // getIsLocked()
 }
 const handleDeleteClicked = () => {
-  if (articleDetail.publishStatus === 'POSTED'){
+  if (articleDetail.publishStatus === 'POSTED') {
     ElMessage({
       type: 'warning',
       message: '已刊登文章无法删除',
@@ -557,7 +588,7 @@ const visibleInit = () => {
     if (articleDetail.auditStatus === 'AUDITED') {
       onlyMyself.value = false
       publicButtonVisible.value = true
-    } else if (articleDetail.auditStatus === 'LOCKED'){
+    } else if (articleDetail.auditStatus === 'LOCKED') {
       onlyMyself.value = true
       publicButtonVisible.value = true
     }
@@ -566,7 +597,7 @@ const visibleInit = () => {
 // 有article_id时初始化ArticleDetail
 (async () => {
   if (route.query.id === '' || route.query.id === undefined) return
-  if(getCookie('userInfo') !== '' && (JSON.parse(getCookie('userInfo'))?.identity === 'EXPERT'|| JSON.parse(getCookie('userInfo'))?.identity === 'HUNTER')){
+  if (getCookie('userInfo') !== '' && (JSON.parse(getCookie('userInfo'))?.identity === 'EXPERT' || JSON.parse(getCookie('userInfo'))?.identity === 'HUNTER')) {
     displayMessage.value = true
   }
 
@@ -670,9 +701,13 @@ const visibleInit = () => {
   display: flex;
   white-space: pre-wrap;
   text-align: start !important;
-  margin-bottom: 20px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin: 0 20px 20px;
+}
+
+.article-disp-card {
+  position: relative;
+
+  transform: scale(1.02);
 }
 
 .article-reason {
@@ -701,127 +736,4 @@ const visibleInit = () => {
   margin-top: 15px;
   margin-right: 15px;
 }
-
-/*
-.circle {
-  width: 20px;
-  height: 20px;
-  margin: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0px 0px 0px 0px rgba(223, 46, 58, 0.5);
-
-  .img-box {
-    width: 20px;
-    height: 20px;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    -khtml-user-select: none;
-    user-select: none; */
-
-/* 防止快速点击图片被选中*/
-/* & img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-} */
-/*
-.check {
-  -webkit-transition: box-shadow 0.5s;
-  -moz-transition: box-shadow 0.5s;
-  -o-transition: box-shadow 0.5s;
-  transition: box-shadow 0.5s;
-  box-shadow: 0px 0px 0px 1em rgba(226, 32, 44, 0);
-}
-
-.img-box-check {
-  animation: anm 0.5s;
-  -moz-animation: anm 0.5s;
-  -webkit-animation: anm 0.5s;
-  -o-animation: anm 0.5s;
-}
-
-@keyframes anm {
-  0% {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-  }
-
-  50% {
-    transform: scale(1.3);
-    -webkit-transform: scale(1.3);
-    -moz-transform: scale(1.3);
-  }
-
-  100% {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-  }
-} */
-
-/* 以下为处理兼容代码，可不看。*/
-/*
-@-moz-keyframes anm {
-  0% {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-  }
-
-  50% {
-    transform: scale(1.3);
-    -webkit-transform: scale(1.3);
-    -moz-transform: scale(1.3);
-  }
-
-  100% {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-  }
-}
-
-@-webkit-keyframes anm {
-  0% {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-  }
-
-  50% {
-    transform: scale(1.3);
-    -webkit-transform: scale(1.3);
-    -moz-transform: scale(1.3);
-  }
-
-  100% {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-  }
-}
-
-@-o-keyframes anm {
-  0% {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-  }
-
-  50% {
-    transform: scale(1.3);
-    -webkit-transform: scale(1.3);
-    -moz-transform: scale(1.3);
-  }
-
-  100% {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-  }
-} */
 </style>

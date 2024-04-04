@@ -24,12 +24,11 @@
                 <el-text class="article-detail-author">发布时间：{{ articleDetail.time }}</el-text>
               </el-row>
               <div style="display: flex; justify-content:center;align-items: flex-end;margin-bottom: 10px;">
-
-                <el-button link type="primary" :onclick="()=>{displaySize='small'}" style="font-size: small;">小
+                <el-button link type="primary" :onclick="handleDiscriptionSmall" style="font-size: 16px;">小
                 </el-button>
-                <el-button link type="primary" :onclick="()=>{displaySize='default'}" style="font-size: medium;">中
+                <el-button link type="primary" :onclick="handleDiscriptionMedium" style="font-size: 18px;">中
                 </el-button>
-                <el-button link type="primary" :onclick="()=>{displaySize='large'}" style="font-size: large;">大
+                <el-button link type="primary" :onclick="handleDiscriptionLarge" style="font-size: 20px;">大
                 </el-button>
               </div>
 
@@ -41,7 +40,9 @@
                 <SearchFilter style="display:none;"  ref="SearchFilterRef" @change="searchFilterChange" :disabled="true"/>
                 <ArticleTags v-if="articleTagsVisible" ref="articleTags" :tagsJsons="articleDetail.tags"></ArticleTags>
                 <span v-else>无</span>
-                <div class="contain-head"><span>文章内容</span></div>
+                <div class="contain-head"><span>文章内容</span> <el-button link v-if="isDetailCssChange" type="primary"
+                    :onclick="handleDetailRemoveCSS" >恢复默认字体大小
+                  </el-button></div>
                 <!-- 待弃用 -->
                 <ArticleDisplayCard class="article-contain-card" :articleRaw="articleDetail.raw"
                                     :lock-before-preview="false"
@@ -127,6 +128,31 @@ const SearchFilterRef = ref()
 const isFavorited = ref(false)
 const showArticle = ref(false)
 const textByIdentity = ref('CONTRIBUTOR')
+
+const isDetailCssChange = ref(false)
+
+function handleDiscriptionSmall() {
+  $('.article-description').css('font-size', '16px')
+  $('#docxContainer .docx p span').css('font-size', '16px')
+  isDetailCssChange.value = true
+}
+
+function handleDiscriptionMedium() {
+  $('.article-description').css('font-size', '18px')
+  $('#docxContainer .docx p span').css('font-size', '18px')
+  isDetailCssChange.value = true
+}
+
+function handleDiscriptionLarge() {
+  $('.article-description').css('font-size', '20px')
+  $('#docxContainer .docx p span').css('font-size', '20px')
+  isDetailCssChange.value = true
+}
+
+function handleDetailRemoveCSS() {
+  $('#docxContainer .docx p span').css('font-size', '')
+  isDetailCssChange.value = false
+}
 
 const searchFilterChange = () => {
   articleDetail.tags = SearchFilterRef.value.filterSelection
@@ -321,12 +347,11 @@ getAuditedArticle()
 }
 
 .article-description {
+  font-size: 16px;
   display: flex;
   white-space: pre-wrap;
   text-align: start !important;
-  margin-bottom: 20px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin: 0 20px 20px;
 }
 
 .description-head {

@@ -1,16 +1,18 @@
 <template>
-  <div class="preview_file">
-    <el-card id="docxContainer" v-if="dialogManager.docxDialogVisible">
-    </el-card>
-    <el-card v-if="dialogManager.txtContainerVisible">
-    <el-text v-if="dialogManager.txtContainerVisible" class="txtPreview" size="large">{{ dialogManager.txtContainerText }}</el-text>
-    </el-card>
-  </div>
+    <div class="preview_file">
+      <div id="docxContainer" v-if="dialogManager.docxDialogVisible">
+      </div>
+      <div v-if="dialogManager.txtContainerVisible">
+        <el-text v-if="dialogManager.txtContainerVisible" class="txtPreview">{{
+        dialogManager.txtContainerText }}</el-text>
+      </div>
+    </div>
 </template>
 <script lang="ts" setup>
-import {reactive, toRef, watch} from 'vue';
-import {fileToBlob} from '@/scripts/DocumentUtil'
-import {renderAsync} from 'docx-preview'
+import { reactive, toRef, watch } from 'vue';
+import { fileToBlob } from '@/scripts/DocumentUtil'
+import { renderAsync } from 'docx-preview'
+
 const props = defineProps({
   articleRaw: { // File类型
     type: Object,
@@ -73,7 +75,7 @@ const handleDocumentPreView = async (file: any) => {
   dialogManager.txtContainerText = ''
   dialogManager.docxDialogVisible = false
   dialogManager.txtContainerVisible = false
-  if(props.lockBeforePreview){
+  if (props.lockBeforePreview) {
     lockBeforePreview()
   }
 
@@ -100,6 +102,7 @@ handleDocumentPreView(props.articleRaw)
 }
 
 .txtPreview {
+  font-size: 16px;
   display: flex;
   white-space: pre-wrap;
   margin: 20px 20px;
@@ -107,7 +110,22 @@ handleDocumentPreView(props.articleRaw)
 
   /*background-color: gray;*/
 }
+
 #docxContainer .docx-wrapper {
-  background: #ecf9ef
+  background: #ecf9ef;
+  border-radius: 5px;
+}
+
+#docxContainer .docx {
+  width: 100%!important;
+  min-height: 100%!important;
+  display: table;
+  padding: 2em 2em!important;
+  box-shadow: none;
+  background: none;
+}
+
+#docxContainer .docx p span {
+  
 }
 </style>
