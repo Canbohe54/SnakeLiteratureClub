@@ -682,6 +682,7 @@ const handleUnPOSTEDClicked = async () => {
 const handleAccept = async () => {
   let userInfo = store.getters.getUserInfo
   await SYNC_POST('/message/addMessage', {
+    token: store.getters.getToken,
     from: userInfo.id,
     to: articleDetail.id,
     message: acceptManager.acceptInfo
