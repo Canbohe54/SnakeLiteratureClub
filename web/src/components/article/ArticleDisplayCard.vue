@@ -114,6 +114,7 @@ handleDocumentPreView(props.articleRaw)
 #docxContainer .docx-wrapper {
   background: #ecf9ef;
   border-radius: 5px;
+  text-align: start !important;
 }
 
 #docxContainer .docx {
@@ -126,6 +127,6 @@ handleDocumentPreView(props.articleRaw)
 }
 
 #docxContainer .docx p span {
-  
+
 }
 </style>

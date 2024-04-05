@@ -124,6 +124,7 @@ const handleDocumentPreView = async (file: any) => {
 
 #docxContainer {
     max-width: 1000px;
+    text-align: start !important;
 }
 
 #docxContainer .docx-wrapper {
