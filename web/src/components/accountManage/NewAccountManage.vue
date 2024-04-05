@@ -101,6 +101,7 @@ import AvatarSelection from '../user/AvatarSelection.vue';
 import { SnachResponse } from '@/scripts/types/ResponseObject';
 import { getCookie } from '@/scripts/cookie';
 import { ChineseLanguageMap } from '@/scripts/common/ChineseLanguageMap';
+import {BASE_URL} from "@/scripts/config/BaseURL";
 
 const router = useRouter()
 const store = useStore()
@@ -215,7 +216,7 @@ const onChangeInfo = async (formEl: FormInstance | undefined) => { // 提交表�
                     attrs: `{ "${ChineseLanguageMap.get(pageAttr.value)}": "${changeForm.attribute}" }`
                 }
                 $.post({
-                    url: 'http://localhost:19198/usr/updateUserInfo',
+                    url: BASE_URL + '/usr/updateUserInfo',
                     async: false,
                     enctype: 'multipart/form-data',
                     data: requestData,
@@ -294,7 +295,7 @@ const onChangePasswd = async (formEl: FormInstance | undefined) => { // 提交�
                     newPassword: passwdForm.newPassword
                 }
                 $.post({
-                    url: 'http://localhost:19198/usr/updateUserPassword',
+                    url: BASE_URL + '/usr/updateUserPassword',
                     async: false,
                     enctype: 'multipart/form-data',
                     data: requestData,

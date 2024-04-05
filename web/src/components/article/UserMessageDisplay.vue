@@ -28,6 +28,7 @@ import { toUserPage } from '@/scripts/userInfo'
 import { SnachResponse } from '@/scripts/types/ResponseObject'
 import { getCookie } from '@/scripts/cookie'
 import SnakeAvatar from "@/components/common/SnakeAvatar.vue";
+import {BASE_URL} from "@/scripts/config/BaseURL";
 
 const props = defineProps({
   articleId: {
@@ -69,7 +70,7 @@ function getUserInfo(userId: string) {
     avatar: ''
   }
   $.get({
-    url: 'http://localhost:19198/usr/getUserBasicInfo',
+    url: BASE_URL + '/usr/getUserBasicInfo',
     enctype: 'multipart/form-data',
     async: false,
     data: {
@@ -96,7 +97,7 @@ function getUserInfo(userId: string) {
 
 function loadMessageList() {
   $.get({
-    url: 'http://localhost:19198/message/getMessageListByArticleId',
+    url: BASE_URL + '/message/getMessageListByArticleId',
     enctype: 'multipart/form-data',
     async: false,
     data: {
@@ -129,7 +130,7 @@ function loadMessageList() {
 
 function deleteMessage(messageId: string) {
   $.post({
-    url: 'http://localhost:19198/message/deleteMessage',
+    url: BASE_URL + '/message/deleteMessage',
     enctype: 'multipart/form-data',
     async: false,
     data: {

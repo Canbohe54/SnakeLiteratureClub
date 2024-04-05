@@ -252,6 +252,7 @@ import LikeBroken from "@/components/common/SnakeIcons/LikeBroken.vue";
 import LikeBold from "@/components/common/SnakeIcons/LikeBold.vue";
 import { getCookie } from "@/scripts/cookie";
 import { SnachResponse } from "@/scripts/types/ResponseObject";
+import {BASE_URL} from "@/scripts/config/BaseURL";
 
 const router = useRouter()
 const route = useRoute()
@@ -466,7 +467,7 @@ const addViewCount = async () => {
 
 function addMessage(articleId: string, message: string) {
   $.post({
-    url: 'http://localhost:19198/message/addMessage',
+    url: BASE_URL + '/message/addMessage',
     enctype: 'multipart/form-data',
     async: false,
     data: {

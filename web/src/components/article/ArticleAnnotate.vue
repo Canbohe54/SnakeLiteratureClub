@@ -213,7 +213,7 @@ export default {
     mounted() {
         // this.pdfUrl = process.env.VUE_APP_TARGET_API + '/ljkj_experienceFile/' + this.pdfIdMsg.uid + '.' + this.pdfIdMsg.gid + '.' + this.pdfIdMsg.eid + '.pdf'
         // var url = this.pdfUrl + '?' + Math.random()// 去除缓存
-        let url = 'http://localhost:19198/article/File2Pdf?article_id=a3F7rTx715lO'
+        let url = BASE_URL + '/article/File2Pdf?article_id=a3F7rTx715lO'
         const _this = this
         async function getPdfContent() { // 加载pdf，并分页
             const arrayBuffer = await fetch(url, { method: 'get' }).then((res) => res.arrayBuffer())

@@ -31,6 +31,7 @@ import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
 import { Article } from "@/scripts/types/models";
 import {errorCallback} from "@/scripts/ErrorCallBack";
 import { useStore } from 'vuex';
+import {BASE_URL} from "@/scripts/config/BaseURL";
 
 const store = useStore()
 
@@ -423,7 +424,7 @@ function getArticles() {
         pageSize: pageInfo.pageSize
     })
     $.post({
-        url: 'http://localhost:19198/article/getArticles',
+        url: BASE_URL + '/article/getArticles',
         async: false,
         enctype: 'multipart/form-data',
         data: params,
