@@ -40,7 +40,7 @@ public interface ArticleService {
 
     PageInfo<Article> getArticles(List<String> idList,
                                   List<String> authorList,
-                                  List<String> recieverList,
+                                  List<String> receiverList,
                                   List<String> auditorList,
                                   String keyword,
                                   String tags,

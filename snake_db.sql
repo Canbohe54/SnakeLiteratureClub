@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : snake_db
+ Source Server         : Snach_TencentCDB
  Source Server Type    : MySQL
- Source Server Version : 80100
- Source Host           : localhost:3306
+ Source Server Version : 80030
+ Source Host           : gz-cdb-djs39rd9.sql.tencentcdb.com:56570
  Source Schema         : snake_db
 
  Target Server Type    : MySQL
- Target Server Version : 80100
+ Target Server Version : 80030
  File Encoding         : 65001
 
- Date: 01/04/2024 17:30:00
+ Date: 05/04/2024 10:38:05
 */
 
 SET NAMES utf8mb4;
@@ -25,7 +25,7 @@ CREATE TABLE `article`  (
   `id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `time` datetime(0) NULL DEFAULT NULL,
+  `time` datetime NULL DEFAULT NULL,
   `audit_status` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `tags` json NULL,
   `text_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
@@ -41,9 +41,9 @@ CREATE TABLE `article`  (
   `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `publish_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_article_user_text_by`(`text_by`) USING BTREE,
+  INDEX `fk_article_user_text_by`(`text_by` ASC) USING BTREE,
   CONSTRAINT `fk_article_user_text_by` FOREIGN KEY (`text_by`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for article_likes
@@ -53,12 +53,12 @@ CREATE TABLE `article_likes`  (
   `like_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '点赞信息ID',
   `article_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '点赞对象id',
   `user_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '点赞人ID',
-  `status` int(0) NULL DEFAULT 0 COMMENT '0 取消 1 点赞',
+  `status` int NULL DEFAULT 0 COMMENT '0 取消 1 点赞',
   PRIMARY KEY (`like_id`) USING BTREE,
-  UNIQUE INDEX `agdkey`(`user_id`, `article_id`) USING BTREE,
-  INDEX `fk_likes_article_article_id`(`article_id`) USING BTREE,
+  UNIQUE INDEX `agdkey`(`user_id` ASC, `article_id` ASC) USING BTREE,
+  INDEX `fk_likes_article_article_id`(`article_id` ASC) USING BTREE,
   CONSTRAINT `fk_likes_article_article_id` FOREIGN KEY (`article_id`) REFERENCES `article` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '点赞记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '点赞记录表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for comments
@@ -67,15 +67,15 @@ DROP TABLE IF EXISTS `comments`;
 CREATE TABLE `comments`  (
   `id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `text` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `time` datetime(0) NULL DEFAULT NULL,
+  `time` datetime NULL DEFAULT NULL,
   `text_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `text_on` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `reply` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_comments_article_and_user_text_on_user`(`text_on`) USING BTREE,
-  INDEX `fk_comment_user_text_by`(`text_by`) USING BTREE,
+  INDEX `fk_comments_article_and_user_text_on_user`(`text_on` ASC) USING BTREE,
+  INDEX `fk_comment_user_text_by`(`text_by` ASC) USING BTREE,
   CONSTRAINT `fk_comment_user_text_by` FOREIGN KEY (`text_by`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for likes_views_count
@@ -83,11 +83,11 @@ CREATE TABLE `comments`  (
 DROP TABLE IF EXISTS `likes_views_count`;
 CREATE TABLE `likes_views_count`  (
   `article_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '稿件id',
-  `like_count` int(0) NULL DEFAULT NULL COMMENT '点赞数',
-  `view_count` int(0) NULL DEFAULT NULL COMMENT '浏览量',
+  `like_count` int NULL DEFAULT NULL COMMENT '点赞数',
+  `view_count` int NULL DEFAULT NULL COMMENT '浏览量',
   PRIMARY KEY (`article_id`) USING BTREE,
   CONSTRAINT `fk_likes_view_article_id` FOREIGN KEY (`article_id`) REFERENCES `article` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for message
@@ -99,9 +99,9 @@ CREATE TABLE `message`  (
   `to` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `message` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_message_user_from`(`from`) USING BTREE,
+  INDEX `fk_message_user_from`(`from` ASC) USING BTREE,
   CONSTRAINT `fk_message_user_from` FOREIGN KEY (`from`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for user
@@ -118,6 +118,6 @@ CREATE TABLE `user`  (
   `pictureUrl` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `attrs` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;

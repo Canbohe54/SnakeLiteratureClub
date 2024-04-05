@@ -30,6 +30,9 @@ import { PageInfo, SnachResponse } from "@/scripts/types/ResponseObject";
 import { AttributeAddableObject } from "@/scripts/ArticleTagFilter";
 import { Article } from "@/scripts/types/models";
 import {errorCallback} from "@/scripts/ErrorCallBack";
+import { useStore } from 'vuex';
+
+const store = useStore()
 
 type Option = 'STATIC' | 'LOBBY' | 'SEARCH' | 'USER_PUBLIC_LIST' | 'USER_PRIVATE_LIST' | 'AUDIT_LIST'  | 'PUBLIC' |
     'RECEIVING' | 'RECEIVED' | 'RECEIVINGANDRECEIVED' | 'FAILED_REVIEW' | 'POST_RECORD' | 'BEING_AUDITED' | 'FAIL_AUDITED' | 'POSTED'
@@ -284,7 +287,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
                 idList: [],
                 authorList: [],
                 receiverList: [],
-                auditorList: [route.params.id],
+                auditorList: [store.getters.getUserInfo.id],
                 keyword: '',
                 tags: '',
                 auditStatusList: ['BEING_AUDITED'],
@@ -296,7 +299,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
             articleInfoRequest = {
                 idList: [],
                 authorList: [],
-                receiverList: [route.params.id],
+                receiverList: [store.getters.getUserInfo.id],
                 auditorList: [],
                 keyword: '',
                 tags: '',
@@ -309,7 +312,7 @@ function formRequestParams(option?: Option): ArticleInfoRequest | UrlDecodedArti
         articleInfoRequest = {
           idList: [],
           authorList: [],
-          receiverList: [route.params.id],
+          receiverList: [store.getters.getUserInfo.id],
           auditorList: [],
           keyword: '',
           tags: '',
