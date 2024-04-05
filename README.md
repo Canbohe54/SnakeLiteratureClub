@@ -1,8 +1,4 @@
-# SnakeLiteratureClub
-
-## 🐍🐍🐍
-
-description: 蛇蛇文学社
+# 软件部署及配置方法
 
 ### 部署前置软件要求
 
@@ -34,19 +30,20 @@ spring:
     username: # 这里填mysql用户名，一般为root
     password: # 这里填mysql密码
     url: jdbc:mysql://localhost:3306/snake_db
-  mail: # 这里配置用于发送验证码的邮箱，使用smtp协议
-    host: 
-    port: 
-    username: 
-    password: 
-    default-encoding: UTF-8
-    properties:
-      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
-      mail.debug: false
-
-mybatis:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+ 
+snach:
+  common:
+    redisKeyOfArticleTags: "ARTICLE_TAGS"
+    redisKeyOfCurrentUserId: "CURRENT_USER_ID"
+  datasource:
+    redis:
+      port: 6379
+      host: localhost
+      pool:
+        max-idle: 10
+        max-active: 20
+        min-idle: 2
+      timeout: 2000
 ```
 
 配置完成后，通过application/literatureClub/src/main/java/com/snach/literatureclub/LiteratureClubApplication.java启动
