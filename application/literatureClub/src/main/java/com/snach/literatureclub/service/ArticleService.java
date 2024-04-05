@@ -291,7 +291,7 @@ class ArticleServiceImpl implements ArticleService {
             throw new InvalidTokenException();
         }
 
-        Article article = articleDao.getArticleById(id);
+        Article article = articleDao.getArticleFileById(id);
         byte[] fileContent = article.getRaw();
         String format = article.getFileType();
 
