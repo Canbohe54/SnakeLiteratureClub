@@ -6,6 +6,7 @@ import com.snach.literatureclub.common.ArticleAuditStatus;
 import com.snach.literatureclub.common.ArticlePublishStatus;
 import com.snach.literatureclub.service.ArticleService;
 import com.snach.literatureclub.service.ContributorService;
+import com.snach.literatureclub.service.TagService;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +21,14 @@ import java.util.Map;
 public class ContributorController {
     private final ArticleService articleService;
 
+    private final TagService tagService;
+
     private final ContributorService contributorService;
 
     @Autowired
-    public ContributorController(ArticleService articleService, ContributorService contributorService) {
+    public ContributorController(ArticleService articleService, TagService tagService, ContributorService contributorService) {
         this.articleService = articleService;
+        this.tagService = tagService;
         this.contributorService = contributorService;
     }
 
@@ -67,7 +71,13 @@ public class ContributorController {
                                                  @RequestParam(name = "page_size") int pageSize,
                                                  @RequestParam(name = "audit_status_list") List<ArticleAuditStatus> auditStatusList,
                                                  @RequestParam(name = "publish_status_list") List<ArticlePublishStatus> publishStatusList) {
-        return articleService.getContributorArticles(contributor_id, pageNum, pageSize, auditStatusList, publishStatusList);
+        PageInfo<Article> pageInfo = articleService.getContributorArticles(contributor_id, pageNum, pageSize, auditStatusList, publishStatusList);
+        // 获取每篇文章对应tags
+        for(int i=0; i<pageInfo.getList().size(); i++){
+            Article article = pageInfo.getList().get(i);
+            pageInfo.getList().get(i).setTags(tagService.getPackedTags(article.getId()));
+        }
+        return pageInfo;
     }
 
 }

@@ -1,10 +1,8 @@
 package com.snach.literatureclub.service;
 
-import com.snach.literatureclub.bean.like.ArticleLike;
 import com.snach.literatureclub.bean.like.LikesAndViewCount;
 import com.snach.literatureclub.common.CONSTANT;
-import com.snach.literatureclub.common.exception.InvalidTokenException;
-import com.snach.literatureclub.dao.ArticleDao;
+import com.snach.literatureclub.dao.NewArticleDao;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +30,7 @@ class ViewServiceImpl implements ViewService {
     @Autowired
     private DBService dbService;
     @Autowired
-    private ArticleDao articleDao;
+    private NewArticleDao newArticleDao;
     public Map<String, Object> addViewCount(String articleId) {
         Map<String, Object> res = new HashMap<>();
         // 判断浏览量信息是否在redis中
@@ -85,7 +83,7 @@ class ViewServiceImpl implements ViewService {
 
     @Override
     public Map<String, Object> getAllViewCountByContributorId(String contributorId) {
-        List<String> articleIdList = articleDao.getAllArticleIdByContributorId(contributorId);
+        List<String> articleIdList = newArticleDao.getAllArticleIdByContributorId(contributorId);
         int count = 0;
         for(String articleId: articleIdList){
             count += (Integer) getViewCount(articleId).get("currentViewCount");

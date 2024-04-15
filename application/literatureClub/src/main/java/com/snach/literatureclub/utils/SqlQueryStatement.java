@@ -11,7 +11,9 @@ public class SqlQueryStatement {
                 sb.append(",");
             }
         }
-        sb.append(")");
+        if (!objectList.isEmpty()) {
+            sb.append(")");
+        }
         return sb.toString();
     }
 }

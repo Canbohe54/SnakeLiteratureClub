@@ -7,9 +7,9 @@ import com.snach.literatureclub.bean.like.ArticleLike;
 import com.snach.literatureclub.bean.like.LikesAndViewCount;
 import com.snach.literatureclub.common.CONSTANT;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
-import com.snach.literatureclub.dao.ArticleDao;
 import com.snach.literatureclub.dao.ArticleLikeDao;
 import com.snach.literatureclub.dao.ArticleLikeAndViewCountDao;
+import com.snach.literatureclub.dao.NewArticleDao;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,8 +49,12 @@ class LikeServiceImpl implements LikeService {
     @Autowired
     DBService dbService;
 
+
     @Autowired
-    ArticleDao articleDao;
+    NewArticleDao newArticleDao;
+
+    @Autowired
+    TagService tagService;
 
     @Override
     public Map<String, Object> like(String token, String articleId, String userId) {
@@ -183,12 +187,13 @@ class LikeServiceImpl implements LikeService {
 
     @Override
     public Map<String, Object> getAllLikeAndViewCount(int pageNum, int pageSize) {
+        // todo 分解为多个函数
         Map<String, Object> res = new HashMap<>();
         Map<String, Map<String, Integer>> articleLikeAndViewCountMap = new HashMap<>();
         Map<String, Integer> articleLikeCountMap = new HashMap<>();
         Map<String, Integer> articleViewCountMap = new HashMap<>();
         // 先获取文章id列表
-        List<String> articleIdList = articleDao.getAllArticleId();
+        List<String> articleIdList = newArticleDao.getAllArticleId();
         // 遍历文章id列表，获取每个文章的点赞数
         for(String articleId: articleIdList){
             Map<String, Integer> detail = new HashMap<>();
@@ -210,7 +215,9 @@ class LikeServiceImpl implements LikeService {
                 .collect(Collectors.toList());
         List<Article> articlesRankingByLikeCount = new ArrayList<>();
         for(String articleId: RankingByLikeCount){
-            articlesRankingByLikeCount.add(articleDao.getArticleByIdToRank(articleId));
+            Article art = newArticleDao.getArticleByIdToRank(articleId);
+            art.setTags(tagService.getPackedTags(articleId));
+            articlesRankingByLikeCount.add(art);
         }
         PageHelper.startPage(pageNum, pageSize);
         res.put("RankingByLikeCount", new PageInfo<>(articlesRankingByLikeCount));
@@ -222,7 +229,9 @@ class LikeServiceImpl implements LikeService {
                 .collect(Collectors.toList());
         List<Article> articlesRankingByViewCount = new ArrayList<>();
         for(String articleId: RankingByViewCount){
-            articlesRankingByViewCount.add(articleDao.getArticleByIdToRank(articleId));
+            Article art = newArticleDao.getArticleByIdToRank(articleId);
+            art.setTags(tagService.getPackedTags(articleId));
+            articlesRankingByViewCount.add(art);
         }
         PageHelper.startPage(pageNum, pageSize);
         res.put("RankingByViewCount", new PageInfo<>(articlesRankingByViewCount));
@@ -238,7 +247,9 @@ class LikeServiceImpl implements LikeService {
         Collections.reverse(RankingByLikeAndViewCount);
         List<Article> articlesRankingByLikeAndViewCount = new ArrayList<>();
         for(String articleId: RankingByLikeAndViewCount){
-            articlesRankingByLikeAndViewCount.add(articleDao.getArticleByIdToRank(articleId));
+            Article art = newArticleDao.getArticleByIdToRank(articleId);
+            art.setTags(tagService.getPackedTags(articleId));
+            articlesRankingByLikeAndViewCount.add(art);
         }
         PageHelper.startPage(pageNum, pageSize);
         res.put("RankingByLikeAndViewCount", new PageInfo<>(articlesRankingByLikeAndViewCount));
@@ -247,7 +258,7 @@ class LikeServiceImpl implements LikeService {
 
     @Override
     public Map<String, Object> getAllLikeCountByContributorId(String contributorId) {
-        List<String> articleIdList = articleDao.getAllArticleIdByContributorId(contributorId);
+        List<String> articleIdList = newArticleDao.getAllArticleIdByContributorId(contributorId);
         int count = 0;
         for(String articleId: articleIdList){
             count += (Integer) getCurrentLikeCount(articleId).get("currentLikeCount");
@@ -256,4 +267,5 @@ class LikeServiceImpl implements LikeService {
         res.put("allLikeCount", count);
         return res;
     }
+
 }

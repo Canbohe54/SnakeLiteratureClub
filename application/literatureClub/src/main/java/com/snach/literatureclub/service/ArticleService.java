@@ -7,7 +7,7 @@ import com.snach.literatureclub.common.ArticleAuditStatus;
 import com.snach.literatureclub.common.ArticlePublishStatus;
 import com.snach.literatureclub.common.exception.InsufficientPermissionException;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
-import com.snach.literatureclub.dao.ArticleDao;
+import com.snach.literatureclub.dao.NewArticleDao;
 import com.snach.literatureclub.utils.File2PdfTools;
 import com.snach.literatureclub.utils.FileUtil;
 import com.snach.literatureclub.utils.SensitiveWordsTools;
@@ -127,14 +127,14 @@ public interface ArticleService {
 @Service
 @Mapper
 class ArticleServiceImpl implements ArticleService {
-    private final ArticleDao articleDao;
+    private final NewArticleDao newArticleDao;
 
     private final ArticleLocker articleLocker;
 
     @Autowired
-    ArticleServiceImpl(ArticleDao articleDao, ArticleLocker locker) {
-        this.articleDao = articleDao;
+    ArticleServiceImpl(ArticleLocker locker, NewArticleDao newArticleDao) {
         this.articleLocker = locker;
+        this.newArticleDao = newArticleDao;
     }
 
     @Override
@@ -142,7 +142,7 @@ class ArticleServiceImpl implements ArticleService {
         if (!tokenVerify(token)) {
             throw new InvalidTokenException();
         }
-        articleDao.updateAuditStatus(articleId, status);
+        newArticleDao.updateAuditStatus(articleId, status);
         return true;
     }
 
@@ -151,7 +151,7 @@ class ArticleServiceImpl implements ArticleService {
         if (!tokenVerify(token)) {
             throw new InvalidTokenException();
         }
-        articleDao.updatePublishStatus(articleId, status);
+        newArticleDao.updatePublishStatus(articleId, status);
         return true;
     }
 
@@ -160,13 +160,14 @@ class ArticleServiceImpl implements ArticleService {
         if (!tokenVerify(token)) {
             throw new InvalidTokenException();
         }
-        articleDao.updateReceivedBy(articleId, receivedBy);
+        newArticleDao.updateReceivedBy(articleId, receivedBy);
         return true;
     }
 
     @Override
     public Article getArticleById(String articleId) {
-        return articleDao.getArticleById(articleId);
+        Article article = newArticleDao.getArticleById(articleId);
+        return article;
     }
 
     @Override
@@ -180,6 +181,7 @@ class ArticleServiceImpl implements ArticleService {
                                          List<ArticlePublishStatus> publishStatusList,
                                          int pageNum,
                                          int pageSize) {
+        // todo tag 筛选
         PageHelper.startPage(pageNum, pageSize);
         StringBuilder whereStatement = new StringBuilder();
 
@@ -204,7 +206,8 @@ class ArticleServiceImpl implements ArticleService {
             }
             whereStatement.append("audited_by IN ").append(toSelectString(auditorList));
         }
-        if (keyword != null && !keyword.isEmpty()) {
+//        if (keyword != null && !keyword.isEmpty()) {
+        if (keyword != null) {
             if (!whereStatement.isEmpty()) {
                 whereStatement.append(" AND ");
             }
@@ -222,45 +225,47 @@ class ArticleServiceImpl implements ArticleService {
             }
             whereStatement.append("publish_status IN ").append(toSelectString(publishStatusList));
         }
-        return new PageInfo<>(articleDao.getArticleByPersonalOptions(whereStatement.toString()));
+        return new PageInfo<>(newArticleDao.getArticleByPersonalOptions(whereStatement.toString()));
     }
 
     @Override
     public PageInfo<Article> getContributorArticles(String contributorId, int pageNum, int pageSize, List<ArticleAuditStatus> auditStatusList, List<ArticlePublishStatus> publishStatusList) {
         PageHelper.startPage(pageNum, pageSize);
-        return new PageInfo<>(articleDao.getArticleByContributorId(contributorId, auditStatusList, publishStatusList));
+        return new PageInfo<>(newArticleDao.getArticleByContributorId(contributorId, auditStatusList, publishStatusList));
     }
 
     @Override
     public Article getArticleFileById(String articleId) {
-        return articleDao.getArticleFileById(articleId);
+        return newArticleDao.getArticleFileById(articleId);
     }
 
     @Override
     public String getLatestApprovalArticleById(String articleId) {
-        return articleDao.getLatestApprovalArticleUrlById(articleId);
+        return newArticleDao.getLatestApprovalArticleUrlById(articleId);
     }
 
     @Override
     public PageInfo<Article> getReceivedArticleById(String auditorId, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        return new PageInfo<>(articleDao.getArticleByReceivedBy(auditorId));
+        return new PageInfo<>(newArticleDao.getArticleByReceivedBy(auditorId));
     }
 
     @Override
     public PageInfo<Article> getAllArticles(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        return new PageInfo<>(articleDao.getAllArticles());
+        return new PageInfo<>(newArticleDao.getAllArticles());
     }
 
     @Override
     public PageInfo<Article> searchArticle(String keyword, String tag, int pageNum, int pageSize, List<ArticlePublishStatus> statusList) {
         PageHelper.startPage(pageNum, pageSize);
+        PageInfo<Article> pageInfo;
         if (tag == null) {
-            return new PageInfo<>(articleDao.getArticlesByKeyword(keyword, statusList));
+            pageInfo = new PageInfo<>(newArticleDao.getArticlesByKeyword(keyword, statusList));
         } else {
-            return new PageInfo<>(articleDao.getArticlesByKeywordAndTag(keyword, tag));
+            pageInfo = new PageInfo<>(newArticleDao.getArticlesByKeywordAndTag(keyword, tag));
         }
+        return pageInfo;
     }
 
     @Override
@@ -271,10 +276,10 @@ class ArticleServiceImpl implements ArticleService {
         // get user id from token
         String contributorId = getPayload(token, "id");
         // check if the article belongs to the user
-        if (articleDao.belong(contributorId, articleId) == 0) {
+        if (newArticleDao.belong(contributorId, articleId) == 0) {
             throw new InsufficientPermissionException();
         }
-        articleDao.deleteArticleById(articleId);
+        newArticleDao.deleteArticleById(articleId);
         return true;
     }
 
@@ -291,7 +296,7 @@ class ArticleServiceImpl implements ArticleService {
             throw new InvalidTokenException();
         }
 
-        Article article = articleDao.getArticleFileById(id);
+        Article article = newArticleDao.getArticleFileById(id);
         byte[] fileContent = article.getRaw();
         String format = article.getFileType();
 
@@ -309,7 +314,7 @@ class ArticleServiceImpl implements ArticleService {
     @Override
     public byte[] File2Pdf(String id) throws IOException {
         // 通过文章ID从数据库获取文章对象
-        Article article = articleDao.getArticleFileById(id);
+        Article article = newArticleDao.getArticleFileById(id);
         // 获取文章原始内容的二进制数据
         byte[] fileContent = article.getRaw();
         // 获取文章原始文件的格式
@@ -329,7 +334,7 @@ class ArticleServiceImpl implements ArticleService {
         if (articleLocker.checkLock(articleId) && !articleLocker.checkLockPermission(articleId, TokenTools.getPayload(lockedBy, "id"))) {
             throw new InsufficientPermissionException();
         } else {
-            String authorId = articleDao.getArticleById(articleId).getTextBy();
+            String authorId = newArticleDao.getArticleById(articleId).getTextBy();
             articleLocker.lock(articleId, expire, authorId, TokenTools.getPayload(lockedBy, "id"));
         }
         return true;
@@ -367,8 +372,8 @@ class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Map<String, Object> getRecievedAndPublishedCount(String contributorId) {
-        int receivedCount = articleDao.getReceivedCount(contributorId);
-        int publishedCount = articleDao.getPublishedCount(contributorId);
+        int receivedCount = newArticleDao.getReceivedCount(contributorId);
+        int publishedCount = newArticleDao.getPublishedCount(contributorId);
         Map<String, Object> res = new HashMap<>();
         res.put("receivedCount", receivedCount);
         res.put("publishedCount", publishedCount);
@@ -377,12 +382,12 @@ class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Map<String, Object> getContributorCenterInformation(String contributorId) {
-        int roughCount = articleDao.getRoughCount(contributorId);
-        int beingAuditedCount = articleDao.getBeingAuditedCount(contributorId);
-        int failAuditedCount = articleDao.getFailAuditedCount(contributorId);
-        int reasonCount = articleDao.getReasonCount(contributorId);
-        int failedReviewCount = articleDao.getFailedReviewCount(contributorId);
-        int postRecordCount = articleDao.getPostRecordCount(contributorId);
+        int roughCount = newArticleDao.getRoughCount(contributorId);
+        int beingAuditedCount = newArticleDao.getBeingAuditedCount(contributorId);
+        int failAuditedCount = newArticleDao.getFailAuditedCount(contributorId);
+        int reasonCount = newArticleDao.getReasonCount(contributorId);
+        int failedReviewCount = newArticleDao.getFailedReviewCount(contributorId);
+        int postRecordCount = newArticleDao.getPostRecordCount(contributorId);
         Map<String, Object> res = new HashMap<>();
         res.put("roughCount", roughCount);
         res.put("beingAuditedCount", beingAuditedCount);

@@ -4,7 +4,7 @@ import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.common.ArticlePublishStatus;
 import com.snach.literatureclub.common.Identity;
 import com.snach.literatureclub.common.exception.InsufficientPermissionException;
-import com.snach.literatureclub.dao.ArticleDao;
+import com.snach.literatureclub.dao.NewArticleDao;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,18 +27,18 @@ public interface ExpertService {
 @Mapper
 class ExpertServiceImpl implements ExpertService {
 
-    private final ArticleDao articleDao;
+    private final NewArticleDao newArticleDao;
 
     @Autowired
-    ExpertServiceImpl(ArticleDao articleDao) {
-        this.articleDao = articleDao;
+    ExpertServiceImpl(NewArticleDao newArticleDao) {
+        this.newArticleDao = newArticleDao;
     }
     public boolean recommendArticle(User expert, String articleId, String recommendTo) {
         if (!expert.checkIdentity(Identity.EXPERT) && !expert.checkIdentity(Identity.ADMINISTRATOR)) {
             throw new InsufficientPermissionException();
         }
-        articleDao.updatePublishStatus(articleId, ArticlePublishStatus.UNDER_RECORD);
-        articleDao.updateReceivedBy(articleId, recommendTo);
+        newArticleDao.updatePublishStatus(articleId, ArticlePublishStatus.UNDER_RECORD);
+        newArticleDao.updateReceivedBy(articleId, recommendTo);
         return true;
     }
 }

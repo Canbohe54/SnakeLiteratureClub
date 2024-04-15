@@ -3,6 +3,7 @@ package com.snach.literatureclub.controller;
 import com.snach.literatureclub.bean.Article;
 import com.snach.literatureclub.bean.User;
 import com.snach.literatureclub.service.AuditorService;
+import com.snach.literatureclub.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,11 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping(value = "auditor", method = RequestMethod.POST)
 public class AuditorController {
-    AuditorService auditorService;
+    private final AuditorService auditorService;
+    private final TagService tagService;
 
     @Autowired
-    public AuditorController(AuditorService auditorService) {
+    public AuditorController(AuditorService auditorService, TagService tagService) {
         this.auditorService = auditorService;
+        this.tagService = tagService;
     }
 
     @RequestMapping("saveApprovalArticle")
@@ -25,7 +28,9 @@ public class AuditorController {
 
     @RequestMapping(value = "getUnauditedArticle", method = RequestMethod.GET)
     public Article getUnauditedArticle(User auditor) {
-        return auditorService.getUnauditedArticle(auditor);
+        Article article = auditorService.getUnauditedArticle(auditor);
+        article.setTags(tagService.getPackedTags(article.getId()));
+        return article;
     }
 
     @RequestMapping("audit")

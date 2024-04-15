@@ -7,7 +7,7 @@ import com.snach.literatureclub.common.ArticlePublishStatus;
 import com.snach.literatureclub.common.Identity;
 import com.snach.literatureclub.common.exception.InsufficientPermissionException;
 import com.snach.literatureclub.common.exception.NoUnauditedArticleException;
-import com.snach.literatureclub.dao.ArticleDao;
+import com.snach.literatureclub.dao.NewArticleDao;
 import com.snach.literatureclub.utils.QiniuKodoUtil;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,14 +66,14 @@ public interface AuditorService {
 @Service
 @Mapper
 class AuditorServiceImpl implements AuditorService {
-    private final ArticleDao articleDao;
+    private final NewArticleDao newArticleDao;
 
     private final QiniuKodoUtil qiniuKodoUtil;
 
     @Autowired
-    AuditorServiceImpl(ArticleDao articleDao, QiniuKodoUtil qiniuKodoUtil) {
-        this.articleDao = articleDao;
+    AuditorServiceImpl(QiniuKodoUtil qiniuKodoUtil, NewArticleDao newArticleDao) {
         this.qiniuKodoUtil = qiniuKodoUtil;
+        this.newArticleDao = newArticleDao;
     }
 
     @Override
@@ -83,10 +83,10 @@ class AuditorServiceImpl implements AuditorService {
         }
         Article article;
         // 先找指定审核人的文章
-        article = articleDao.getArticleByStatusAndAuditedBy(ArticleAuditStatus.SUBMITTED, auditor.getId());
+        article = newArticleDao.getArticleByStatusAndAuditedBy(ArticleAuditStatus.SUBMITTED, auditor.getId());
         // 如果找不到，找未指定审核人的文章
         if (article == null) {
-            article = articleDao.getArticleByStatusAndAuditedBy(ArticleAuditStatus.SUBMITTED, "");
+            article = newArticleDao.getArticleByStatusAndAuditedBy(ArticleAuditStatus.SUBMITTED, "");
             if (article == null) {
                 // 再找不到则设文章id为null
                 article = new Article();
@@ -94,7 +94,7 @@ class AuditorServiceImpl implements AuditorService {
             }
         }
         if (!article.getId().equals("null")) {
-            articleDao.updateAuditStatus(article.getId(), ArticleAuditStatus.BEING_AUDITED);
+            newArticleDao.updateAuditStatus(article.getId(), ArticleAuditStatus.BEING_AUDITED);
         }
         return article;
     }
@@ -105,27 +105,27 @@ class AuditorServiceImpl implements AuditorService {
             throw new InsufficientPermissionException();
         }
         // 记录审核人id
-        articleDao.updateAuditedBy(articleId, auditor.getId());
+        newArticleDao.updateAuditedBy(articleId, auditor.getId());
         if (auditResult) {
             // 审核通过
-            articleDao.audit(articleId, ArticleAuditStatus.AUDITED, reason);
+            newArticleDao.audit(articleId, ArticleAuditStatus.AUDITED, reason);
             // 判断该文章是否有意向收稿者
-            User user = articleDao.getReceivedBy(articleId);
+            User user = newArticleDao.getReceivedBy(articleId);
             if (user != null && user.getIdentity() != null) {
                 if (user.getIdentity() == Identity.HUNTER) {
                     // 收稿者为报社，设置待收录
-                    articleDao.updatePublishStatus(articleId, ArticlePublishStatus.UNDER_RECORD);
+                    newArticleDao.updatePublishStatus(articleId, ArticlePublishStatus.UNDER_RECORD);
                 } else {
                     // 收稿者为专家，设置待推荐
-                    articleDao.updatePublishStatus(articleId, ArticlePublishStatus.UNDER_REVIEW);
+                    newArticleDao.updatePublishStatus(articleId, ArticlePublishStatus.UNDER_REVIEW);
                 }
             } else {
                 // 没有意向收稿者，直接发布
-                articleDao.updatePublishStatus(articleId, ArticlePublishStatus.PUBLIC);
+                newArticleDao.updatePublishStatus(articleId, ArticlePublishStatus.PUBLIC);
             }
         } else {
             // 审核不通过
-            articleDao.audit(articleId, ArticleAuditStatus.FAIL_AUDITED, reason);
+            newArticleDao.audit(articleId, ArticleAuditStatus.FAIL_AUDITED, reason);
         }
         return true;
     }
@@ -135,7 +135,7 @@ class AuditorServiceImpl implements AuditorService {
         if (!auditor.checkIdentity(Identity.AUDITOR) && !auditor.checkIdentity(Identity.ADMINISTRATOR)) {
             throw new InsufficientPermissionException();
         }
-        articleDao.updateAuditStatus(articleId, ArticleAuditStatus.SUBMITTED);
+        newArticleDao.updateAuditStatus(articleId, ArticleAuditStatus.SUBMITTED);
         return true;
     }
 
@@ -160,7 +160,7 @@ class AuditorServiceImpl implements AuditorService {
             qiniuKodoUtil.upload(f, fileName);
             // 更新最新的审批文件的url
             String fileUrl = qiniuKodoUtil.getFileUrl(fileName);
-            articleDao.updateLatestApprovalArticleUrl(articleId, fileUrl);
+            newArticleDao.updateLatestApprovalArticleUrl(articleId, fileUrl);
             if (!f.delete()) {
                 System.out.println("删除失败");
             }

@@ -7,6 +7,7 @@ import com.snach.literatureclub.common.ArticleAuditStatus;
 import com.snach.literatureclub.common.ArticlePublishStatus;
 import com.snach.literatureclub.common.annotation.ResponseNotIntercept;
 import com.snach.literatureclub.service.ArticleService;
+import com.snach.literatureclub.service.TagService;
 import com.snach.literatureclub.utils.MediaTypeConverter;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,12 @@ import java.util.Map;
 public class ArticleController {
     private final ArticleService articleService;
 
+    private final TagService tagService;
+
     @Autowired
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleService articleService, TagService tagService) {
         this.articleService = articleService;
+        this.tagService = tagService;
     }
 
     /**
@@ -42,7 +46,13 @@ public class ArticleController {
     @RequestMapping(value = "allArticles", method = RequestMethod.GET)
     public PageInfo<Article> allArticles(@RequestParam(name = "page_num") int pageNum,
                                          @RequestParam(name = "page_size") int pageSize) {
-        return articleService.getAllArticles(pageNum, pageSize);
+        PageInfo<Article> pageInfo = articleService.getAllArticles(pageNum, pageSize);
+        // 获取每篇文章对应tags
+        for(int i=0; i<pageInfo.getList().size(); i++){
+            Article article = pageInfo.getList().get(i);
+            pageInfo.getList().get(i).setTags(tagService.getPackedTags(article.getId()));
+        }
+        return pageInfo;
     }
 
     /**
@@ -54,7 +64,9 @@ public class ArticleController {
     @RequestMapping(value = "articleDetail", method = RequestMethod.GET)
     public Map<String, Object> articleDetail(String article_id) {
         Map<String, Object> response = new HashMap<>();
-        response.put("article", articleService.getArticleById(article_id));
+        Article article = articleService.getArticleById(article_id);
+        article.setTags(tagService.getPackedTags(article_id));
+        response.put("article", article);
         return response;
     }
 
@@ -69,7 +81,13 @@ public class ArticleController {
                                          @RequestParam(required = false) List<ArticlePublishStatus> publishStatusList,
                                          @RequestParam int pageNum,
                                          @RequestParam int pageSize) {
-        return articleService.getArticles(idList, authorList, receiverList, auditorList, keyword, tags, auditStatusList, publishStatusList, pageNum, pageSize);
+        PageInfo<Article> pageInfo = articleService.getArticles(idList, authorList, receiverList, auditorList, keyword, tags, auditStatusList, publishStatusList, pageNum, pageSize);
+        // 获取每篇文章对应tags
+        for(int i=0; i<pageInfo.getList().size(); i++){
+            Article article = pageInfo.getList().get(i);
+            pageInfo.getList().get(i).setTags(tagService.getPackedTags(article.getId()));
+        }
+        return pageInfo;
     }
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
@@ -78,7 +96,13 @@ public class ArticleController {
                                            @RequestParam(name = "page_num") int pageNum,
                                            @RequestParam(name = "page_size") int pageSize,
                                            @RequestParam(name = "status_list") List<ArticlePublishStatus> statusList) {
-        return articleService.searchArticle(keyword, tag, pageNum, pageSize, statusList);
+        PageInfo<Article> pageInfo = articleService.searchArticle(keyword, tag, pageNum, pageSize, statusList);
+        // 获取每篇文章对应tags
+        for(int i=0; i<pageInfo.getList().size(); i++){
+            Article article = pageInfo.getList().get(i);
+            pageInfo.getList().get(i).setTags(tagService.getPackedTags(article.getId()));
+        }
+        return pageInfo;
     }
 
     /**
@@ -175,7 +199,13 @@ public class ArticleController {
 
     @RequestMapping(value = "getReceivedArticleById", method = RequestMethod.GET)
     public PageInfo<Article> getReceivedArticleById(@RequestParam("auditor_id") String auditorId, @RequestParam("page_num") int pageNum, @RequestParam("page_size") int pageSize) {
-        return articleService.getReceivedArticleById(auditorId, pageNum, pageSize);
+        PageInfo<Article> pageInfo = articleService.getReceivedArticleById(auditorId, pageNum, pageSize);
+        // 获取每篇文章对应tags
+        for(int i=0; i<pageInfo.getList().size(); i++){
+            Article article = pageInfo.getList().get(i);
+            pageInfo.getList().get(i).setTags(tagService.getPackedTags(article.getId()));
+        }
+        return pageInfo;
     }
 
     /**

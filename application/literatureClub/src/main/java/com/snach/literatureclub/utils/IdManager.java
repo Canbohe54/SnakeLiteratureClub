@@ -77,4 +77,6 @@ public class IdManager {
     public String generateMessageId() {
         return "m" + generateNormalId();
     }
+
+    public String generateTagId() { return "t" + generateNormalId(); }
 }
