@@ -116,7 +116,9 @@
               <el-text class="article-reason" :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' :
       articleDetail.reason }}</el-text>
             </el-card>
-
+            <el-card>
+            <QuestionComponent :questions="articleQuestions"></QuestionComponent>
+            </el-card>
             <el-card v-if="displayMessage">
               <el-text class="MessageInputTag">反馈:</el-text>
               <el-input class="MessageInputBox" v-model="messageInputText" :disabled="store.getters.getToken === ''"
@@ -253,6 +255,7 @@ import LikeBold from "@/components/common/SnakeIcons/LikeBold.vue";
 import { getCookie } from "@/scripts/cookie";
 import { SnachResponse } from "@/scripts/types/ResponseObject";
 import {BASE_URL} from "@/scripts/config/BaseURL";
+import QuestionComponent from "@/components/questionnaire/QuestionComponent.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -274,6 +277,28 @@ const articleDetail = reactive<AttributeAddableObject>({
   receivedBy: '',
   reason: '',
 })
+const articleQuestions = reactive([{
+  id: 'q1',
+  questionHead: '这篇文章讲了什么',
+  candidate: {
+    A: '选项1',
+    B: '选项2',
+    C: '选项3',
+    D: '选项4'
+  },
+  trueAnswer: 'A'
+}, {
+  id: 'q2',
+  questionHead: '这篇文章......',
+  candidate: {
+    A: '选项1',
+    B: '选项2',
+    C: '选项3',
+    D: '选项4'
+  },
+  trueAnswer: 'B'
+}])
+
 const acceptManager = reactive({
   acceptDialogVisible: false,
   acceptInfo: '我是xxx报社的xxx，对您的文章很有兴趣，是否可以收录和刊登您的文章？',
