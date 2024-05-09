@@ -3,9 +3,11 @@ package com.snach.literatureclub.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.snach.literatureclub.bean.User;
+import com.snach.literatureclub.common.Identity;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.common.exception.NonexistentException;
 import com.snach.literatureclub.common.exception.WrongIdOrPasswordException;
+import com.snach.literatureclub.dao.ContributorDao;
 import com.snach.literatureclub.dao.UserDao;
 import com.snach.literatureclub.utils.IdManager;
 import org.apache.ibatis.annotations.Mapper;
@@ -25,31 +27,36 @@ import static com.snach.literatureclub.utils.TokenTools.getPayload;
 public interface UserService {
     // Account
     String login(String id, String password);
+
     String register(User user);
 
     // User Info
     User getUserBasicInfo(String id);
+
     PageInfo<User> getUserBasicInfoByName(String name, List<String> identity, int pageNum, int pageSize);
 
     String getUserIdentity(String id);
 
     List<User> getUserBasicInfoByNameNoPagination(String name, List<String> identity);
+
     boolean updateUserBasicInfo(String token, User user);
 
     boolean updateUserPassword(String token, String oldPassword, String newPassword);
 }
+
 @Transactional(rollbackFor = Exception.class)
 @Mapper
 @Service
 class UserServiceImpl implements UserService {
     private final UserDao userDao;
-
+    private final ContributorDao contributorDao; //字段多了感觉还是在字段上用autowired舒服
     private final IdManager idManager;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, IdManager manager) {
+    public UserServiceImpl(UserDao userDao, IdManager manager, ContributorDao contributorDao) {
         this.userDao = userDao;
         this.idManager = manager;
+        this.contributorDao = contributorDao;
     }
 
     // Account
@@ -72,16 +79,31 @@ class UserServiceImpl implements UserService {
         String newUserId = idManager.generateUserId();
         user.setId(newUserId);
         userDao.insertUser(user);
+        Identity identity = user.getIdentity();
+        switch (identity) {
+            case CONTRIBUTOR:
+                contributorDao.insertUser(user);
+                break;
+        }
         return newUserId;
     }
 
     // User Info
     @Override
     public User getUserBasicInfo(String id) {
-        User user = userDao.getUserById(id);
-        if (user == null) {
+        Identity identity = userDao.getUserById(id).getIdentity();
+        if (identity == null) {
             throw new NonexistentException(User.class);
         }
+        User user;
+        switch (identity) {
+            case CONTRIBUTOR:
+                user = contributorDao.getUserById(id);
+                break;
+            default:
+                throw new NonexistentException(User.class);
+        }
+        user.setIdentity(identity);
         user.setPassword("<SECRET>");
         return user;
     }
@@ -89,7 +111,7 @@ class UserServiceImpl implements UserService {
     @Override
     public PageInfo<User> getUserBasicInfoByName(String name, List<String> identity, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        if(identity != null && !identity.isEmpty()){
+        if (identity != null && !identity.isEmpty()) {
             return new PageInfo<>(userDao.getUserByNameAndIdentity(name, identity));
         }
         return new PageInfo<>(userDao.getUserByName(name));

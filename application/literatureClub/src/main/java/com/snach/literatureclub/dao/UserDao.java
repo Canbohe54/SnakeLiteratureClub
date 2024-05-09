@@ -16,8 +16,12 @@ public interface UserDao {
     @Select("SELECT id FROM user WHERE phone = #{phone} AND password = #{password}")
     String loginByPhone(String phone, String password);
 
-    @Insert("INSERT INTO user(id, name, phone, password, identity, introduction, organization, pictureUrl, attrs) " +
-            "VALUES (#{user.id}, #{user.name}, #{user.phone}, #{user.password}, #{user.identity},  #{user.introduction}, #{user.organization}, #{user.pictureUrl}, #{user.attrs})")
+//    @Insert("INSERT INTO user(id, name, phone, password, identity, introduction, organization, pictureUrl, attrs) " +
+//            "VALUES (#{user.id}, #{user.name}, #{user.phone}, #{user.password}, #{user.identity},  #{user.introduction}, #{user.organization}, #{user.pictureUrl}, #{user.attrs})")
+//    void insertUser(@Param("user") User user);
+
+    @Insert("INSERT INTO user(id, name, phone, password, identity) " +
+            "VALUES (#{user.id}, #{user.name}, #{user.phone}, #{user.password}, #{user.identity})")
     void insertUser(@Param("user") User user);
 
     // User Info
@@ -31,7 +35,12 @@ public interface UserDao {
     @Select({"<script>",
             "SELECT ",
             "* ",
-            "FROM user WHERE name LIKE '%${name}%' AND identity in",
+            "FROM user u LEFT JOIN contributor ct ON u.id=ct.id ",
+            "LEFT JOIN teacher t ON u.id=t.id ",
+            "LEFT JOIN expert e ON u.id=e.id ",
+            "LEFT JOIN hunter h ON u.id=h.id ",
+            "LEFT JOIN auditor a ON u.id=a.id ",
+            "WHERE user.name LIKE '%${name}%' AND user.identity in",
             "<foreach collection='items' item='item' open='(' separator=',' close=')'>",
             "#{item}",
             "</foreach>",
@@ -42,7 +51,7 @@ public interface UserDao {
     @Select("SELECT identity FROM user WHERE id = #{id}")
     String getUserIdentity(String id);
 
-    @Insert("UPDATE user SET name = #{user.name}, phone = #{user.phone}, introduction = #{user.introduction}, organization = #{user.organization}, attrs = #{user.attrs} WHERE id = #{user.id}")
+    @Update("UPDATE user SET name = #{user.name}, phone = #{user.phone} WHERE id = #{user.id}")
     void updateUserInfo(@Param("user") User user);
 
     @Update("UPDATE user SET password = #{newPassword} WHERE id = #{id}")
