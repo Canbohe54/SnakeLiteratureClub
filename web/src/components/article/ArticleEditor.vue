@@ -69,7 +69,20 @@
             {{ articleDetail.raw.name }}
           </el-tag>
         </div>
-
+        <el-form :rules="editRules" ref="editFormRef" :model="articleDetail" class="edit-form">
+          <el-form-item prop="featuredClips">
+            <div class="description-head"><span>精选片段</span></div>
+            <el-input
+              class="editor-description"
+              v-model="articleDetail.featuredClips"
+              maxlength="400"
+              show-word-limit
+              :autosize="{ minRows: 4, maxRows: 10}"
+              type="textarea"
+              placeholder="请输入精选片段（建议200字以内）"
+            />
+          </el-form-item>
+        </el-form>
       </el-card>
 
       <el-card class="more-option-card">
@@ -240,6 +253,7 @@ const articleDetail: AttributeAddableObject = reactive({
   authorOrganization: '',
   authorGrade: '',
   auditedBy: '',
+  featuredClips: '',
 })
 const editFormRef = ref<FormInstance>()
 const basicInfoFormRef = ref<FormInstance>()
