@@ -23,4 +23,7 @@ public interface ContributorDao {
 
     @Select("SELECT * FROM contributor NATURAL JOIN user WHERE name LIKE '%${name}%'")
     List<User> getUserByName(String name);
+
+    @Select("SELECT grade FROM contributor WHERE id=#{id}")
+    String getContributorGrade(String id);
 }

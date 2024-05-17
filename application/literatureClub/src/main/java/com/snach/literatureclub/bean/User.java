@@ -44,15 +44,15 @@ public class User implements Serializable {
 
     // Extra Info
     // todo attrs
-//    @JsonIgnore String attrs;
-//    @JsonProperty("attrs") UserAttribute userAttribute;
-//
-//    public UserAttribute getUserAttribute() {
-//        if (this.userAttribute == null) {
-//            this.userAttribute = UserAttributeFactory.load(this.identity, this.attrs);
-//        }
-//        return this.userAttribute;
-//    }
+    @JsonIgnore String attrs;
+    @JsonProperty("attrs") UserAttribute userAttribute;
+
+    public UserAttribute getUserAttribute() {
+        if (this.userAttribute == null) {
+            this.userAttribute = UserAttributeFactory.load(this.identity, this.attrs);
+        }
+        return this.userAttribute;
+    }
 
     public boolean checkIdentity(Identity identity) {
         return this.identity == identity;

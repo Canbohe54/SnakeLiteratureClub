@@ -119,9 +119,12 @@ class UserServiceImpl implements UserService {
             throw new NonexistentException(User.class);
         }
         User user;
+        String attrs;
         switch (identity) {
             case CONTRIBUTOR:
                 user = contributorDao.getUserById(id);
+                attrs = contributorDao.getContributorGrade(id);
+                user.setAttrs("{\"grade\":"+attrs+"}");
                 break;
             case TEACHER:
                 user = teacherDao.getUserById(id);
