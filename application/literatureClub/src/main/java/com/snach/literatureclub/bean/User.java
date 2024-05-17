@@ -43,15 +43,16 @@ public class User implements Serializable {
     String pictureUrl;
 
     // Extra Info
-    @JsonIgnore String attrs;
-    @JsonProperty("attrs") UserAttribute userAttribute;
-
-    public UserAttribute getUserAttribute() {
-        if (this.userAttribute == null) {
-            this.userAttribute = UserAttributeFactory.load(this.identity, this.attrs);
-        }
-        return this.userAttribute;
-    }
+    // todo attrs
+//    @JsonIgnore String attrs;
+//    @JsonProperty("attrs") UserAttribute userAttribute;
+//
+//    public UserAttribute getUserAttribute() {
+//        if (this.userAttribute == null) {
+//            this.userAttribute = UserAttributeFactory.load(this.identity, this.attrs);
+//        }
+//        return this.userAttribute;
+//    }
 
     public boolean checkIdentity(Identity identity) {
         return this.identity == identity;

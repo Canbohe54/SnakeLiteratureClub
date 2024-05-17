@@ -7,8 +7,7 @@ import com.snach.literatureclub.common.Identity;
 import com.snach.literatureclub.common.exception.InvalidTokenException;
 import com.snach.literatureclub.common.exception.NonexistentException;
 import com.snach.literatureclub.common.exception.WrongIdOrPasswordException;
-import com.snach.literatureclub.dao.ContributorDao;
-import com.snach.literatureclub.dao.UserDao;
+import com.snach.literatureclub.dao.*;
 import com.snach.literatureclub.utils.IdManager;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,12 +50,22 @@ class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final ContributorDao contributorDao; //字段多了感觉还是在字段上用autowired舒服
     private final IdManager idManager;
+    private final TeacherDao teacherDao;
+    private final ExpertDao expertDao;
+    private final HunterDao hunterDao;
+    private final AuditorDao auditorDao;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, IdManager manager, ContributorDao contributorDao) {
+    public UserServiceImpl(UserDao userDao, IdManager manager,
+                           ContributorDao contributorDao, TeacherDao teacherDao,
+                           ExpertDao expertDao, HunterDao hunterDao, AuditorDao auditorDao) {
         this.userDao = userDao;
         this.idManager = manager;
         this.contributorDao = contributorDao;
+        this.teacherDao = teacherDao;
+        this.expertDao = expertDao;
+        this.hunterDao = hunterDao;
+        this.auditorDao = auditorDao;
     }
 
     // Account
@@ -84,6 +93,20 @@ class UserServiceImpl implements UserService {
             case CONTRIBUTOR:
                 contributorDao.insertUser(user);
                 break;
+            case TEACHER:
+                teacherDao.insertUser(user);
+                break;
+            case EXPERT:
+                expertDao.insertUser(user);
+                break;
+            case HUNTER:
+                hunterDao.insertUser(user);
+                break;
+            case AUDITOR:
+                auditorDao.insertUser(user);
+                break;
+            default:
+                throw new NonexistentException(String.valueOf(user.getIdentity()));
         }
         return newUserId;
     }
@@ -99,6 +122,18 @@ class UserServiceImpl implements UserService {
         switch (identity) {
             case CONTRIBUTOR:
                 user = contributorDao.getUserById(id);
+                break;
+            case TEACHER:
+                user = teacherDao.getUserById(id);
+                break;
+            case EXPERT:
+                user = expertDao.getUserById(id);
+                break;
+            case HUNTER:
+                user = hunterDao.getUserById(id);
+                break;
+            case AUDITOR:
+                user = auditorDao.getUserById(id);
                 break;
             default:
                 throw new NonexistentException(User.class);
@@ -133,6 +168,25 @@ class UserServiceImpl implements UserService {
             throw new InvalidTokenException();
         }
         userDao.updateUserInfo(user);
+        switch (user.getIdentity()) {
+            case CONTRIBUTOR:
+                contributorDao.updateUserInfo(user);
+                break;
+            case TEACHER:
+                teacherDao.updateUserInfo(user);
+                break;
+            case EXPERT:
+                expertDao.updateUserInfo(user);
+                break;
+            case HUNTER:
+                hunterDao.updateUserInfo(user);
+                break;
+            case AUDITOR:
+                auditorDao.updateUserInfo(user);
+                break;
+            default:
+                throw new NonexistentException(String.valueOf(user.getIdentity()));
+        }
         return true;
     }
 

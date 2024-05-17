@@ -28,7 +28,12 @@ public interface UserDao {
     @Select("SELECT * FROM user WHERE id = #{id}")
     User getUserById(String id);
 
-    @Select("SELECT * FROM user WHERE name LIKE '%${name}%'")
+    @Select("SELECT * FROM user u LEFT JOIN contributor ct ON u.id=ct.id " +
+            "LEFT JOIN teacher t ON u.id=t.id " +
+            "LEFT JOIN expert e ON u.id=e.id " +
+            "LEFT JOIN hunter h ON u.id=h.id " +
+            "LEFT JOIN auditor a ON u.id=a.id " +
+            "WHERE u.name LIKE '%${name}%'")
     List<User> getUserByName(String name);
 
 //    @Select("SELECT * FROM user WHERE identity = #{identity} AND name LIKE '%${name}%'")
