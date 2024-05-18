@@ -29,7 +29,7 @@
     height: 32px;
     width: 32px;
     margin: 0.5px 10px 0 16px;
-    background: url("../assets/logo.png") no-repeat center center;
+    background: url("../assets/bridge_of_youth_logo.png") no-repeat center center;
     background-size: contain;
 }
 
