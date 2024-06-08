@@ -32,8 +32,8 @@ public interface NewArticleDao {
             "VALUES(#{a.id}, #{a.raw}, #{a.fileType}, #{a.latestApprovalArticleUrl})")
     void insertArticleRaw(@Param("a") Article article);
 
-    @Insert("INSERT INTO article_info(id,`time`, description, title, mentor, author_name, author_org, author_grade)" +
-            "VALUES(#{a.id}, #{a.time}, #{a.description}, #{a.title}, #{a.mentor}, #{a.authorName}, #{a.authorOrganization}, #{a.authorGrade})")
+    @Insert("INSERT INTO article_info(id,`time`, description, title, mentor, author_name, author_org, author_grade, featured_clip)" +
+            "VALUES(#{a.id}, #{a.time}, #{a.description}, #{a.title}, #{a.mentor}, #{a.authorName}, #{a.authorOrganization}, #{a.authorGrade}, #{a.featured_clip})")
     void insertArticleInfo(@Param("a") Article article);
 
     @Insert("INSERT INTO article_and_tags(article_id, tag_id)" +
@@ -242,7 +242,7 @@ public interface NewArticleDao {
      * @param article 封装有稿件信息的Article对象
      * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
      */
-    @Update("UPDATE article_info SET `time` = #{a.time}, title = #{a.title}, description = #{a.description},mentor=#{a.mentor}, author_name=#{a.authorName}, author_org=#{a.authorOrganization}, author_grade=#{a.authorGrade} WHERE id = #{a.id}")
+    @Update("UPDATE article_info SET `time` = #{a.time}, title = #{a.title}, description = #{a.description},mentor=#{a.mentor}, author_name=#{a.authorName}, author_org=#{a.authorOrganization}, author_grade=#{a.authorGrade}, featured_clip=#{a.featured_clip} WHERE id = #{a.id}")
     void updateArticleInfo(@Param("a") Article article);
 
     @Update("UPDATE article SET text_by=#{a.textBy}, received_by=#{a.receivedBy}, audited_by=#{a.auditedBy} WHERE id=#{a.id}")

@@ -116,9 +116,9 @@
               <el-text class="article-reason" :size="displaySize">{{ articleDetail.reason === '' ? '暂无建议' :
       articleDetail.reason }}</el-text>
             </el-card>
-            <el-card>
-            <QuestionComponent :questions="articleQuestions"></QuestionComponent>
-            </el-card>
+<!--            <el-card>-->
+<!--            <QuestionComponent :questions="articleQuestions"></QuestionComponent>-->
+<!--            </el-card>-->
             <el-card v-if="displayMessage">
               <el-text class="MessageInputTag">反馈:</el-text>
               <el-input class="MessageInputBox" v-model="messageInputText" :disabled="store.getters.getToken === ''"

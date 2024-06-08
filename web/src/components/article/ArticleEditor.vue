@@ -70,11 +70,11 @@
           </el-tag>
         </div>
         <el-form :rules="editRules" ref="editFormRef" :model="articleDetail" class="edit-form">
-          <el-form-item prop="featuredClips">
+          <el-form-item prop="featuredClip">
             <div class="description-head"><span>精选片段</span></div>
             <el-input
               class="editor-description"
-              v-model="articleDetail.featuredClips"
+              v-model="articleDetail.featuredClip"
               maxlength="400"
               show-word-limit
               :autosize="{ minRows: 4, maxRows: 10}"
@@ -253,7 +253,7 @@ const articleDetail: AttributeAddableObject = reactive({
   authorOrganization: '',
   authorGrade: '',
   auditedBy: '',
-  featuredClips: '',
+  featuredClip: '',
 })
 const editFormRef = ref<FormInstance>()
 const basicInfoFormRef = ref<FormInstance>()
@@ -371,6 +371,7 @@ const save = async () => {
   param.append("authorName", articleDetail.authorName)
   param.append("authorOrganization", articleDetail.authorOrganization)
   param.append("authorGrade", articleDetail.authorGrade)
+  param.append("featuredClip", articleDetail.featuredClip)
   if (contributeManager.contributeWay == 'PUBLISHED') {
     param.append("receivedBy", contributeManager.contributeTo)
   }
@@ -410,6 +411,7 @@ const release = async () => {
   param.append("authorName", articleDetail.authorName)
   param.append("authorOrganization", articleDetail.authorOrganization)
   param.append("authorGrade", articleDetail.authorGrade)
+  param.append("featuredClip", articleDetail.featuredClip)
   if (contributeManager.contributeWay == 'PUBLISHED') {
     param.append("receivedBy", contributeManager.contributeTo)
   }
